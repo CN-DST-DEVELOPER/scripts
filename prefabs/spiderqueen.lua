@@ -13,6 +13,8 @@ local prefabs =
     "silk",
     "spiderhat",
     "spidereggsack",
+
+    "spiderqueencorpse",
 }
 
 local brain = require "brains/spiderqueenbrain"
@@ -147,8 +149,6 @@ local function fn()
 
 	inst.override_combat_fx_size = "med"
 
-    inst:SetStateGraph("SGspiderqueen")
-
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetLoot(loot)
 
@@ -218,9 +218,11 @@ local function fn()
 
     ------------------
 
+    inst:SetStateGraph("SGspiderqueen")
     inst:SetBrain(brain)
 
 	inst.hit_recovery = TUNING.SPIDERQEEN_HIT_RECOVERY
+    inst.spawn_lunar_mutated_tuning = "SPAWN_MUTATED_SPIDERQUEEN"
 
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDead)

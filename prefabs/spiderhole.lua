@@ -20,6 +20,8 @@ local prefabs =
 
     --fx
     "rock_break_fx",
+	--halloween
+	"spooked_spider_rock_fx",
 }
 
 SetSharedLootTable('spider_hole',
@@ -59,11 +61,26 @@ local function rock_onworked(inst, worker, workleft)
         inst.components.lootdropper:DropLoot(pos)
         inst:Remove()
     else
-        inst.AnimState:PlayAnimation(workleft <= TUNING.SPILAGMITE_ROCK * 0.5 and "low" or "med")
+		local anim = workleft <= TUNING.SPILAGMITE_ROCK * 0.5 and "low" or "med"
+
+		if --IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and
+			worker.components.spooked and
+			not inst.AnimState:IsCurrentAnimation(anim)
+		then
+			worker.components.spooked:TryCustomSpook(inst, "spooked_spider_rock_fx", TUNING.MINE_SPOOKED_MULT_LOW)
+		end
+
+		inst.AnimState:PlayAnimation(anim)
     end
 end
 
-local function GoToBrokenState(inst)
+local function spawner_onfinish(inst, worker)
+	if --IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and
+		worker.components.spooked
+	then
+		worker.components.spooked:TryCustomSpook(inst, "spooked_spider_rock_fx", TUNING.MINE_SPOOKED_MULT_HIGH)
+	end
+
     --Remove myself, spawn a rock version in my place.
     SpawnPrefab("spiderhole_rock").Transform:SetPosition(inst.Transform:GetWorldPosition())
     inst:Remove()
@@ -199,7 +216,7 @@ local function spawnerfn()
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
     inst.components.workable:SetWorkLeft(TUNING.SPILAGMITE_SPAWNER)
     inst.components.workable:SetOnWorkCallback(spawner_onworked)
-    inst.components.workable:SetOnFinishCallback(GoToBrokenState)
+	inst.components.workable:SetOnFinishCallback(spawner_onfinish)
 
     inst:AddComponent("childspawner")
     inst.components.childspawner:SetRegenPeriod(TUNING.SPIDERHOLE_REGEN_TIME)

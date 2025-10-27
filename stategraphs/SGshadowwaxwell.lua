@@ -850,7 +850,7 @@ local states =
 			inst.components.locomotor:Stop()
 			inst:ClearBufferedAction()
 
-			inst.AnimState:PlayAnimation("pickaxe_recoil") --TODO FIXME(Omar): Hook in animation when it comes in
+			inst.AnimState:PlayAnimation("atk_recoil")
 			if data ~= nil and data.target ~= nil and data.target:IsValid() then
                 local pos = data.target:GetPosition()
 

@@ -78,7 +78,9 @@ local prefabs =
     "spider_mutate_fx",
     "spider_heal_fx",
     "spider_heal_target_fx",
-    "spider_heal_ground_fx"
+    "spider_heal_ground_fx",
+
+    "spidercorpse",
 }
 
 local brain = require "brains/spiderbrain"
@@ -571,6 +573,13 @@ local function SoundPath(inst, event)
     return "dontstarve/creatures/" .. creature .. "/" .. event
 end
 
+local function SaveCorpseData(inst, corpse)
+    local home = inst.components.homeseeker and inst.components.homeseeker:GetHome()
+    if home ~= nil then
+        corpse.components.entitytracker:TrackEntity("spider_home", home)
+    end
+end
+
 local DIET = { FOODTYPE.MEAT }
 local BASE_PATHCAPS = { ignorecreep = true }
 local function create_common(bank, build, tag, common_init, extra_data)
@@ -740,8 +749,10 @@ local function create_common(bank, build, tag, common_init, extra_data)
     OnIsCaveDay(inst, TheWorld.state.iscaveday)
 
     inst.SoundPath = SoundPath
+    inst.SaveCorpseData = SaveCorpseData
 
     inst.incineratesound = SoundPath(inst, "die")
+    inst.spawn_lunar_mutated_tuning = "MOONSPIDERDEN_ENABLED"
 
     inst.build = build
     inst.SetHappyFace = (extra_data and extra_data.SetHappyFaceFn) or SetHappyFace
@@ -755,6 +766,8 @@ local function create_spider()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.lunar_mutation_chance = TUNING.SPIDER_PRERIFT_MUTATION_SPAWN_CHANCE
 
     inst.components.health:SetMaxHealth(TUNING.SPIDER_HEALTH)
 
@@ -780,6 +793,8 @@ local function create_warrior()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
 
     inst.components.health:SetMaxHealth(TUNING.SPIDER_WARRIOR_HEALTH)
 
@@ -809,6 +824,8 @@ local function create_hider()
         return inst
     end
 
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
+
     inst.components.health:SetMaxHealth(TUNING.SPIDER_HIDER_HEALTH)
 
     inst.components.combat:SetDefaultDamage(TUNING.SPIDER_HIDER_DAMAGE)
@@ -837,6 +854,8 @@ local function create_spitter()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
 
     inst.components.acidinfusible:SetOnInfuseFn(Spitter_OnAcidInfuse)
     inst.components.acidinfusible:SetOnUninfuseFn(Spitter_OnAcidUninfuse)
@@ -870,6 +889,8 @@ local function create_dropper()
         return inst
     end
 
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
+
     inst.components.health:SetMaxHealth(TUNING.SPIDER_WARRIOR_HEALTH)
 
     inst.components.combat:SetDefaultDamage(TUNING.SPIDER_WARRIOR_DAMAGE)
@@ -897,6 +918,16 @@ local function spider_moon_common_init(inst)
     inst:AddTag("soulless") -- no wortox souls
 end
 
+local function LoadCorpseData(inst, corpse)
+    local data = corpse.corpsedata
+    local home = corpse.components.entitytracker:GetEntity("spider_home")
+    if home ~= nil then
+        -- Unfortunately it doesn't retain as the moon spider prefab when going home
+        --home.components.childspawner:TakeOwnership(inst)
+		corpse.components.entitytracker:ForgetEntity("spider_home")
+    end
+end
+
 local function create_moon()
     local inst = create_common("spider_moon", "ds_spider_moon", "spider_moon", spider_moon_common_init)
 
@@ -905,6 +936,7 @@ local function create_moon()
     end
 
     inst.DoSpikeAttack = DoSpikeAttack
+    inst.LoadCorpseData = LoadCorpseData
 
     inst.components.health:SetMaxHealth(TUNING.SPIDER_MOON_HEALTH)
 
@@ -929,6 +961,8 @@ local function create_healer()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
 
     inst.components.health:SetMaxHealth(TUNING.SPIDER_HEALER_HEALTH)
 
@@ -1002,6 +1036,8 @@ local function create_water()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.lunar_mutation_chance = TUNING.SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE
 
     inst:AddComponent("amphibiouscreature")
     inst.components.amphibiouscreature:SetBanks("spider_water", "spider_water_water")

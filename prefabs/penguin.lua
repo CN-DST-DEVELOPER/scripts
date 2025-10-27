@@ -12,6 +12,8 @@ local prefabs =
     "feather_crow",
     "bird_egg",
     "teamleader",
+
+    "penguincorpse",
 }
 
 local mutated_penguin_assets =
@@ -63,6 +65,11 @@ local function OnLoad(inst, data)
     end
 end
 
+local function SaveCorpseData(inst, corpse)
+    return inst.colonyNum and { colonyNum = inst.colonyNum }
+        or nil
+end
+
 local function GetStatus(inst)
     if inst.components.hunger then
         if inst.components.hunger:IsStarving(inst) then
@@ -77,7 +84,7 @@ local function MakeTeam(inst, attacker)
     local leader = SpawnPrefab("teamleader")
     leader:AddTag("penguin")
     local teamleader = leader.components.teamleader
-    teamleader.threat = attacker
+    teamleader:SetNewThreat(attacker)
     teamleader.radius = 10
     teamleader:SetAttackGrpSize(5+math.random(1,3))
     teamleader.timebetweenattacks = 0  -- first attack happens immediately
@@ -320,14 +327,30 @@ local function fn()
 
     MakeHauntablePanic(inst)
 
+    inst.SaveCorpseData = SaveCorpseData
+
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
     inst.eggsLayed = 0
 	inst.eggprefab = "bird_egg"
+    inst.spawn_lunar_mutated_tuning = "SPAWN_MOON_PENGULLS"
 
     inst:DoTaskInTime(0, OnInit)
 
     return inst
+end
+
+-----------------------------------------------------------
+
+local function LoadCorpseData(inst, corpse)
+    local data = corpse.corpsedata
+    if data and data.colonyNum then
+        inst.colonyNum = data.colonyNum
+        local spawner = TheWorld.components.penguinspawner
+        if spawner then
+            spawner:AddToColony(inst.colonyNum, inst)
+        end
+    end
 end
 
 local function mutated_fn()
@@ -352,6 +375,7 @@ local function mutated_fn()
     inst:AddTag("animal")
     inst:AddTag("smallcreature")
     inst:AddTag("lunar_aligned")
+    inst:AddTag("mutated_penguin")
     inst:AddTag("soulless") -- no wortox souls
 
     --herdmember (from herdmember component) added to pristine state for optimization
@@ -437,6 +461,8 @@ local function mutated_fn()
     inst:ListenForEvent("attacked", OnAttacked)
 
     MakeHauntablePanic(inst)
+
+    inst.LoadCorpseData = LoadCorpseData
 
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad

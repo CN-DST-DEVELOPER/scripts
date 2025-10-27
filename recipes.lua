@@ -523,6 +523,7 @@ Recipe2("goggleshat", 						{Ingredient("goldnugget", 1), Ingredient("pigskin", 
 Recipe2("deserthat", 						{Ingredient("goggleshat", 1), Ingredient("pigskin", 1)}, 										TECH.LOST)
 Recipe2("moonstorm_goggleshat", 			{Ingredient("moonglass", 2),Ingredient("potato", 1)}, 											TECH.LOST)
 Recipe2("watermelonhat", 					{Ingredient("watermelon", 1), Ingredient("twigs", 3)}, 											TECH.SCIENCE_ONE)
+Recipe2("pumpkinhat", 						{Ingredient("pumpkin", 1)},							 											TECH.HALLOWED_NIGHTS)
 Recipe2("icehat",							{Ingredient("transistor", 2), Ingredient("rope", 4), Ingredient("ice", 10)}, 					TECH.SCIENCE_TWO)
 Recipe2("beehat", 							{Ingredient("silk", 8), Ingredient("rope", 1)}, 												TECH.SCIENCE_TWO)
 Recipe2("featherhat", 						{Ingredient("feather_crow", 3),Ingredient("feather_robin", 2), Ingredient("tentaclespots", 2)}, TECH.SCIENCE_TWO)

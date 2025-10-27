@@ -709,7 +709,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Wolfgang's eyes is playing tricky!",
+    ANNOUNCE_SPOOKED = "Is bad surprise!",
 	ANNOUNCE_BRAVERY_POTION = "Wolfgang is brave! Not scared of spooky tree!",
 	ANNOUNCE_MOONPOTION_FAILED = "Wolfgang expected something to happen.",
 
@@ -1186,6 +1186,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Get out of here, big shadow hand!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Go away, weird buzzard! Wolfgang still alive!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5784,7 +5786,7 @@ return{
             REVIVING = "Oh, no.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Is very bad luck.", -- Generic string
             EATING_CORPSE = "Is gross, but Wolfgang can't look away.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5856,6 +5858,45 @@ return{
 			GENERIC = "Is mitey, not mighty!",
 			SLEEPING = "Shh, gassy bug is sleeping.",
             VENTING = "Is bad gas!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Wolfgang wear scary pumpkin face! Tricky kids beware!",
+			UNCARVED = "No face? How will it scare the little babies?",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Is not personal.", --witnessing the corpse
+            BURNING  = "Better this way.", --when its burning
+            REVIVING = "This not funny!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Wolfgang prefer dead spider.",
+			BURNING = "Good idea.",
+			REVIVING = "Don't come back, spider!",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Ha! Is no match for Mighty Wolfgang!",
+			BURNING = "Burn, bug-house! Burn!",
+			REVIVING = "Oh no. This bad. This very bad.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Bye bye, fish man!",
+			BURNING = "Smell kind of delicious.",
+			REVIVING = "Is rotten fish man!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

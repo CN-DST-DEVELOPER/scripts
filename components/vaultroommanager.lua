@@ -530,19 +530,24 @@ function self:OnVaultTeleporterChannelStart(teleporter, doer)
         local roomid = teleporter.components.vault_teleporter:GetTargetRoomID()
         local targetteleportmarkername = teleporter.components.vault_teleporter:GetTargetMarkerName()
         if roomid == LOBBY_TO_OR_FROM_VAULT then
-			doer:PushEventImmediate("vault_teleport", {
-				onplayerready = function(doer)
-                    local entities = self:GetToOrFromVaultTeleportTargetsFor(doer)
-					for i, v in ipairs(entities) do
-						if not v.isplayer then
-							SpawnPrefab("vault_portal_fx").Transform:SetPosition(v.Transform:GetWorldPosition())
-						end
-					end
-                    self:TeleportEntities(entities, targetteleportmarkername)
-                    self:PlayDestinationSFX(targetteleportmarkername)
-				end,
-			})
-			teleporter:OnDepartFx()
+            if teleporter == self.teleporters["lobby"] and not self.haslobby then
+                doer:PushEvent("vault_teleporter_does_nothing") -- Wisecracker.
+                teleporter.components.channelable:StopChanneling(true)
+            else
+                doer:PushEventImmediate("vault_teleport", {
+                    onplayerready = function(doer)
+                        local entities = self:GetToOrFromVaultTeleportTargetsFor(doer)
+                        for i, v in ipairs(entities) do
+                            if not v.isplayer then
+                                SpawnPrefab("vault_portal_fx").Transform:SetPosition(v.Transform:GetWorldPosition())
+                            end
+                        end
+                        self:TeleportEntities(entities, targetteleportmarkername)
+                        self:PlayDestinationSFX(targetteleportmarkername)
+                    end,
+                })
+                teleporter:OnDepartFx()
+            end
         else
             local direction = DIRECTIONS[teleporter.components.vault_teleporter:GetUnshuffledDirectionName()]
 
@@ -712,12 +717,8 @@ function self:ClearAllExits(resettolobby)
         end
     end
     local roomdata = self.rooms[self.roomindex]
-    local haslobby = roomdata and roomdata.haslobby
-    local lobby_to_vault_teleporter = self:GetLobbyToVaultTeleporter()
-    if haslobby and self.archivespowered then
-        lobby_to_vault_teleporter:SetPowered(true)
-    else
-        lobby_to_vault_teleporter:SetPowered(false)
+    if roomdata then
+        self:UpdateLobbyToVaultTeleporter(roomdata)
     end
 end
 function self:IsLinkBroken(roomdata, direction, link)
@@ -741,6 +742,11 @@ function self:GetLobbyToVaultTeleporter()
     end
     return lobby_to_vault_teleporter
 end
+function self:UpdateLobbyToVaultTeleporter(roomdata)
+    self.haslobby = roomdata.haslobby
+    local lobby_to_vault_teleporter = self:GetLobbyToVaultTeleporter()
+    lobby_to_vault_teleporter:SetPowered(self.archivespowered)
+end
 function self:SetAllExits(roomdata)
     for direction = 1, DIRECTIONS_INDEX_SIZE do
         local link = roomdata.links[direction]
@@ -763,13 +769,7 @@ function self:SetAllExits(roomdata)
             end
         end
     end
-    local haslobby = roomdata.haslobby
-    local lobby_to_vault_teleporter = self:GetLobbyToVaultTeleporter()
-    if haslobby and self.archivespowered then
-        lobby_to_vault_teleporter:SetPowered(true)
-    else
-        lobby_to_vault_teleporter:SetPowered(false)
-    end
+    self:UpdateLobbyToVaultTeleporter(roomdata)
 end
 function self:TeleportEntities(toteleportents, targetteleportmarkername)
     local marker = self.markers[targetteleportmarkername]
@@ -792,6 +792,19 @@ function self:TeleportEntities(toteleportents, targetteleportmarkername)
             self:TryToAdjustTrackingPlayer(ent)
             if ent.SnapCamera then
                 ent:SnapCamera()
+            end
+            local drownable = ent.components.drownable
+            if drownable then
+                local invault = self.players[ent] -- Cached from TryToAdjustTrackingPlayer.
+                if invault then
+                    local pt = drownable:GetTeleportPtFor("VAULT")
+                    if pt then
+                        pt.x = x1
+                        pt.z = z1
+                    else
+                        drownable:PushTeleportPt("VAULT", Vector3(x1, 0, z1))
+                    end
+                end
             end
         end
     end
@@ -906,11 +919,15 @@ function self:NumPlayersInVault()
 end
 function self:TryToAdjustTrackingPlayer(player)
     local x, y, z = player.Transform:GetWorldPosition()
+    local drownable = player.components.drownable
     local invault = _map:IsPointInVaultRoom(x, 0, z)
     if invault then
         self:TrackPlayer(player)
     else
         self:StopTrackingPlayer(player)
+        if drownable then
+            drownable:PopTeleportPt("VAULT")
+        end
     end
 end
 self.OnPlayerJoined = function(world, player)
@@ -991,6 +1008,17 @@ function self:OnUpdate(dt)
         for _, player in ipairs(AllPlayers) do
             self:TryToAdjustTrackingPlayer(player)
             aplayerisonshard = true
+            if self.players[player] then
+                local drownable = player.components.drownable
+                if drownable then
+                    if not drownable:GetTeleportPtFor("VAULT") then
+                        local x, y, z = player.Transform:GetWorldPosition()
+                        if _map:IsVisualGroundAtPoint(x, 0, z) then
+                            drownable:PushTeleportPt("VAULT", Vector3(x, 0, z))
+                        end
+                    end
+                end
+            end
         end
 
         if aplayerisonshard then

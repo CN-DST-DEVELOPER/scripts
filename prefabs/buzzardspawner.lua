@@ -1,9 +1,3 @@
-local assets =
-{
-    Asset("ANIM", "anim/buzzard_shadow.zip"),
-    Asset("ANIM", "anim/buzzard_build.zip"),
-}
-
 local spawner_assets =
 {
     Asset("MINIMAP_IMAGE", "buzzard"),
@@ -54,6 +48,7 @@ local function ReturnChildren(inst)
         if child.components.homeseeker ~= nil then
             child.components.homeseeker:GoHome()
         end
+        child.shouldGoAway = true -- The above doesn't actually really work, so we're setting this instead for the brain.
         child:PushEvent("gohome")
     end
 end
@@ -69,7 +64,7 @@ local function OnSpawn(inst, child)
         else
             child.Transform:SetPosition(pos.x, 30, pos.y)
         end
-        child.sg:GoToState("glide")
+        child.sg:GoToState(child:HasTag("creaturecorpse") and "corpse_fall" or "glide")
         RemoveBuzzardShadow(inst, shadow)
         return
     end
@@ -131,14 +126,6 @@ local function CancelAwakeTasks(inst)
     end
 end
 
-local function OnEntitySleep(inst)
-    for i = #inst.buzzardshadows, 1, -1 do
-        inst.buzzardshadows[i]:Remove()
-        table.remove(inst.buzzardshadows, i)
-    end
-    CancelAwakeTasks(inst)
-end
-
 local function OnWakeTask(inst)
     inst.waketask = nil
     if not inst:IsAsleep() then
@@ -146,44 +133,132 @@ local function OnWakeTask(inst)
     end
 end
 
-local function OnEntityWake(inst)
-    if inst.waketask == nil then
-        inst.waketask = inst:DoTaskInTime(.5, OnWakeTask)
+local function UpdateAwakeTasks(inst)
+    local _worldstate = TheWorld.state
+    if not _worldstate.isnight and not _worldstate.iswinter and not _worldstate.islunarhailing then
+        if inst.waketask == nil then
+            inst.waketask = inst:DoTaskInTime(.5, OnWakeTask)
+        end
+        if inst.foodtask == nil then
+            inst.foodtask = inst:DoPeriodicTask(math.random(20, 40) * .1, LookForFood)
+        end
     end
-    if inst.foodtask == nil then
-        inst.foodtask = inst:DoPeriodicTask(math.random(20, 40) * .1, LookForFood)
+end
+
+local function InstantKillBuzzardsWithLunarHail(inst)
+    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+    if mutatedbirdmanager and TUNING.SPAWN_MUTATED_BUZZARDS_GESTALT then
+        local childspawner = inst.components.childspawner
+        local num_children = childspawner:NumChildren()
+
+        mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbuzzard_gestalt", inst, num_children)
+
+        -- Clear the children
+        childspawner.childreninside = 0
+        for k, child in pairs(childspawner.childrenoutside) do
+            child:Remove()
+        end
+    end
+end
+
+local function OnEntitySleep(inst)
+    for i = #inst.buzzardshadows, 1, -1 do
+        inst.buzzardshadows[i]:Remove()
+        table.remove(inst.buzzardshadows, i)
+    end
+    CancelAwakeTasks(inst)
+
+    if TheWorld.state.islunarhailing then
+        InstantKillBuzzardsWithLunarHail(inst)
+    end
+end
+
+local function OnEntityWake(inst)
+    UpdateAwakeTasks(inst)
+end
+
+local function UpdateChildSpawner(inst)
+    local isnight, iswinter, islunarhailing = TheWorld.state.isnight, TheWorld.state.iswinter, TheWorld.state.islunarhailing
+
+    if islunarhailing or iswinter then
+        inst.components.childspawner:StopSpawning()
+        inst.components.childspawner:StopRegen()
+    else
+        if isnight then
+            inst.components.childspawner:StopSpawning()
+            if not inst.components.childspawner.regening and inst.components.childspawner.numchildrenoutside + inst.components.childspawner.childreninside < inst.components.childspawner.maxchildren then
+                inst.components.childspawner:StartRegen()
+            end
+        else
+            inst.components.childspawner:StartSpawning()
+        end
     end
 end
 
 local function SpawnerOnIsNight(inst, isnight)
     if isnight then
-        inst.OnEntityWake = nil
-        inst.components.childspawner:StopSpawning()
-        if not inst.components.childspawner.regening and inst.components.childspawner.numchildrenoutside + inst.components.childspawner.childreninside < inst.components.childspawner.maxchildren then
-            inst.components.childspawner:StartRegen()
-        end
+        UpdateChildSpawner(inst)
         ReturnChildren(inst)
         CancelAwakeTasks(inst)
     else
-        inst.OnEntityWake = OnEntityWake
         inst.components.childspawner:StartSpawning()
         if not inst:IsAsleep() then
-            OnEntityWake(inst)
+            UpdateAwakeTasks(inst)
+        end
+    end
+end
+
+local function OnLunarHailLevel(inst, lunarhaillevel)
+    if lunarhaillevel <= inst._drop_buzzards_at_lunar_hail_level then
+        if inst:IsAsleep() then
+            InstantKillBuzzardsWithLunarHail(inst)
+            inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
+        elseif inst.components.childspawner.childreninside > 0 then
+            local corpse = inst.components.childspawner:SpawnChild(nil, "buzzardcorpse")
+            if corpse ~= nil and TUNING.SPAWN_MUTATED_BUZZARDS_GESTALT then
+                -- state and position is handled in OnSpawn
+                corpse:StartGestaltTimer(5 + math.random() * 6)
+            end
+        else
+            inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
+        end
+    end
+end
+
+local BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = TUNING.BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE
+local BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = TUNING.BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR
+local function SpawnerOnIsLunarHailing(inst, islunarhailing)
+    if islunarhailing then
+        inst._drop_buzzards_at_lunar_hail_level = BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE + math.random() * BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR
+        inst:WatchWorldState("lunarhaillevel", OnLunarHailLevel)
+
+        UpdateChildSpawner(inst)
+        ReturnChildren(inst)
+        CancelAwakeTasks(inst)
+    else
+        inst._drop_buzzards_at_lunar_hail_level = nil
+        inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
+
+        UpdateChildSpawner(inst)
+        if not inst:IsAsleep() then
+            UpdateAwakeTasks(inst)
         end
     end
 end
 
 local function SpawnerOnIsWinter(inst, iswinter)
     if iswinter then
-        inst.OnEntityWake = nil
         inst:StopWatchingWorldState("isnight", SpawnerOnIsNight)
-        inst.components.childspawner:StopSpawning()
-        inst.components.childspawner:StopRegen()
+        inst:StopWatchingWorldState("islunarhailing", SpawnerOnIsLunarHailing)
+
+        UpdateChildSpawner(inst)
         ReturnChildren(inst)
         CancelAwakeTasks(inst)
     else
         inst:WatchWorldState("isnight", SpawnerOnIsNight)
+        inst:WatchWorldState("islunarhailing", SpawnerOnIsLunarHailing)
         SpawnerOnIsNight(inst, TheWorld.state.isnight)
+        SpawnerOnIsLunarHailing(inst, TheWorld.state.islunarhailing)
     end
 end
 
@@ -195,7 +270,9 @@ local function OnAddChild(inst)
 end
 
 local function SpawnerOnInit(inst)
+    inst.OnEntityWake = OnEntityWake
     inst.OnEntitySleep = OnEntitySleep
+
     inst:WatchWorldState("iswinter", SpawnerOnIsWinter)
     SpawnerOnIsWinter(inst, TheWorld.state.iswinter)
 end
@@ -236,135 +313,4 @@ local function fn()
     return inst
 end
 
------------------------------------------------------------------------------------
-
-local MAX_FADE_FRAME = math.floor(3 / FRAMES + .5)
-
-local function OnUpdateFade(inst, dframes)
-    local done
-    if inst._isfadein:value() then
-        local frame = inst._fadeframe:value() + dframes
-        done = frame >= MAX_FADE_FRAME
-        inst._fadeframe:set_local(done and MAX_FADE_FRAME or frame)
-    else
-        local frame = inst._fadeframe:value() - dframes
-        done = frame <= 0
-        inst._fadeframe:set_local(done and 0 or frame)
-    end
-
-    local k = inst._fadeframe:value() / MAX_FADE_FRAME
-    inst.AnimState:OverrideMultColour(1, 1, 1, k)
-
-    if done then
-        inst._fadetask:Cancel()
-        inst._fadetask = nil
-        if inst._killed then
-            --don't need to check ismastersim, _killed will never be set on clients
-            inst:Remove()
-            return
-        end
-    end
-
-    if TheWorld.ismastersim then
-        if inst._fadeframe:value() > 0 then
-            inst:Show()
-        else
-            inst:Hide()
-        end
-    end
-end
-
-local function OnFadeDirty(inst)
-    if inst._fadetask == nil then
-        inst._fadetask = inst:DoPeriodicTask(FRAMES, OnUpdateFade, nil, 1)
-    end
-    OnUpdateFade(inst, 0)
-end
-
-local function CircleOnIsNight(inst, isnight)
-    inst._isfadein:set(not isnight)
-    inst._fadeframe:set(inst._fadeframe:value())
-    OnFadeDirty(inst)
-end
-
-local function CircleOnIsWinter(inst, iswinter)
-    if iswinter then
-        inst:StopWatchingWorldState("isnight", CircleOnIsNight)
-        CircleOnIsNight(inst, true)
-    else
-        inst:WatchWorldState("isnight", CircleOnIsNight)
-        CircleOnIsNight(inst, TheWorld.state.isnight)
-    end
-end
-
-local function CircleOnInit(inst)
-    inst:WatchWorldState("iswinter", CircleOnIsWinter)
-    CircleOnIsWinter(inst, TheWorld.state.iswinter)
-end
-
-local function DoFlap(inst)
-    if math.random() > 0.66 then
-        inst.AnimState:PlayAnimation("shadow_flap_loop")
-        for i = 2, math.random(3, 6) do
-            inst.AnimState:PushAnimation("shadow_flap_loop")
-        end
-        inst.AnimState:PushAnimation("shadow")
-    end
-end
-
-local function KillShadow(inst)
-    if inst._fadeframe:value() > 0 and not inst:IsAsleep() then
-        inst:StopWatchingWorldState("iswinter", CircleOnIsWinter)
-        inst:StopWatchingWorldState("isnight", CircleOnIsNight)
-        inst._killed = true
-        inst._isfadein:set(false)
-        inst._fadeframe:set(inst._fadeframe:value())
-        OnFadeDirty(inst)
-    else
-        inst:Remove()
-    end
-end
-
-local function circlingbuzzardfn()
-    local inst = CreateEntity()
-
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddNetwork()
-
-    inst.AnimState:SetBank("buzzard")
-    inst.AnimState:SetBuild("buzzard_build")
-    inst.AnimState:PlayAnimation("shadow", true)
-    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(3)
-    inst.AnimState:OverrideMultColour(1, 1, 1, 0)
-
-    inst:AddTag("FX")
-
-    inst._fadeframe = net_byte(inst.GUID, "circlingbuzzard._fadeframe", "fadedirty")
-    inst._isfadein = net_bool(inst.GUID, "circlingbuzzard._isfadein", "fadedirty")
-    inst._fadetask = nil
-
-    inst.entity:SetPristine()
-
-    if not TheWorld.ismastersim then
-        inst:ListenForEvent("fadedirty", OnFadeDirty)
-
-        return inst
-    end
-
-    inst:AddComponent("circler")
-
-    inst:DoTaskInTime(0, CircleOnInit)
-    inst:DoPeriodicTask(math.random(3, 5), DoFlap)
-
-    inst.KillShadow = KillShadow
-
-    inst.persists = false
-
-    return inst
-end
-
-return Prefab("buzzardspawner", fn, spawner_assets, prefabs),
-    Prefab("circlingbuzzard", circlingbuzzardfn, assets)
+return Prefab("buzzardspawner", fn, spawner_assets, prefabs)

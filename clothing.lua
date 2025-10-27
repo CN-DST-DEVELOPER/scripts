@@ -1018,6 +1018,16 @@ CLOTHING =
 		marketable = true,
 		release_group = 0,
 	},
+	body_tshirt_hallowed =
+	{
+		type = "body",
+		skin_tags = { "HALLOWED", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 173,
+	},
 	body_tshirt_orange_pumpkin =
 	{
 		type = "body",

@@ -24,13 +24,12 @@ local function PlayShardFx(inst, target)
 end
 
 local function FlyAwayToSky(inst)
-    --Bright-Beaked Birds persist.
-    local birdspawner = TheWorld.components.birdspawner
-    --if inst:HasTag("bird_mutant_rift") and birdspawner then
-    --    birdspawner:StoreMutatedBird(inst)
-    --else
-        inst:Remove()
-    --end
+    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+    if inst:HasTag("bird_mutant_rift") and mutatedbirdmanager then
+        mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", inst, 1)
+    end
+    --
+    inst:Remove()
 end
 
 local events =
@@ -47,7 +46,9 @@ local events =
     end),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+    CommonHandlers.OnDeath(),
 	EventHandler("attacked", function(inst, data)
+        --V2C: health check since corpse shares this SG
         if inst.components.health and not inst.components.health:IsDead() then
 			if not IsStuck(inst) and CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
@@ -55,9 +56,6 @@ local events =
 				inst.sg:GoToState("hit")
 			end
         end
-    end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death")
     end),
     EventHandler("flyaway", function(inst)
         if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
@@ -75,14 +73,12 @@ local events =
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned")
     end),
-    EventHandler("glide_attack_at_target", function(inst, data)
-        inst.sg:GoToState("glide_attack_in", data.target)
-    end),
-    EventHandler("glide_clear_at_target", function(inst, data)
-        inst.sg:GoToState("glide_clearhail", data.target)
+    EventHandler("swoop_at_target", function(inst, data)
+        inst.sg:GoToState("swoop_attack_in", data.target)
     end),
 
-    EventHandler("locomote", function(inst) --FIXME probably no more locomotion when new behaviour of bird is in
+    --FIXME probably no more locomotion when new behaviour of bird is in
+    EventHandler("locomote", function(inst)
         --NOTE: Locomote behaviour for the mutated bird, it's probably fine to have this event listener for all, but just in case.
         if inst:HasTag("bird_mutant_rift") and not inst.sg:HasAnyStateTag("sleeping", "busy", "flight") then
             local is_moving = inst.sg:HasStateTag("moving")
@@ -90,8 +86,23 @@ local events =
             if is_moving ~= wants_to_move then
                 inst.sg:GoToState(wants_to_move and "hop" or "idle")
             end
+
+            --[[
+            local is_idling = inst.sg:HasStateTag("idle")
+
+            local should_move = inst.components.locomotor:WantsToMoveForward()
+
+            if is_moving and not should_move then
+                inst.sg:GoToState("mutated_glide_pst")
+            elseif (is_idling and should_move) or (is_moving and should_move ) then
+                inst.sg:GoToState("mutated_glide_pre")
+            end
+            ]]
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -99,7 +110,7 @@ local states =
     State{
 		name = "init",
 		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "glide" or POPULATING and "corpse_idle" or "corpse_fall")
+			inst.sg:GoToState(inst.components.locomotor ~= nil and "glide" or "corpse_idle")
 		end,
 	},
 
@@ -146,10 +157,16 @@ local states =
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:SetDeathLootLevel(1)
             if inst.sounds.death then
                 inst.SoundEmitter:PlaySound(inst.sounds.death)
             end
         end,
+
+        events =
+		{
+			CommonHandlers.OnCorpseDeathAnimOver(),
+		},
     },
 
     State{
@@ -553,7 +570,7 @@ local states =
 
     State{
         name = "corpse_fall",
-		tags = { "busy", "noelectrocute" },
+		tags = { "corpse", "busy", "noelectrocute" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -584,7 +601,8 @@ local states =
                     local rot = inst.Transform:GetRotation() * DEGREES
                     inst.Physics:SetVel(math.random(6, 10) * math.cos(rot), 0, math.random(6, 10) * -math.sin(rot))
                 end
-                inst.sg:GoToState("corpse_idle")
+
+                inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
                 inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/body_land")
 
                 --Can't use inventoryitem:TryToSink, not an item!
@@ -598,121 +616,6 @@ local states =
 			inst.DynamicShadow:Enable(true)
 		end,
     },
-
-	State{
-		name = "corpse_idle",
-
-		onenter = function(inst)
-			inst.AnimState:PlayAnimation("corpse")
-		end,
-	},
-
-	State{
-		name = "corpse_mutate_pre",
-		tags = { "mutating" },
-
-		onenter = function(inst, mutantprefab)
-			inst.AnimState:PlayAnimation("twitch", true)
-			inst.sg:SetTimeout(3)
-			inst.sg.statemem.mutantprefab = mutantprefab
-		end,
-
-		ontimeout = function(inst)
-			inst.sg:GoToState("corpse_mutate", inst.sg.statemem.mutantprefab)
-		end,
-
-		onexit = function(inst)
-			inst.SoundEmitter:KillSound("loop")
-		end,
-	},
-
-	State{
-		name = "corpse_mutate",
-		tags = { "mutating" },
-
-		onenter = function(inst, mutantprefab)
-			inst.AnimState:OverrideSymbol("lunar_parts", "bird_lunar_build", "lunar_parts")
-			inst.AnimState:OverrideSymbol("fx_puff_hi", "bird_lunar_build", "fx_puff_hi")
-			inst.AnimState:OverrideSymbol("fx_puff2", "bird_lunar_build", "fx_puff2")
-
-			inst.AnimState:PlayAnimation("mutate_pre")
-            inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/mutate_pre")
-
-			inst.sg.statemem.mutantprefab = mutantprefab
-		end,
-
-		timeline =
-		{
-			FrameEvent(0, function(inst)
-
-            end),
-		},
-
-		events =
-		{
-			EventHandler("animover", function(inst)
-				if inst.AnimState:AnimDone() then
-					local rot = inst.Transform:GetRotation()
-					local creature = ReplacePrefab(inst, inst.sg.statemem.mutantprefab)
-					creature.Transform:SetRotation(rot)
-					creature.AnimState:MakeFacingDirty() --not needed for clients
-					creature.sg:GoToState("mutate_pst")
-				end
-			end),
-		},
-
-		onexit = function(inst)
-			--Shouldn't reach here!
-			inst.AnimState:ClearAllOverrideSymbols()
-			inst.AnimState:SetAddColour(0, 0, 0, 0)
-			inst.AnimState:SetLightOverride(0)
-			inst.SoundEmitter:KillSound("loop")
-			inst.components.burnable:SetBurnTime(TUNING.MED_BURNTIME)
-			inst.components.burnable.fastextinguish = false
-		end,
-	},
-
-	--------------------------------------------------------------------------
-	--Transitions from corpse_mutate after prefab switch
-	State{
-		name = "mutate_pst",
-		tags = { "busy", "noattack", "temp_invincible", "noelectrocute" },
-
-		onenter = function(inst)
-			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("mutate")
-            inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/mutate")
-			inst.sg.statemem.flash = 24
-		end,
-
-		onupdate = function(inst)
-			local c = inst.sg.statemem.flash
-			if c >= 0 then
-				inst.sg.statemem.flash = c - 1
-				c = easing.inOutQuad(math.min(20, c), 0, 1, 20)
-				inst.AnimState:SetAddColour(c, c, c, 0)
-				inst.AnimState:SetLightOverride(c)
-			end
-		end,
-
-		timeline =
-		{
-		},
-
-		events =
-		{
-			EventHandler("animover", function(inst)
-				if inst.AnimState:AnimDone() then
-					inst.sg:GoToState("caw")
-				end
-			end),
-		},
-
-		onexit = function(inst)
-			inst.AnimState:SetAddColour(0, 0, 0, 0)
-			inst.AnimState:SetLightOverride(0)
-		end,
-	},
 
     State{
         name = "lunar_eat",
@@ -750,49 +653,43 @@ local states =
         end,
     },
 
-    --This will also be how they destroy the hail build up
-    --TODO, this is very conceptual!
+    -- Mutated states
+
     State{
-        name = "glide_attack_in", --For mutated bird
-		tags = { "idle", "flight", "notarget", "noelectrocute" }, --flight and notarget prevent attacks
+        name = "swoop_attack_in",
+        tags = { "flight", "notarget", },
 
         onenter = function(inst, target)
-		    inst:AddTag("NOCLICK")
-            inst:AddTag("NOBLOCK")
-            if not inst.AnimState:IsCurrentAnimation("glide") then
-                inst.AnimState:PlayAnimation("glide", true)
-            end
+            inst.Transform:SetFourFaced()
+
+            inst.AnimState:PlayAnimation("mutated_attack_pre")
+            inst.AnimState:PushAnimation("mutated_attack_loop", true)
 
             local x, y, z = inst.Transform:GetWorldPosition()
-
             local dist = math.sqrt(inst:GetDistanceSqToInst(target))
 
             inst.sg.statemem.target = target
-            inst.sg.statemem.velocity = {dist/2, (-y + 4)/2, 0} --math.random() * 10 - 20, 0} --{dist/2, (-y + 5)/2, 0}
+            inst.sg.statemem.velocity = Vector3(dist / 2, -(y - 4) / 2, 0)
+            
+            inst:FacePoint(target:GetPosition())
 
-            inst:ForceFacePoint(target:GetPosition())
-            inst.Physics:SetMotorVel(unpack(inst.sg.statemem.velocity)) --math.random() * 10 - 20 -- -12
-			inst.DynamicShadow:Enable(true)
+            local vel = inst.sg.statemem.velocity
+            inst.Physics:SetMotorVel(vel.x, vel.y, vel.z)
         end,
-
-        timeline =
-        {
-            FrameEvent(1, function(inst)
-                if inst.components.inventoryitem == nil or not inst.components.inventoryitem:IsHeld() then
-                    inst.SoundEmitter:PlaySound(inst.sounds.flyin)
-                end
-            end),
-        },
 
         onupdate = function(inst, dt)
             local target = inst.sg.statemem.target
             local x, y, z = inst.Transform:GetWorldPosition()
+            local vx, vy, vz = inst.Physics:GetMotorVel()
 
             if target and target:IsValid() then
-                if y < 2 then
-                    inst.sg:GoToState("glide_attack_out", target)
+                local time_to_ground = (y - 2.5) / math.abs(vy)
+                --print(time_to_ground)
+
+                if y < 2.5 then
+                    inst.sg:GoToState("swoop_attack", target)
                 elseif y > 3 then
-                    local tx, ty, tz = inst.sg.statemem.target.Transform:GetWorldPosition()
+                    local tx, ty, tz = target.Transform:GetWorldPosition()
                     local dx = tx - x
 		            local dz = tz - z
 
@@ -801,133 +698,183 @@ local states =
                         local dir1 = math.atan2(-dz, dx)
                         local diff = ReduceAngleRad(dir1 - dir)
 
+                        local turnmult = y <= 15 and easing.outQuad(y, 0, 1, 15) or 1
                         --Allow minor change in direction
-			            local maxdiff = 10 * DEGREES --Make degree turning depend on height to ground
+			            local maxdiff = 10 * DEGREES * turnmult
 			            dir = dir + math.clamp(diff, -maxdiff, maxdiff)
 
-                        --TODO update velocity too
-                        --inst.sg.statemem.velocity[1] = 
+                        --TODO update velocity too?
+                        --inst.sg.statemem.velocity.x
                         inst.Transform:SetRotation(dir * RADIANS)
-                        --inst.Physics:SetMotorVel(unpack(inst.sg.statemem.velocity))
                     end
-
-                    --inst:ForceFacePoint(inst.sg.statemem.target:GetPosition())
                 end
-            end
-
-            if y <= 0.1 then
-                inst.Physics:Stop()
-                inst.Physics:Teleport(x, 0, z)
-                inst.AnimState:PlayAnimation("land")
-                inst.DynamicShadow:Enable(true)
-                if inst.components.floater ~= nil then
-                    inst:PushEvent("on_landed")
-                end
-                inst.sg:GoToState("idle", true)
             end
         end,
 
-		onexit = function(inst)
-			inst:RemoveTag("NOCLICK")
-            inst:RemoveTag("NOBLOCK")
-			inst.DynamicShadow:Enable(true)
-		end,
+        onexit = function(inst)
+            inst.Transform:SetTwoFaced()
+        end,
     },
 
     State{
-        name = "glide_attack_out", --For mutated bird
-		tags = { "idle", "flight", "noelectrocute" },
+        name = "swoop_attack",
+        tags = { "flight", },
 
         onenter = function(inst, target)
-            --Pre animation before switching from glide to takeoff_diagonal_loop?
-            if target then
-                inst.components.combat:DoAttack(target)
-            end
-            inst.AnimState:PlayAnimation("takeoff_diagonal_loop", true)
+            inst.sg.statemem.target = target
+            inst.Transform:SetFourFaced()
+            inst.AnimState:PlayAnimation("mutated_attack")
             inst.SoundEmitter:PlaySound(inst.sounds.attack)
-            inst.Physics:SetMotorVel(15, math.random() * 5 + math.random() * 4, 0)
         end,
 
-        timeline =
+        events =
         {
-            FrameEvent(6, function(inst)
-                inst.sg:AddStateTag("notarget")
-            end),
-            TimeEvent(2, FlyAwayToSky),
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("swoop_attack_out")
+                end
+            end)
         },
-
-		onexit = function(inst)
-			inst:RemoveTag("NOCLICK")
-            inst:RemoveTag("NOBLOCK")
-			inst.DynamicShadow:Enable(true)
-		end,
-    },
-
-    State{
-        name = "glide_clearhail", --For mutated bird
-		tags = { "idle", "flight", "notarget", "noelectrocute" },
-
-        onenter = function(inst)
-			inst:AddTag("NOCLICK")
-            inst:AddTag("NOBLOCK")
-            if not inst.AnimState:IsCurrentAnimation("glide") then
-                inst.AnimState:PlayAnimation("glide", true)
-            end
-            --inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-
-            local buffaction = inst:GetBufferedAction()
-
-            local x, y, z = inst.Transform:GetWorldPosition()
-
-            local dist = math.sqrt(inst:GetDistanceSqToInst(buffaction.target))
-
-            inst.sg.statemem.target = buffaction.target
-            inst.sg.statemem.velocity = {dist, -y + 3, 0}
-
-            inst:ForceFacePoint(buffaction.target:GetPosition())
-            inst.Physics:SetMotorVel(unpack(inst.sg.statemem.velocity))
-			inst.DynamicShadow:Enable(true)
-        end,
 
         timeline =
         {
             FrameEvent(1, function(inst)
-                if inst.components.inventoryitem == nil or not inst.components.inventoryitem:IsHeld() then
-                    inst.SoundEmitter:PlaySound(inst.sounds.flyin)
+                local target = inst.sg.statemem.target
+                if target and target:IsValid() then
+                    inst.components.combat:DoAttack(target)
                 end
+                inst.Physics:SetMotorVel(15, 3 + math.random() * 3 + math.random() * 3, 0)
             end),
         },
 
-        onupdate = function(inst, dt)
-            local target = inst.sg.statemem.target
-            local x, y, z = inst.Transform:GetWorldPosition()
-
-            if target and target:IsValid() then
-                if inst:GetDistanceSqToInst(target) < 1 and inst:GetBufferedAction() then
-                    inst:PerformBufferedAction()
-                    inst.sg:GoToState("glide_attack_out")
-                end
-            end
-
-            if y <= 0.1 then
-                inst.Physics:Stop()
-                inst.Physics:Teleport(x, 0, z)
-                inst.AnimState:PlayAnimation("land")
-                inst.DynamicShadow:Enable(true)
-                if inst.components.floater ~= nil then
-                    inst:PushEvent("on_landed")
-                end
-                inst.sg:GoToState("idle", true)
-            end
-        end,
-
 		onexit = function(inst)
-			inst:RemoveTag("NOCLICK")
-            inst:RemoveTag("NOBLOCK")
-			inst.DynamicShadow:Enable(true)
+			inst.Transform:SetTwoFaced()
 		end,
     },
+
+    State{
+        name = "swoop_attack_out",
+        tags = { "flight", },
+
+        onenter = function(inst)
+            inst.Transform:SetFourFaced()
+            inst.AnimState:PlayAnimation("mutated_flap", true)
+        end,
+
+        timeline =
+        {
+            FrameEvent(3, function(inst) inst.sg:AddStateTag("notarget") end),
+            FrameEvent(60, FlyAwayToSky),
+        },
+
+		onexit = function(inst)
+			inst.Transform:SetTwoFaced()
+		end,
+    },
+
+    State{
+        name = "mutated_glide_pre",
+        tags = { "flight", "moving", "canrotate" },
+
+        onenter = function(inst)
+            --inst:AddTag("NOCLICK")
+            inst:AddTag("NOBLOCK")
+            inst.Transform:SetEightFaced()
+            inst.AnimState:PlayAnimation("mutated_flap_pre")
+			inst.DynamicShadow:Enable(false)
+
+            inst.components.locomotor:RunForward()
+        end,
+
+        onexit = function(inst)
+            --inst:RemoveTag("NOCLICK")
+            inst:RemoveTag("NOBLOCK")
+            inst.Transform:SetTwoFaced()
+			inst.DynamicShadow:Enable(true)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("mutated_glide_loop")
+                end
+            end)
+        },
+    },
+
+    State{
+        name = "mutated_glide_loop",
+        tags = { "flight", "moving", "canrotate" },
+
+        onenter = function(inst)
+            --inst:AddTag("NOCLICK")
+            inst:AddTag("NOBLOCK")
+            inst.Transform:SetEightFaced()
+            inst.AnimState:PlayAnimation("mutated_flap")
+			inst.DynamicShadow:Enable(false)
+
+            inst.components.locomotor:RunForward()
+        end,
+
+        onexit = function(inst)
+            --inst:RemoveTag("NOCLICK")
+            inst:RemoveTag("NOBLOCK")
+            inst.Transform:SetTwoFaced()
+			inst.DynamicShadow:Enable(true)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("mutated_glide_loop")
+                end
+            end)
+        }
+    },
+
+    State{
+        name = "mutated_glide_pst",
+        tags = { "flight", "moving", "canrotate" },
+
+        onenter = function(inst)
+            --inst:AddTag("NOCLICK")
+            inst:AddTag("NOBLOCK")
+            inst.Transform:SetEightFaced()
+            inst.AnimState:PlayAnimation("mutated_flap_pst")
+			inst.DynamicShadow:Enable(false)
+        end,
+
+        onexit = function(inst)
+            --inst:RemoveTag("NOCLICK")
+            inst:RemoveTag("NOBLOCK")
+            inst.Transform:SetTwoFaced()
+			inst.DynamicShadow:Enable(true)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end)
+        }
+    },
 }
+
+--[[
+ANGLE = 90
+-- adjust angle based on distance to player
+	pt.x, pt.y, pt.z = target.Transform:GetWorldPosition()
+	local rot1 = inst.Transform:GetRotation() + ANGLE
+	local rot2 = inst:GetAngleToPoint(pt)
+	local diff = ReduceAngle(rot2 - rot1)
+	local absdiff = math.abs(diff)
+	rot2 = rot1 + diff * 0.5
+	inst.Transform:SetRotation(rot2 - ANGLE)
+]]
 
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
@@ -942,6 +889,49 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 			end
 		end
 	end,
+})
+
+CommonStates.AddCorpseStates(states, nil,
+{
+    corpseoncreate = function(inst, corpse)
+        corpse:SetAltBuild(inst.prefab)
+    end,
+}, "birdcorpse")
+-- Mutant birds use a different sg, so we do not actually use the _pst here!
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutate_timeline = {
+
+    },
+},
+{
+    mutate = "mutated_bird_reviving",
+},
+{
+    mutate_onenter = function(inst)
+
+    end,
+},
+{
+    mutated_spawn_timing = 88 * FRAMES,
+})
+
+CommonStates.AddLunarRiftMutationStates(states, nil, nil,
+{ -- fns
+    mutate_onenter = function(inst)
+        inst.AnimState:OverrideSymbol("lunar_parts", "bird_lunar_build", "lunar_parts")
+		inst.AnimState:OverrideSymbol("fx_puff_hi", "bird_lunar_build", "fx_puff_hi")
+		inst.AnimState:OverrideSymbol("fx_puff2", "bird_lunar_build", "fx_puff2")
+        inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/mutate_pre")
+    end,
+
+    mutatepst_onenter = function(inst)
+        inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/mutate")
+    end,
+},
+{
+    twitch_lp = "lunarhail_event/creatures/lunar_crow/twitch_LP",
+    post_mutate_state = "caw",
 })
 
 return StateGraph("bird", states, events, "init", actionhandlers)

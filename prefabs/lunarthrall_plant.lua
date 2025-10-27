@@ -447,6 +447,7 @@ local function fn()
     inst:AddTag("lunarthrall_plant")
     inst:AddTag("retaliates")
     inst:AddTag("NPCcanaggro")
+    inst:AddTag("gestaltmutant")
 
 	inst.highlightchildren = {}
 

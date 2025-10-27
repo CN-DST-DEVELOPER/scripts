@@ -50,6 +50,8 @@ SetSharedLootTable("alterguardian_phase3dead",
 local function orb_replacewithdead(inst)
     local dead_phase = SpawnPrefab("alterguardian_phase3dead")
     dead_phase.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    dead_phase.Transform:SetRotation(inst.Transform:GetRotation())
+    dead_phase.AnimState:MakeFacingDirty() -- not needed for clients
 
     inst:Remove()
 end
@@ -144,6 +146,8 @@ local function orbfn()
     inst.entity:AddSoundEmitter()
     inst.entity:AddNetwork()
 
+    inst.Transform:SetSixFaced()
+
     set_lightvalues(inst, INITIAL_LIGHT_VALUE)
     inst.Light:SetColour(0.01, 0.35, 1)
 
@@ -184,10 +188,9 @@ local ALTAR_PIECES =
     "moon_altar_ward",
 }
 
-local PIECEBLOCKER_CANT = {"INLIMBO", "FX", "DECOR", "NOCLICK", "flying", "ghost", "playerghost"}
+local PIECEBLOCKER_CANT = {"INLIMBO", "FX", "DECOR", "NOCLICK", "flying", "ghost", "playerghost", "_inventoryitem"}
 local function altarpiece_spawn_checkfn(v)
-    local ents = TheSim:FindEntities(v.x, v.y, v.z, 1.5, nil, PIECEBLOCKER_CANT)
-    return #ents == 0
+    return TheSim:CountEntities(v.x, v.y, v.z, 1.5, nil, PIECEBLOCKER_CANT) == 0
 end
 
 local function dead_onwork(inst, worker, workleft)
@@ -226,6 +229,8 @@ local function deadfn()
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
     inst.entity:AddNetwork()
+
+    inst.Transform:SetSixFaced()
 
     MakeObstaclePhysics(inst, 2)
 

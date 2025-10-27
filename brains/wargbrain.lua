@@ -103,7 +103,7 @@ function WargBrain:OnStart()
 							function() return self.inst.components.combat:GetHitRange() + self.carcass:GetPhysicsRadius(0) - 1 end,
 							true)),
 					IfNode(function() return self:CheckCarcass() and not self.inst.components.combat:InCooldown() end, "chomp",
-						ActionNode(function() self.inst.sg:HandleEvent("chomp", { target = self.carcass }) end)),
+						ActionNode(function() self.inst:PushEventImmediate("chomp", { target = self.carcass }) end)),
 					FaceEntity(self.inst,
 						function() return self.carcass end,
 						function() return self:CheckCarcass() end),

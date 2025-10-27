@@ -18,6 +18,7 @@ local function FlyAway(inst)
 end
 
 function BirdBrain:OnStart()
+    local ismutated = self.inst:HasTag("lunar_aligned")
     local fly_away_fn = function() return FlyAway(self.inst) end
     local root = PriorityNode(
     {

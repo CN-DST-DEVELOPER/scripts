@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Curious. I seem to be hallucinating.",
+    ANNOUNCE_SPOOKED = "Goodness gracious!",
 	ANNOUNCE_BRAVERY_POTION = "My intestinal fortitude has returned!",
 	ANNOUNCE_MOONPOTION_FAILED = "Oh dear, that didn't go as planned.",
 
@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "That insufferable hand appears to be impeding the puzzle's resolution!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzards drawn by carrion, naturally. However, these exhibit signs of mutation.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -4838,7 +4840,7 @@ return{
         MOONSTORM_SPARK = "I assumed it was a form of electricity, but it seems to be something else entirely...",
 
         BIRD_MUTANT = "Oh dear, that creature looks unwell.",
-        BIRD_MUTANT_SPITTER = "The poor thing appears to have been altered by its proximity to the storm.",
+        BIRD_MUTANT_SPITTER = "The poor thing appears to have been altered by unnatural means.",
 
         WAGSTAFF_NPC = "He seems to be conducting research on the storm, I should assist him.",
 
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "The buzzard is on a different path now... terrible one.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Though reanimated, the creature remains an eater of the dead.", -- Generic string
             EATING_CORPSE = "This is how it spreads the... infection.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "This creature is a hybrid of insect and mineral, possessing the ability to store gas under considerable pressure.",
 			SLEEPING = "It is dormant at the moment.",
             VENTING = "It is venting gas as a form of attack.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "It does call to mind Ichabod's ill-fated encounter.",
+			UNCARVED = "The pumpkin requires a face before one can wear it.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "If only this were the end for the little bird.", --witnessing the corpse
+            BURNING  = "This is, in fact, saving it.", --when its burning
+            REVIVING = "The little bird is on a different path now... terrible one.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "This spider has perished.",
+			BURNING = "It must be done.",
+			REVIVING = "Along came... another spider.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "The arachnid matriarch lies expired.",
+			BURNING = "It is an act of mercy.",
+			REVIVING = "Long live the queen.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "This piscean biped has met its demise.",
+			BURNING = "It is unfortunate but necessary.",
+			REVIVING = "The creature is reanimating in the most unnatural way.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

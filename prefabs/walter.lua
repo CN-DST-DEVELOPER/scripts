@@ -1182,9 +1182,9 @@ local function master_postinit(inst)
     inst.components.sanity:SetMax(TUNING.WALTER_SANITY)
 
     inst.components.sanity.custom_rate_fn = CustomSanityFn
-    inst.components.sanity:SetNegativeAuraImmunity(true)
-    inst.components.sanity:SetPlayerGhostImmunity(true)
-    inst.components.sanity:SetLightDrainImmune(true)
+	inst.components.sanity:SetNegativeAuraImmunity(true, inst)
+	inst.components.sanity:SetPlayerGhostImmunity(true, inst)
+	inst.components.sanity:SetLightDrainImmune(true, inst)
 	inst.components.sanity.get_equippable_dappernessfn = GetEquippableDapperness
 	inst.components.sanity.only_magic_dapperness = true
 

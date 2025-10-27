@@ -1502,7 +1502,7 @@ STRINGS =
         TORCH = "Torch",
         SEEDS = "Seeds",
         HOUND = "Hound",
-		HOUNDCORPSE = "Hound",
+		--HOUNDCORPSE = "Hound", -- NOTE: Deprecated.
         FIREHOUND = "Red Hound",
         SEEDS_COOKED = "Toasted Seeds",
         SILK = "Silk",
@@ -4362,7 +4362,7 @@ STRINGS =
         FENCE_ELECTRIC_ITEM = "T.I.N.G.L.E. Node",
 
         MUTATEDBIRD = "Bright-Beaked Bird",
-        MUTATEDBUZZARD = "Crystal-Crested Buzzard",
+        MUTATEDBUZZARD_GESTALT = "Crystal-Crested Buzzard",
 
         -- Names for missed scrapbook entries
         WAVEYJONES = "Wavey Jones",
@@ -4398,12 +4398,17 @@ STRINGS =
 
         -- Rifts 6.1
 
-        OCEANWHIRLBIGPORTAL = "Big Whirlpool",
+        OCEANWHIRLBIGPORTAL = "Giant Whirlpool",
         OCEANWHIRLBIGPORTALEXIT = "Ocean Detritus", -- The flotsam pickable not the waterfall.
 
 		VAULT_TORCH = "Flummoxing Flame",
 
         CAVE_VENT_MITE = "Geothermite",
+
+		-- Hallowed Nights 2025
+
+		PUMPKINHAT = "Faceless Pumpkin",
+		PUMPKINHAT_CARVED = "Pumpkin Head",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -5563,6 +5568,8 @@ STRINGS =
         FENCE_ELECTRIC = "A shockingly effective way to contain yourself... or others.",
         FENCE_ELECTRIC_ITEM = "A shockingly effective way to contain yourself... or others.",
 
+		-- Halloween 2025
+		PUMPKINHAT = "It's only natural to wear a pumpkin on your head after you've carved a face into it.",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -9533,6 +9540,14 @@ STRINGS.UI =
 		CARVE = "Carve",
 	},
 
+	PUMPKINHAT_CARVING_POPUP =
+	{
+		RANDOMIZE = "Randomize",
+		REYE = "Eye",
+		LEYE = "Other Eye",
+		MOUTH = "Mouth",
+	},
+
 	SNOWMAN_DECORATING_POPUP =
 	{
 		MAX_DECOR = "You have reached the maximum number of decorations!",
@@ -9609,8 +9624,12 @@ STRINGS.UI =
         MINIMAPZOOMCURSOR = "Zoom Cursor Focus:",
         VIBRATION = "Vibration:",
         CONTROLLER_AUDIO = "Controller Audio:",
-        UI_HAPTICS = "Interface Haptics:",
-        UI_VIBRATION = "Interface Vibration:",
+        HAPTICS_STRENGTH = "Effect Strength:",
+        HAPTICS_EFFECTS_UI = "Interface Effects:",
+        HAPTICS_EFFECTS_DANGER = "Danger Effects:",
+        HAPTICS_EFFECTS_PLAYER = "Player Effects:",
+        HAPTICS_EFFECTS_ENVIRO = "Environmental Effects:",
+        HAPTICS_EFFECTS_BOSS = "Boss Effects:",
         WATHGRITHRFONT = "Wigfrid's Umlauts:",
         WALTERCAMERA = "Campfire Camera:",
         BOATCAMERA = "Seafaring Camera:",
@@ -9664,7 +9683,8 @@ STRINGS.UI =
         DYNAMICCONTENT_ENABLE = "Re-enable Dynamic Content",
         OFFLINE_MODE_TITLE = "Offline Mode",
         OFFLINE_MODE_BODY = "Your selection is not available in offline mode. Please log in and try again.",
-        KLEI_ID_PREFIX = "Klei ID: ",
+        KLEI_ID_PREFIX = "Klei ID",
+        VERSION = "Version",
 		COMMANDWHEEL = "Social Menu Movement:",
 
 		INTRO_MOVIE = "Intro Movie",
@@ -9716,8 +9736,12 @@ STRINGS.UI =
             VIBRATION = "Make your controller vibrate at key gameplay moments.",
 			VIBRATION_WIRELESS = "Enable vibration of your wireless controller at key gameplay moments.",
             CONTROLLER_AUDIO = "Enable audio from your wireless controller at key gameplay moments.",
-            UI_HAPTICS = "Enable vibration and/or audio from your wireless controller when interacting with the user interface.",
-            UI_VIBRATION = "Enable vibration when interacting with the user interface.",
+            HAPTICS_STRENGTH = "Adjust the strength of haptic effects.",
+            HAPTICS_EFFECTS_UI = "Toggle haptic effects from interacting with the user interface.",
+            HAPTICS_EFFECTS_DANGER = "Toggle haptic effects when your character is in danger.",
+            HAPTICS_EFFECTS_PLAYER = "Toggle haptic effects from your character's actions.",
+            HAPTICS_EFFECTS_BOSS = "Toggle haptic effects from boss enemy actions.",
+            HAPTICS_EFFECTS_ENVIRO = "Toggle haptic effects from the environment.",
             FX = "Change how loud things are in the world.",
             MUSIC = "Tone up or down the musical fanfare in your adventures.",
             AMBIENT = "The environment makes noise too, luckily you can control how loudly it does.",
@@ -10959,6 +10983,15 @@ STRINGS.UI =
 
         OCEAN_OTTERDENS = "Marotter Dens",
         OTTERS_SETTING = "Marotters",
+
+        MUTATED_BIRDS = "Mutated Birds",
+        MUTATED_MERM = "Mutated Merms",
+        MUTATED_SPIDERQUEEN = "Shattered Spider Holes",
+        MUTATED_BIRD_GESTALT = "Bright-Beaked Birds",
+        MUTATED_BUZZARD_GESTALT = "Crystal-Crested Buzzards",
+        MUTATED_DEERCLOPS = "Crystal Deerclops",
+        MUTATED_BEARGER = "Armored Bearger",
+        MUTATED_WARG = "Possessed Vargs",
 		-- End of world customization strings
     },
 
@@ -12667,6 +12700,8 @@ STRINGS.UI =
         FAILED_NOPERMISSIONS_NOCHOICE = "I understand",
 
         MYSTERYBOX_DISABLE = "You must be logged in to access the Treasury.",
+
+        NOT_AVAILABLE_OFFLINE = "This feature is not available in offline mode."
     },
 
     BEARDSCREEN =
@@ -14387,6 +14422,7 @@ STRINGS.UI =
         CHOICEEVENTS = "Events",
         CHOICESURVIVORS = "Survivors",
         CHOICEGIANTS = "Giants",
+        CHOICELUNARMUTATIONS = "Lunar Mutations",
 
         WORLDSETTINGS_RESOURCEREGROWTH = "Resource Regrowth",
         WORLDSETTINGS_PORTALRESOURCES = "Unnatural Portal Resources",

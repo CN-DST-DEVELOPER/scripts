@@ -114,6 +114,23 @@ function LaunchAt(inst, launcher, target, speedmult, startheight, startradius, r
     end
 end
 
+function LaunchToXZ(inst, tox, toz)
+    if inst ~= nil and inst.Physics ~= nil and inst.Physics:IsActive() then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local vx, vz = tox - x, toz - z
+        local dist = math.sqrt(vx * vx + vz * vz)
+        if dist > 0 then
+            local angle = math.atan2(vz / dist, vx / dist)
+            local speed = math.sqrt(6.7 * dist) -- Magic constant approximated from inventoryitem tests and their friction to make it get to the destination on rest.
+            inst.Physics:Teleport(x, .1, z)
+            inst.Physics:SetVel(math.cos(angle) * speed, speed, math.sin(angle) * speed)
+        else
+            inst.Physics:Teleport(x, .1, z)
+            inst.Physics:SetVel(0, 2, 0)
+        end
+    end
+end
+
 local COLLAPSIBLE_WORK_ACTIONS =
 {
     CHOP = true,

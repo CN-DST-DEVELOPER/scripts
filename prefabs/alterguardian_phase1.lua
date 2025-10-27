@@ -138,12 +138,15 @@ end
 
 local function OnPhaseTransition(inst)
     local px, py, pz = inst.Transform:GetWorldPosition()
+    local rot = inst.Transform:GetRotation()
     local target = inst.components.combat.target
 
     inst:Remove()
 
     local phase2 = SpawnPrefab("alterguardian_phase2")
     phase2.Transform:SetPosition(px, py, pz)
+    phase2.Transform:SetRotation(rot)
+    phase2.AnimState:MakeFacingDirty() --not needed for clients
     phase2.components.combat:SuggestTarget(target)
     phase2.sg:GoToState("spawn")
 end

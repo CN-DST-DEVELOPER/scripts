@@ -45,7 +45,17 @@ local function stop_motion(inst)
     end
 
     inst.AnimState:PlayAnimation("mutate")
-    inst.Physics:SetMotorVelOverride(2, 0, 0)
+    if inst._force_end_position_callback then
+        inst.Physics:SetMotorVelOverride(0, 0, 0)
+        if inst.Transform then
+            inst.Transform:SetPosition(inst._target_pos:Get()) -- We want to interpolate the position if possible so this before physics teleport.
+        else
+            inst.Physics:Teleport(inst._target_pos:Get())
+        end
+        inst:_force_end_position_callback()
+    else
+        inst.Physics:SetMotorVelOverride(2, 0, 0)
+    end
 end
 
 local function attack_behaviour(inst, target)
@@ -102,9 +112,15 @@ local function try_attack(inst)
 end
 
 local function start_motion(inst)
-    inst.Physics:SetMotorVelOverride(inst.attack_speed, 0, 0)
-    inst._attack_task = inst:DoPeriodicTask(2*FRAMES, try_attack)
+    inst.Physics:SetMotorVelOverride(inst.attack_speed * (inst.attack_speed_mod or 1), 0, 0)
+    if inst.components.combat then
+        inst._attack_task = inst:DoPeriodicTask(2*FRAMES, try_attack)
+    end
 end
+
+local FLY_START_TIME = 15 * FRAMES
+local FLY_END_TIME = 25 * FRAMES
+local TIME_TO_FLY = FLY_END_TIME - FLY_START_TIME - FRAMES
 
 local function on_anim_over(inst)
     if inst.AnimState:IsCurrentAnimation("emerge") then
@@ -115,8 +131,8 @@ local function on_anim_over(inst)
         end
         inst.AnimState:PlayAnimation("attack")
 
-        inst:DoTaskInTime(15*FRAMES, start_motion)
-        inst._stop_task = inst:DoTaskInTime(25*FRAMES, stop_motion)
+        inst:DoTaskInTime(FLY_START_TIME, start_motion)
+        inst._stop_task = inst:DoTaskInTime(FLY_END_TIME, stop_motion)
 
     elseif inst.AnimState:IsCurrentAnimation("mutate") then
         inst:Remove()
@@ -335,8 +351,13 @@ local HATGUARD_COMBAT_MUSHAVE_TAGS = { "_combat", "_health" }
 local HATGUARD_COMBAT_CANTHAVE_TAGS = { "INLIMBO", "structure", "wall", "companion" }
 
 local function hatguard_find_attack_victim(inst)
+    local hitrange = 0.75
+    if inst._focustarget then
+        return inst._focustarget:IsValid() and inst:GetDistanceSqToInst(inst._focustarget) < hitrange * hitrange and inst._focustarget or nil
+    end
+
     local x, y, z = inst.Transform:GetWorldPosition()
-	local ents = TheSim:FindEntities(x, y, z, 0.75, HATGUARD_COMBAT_MUSHAVE_TAGS, HATGUARD_COMBAT_CANTHAVE_TAGS)
+	local ents = TheSim:FindEntities(x, y, z, hitrange, HATGUARD_COMBAT_MUSHAVE_TAGS, HATGUARD_COMBAT_CANTHAVE_TAGS)
 	for _, target in ipairs(ents) do
 		if (target.components.health ~= nil and not target.components.health:IsDead())
 			and (target.components.combat ~= nil and not inst.components.combat:TargetHasFriendlyLeader(target) and inst.components.combat:CanTarget(target)) then
@@ -382,6 +403,36 @@ local function hatguardfn()
     return inst
 end
 
+----------- gestalt_evolved_planting_visual_projectile -----------
+
+local function SetProjectileDistance(inst, dist, callback)
+    local normal_dist = inst.attack_speed * TIME_TO_FLY
+    inst.attack_speed_mod = 2 * (dist / normal_dist) -- The 2 comes from how fast physics ticks relative to FRAMES.
+    inst._force_end_position_callback = callback
+end
+
+local function plantingvisualfn()
+    local inst = commonfn("brightmare_gestalt_evolved", GUARD_HEADDATA, GUARD_TAGS, hatguard_common_postinit, nil, true)
+
+    inst.AnimState:Hide("angry")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.scrapbook_hide = SPIKE_LAYER
+
+    inst.attack_speed = TUNING.ALTERGUARDIAN_PROJECTILE_SPEED / HATGUARD_SCALE
+    inst.SetProjectileDistance = SetProjectileDistance
+
+	inst:AddComponent("follower")
+    inst.components.follower:KeepLeaderOnAttacked()
+    inst.components.follower.keepdeadleader = true
+	inst.components.follower.keepleaderduringminigame = true
+
+    return inst
+end
+
 ----------- largeguard_alterguardian_projectile -----------
 --[[ Defined above, repeated for posterity.
 local GUARD_HEADDATA =
@@ -416,4 +467,5 @@ end
 return Prefab("gestalt_alterguardian_projectile", gestaltfn, gestalt_assets, gestalt_prefabs),
         Prefab("smallguard_alterguardian_projectile", smallguardfn, guard_assets, guard_prefabs),
         Prefab("alterguardianhat_projectile", hatguardfn, guard_assets, guard_prefabs),
+        Prefab("gestalt_evolved_planting_visual_projectile", plantingvisualfn, guard_assets, guard_prefabs),
         Prefab("largeguard_alterguardian_projectile", largeguardfn, guard_assets, guard_prefabs)

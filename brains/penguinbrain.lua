@@ -30,9 +30,25 @@ local MIN_TIME_TILL_NEXT_DROP = 60
 local LEASH_RETURN_DIST = 5
 local LEASH_MAX_DIST = 10
 
+local function GetClosestInstWithTagAndExcludeTag(tag, excludetag, inst, radius)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, radius, tag, excludetag)
+    return ents[1] ~= inst and ents[1] or ents[2]
+end
+
 local PenguinBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
+
+local SCARY_TAGS = { "scarytoprey" }
+local MUTATED_EXCLUDE_TAGS = { "mutated_penguin" } -- Let's not be scared of each other!
+local function FindScaryPredator(inst, radius)
+    if inst:HasTag("mutated_penguin") then
+        return GetClosestInstWithTagAndExcludeTag(SCARY_TAGS, MUTATED_EXCLUDE_TAGS, inst, radius)
+    else
+        return GetClosestInstWithTagAndExcludeTag(SCARY_TAGS, nil, inst, radius)
+    end
+end
 
 local function AtRookery(inst)
     if not inst then
@@ -105,13 +121,12 @@ local function FindItems(inst, radius, fn, tags)
 end
 
 -- Go grab an egg if player gets too close to it
-local SCARY_TAGS = { "scarytoprey" }
 local function StealAction(inst)
     if not inst.components.inventory:IsFull() then
         -- Check that my egg exists and is not being held by someone else
         local target = CheckMyEgg(inst)
         local lst
-        local char = GetClosestInstWithTag(SCARY_TAGS, inst, TOOCLOSE)
+        local char = FindScaryPredator(inst, TOOCLOSE)
         if not target then
 		    lst = FindItems(inst, SEE_DIST/2, function(item)
                                                     if  item.components.inventoryitem and
@@ -191,7 +206,7 @@ local function LayEggAction(inst)
 
     local delay
     local egg = CheckMyEgg(inst)
-    local nearest = GetClosestInstWithTag(SCARY_TAGS, inst, TOOCLOSE)
+    local nearest = FindScaryPredator(inst, TOOCLOSE)
     if nearest and nearest:IsNear(inst, TOOCLOSE) then
         --print("\rTOO CLOSE")
         return
@@ -212,7 +227,7 @@ local function LayEggAction(inst)
                             function()
                                 if not inst:IsValid() then return end
                                 inst.layingEgg = false
-                                nearest = GetClosestInstWithTag(SCARY_TAGS, inst, TOOCLOSE)
+                                nearest = FindScaryPredator(inst, TOOCLOSE)
 
                                 if PrepareForNight(inst) or not AtRookery(inst) or
                                 (nearest and nearest:IsNear(inst, TOOCLOSE)) then
@@ -235,7 +250,7 @@ local function LayEggAction(inst)
                             function()
                                 if not inst:IsValid() then return end
                                 inst.layingEgg = false
-                                nearest = GetClosestInstWithTag(SCARY_TAGS, inst, TOOCLOSE)
+                                nearest = FindScaryPredator(inst, TOOCLOSE)
 
                                 if PrepareForNight(inst) or not AtRookery(inst) or
                                    (TheWorld.state.iswinter and TheWorld.state.temperature <= -15) and
@@ -310,8 +325,8 @@ local function ShouldRunAway(inst,hunter)
     local hasLeader = inst.components.teamattacker.teamleader
     if hasLeader and (teamattacker.orders == "ATTACK" or teamattacker.orders == "HOLD")  then
         return false
-    elseif hunter.sg and hunter.sg:HasStateTag("moving")
-           -- or hunter.sg:HasStateTag("attack")
+    elseif (hunter.sg and hunter.sg:HasStateTag("moving"))
+            or hunter:HasTag("mutated_penguin") -- These guys are ALWAYS scary to us!
            then
         return true
     else
@@ -341,12 +356,6 @@ local function FlyAway(inst)
 end
 
 function PenguinBrain:OnStart()
-    --[[
-    local stealnode = PriorityNode(
-	{
-		DoAction(self.inst, function() return StealAction(self.inst) end, "steal", true ),
-	}, 2)
-    --]]
     local root = PriorityNode(
     {
         IfNode(function() return  self.inst.sg:HasStateTag("flight") end, "Flying",
@@ -360,9 +369,10 @@ function PenguinBrain:OnStart()
 
         -- Scatter for a short distance if player gets too close
      -- RunAway(hunterparams, see_dist, safe_dist, shouldRunFn, runhome)
-        RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST,
-                    function(target) return ShouldRunAway(self.inst, target) end,
-                    false),
+        IfNode(function() return not self.inst:HasTag("mutated_penguin") end, "IsScaredOfPrey",
+            RunAway(self.inst, "scarytoprey", SEE_PLAYER_DIST, STOP_RUN_DIST,
+            function(target) return ShouldRunAway(self.inst, target) end,
+            false)),
 
      -- ChaseAndAttack( inst, max_chase_time, give_up_dist, max_attacks, findnewtargetfn)
         IfNode(function() return ShouldAttack(self.inst) end, "ShouldAttack",

@@ -32,8 +32,8 @@ local function InitEnvelope()
         }
     )
 
-    local mix_scale = 2
-    local max_scale = 4
+    local mix_scale = 1
+    local max_scale = 1
     EnvelopeManager:AddVector2Envelope(
         SCALE_ENVELOPE_NAME,
         {
@@ -121,6 +121,7 @@ local function fn()
     effect:InitEmitters(1)
     effect:SetRenderResources(0, TEXTURE, SHADER)
     effect:SetRotationStatus(0, true)
+    effect:SetUVFrameSize(0, .125, 1)
     effect:SetMaxNumParticles(0, 4800)
     effect:SetMaxLifetime(0, MAX_LIFETIME)
     effect:SetColourEnvelope(0, COLOUR_ENVELOPE_NAME)
@@ -151,7 +152,7 @@ local function fn()
     local emitter_shape = CreateBoxEmitter(bx, by, bz, bx + 20, by, bz + 20)
 
     local angle = 0
-    local dx = math.cos(angle * DEGREES)
+    local dx = math.cos(angle * DEGREES) * .2
     effect:SetAcceleration(0, dx, -6, 1 )
 
     local function emit_fn(x, z, left_sx, right_sx, bottom_sy)
@@ -173,12 +174,15 @@ local function fn()
                 end
             end
 
-            effect:AddRotatingParticle(
-                0,                  -- the only emitter
+            local uv_offset = math.random(0, 7) * .125 -- math.random(0, 3) * 0.25
+
+            effect:AddRotatingParticleUV(
+                0,
                 lifetime,           -- lifetime
                 px, py, pz,         -- position
                 vx, vy, vz,         -- velocity
-                angle, 0            -- angle, angular_velocity
+                angle, 0,           -- angle, angular_velocity
+                uv_offset, 0        -- uv offset
             )
         end
     end

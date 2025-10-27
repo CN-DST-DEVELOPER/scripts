@@ -964,18 +964,28 @@ function self:OnLoad(data)
 	if data ~= nil then
 		if data._alterguardian_defeated_count then
 			_alterguardian_defeated_count = data._alterguardian_defeated_count
-			if _alterguardian_defeated_count > 0 then
-				self.inst:DoTaskInTime(0,function()
-					TheWorld:PushEvent("ms_setmoonphasestyle", {style = "glassed_default"})
-                    TheWorld:PushEvent("ms_moonboss_was_defeated", {count = _alterguardian_defeated_count})
-				end)
-			end
 		end
 
-		-- THIS MUST COME AFTER THE _alterguardian_defeated_count IS SET
 		if data.moonstyle_altar then
 			_moonstyle_altar = data.moonstyle_altar
-			self.inst:DoTaskInTime(0,setmoonphasestyle)
+		end
+
+		-- After _moonstyle_altar and _alterguardian_defeated_count are set
+		local champion_defeated = _alterguardian_defeated_count > 0
+		if _moonstyle_altar and champion_defeated then
+			local function DefeatedChampionAndMoonstormActive()
+				setmoonphasestyle()
+				TheWorld:PushEvent("ms_moonboss_was_defeated", {count = _alterguardian_defeated_count} ) --Unused but kept for any mods that might have been using it
+			end
+			self.inst:DoTaskInTime(0, DefeatedChampionAndMoonstormActive)
+		elseif _moonstyle_altar then
+			self.isnt:DoTaskInTime(0, setmoonphasestyle)
+		elseif champion_defeated then
+			local function DefeatedChampion()
+				TheWorld:PushEvent("ms_setmoonphasestyle", {style = "glassed_default"})
+                TheWorld:PushEvent("ms_moonboss_was_defeated", {count = _alterguardian_defeated_count}) --Unused but kept for any mods that might have been using it
+			end
+			self.inst:DoTaskInTime(0, DefeatedChampion)
 		end
 
 		if data.metplayers then

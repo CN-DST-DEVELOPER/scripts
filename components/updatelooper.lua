@@ -117,29 +117,76 @@ function UpdateLooper:OnWallUpdate(dt)
 end
 
 --------------------------------------------------------------------------
---#V2C: quick and dirty post update implementation for now.
---      not safe to add remove fns during UpdateLooper_PostUpdate.
+--#V2C: it is now safe to add or remove fns during UpdateLooper_PostUpdate.
+local _IsPostUpdating = false
 
 function UpdateLooper:AddPostUpdateFn(fn)
 	if #self.postupdatefns <= 0 then
 		_PostUpdates[self.inst] = self.postupdatefns
 	end
-	table.insert(self.postupdatefns, fn)
+	self.postupdatefns[#self.postupdatefns + 1] = fn
 end
 
 function UpdateLooper:RemovePostUpdateFn(fn)
-	table.removearrayvalue(self.postupdatefns, fn)
-	if #self.postupdatefns <= 0 then
-		_PostUpdates[self.inst] = nil
+	for i = 1, #self.postupdatefns do --don't use ipairs, table may contain nil entries
+		if fn == self.postupdatefns[i] then
+			if _IsPostUpdating then
+				self.postupdatefns[i] = nil
+			else
+				--not post updating loop, so it's safe to remove now
+				local j = i
+				for i = i + 1, #self.postupdatefns do
+					local fn = self.postupdatefns[i]
+					if fn then
+						self.postupdatefns[j] = fn
+						j = j + 1
+					end
+				end
+				for i = j, #self.postupdatefns do
+					self.postupdatefns[i] = nil
+				end
+				if #self.postupdatefns <= 0 then
+					_PostUpdates[self.inst] = nil
+				end
+			end
+			break
+		end
 	end
 end
 
 function UpdateLooper_PostUpdate()
+	_IsPostUpdating = true
 	for inst, fns in pairs(_PostUpdates) do
-		for _, fn in ipairs(fns) do
-			fn(inst)
+		local pendingremoval = false
+		local i = 1
+		while i <= #fns do --while loop because #fns is allowed to change now
+			local fn = fns[i]
+			if fn then --nil means removed during post update loop
+				fn(inst)
+				pendingremoval = pendingremoval or fns[i] == nil --could've removed itself
+			else
+				pendingremoval = true
+			end
+			i = i + 1
+		end
+		if pendingremoval then
+			local j = 1
+			for i = 1, #fns do
+				local fn = fns[i]
+				if fn then
+					fns[j] = fn
+					j = j + 1
+				end
+			end
+			for i = j, #fns do
+				fns[i] = nil
+			end
+			if #fns <= 0 then
+				_PostUpdates[inst] = nil
+			end
 		end
 	end
+	_IsPostUpdating = false
 end
 
 --------------------------------------------------------------------------

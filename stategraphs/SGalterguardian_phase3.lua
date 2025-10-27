@@ -944,6 +944,8 @@ local states =
             EventHandler("animover", function(inst)
                 local orb = SpawnPrefab("alterguardian_phase3deadorb")
                 orb.Transform:SetPosition(inst.Transform:GetWorldPosition())
+                orb.Transform:SetRotation(inst.Transform:GetRotation())
+                orb.AnimState:MakeFacingDirty() -- not needed for clients
 
                 inst:Remove()
             end),

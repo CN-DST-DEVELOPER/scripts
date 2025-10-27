@@ -1,9 +1,15 @@
+local easing = require("easing")
+
 local BALLOONS = require "prefabs/balloons_common"
 
 local SPIDER_TAGS = {"spider"}
 local SHADOWTHRALL_PARASITE_RETARGET_CANT_TAGS = { "shadowthrall_parasite_hosted", "shadowthrall_parasite_mask" }
+local MOONGLASS_MUST_TAGS = {"moonglass_piece"}
+local MOONGLASS_CANT_TAGS = {"INLIMBO"}
 
 ALL_HAT_PREFAB_NAMES = {}
+
+local fns2 = {}
 
 local function MakeHat(name)
     local fns = {}
@@ -58,7 +64,7 @@ local function MakeHat(name)
         owner.AnimState:Hide("HAIR_NOHAT")
         owner.AnimState:Hide("HAIR")
 
-        if owner:HasTag("player") then
+		if owner.isplayer then
             owner.AnimState:Hide("HEAD")
             owner.AnimState:Show("HEAD_HAT")
 			owner.AnimState:Show("HEAD_HAT_NOHELM")
@@ -83,7 +89,7 @@ local function MakeHat(name)
         owner.AnimState:Show("HAIR_NOHAT")
         owner.AnimState:Show("HAIR")
 
-        if owner:HasTag("player") then
+		if owner.isplayer then
             owner.AnimState:Show("HEAD")
             owner.AnimState:Hide("HEAD_HAT")
 			owner.AnimState:Hide("HEAD_HAT_NOHELM")
@@ -120,7 +126,7 @@ local function MakeHat(name)
     end
 
 	fns.fullhelm_onequip = function(inst, owner)
-		if owner:HasTag("player") then
+		if owner.isplayer then
 			_base_onequip(inst, owner, nil, "headbase_hat")
 
 			owner.AnimState:Hide("HAT")
@@ -152,7 +158,7 @@ local function MakeHat(name)
 	fns.fullhelm_onunequip = function(inst, owner)
 		_onunequip(inst, owner)
 
-		if owner:HasTag("player") then
+		if owner.isplayer then
 			owner.AnimState:ShowSymbol("face")
 			owner.AnimState:ShowSymbol("swap_face")
 			owner.AnimState:ShowSymbol("beard")
@@ -1226,7 +1232,7 @@ local function MakeHat(name)
         _onequip(inst, owner)
 
         -- check for the armor_snurtleshell pairing achievement
-        if owner:HasTag("player") then
+		if owner.isplayer then
 			local equipped_body = owner.components.inventory ~= nil and owner.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY) or nil
 			if equipped_body ~= nil and equipped_body.prefab == "armorsnurtleshell" then
 				AwardPlayerAchievement("snail_armour_set", owner)
@@ -1732,7 +1738,7 @@ local function MakeHat(name)
         return inst
     end
 
-    local function watermelon_custom_init(inst)
+	fns.watermelon_custom_init = function(inst)
         inst:AddTag("show_spoilage")
         inst:AddTag("icebox_valid")
 
@@ -1744,7 +1750,7 @@ local function MakeHat(name)
     end
 
     fns.watermelon = function()
-        local inst = simple(watermelon_custom_init)
+		local inst = simple(fns.watermelon_custom_init)
 
         if not TheWorld.ismastersim then
             return inst
@@ -1762,9 +1768,12 @@ local function MakeHat(name)
         inst.components.insulator:SetSummer()
 
         inst:AddComponent("perishable")
+		inst.components.perishable.onperishreplacement = "spoiled_food"
         inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERFAST)
         inst.components.perishable:StartPerishing()
-        inst.components.perishable:SetOnPerishFn(--[[generic_perish]]inst.Remove)
+
+		inst:AddComponent("forcecompostable")
+		inst.components.forcecompostable.green = true
 
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
@@ -1950,6 +1959,9 @@ local function MakeHat(name)
         inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
         inst.components.perishable:StartPerishing()
         inst.components.perishable:SetOnPerishFn(inst.Remove)
+
+		inst:AddComponent("forcecompostable")
+		inst.components.forcecompostable.green = true
 
         inst:AddComponent("periodicspawner")
         inst.components.periodicspawner:SetPrefab(spore_prefab)
@@ -3073,6 +3085,200 @@ local function MakeHat(name)
         )
     end
 
+    fns.alterguardianhat_lunarseedplanting_findmoonglass_fromshard = function(shard)
+        local x, y, z = shard.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, TUNING.GESTALT_EVOLVED_PLANTING_RADIUS_FROM_MOONGLASS, MOONGLASS_MUST_TAGS, MOONGLASS_CANT_TAGS)
+        local moonglass_count = 0
+        local moonglass_needed = TUNING.GESTALT_EVOLVED_PLANTING_MOONGLASS_REQUIREMENT
+        for i, v in ipairs(ents) do
+            if v.prefab == "moonglass_charged" and not v._pending_lunarseedplant then
+                moonglass_count = moonglass_count + (v.components.stackable and v.components.stackable.stacksize or 1)
+                if moonglass_count >= moonglass_needed then
+                    local moonglass = {}
+                    local centerx, centerz = 0, 0
+                    for j = 1, i do
+                        local v2 = ents[j]
+                        if v2 and v2.prefab == "moonglass_charged" and not v2._pending_lunarseedplant then
+                            local x2, y2, z2 = v2.Transform:GetWorldPosition()
+                            centerx, centerz = centerx + x2, centerz + z2
+                            table.insert(moonglass, v2)
+                        end
+                    end
+                    local centercount = #moonglass
+                    centerx, centerz = centerx / centercount, centerz / centercount
+                    return moonglass, centerx, centerz
+                end
+            end
+        end
+        return nil
+    end
+    fns.alterguardianhat_lunarseedplanting_findmoonglass = function(inst, owner)
+        local x, y, z = owner.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, TUNING.GESTALT_EVOLVED_PLANTING_RADIUS_FROM_HAT, MOONGLASS_MUST_TAGS, MOONGLASS_CANT_TAGS)
+        local maxtries = 10
+        for _, v in ipairs(ents) do
+            if v.prefab == "moonglass_charged" and not v._pending_lunarseedplant then
+                local moonglass, centerx, centerz = fns.alterguardianhat_lunarseedplanting_findmoonglass_fromshard(v)
+                if moonglass then
+                    return moonglass, centerx, centerz
+                end
+                maxtries = maxtries - 1
+                if maxtries <= 0 then
+                    break
+                end
+            end
+        end
+        return nil
+    end
+    fns.alterguardianhat_lunarseedplanting_onremove = function(inst)
+        if inst._moonglass_reserved then
+            for _, v in ipairs(inst._moonglass_reserved) do
+                v._pending_lunarseedplant = nil
+            end
+            inst._moonglass_reserved = nil
+        end
+        if inst._moonglass_owner then
+            if inst._moonglass_owner.components.petleash then
+                inst._moonglass_owner.components.petleash:UnreservePetWithPrefab("gestalt_guard_evolved")
+                if not inst._failed_lunarseedplant then
+                    local moonglass, centerx, centerz = fns.alterguardianhat_lunarseedplanting_findmoonglass_fromshard(inst)
+                    if moonglass then
+                        local moonglass_needed = TUNING.GESTALT_EVOLVED_PLANTING_MOONGLASS_REQUIREMENT
+                        for _, v in ipairs(moonglass) do
+                            local moonglass_amount = (v.components.stackable and v.components.stackable.stacksize or 1)
+                            if v.components.stackable then
+                                v.components.stackable:Get(moonglass_needed):Remove()
+                            else
+                                v:Remove()
+                            end
+                            moonglass_needed = moonglass_needed - moonglass_amount
+                        end
+                        local x, y, z = inst.Transform:GetWorldPosition()
+                        local pet = inst._moonglass_owner.components.petleash:SpawnPetAt(x, 0, z, "gestalt_guard_evolved")
+                        if pet then
+                            local pets = inst._moonglass_owner.components.petleash:GetPetsWithPrefab("gestalt_guard_evolved")
+                            if pets then
+                                local petcount = #pets
+                                for _, pet in ipairs(pets) do
+                                    pet:SetupKilledPetLoot(petcount)
+                                end
+                            else
+                                pet:SetupKilledPetLoot(1)
+                            end
+                            pet:PushEventImmediate("spawned")
+                        end
+                    end
+                end
+            end
+            inst._moonglass_owner = nil
+        end
+    end
+    fns.alterguardianhat_lunarseedplanting_onreachdest = function(inst)
+        if inst._moonglass_reserved then
+            for _, v in ipairs(inst._moonglass_reserved) do
+                v._pending_lunarseedplant = nil
+            end
+            inst._moonglass_reserved = nil
+        end
+        if not inst._failed_lunarseedplant then
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local moonglass, centerx, centerz = fns.alterguardianhat_lunarseedplanting_findmoonglass_fromshard(inst)
+            if moonglass then
+                SpawnPrefab("pull_smoke_fx").Transform:SetPosition(x, y, z)
+                for _, v in ipairs(moonglass) do
+                    v._pending_lunarseedplant = true
+                    LaunchToXZ(v, x, z)
+                end
+                inst._moonglass_reserved = moonglass
+            end
+        end
+    end
+    fns.alterguardianhat_lunarseedplanting_tick = function(inst)
+        local owner = inst.components.equippable:IsEquipped() and inst.components.inventoryitem.owner or nil
+        if owner and owner.components.petleash then
+            local pets = owner.components.petleash:GetPetsWithPrefab("gestalt_guard_evolved")
+            if pets then
+                local petcount = #pets
+                for i = 1, petcount do
+                    local pet1 = pets[i]
+                    for j = i + 1, petcount do
+                        local pet2 = pets[j]
+                        if not pet1._should_teleport and not pet2._should_teleport and pet1:GetDistanceSqToInst(pet2) < 2.25 then -- 1.5 * 1.5
+                            pet1._should_teleport = true
+                        end
+                    end
+                end
+            end
+            if not owner.components.petleash:IsFullForPrefab("gestalt_guard_evolved") then
+                local moonglass, centerx, centerz = fns.alterguardianhat_lunarseedplanting_findmoonglass(inst, owner)
+                if moonglass then
+                    owner.components.petleash:ReservePetWithPrefab("gestalt_guard_evolved")
+                    for _, v in ipairs(moonglass) do
+                        v._pending_lunarseedplant = true
+                    end
+
+                    local x, y, z = owner.Transform:GetWorldPosition()
+                    local r = owner:GetPhysicsRadius(0) + 1
+                    local angle = owner:GetAngleToPoint(centerx, 0, centerz) * DEGREES
+                    x, z = x + r * math.cos(angle), z + r * -math.sin(angle)
+                    local dx, dz = x - centerx, z - centerz
+                    local dist = math.sqrt(dx * dx + dz * dz)
+
+                    local gestalt = SpawnPrefab("gestalt_evolved_planting_visual_projectile")
+                    inst._pending_lunarseedplant_gestalts = inst._pending_lunarseedplant_gestalts or {}
+                    inst._pending_lunarseedplant_gestalts[gestalt] = true
+                    gestalt._moonglass_reserved = moonglass
+                    gestalt._moonglass_centerx = centerx
+                    gestalt._moonglass_centerz = centerz
+                    gestalt._moonglass_owner = owner
+                    gestalt:ListenForEvent("onremove", function()
+                        gestalt._failed_lunarseedplant = true
+                        gestalt._moonglass_owner = nil
+                        fns.alterguardianhat_lunarseedplanting_onremove(gestalt)
+                    end, owner)
+                    gestalt:ListenForEvent("onremove", function()
+                        inst._pending_lunarseedplant_gestalts[gestalt] = nil
+                        if next(inst._pending_lunarseedplant_gestalts) == nil then
+                            inst._pending_lunarseedplant_gestalts = nil
+                        end
+                        fns.alterguardianhat_lunarseedplanting_onremove(gestalt)
+                    end)
+                    gestalt.Transform:SetPosition(x, y, z)
+                    gestalt:ForceFacePoint(centerx, 0, centerz)
+                    gestalt:SetTargetPosition(Vector3(centerx, 0, centerz))
+                    gestalt:SetProjectileDistance(dist, fns.alterguardianhat_lunarseedplanting_onreachdest)
+                    gestalt.components.follower:SetLeader(owner)
+                end
+            end
+        end
+    end
+    fns.alterguardianhat_lunarseedplanting_start = function(inst)
+        if inst.lunarseedplanting_task == nil and inst.components.equippable:IsEquipped() then
+            inst.lunarseedplanting_task = inst:DoPeriodicTask(TUNING.GESTALT_EVOLVED_PLANTING_TICK_TIME, fns.alterguardianhat_lunarseedplanting_tick, math.random() * TUNING.GESTALT_EVOLVED_PLANTING_TICK_TIME)
+        end
+    end
+    fns.alterguardianhat_lunarseedplanting_stop = function(inst, owner)
+        if inst.lunarseedplanting_task ~= nil then
+            inst.lunarseedplanting_task:Cancel()
+            inst.lunarseedplanting_task = nil
+        end
+        if inst._pending_lunarseedplant_gestalts then
+            for gestalt, _ in pairs(inst._pending_lunarseedplant_gestalts) do
+                gestalt._failed_lunarseedplant = true
+            end
+        end
+        if owner and not owner.is_snapshot_user_session then
+            if owner.components.petleash then
+                local pets = owner.components.petleash:GetPetsWithPrefab("gestalt_guard_evolved")
+                if pets then
+                    for _, pet in ipairs(pets) do
+                        pet:SetupDespawnPetLoot()
+                        pet:PushEventImmediate("death")
+                    end
+                end
+            end
+        end
+    end
     fns.alterguardianhat_sporetest = function(item) return item:HasTag("spore") end
     fns.alterguardianhat_wagbosstest = function(item) return item:HasTag("lunarseed") end
     local function alterguardianhat_updatelight(inst)
@@ -3081,19 +3287,29 @@ local function MakeHat(name)
         local conversioncount = TUNING.ALTERGUARDIANHAT_SEEDCOUNT_FOR_FULL_PLANAR_CONVERSION
         inst.lunarseedplanarconversionmult = (math.min(inst.lunarseedscount, conversioncount) / conversioncount) * TUNING.ALTERGUARDIANHAT_MAX_PLANAR_CONVERSION
         inst.lunarseedbonusbasephysicaldamage = (math.max(inst.lunarseedscount - conversioncount, 0) / (inst.components.container:GetNumSlots() - conversioncount)) * TUNING.ALTERGUARDIANHAT_SEEDCOUNT_EXTRA_DAMAGE_MAX
-        if inst.components.equippable:IsEquipped() then -- If we're not equipped, this will get resolved at equip time.
-            local owner = inst.components.inventoryitem.owner
-            if owner and owner.components.sanity then
-                if inst.lunarseedsmaxed then
-                    inst:AddTag("lunarseedmaxed")
+
+        local owner = inst.components.equippable:IsEquipped() and inst.components.inventoryitem.owner or nil
+
+        inst:AddOrRemoveTag("lunarseedmaxed", inst.lunarseedsmaxed)
+        if inst.lunarseedsmaxed then
+            fns.alterguardianhat_lunarseedplanting_start(inst)
+        else
+            fns.alterguardianhat_lunarseedplanting_stop(inst, owner)
+        end
+
+        if owner then
+            if inst.lunarseedsmaxed then
+                if owner.components.sanity then
                     owner.components.sanity:SetInducedLunacy(inst, true)
                     owner.components.sanity:EnableLunacy(true, "lunacyhat")
-                else
-                    inst:RemoveTag("lunarseedmaxed")
+                end
+            else
+                if owner.components.sanity then
                     owner.components.sanity:SetInducedLunacy(inst, false)
                     owner.components.sanity:EnableLunacy(false, "lunacyhat")
                 end
             end
+        else
         end
 
         local spores = inst.components.container:FindItems(fns.alterguardianhat_sporetest)
@@ -3203,6 +3419,7 @@ local function MakeHat(name)
 			inst._back:OnDeactivated()
 			inst._back = nil
 		end
+        fns.alterguardianhat_lunarseedplanting_stop(inst, owner)
 	end
 
 	local function alterguardian_onsanitydelta(inst, owner)
@@ -3221,7 +3438,7 @@ local function MakeHat(name)
 
 		if owner ~= nil and (owner.components.health == nil or not owner.components.health:IsDead()) then
 		    local target = data.target
-			if target and target ~= owner and target:IsValid() and (target.components.health == nil or not target.components.health:IsDead() and not target:HasTag("structure") and not target:HasTag("wall")) then
+			if target and target ~= owner and target:IsValid() and target.prefab ~= "gestalt_guard_evolved" and (target.components.health == nil or not target.components.health:IsDead() and not target:HasAnyTag("structure", "wall")) then
 
                 -- In combat, this is when we're just launching a projectile, so don't spawn a gestalt yet
                 if data.weapon ~= nil and data.projectile == nil
@@ -3278,11 +3495,12 @@ local function MakeHat(name)
             inst.components.container:Open(owner)
         end
 
-        if owner and owner.components.sanity then
-            if inst.lunarseedsmaxed then
+        if inst.lunarseedsmaxed then
+            if owner and owner.components.sanity then
                 owner.components.sanity:SetInducedLunacy(inst, true)
                 owner.components.sanity:EnableLunacy(true, "lunacyhat")
             end
+            fns.alterguardianhat_lunarseedplanting_start(inst)
         end
     end
 
@@ -3292,12 +3510,13 @@ local function MakeHat(name)
 		inst:RemoveEventCallback("sanitydelta", inst._onsanitydelta, owner)
 		inst:RemoveEventCallback("onattackother", inst.alterguardian_spawngestalt_fn, owner)
 
-        if owner and owner.components.sanity then
-            if inst.lunarseedsmaxed then
+        if inst.lunarseedsmaxed then
+            if owner and owner.components.sanity then
                 owner.components.sanity:SetInducedLunacy(inst, false)
                 owner.components.sanity:EnableLunacy(false, "lunacyhat")
             end
         end
+        fns.alterguardianhat_lunarseedplanting_stop(inst, owner)
 
 		if inst._task then
 			inst._task:Cancel()
@@ -3332,10 +3551,13 @@ local function MakeHat(name)
     local function alterguardianhat_onremove(inst)
         if inst._front ~= nil and inst._front:IsValid() then
             inst._front:Remove()
+			inst._front = nil
         end
         if inst._back ~= nil and inst._back:IsValid() then
             inst._back:Remove()
+			inst._back = nil
         end
+        -- Do not call alterguardianhat_lunarseedplanting_stop here the act of the entity being removed unequips the hat.
     end
 
     fns.alterguardian_onsave = function(inst, data)
@@ -3507,7 +3729,8 @@ local function MakeHat(name)
 		inst.fx = SpawnPrefab("lunarplanthat_fx")
         inst.fx.owningitem = inst
 		inst.fx:AttachToOwner(owner)
-		owner.AnimState:SetSymbolLightOverride("swap_hat", .1)
+		--V2C: swap_hat is empty, all follow symbols!
+		--owner.AnimState:SetSymbolLightOverride(owner.isplayer and "headbase_hat" or "swap_hat", 0.1)
 		if owner.components.grue ~= nil then
 			owner.components.grue:AddImmunity("lunarplanthat")
 		end
@@ -3520,7 +3743,7 @@ local function MakeHat(name)
 			inst.fx:Remove()
 			inst.fx = nil
 		end
-		owner.AnimState:SetSymbolLightOverride("swap_hat", 0)
+		--owner.AnimState:SetSymbolLightOverride(owner.isplayer and "headbase_hat" or "swap_hat", 0)
 		if owner.components.grue ~= nil then
 			owner.components.grue:RemoveImmunity("lunarplanthat")
 		end
@@ -5498,6 +5721,372 @@ local function MakeHat(name)
         return inst
     end
 
+	-----------------------------------------------------------------------------
+
+	fns.pumpkin_addiconlayer = function(tbl, idx, name)
+		if name then
+			tbl[idx] = tbl[idx] or { atlas = "images/pumpkinhat_face.xml" }
+			tbl[idx].image = name..".tex"
+			return idx + 1
+		end
+		return idx
+	end
+
+	fns.pumpkin_layeredinvimagefn = function(inst)
+		if inst._icondirty then
+			local reye, leye, mouth = fns2.pumpkinhat_fx_decodeface(inst.face:value())
+			if reye > 0 or leye > 0 or mouth > 0 then
+				if inst._iconlayers == nil then
+					inst._iconlayers = { {} } --pre-add base layer so it doens't auto-add the face atlas above
+				end
+				local j = 1
+				j = fns.pumpkin_addiconlayer(inst._iconlayers, j, inst.base:value() > 1 and string.format("pumpkinhat_%d", inst.base:value()) or "pumpkinhat")
+				j = fns.pumpkin_addiconlayer(inst._iconlayers, j, reye > 0 and string.format("r_eye%04d", reye) or nil)
+				j = fns.pumpkin_addiconlayer(inst._iconlayers, j, leye > 0 and string.format("l_eye%04d", leye) or nil)
+				j = fns.pumpkin_addiconlayer(inst._iconlayers, j, mouth > 0 and string.format("mouth%04d", mouth) or nil)
+				for i = j, #inst._iconlayers do
+					inst._iconlayers[i] = nil
+				end
+			else
+				inst._iconlayers = nil --use default inv img
+			end
+			inst._icondirty = nil
+		end
+		return inst._iconlayers
+	end
+
+	fns.pumpkin_onequip = function(inst, owner)
+		fns.fullhelm_onequip(inst, owner)
+
+		if owner.components.sanity then
+			owner.components.sanity:SetLightDrainImmune(true, inst)
+			owner.components.sanity:SetPlayerGhostImmunity(true, inst)
+			owner.components.sanity:AddSanityAuraImmunity("ghost", inst)
+		end
+
+		--V2C: can only equip if has face, so don't need to check
+		--if fns2.pumpkinhat_fx_hasface(inst) then
+			owner.AnimState:SetSymbolLightOverride(owner.isplayer and "headbase_hat" or "swap_hat", 0.12)
+		--end
+
+		if inst.fx then
+			inst.fx:Remove()
+		end
+		inst.fx = SpawnPrefab("pumpkinhat_fx")
+		inst.fx:AttachToOwner(owner)
+		inst.fx:CopyFaceSymbols(inst)
+	end
+
+	fns.pumpkin_onunequip = function(inst, owner)
+		fns.fullhelm_onunequip(inst, owner)
+
+		if owner.components.sanity then
+			owner.components.sanity:SetLightDrainImmune(false, inst)
+			owner.components.sanity:SetPlayerGhostImmunity(false, inst)
+			owner.components.sanity:RemoveSanityAuraImmunity("ghost", inst)
+		end
+
+		owner.AnimState:SetSymbolLightOverride(owner.isplayer and "headbase_hat" or "swap_hat", 0)
+
+		if inst.fx then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+	end
+
+	fns.pumpkin_onisday = function(inst, isday)
+		if inst.groundfx then
+			fns2.pumpkinhat_fx_enablelight(inst.groundfx, not isday and fns2.pumpkinhat_fx_hasface(inst), POPULATING)
+		end
+	end
+
+	fns.pumpkin_onshowfacedirty = function(inst)
+		if inst.showface:value() and fns2.pumpkinhat_fx_hasface(inst) then
+			local fx = inst.groundfx
+			if fx == nil then
+				fx = CreateEntity()
+
+				--[[Non-networked entity]]
+				fx.entity:AddTransform()
+				fx.entity:AddAnimState()
+				fx.entity:AddFollower()
+
+				fx:AddTag("FX")
+
+				fx.AnimState:SetBank("pumpkinhat")
+				fx.AnimState:SetBuild("hat_pumpkin")
+				fx.AnimState:PlayAnimation("face")
+
+				--V2C: outlines are black when not lit, so can just set the light overrride as permanent
+				for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+					fx.AnimState:SetSymbolLightOverride(v.."_outline", 0.3)
+				end
+
+				fx:AddComponent("highlightchild")
+				fx.components.highlightchild:SetOwner(inst)
+
+				fx:AddComponent("updatelooper")
+
+				fx.entity:SetParent(inst.entity)
+				fx.Follower:FollowSymbol(inst.GUID, "follow_face", nil, nil, nil, true)
+
+				fx._t = math.random() * TWOPI
+				fx._s = math.random() * TWOPI
+				fx._a = math.random() * TWOPI
+				fx.persists = false
+				inst.groundfx = fx
+			end
+			local reye, leye, mouth = fns2.pumpkinhat_fx_decodeface(inst.face:value())
+			fns2._pumpkinhat_fx_applysymbol(fx, "r_eye", reye)
+			fns2._pumpkinhat_fx_applysymbol(fx, "l_eye", leye)
+			fns2._pumpkinhat_fx_applysymbol(fx, "mouth", mouth)
+			fns2.pumpkinhat_fx_enablelight(fx, not TheWorld.state.isday, true)
+		elseif inst.groundfx then
+			inst.groundfx:Remove()
+			inst.groundfx = nil
+		end
+	end
+
+	fns.pumpkin_onicondirty = function(inst)
+		fns.pumpkin_onshowfacedirty(inst)
+		inst._icondirty = true
+		inst:PushEvent("imagechange")
+	end
+
+	fns.pumpkin_encodeface = function(reye, leye, mouth)
+		return bit.bor(bit.bor(reye, bit.lshift(leye, 5)), bit.lshift(mouth, 10))
+	end
+
+	fns.pumpkin_setfacesymbols = function(inst, reye, leye, mouth)
+		local oldreye, oldleye, oldmouth = fns2.pumpkinhat_fx_decodeface(inst.face:value())
+		local face = fns.pumpkin_encodeface(reye or oldreye, leye or oldleye, mouth or oldmouth)
+		if face ~= inst.face:value() then
+			inst.face:set(face)
+
+			if not TheNet:IsDedicated() then
+				fns.pumpkin_onicondirty(inst)
+			end
+			if inst.fx then
+				inst.fx:CopyFaceSymbols(inst)
+			end
+
+			if fns2.pumpkinhat_fx_hasface(inst) then
+				if inst.components.equippable == nil then
+					inst:AddComponent("equippable")
+					inst.components.equippable.equipslot = EQUIPSLOTS.HEAD
+					inst.components.equippable:SetOnEquip(fns.pumpkin_onequip)
+					inst.components.equippable:SetOnUnequip(fns.pumpkin_onunequip)
+					inst.components.equippable:SetOnEquipToModel(fns.simple_onequiptomodel)
+
+					if inst.components.equippable and inst.components.equippable:IsEquipped() then
+						local owner = inst.components.inventoryitem.owner
+						if owner then
+							owner.AnimState:SetSymbolLightOverride(owner.isplayer and "headbase_hat" or "swap_hat", 0.12)
+						end
+					end
+					inst.AnimState:SetLightOverride(0.12)
+				end
+			elseif inst.components.equippable then
+				if inst.components.equippable:IsEquipped() then
+					local owner = inst.components.inventoryitem.owner
+					if owner and owner.components.inventory then
+						local item = owner.components.inventory:Unequip(EQUIPSLOTS.HEAD)
+						if item then
+							owner.components.inventory:GiveItem(item, nil, owner:GetPosition())
+						end
+					end
+				end
+				inst:RemoveComponent("equippable")
+				inst.AnimState:SetLightOverride(0)
+			end
+		end
+	end
+
+	fns.pumpkin_onskinchanged = function(inst, skin_build)
+		local base = skin_build and tonumber(string.match(skin_build, "^pumpkinhat_(%d)")) or 1
+		if inst.base:value() ~= base then
+			inst.base:set(base)
+
+			if not TheNet:IsDedicated() then
+				fns.pumpkin_onicondirty(inst)
+			end
+		end
+	end
+
+	--V2C: also used by client pumpkinhatcarvable.collectfacedatafn
+	fns.pumpkin_onsave = function(inst, data)
+		data.reye, data.leye, data.mouth = fns2.pumpkinhat_fx_decodeface(inst.face:value())
+		data.reye = data.reye > 0 and data.reye or nil
+		data.leye = data.leye > 0 and data.leye or nil
+		data.mouth = data.mouth > 0 and data.mouth or nil
+		data.waxed = inst.components.pumpkinhatcarvable == nil or nil
+	end
+
+	--V2C: also used by client pumpkinhatcarvable.onchangefacedatafn
+	fns.pumpkin_onload = function(inst, data)--, ents)
+		if data then
+			fns.pumpkin_setfacesymbols(inst, data.reye, data.leye, data.mouth)
+			if data.waxed then
+				fns.pumpkin_configurewaxed(inst)
+			end
+		end
+	end
+
+	fns.pumpkin_topocket = function(inst, owner)
+		if inst.showface:value() then
+			inst.showface:set(false)
+			if not TheNet:IsDedicated() then
+				fns.pumpkin_onshowfacedirty(inst)
+			end
+		end
+	end
+
+	fns.pumpkin_toground = function(inst)
+		if not inst.showface:value() then
+			inst.showface:set(true)
+			if not TheNet:IsDedicated() then
+				fns.pumpkin_onshowfacedirty(inst)
+			end
+		end
+	end
+
+	fns.pumpkin_onwaxeddirty = function(inst)
+		if inst.waxed:value() then
+			inst.displayadjectivefn = fns.pumpkin_displayadjectivefn
+			if not TheNet:IsDedicated() then
+				inst:PushEvent("hide_spoilage")
+			end
+		else
+			--V2C: should not reach here. don't bother reconfiguring pumpkinhatcarvable
+			inst.displayadjectivefn = nil
+		end
+	end
+
+	fns.pumpkin_configurewaxed = function(inst)
+		if not inst.waxed:value() then
+			inst:RemoveComponent("perishable")
+			inst:RemoveComponent("waxable")
+			inst:RemoveTag("show_spoilage")
+			inst:RemoveTag("icebox_valid")
+
+			inst.waxed:set(true)
+			fns.pumpkin_onwaxeddirty(inst)
+
+			local owner = inst.components.inventoryitem.owner
+			if owner then
+				local inventory = owner.components.inventory or owner.components.container
+				if inventory and not inventory:CanTakeItemInSlot(inst) then
+					inventory:DropItem(inst, true, true)
+				end
+			end
+		end
+	end
+
+	fns.pumpkin_onwax = function(inst, doer, item)
+		fns.pumpkin_configurewaxed(inst)
+		if not (inst.components.inventoryitem:IsHeld() or inst:IsAsleep()) then
+			inst.AnimState:PlayAnimation("waxed")
+			inst.AnimState:PushAnimation("anim", false)
+		end
+		return true
+	end
+
+	fns.pumpkin_displayadjectivefn = function(inst)
+		return STRINGS.UI.HUD.WAXED
+	end
+
+	fns.pumpkin_displaynamefn = function(inst)
+		return fns2.pumpkinhat_fx_hasface(inst) and STRINGS.NAMES.PUMPKINHAT_CARVED or nil
+	end
+
+	fns.pumpkin_getstatus = function(inst, viewer)
+		return inst.components.equippable == nil and "UNCARVED" or nil
+	end
+
+	fns.pumpkin_custom_init = function(inst)
+		inst:AddTag("show_spoilage")
+		inst:AddTag("icebox_valid")
+		inst:AddTag("goggles")
+		inst:AddTag("spook_protection")
+
+		--waterproofer (from waterproofer component) added to pristine state for optimization
+		inst:AddTag("waterproofer")
+
+		--waxable (from waxable component) added to pristine state for optimization
+		inst:AddTag("waxable")
+
+		inst:RemoveComponent("snowmandecor")
+
+		inst:AddComponent("pumpkinhatcarvable")
+		inst.components.pumpkinhatcarvable.collectfacedatafn = fns.pumpkin_onsave
+
+		inst.base = net_tinybyte(inst.GUID, "pumpkinhat.base", "icondirty")
+		inst.base:set(1)
+
+		inst.face = net_ushortint(inst.GUID, "pumpkinhat.face", "icondirty")
+
+		--for showing the face while on the ground
+		inst.showface = net_bool(inst.GUID, "pumpkinhat.showface", "showfacedirty")
+		inst.showface:set(true)
+		if not TheNet:IsDedicated() then
+			fns.pumpkin_onshowfacedirty(inst)
+		end
+
+		inst.waxed = net_bool(inst.GUID, "pumpkinhat.waxed", "waxeddirty")
+
+		inst:WatchWorldState("isday", fns.pumpkin_onisday)
+		--V2C: no need to init "isday", since it'll do nothing when there's no face symbols
+
+		--inst._iconlayers = nil
+		inst.layeredinvimagefn = fns.pumpkin_layeredinvimagefn
+		inst.displaynamefn = fns.pumpkin_displaynamefn
+	end
+
+	fns.pumpkin = function()
+		local inst = simple(fns.pumpkin_custom_init)
+
+		inst.components.floater:SetSize("med")
+		inst.components.floater:SetVerticalOffset(0.25)
+		inst.components.floater:SetScale(0.85)
+
+		if not TheWorld.ismastersim then
+			inst:ListenForEvent("icondirty", fns.pumpkin_onicondirty)
+			inst:ListenForEvent("showfacedirty", fns.pumpkin_onshowfacedirty)
+			inst:ListenForEvent("waxeddirty", fns.pumpkin_onwaxeddirty)
+
+			return inst
+		end
+
+		inst.components.inspectable.getstatus = fns.pumpkin_getstatus
+		inst.components.pumpkinhatcarvable.onchangefacedatafn = fns.pumpkin_onload
+
+		inst:RemoveComponent("equippable")
+
+		inst:AddComponent("perishable")
+		inst.components.perishable.onperishreplacement = "spoiled_food"
+		inst.components.perishable:SetPerishTime(IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and TUNING.PERISH_SLOW or TUNING.PERISH_FASTISH)
+		inst.components.perishable:StartPerishing()
+
+		inst:AddComponent("waterproofer")
+		inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+		inst:AddComponent("waxable")
+		inst.components.waxable:SetWaxfn(fns.pumpkin_onwax)
+
+		inst:AddComponent("forcecompostable")
+		inst.components.forcecompostable.green = true
+
+		inst.SetFaceSymbols = fns.pumpkin_setfacesymbols
+		inst.OnPumpkinHatSkinChanged = fns.pumpkin_onskinchanged
+		inst.OnSave = fns.pumpkin_onsave
+		inst.OnLoad = fns.pumpkin_onload
+
+		inst:ListenForEvent("onputininventory", fns.pumpkin_topocket)
+		inst:ListenForEvent("ondropped", fns.pumpkin_toground)
+
+		return inst
+	end
+
     -----------------------------------------------------------------------------
     local fn = nil
     local assets = { Asset("ANIM", "anim/"..fname..".zip") }
@@ -5558,6 +6147,7 @@ local function MakeHat(name)
         fn = fns.catcoon
     elseif name == "watermelon" then
         fn = fns.watermelon
+		prefabs = { "spoiled_food" }
     elseif name == "eyebrella" then
         fn = fns.eyebrella
     elseif name == "red_mushroom" then
@@ -5606,6 +6196,8 @@ local function MakeHat(name)
             "alterguardian_hat_equipped",
             "alterguardianhatlight",
             "alterguardianhat_projectile",
+            "gestalt_evolved_planting_visual_projectile",
+            "pull_smoke_fx",
             "alterguardianhatshard",
         }
         table.insert(assets, Asset("ANIM", "anim/ui_alterguardianhat_1x6.zip"))
@@ -5701,6 +6293,15 @@ local function MakeHat(name)
 		table.insert(assets, Asset("ANIM", "anim/beard_monster.zip"))
 		table.insert(assets, Asset("INV_IMAGE", "rabbithat_winter"))
 		table.insert(assets, Asset("INV_IMAGE", "rabbithat_beard_monster"))
+	elseif name == "pumpkin" then
+		fn = fns.pumpkin
+		prefabs =
+		{
+			"pumpkinhat_fx",
+			"spoiled_food",
+		}
+		table.insert(assets, Asset("ATLAS", "images/pumpkinhat_face.xml"))
+		table.insert(assets, Asset("IMAGE", "images/pumpkinhat_face.tex"))
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -5708,7 +6309,9 @@ local function MakeHat(name)
     return Prefab(prefabname, fn or default, assets, prefabs)
 end
 
-local function minerhatlightfn()
+--------------------------------------------------------------------------
+
+fns2.minerhatlightfn = function()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -5733,7 +6336,7 @@ local function minerhatlightfn()
     return inst
 end
 
-local function alterguardianhatlightfn()
+fns2.alterguardianhatlightfn = function()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -5759,7 +6362,7 @@ end
 
 --------------------------------------------------------------------------
 
-local function wagpunkhat_CreateFxFollowFrame(i)
+fns2.wagpunkhat_CreateFxFollowFrame = function(i)
     local inst = CreateEntity()
 
     --[[Non-networked entity]]
@@ -5781,7 +6384,7 @@ local function wagpunkhat_CreateFxFollowFrame(i)
     return inst
 end
 
-local function wagpunkhat_fx_leveldirty(inst)
+fns2.wagpunkhat_fx_leveldirty = function(inst)
     if inst.fx ~= nil then
         if inst.level:value() then
 			local bank =
@@ -5804,14 +6407,14 @@ local function wagpunkhat_fx_leveldirty(inst)
     end
 end
 
-local function wagpunkhat_fx_common_postinit(inst)
+fns2.wagpunkhat_fx_common_postinit = function(inst)
     inst.level = net_tinybyte(inst.GUID, "wagpunkhat_fx.level", "wagpunk_leveldirty")
     if not TheNet:IsDedicated() then
-        inst:ListenForEvent("wagpunk_leveldirty", wagpunkhat_fx_leveldirty)
+		inst:ListenForEvent("wagpunk_leveldirty", fns2.wagpunkhat_fx_leveldirty)
     end
 end
 
-local function mask_halfwit_CreateFxFollowFrame(i)
+fns2.mask_halfwit_CreateFxFollowFrame = function(i)
     local inst = CreateEntity()
 
     --[[Non-networked entity]]
@@ -5836,16 +6439,16 @@ end
 
 local SHADOWTHRALL_PARASITE_TALK_COLOUR = Vector3(168/255, 61/255, 213/255)
 
-local function shadowthrall_parasite_ondonetalking(inst)
+fns2.shadowthrall_parasite_ondonetalking = function(inst)
     inst.SoundEmitter:KillSound("talk")
 end
 
-local function shadowthrall_parasite_ontalk(inst)
+fns2.shadowthrall_parasite_ontalk = function(inst)
     inst.SoundEmitter:KillSound("talk")
     inst.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/vocalization", "talk")
 end
 
-local function shadow_thrall_parasite_fx_common_postinit(inst)
+fns2.shadow_thrall_parasite_fx_common_postinit = function(inst)
     inst.entity:AddSoundEmitter()
 
     inst:AddComponent("talker")
@@ -5855,11 +6458,11 @@ local function shadow_thrall_parasite_fx_common_postinit(inst)
     inst.components.talker.offset = Vector3(0, -500, 0)
     inst.components.talker:MakeChatter()
 
-    inst:ListenForEvent("ontalk", shadowthrall_parasite_ontalk)
-    inst:ListenForEvent("donetalking", shadowthrall_parasite_ondonetalking)
+	inst:ListenForEvent("ontalk", fns2.shadowthrall_parasite_ontalk)
+	inst:ListenForEvent("donetalking", fns2.shadowthrall_parasite_ondonetalking)
 end
 
-local function shadow_thrall_parasite_CreateFxFollowFrame(i)
+fns2.shadow_thrall_parasite_CreateFxFollowFrame = function(i)
     local inst = CreateEntity()
 
     --[[Non-networked entity]]
@@ -5880,7 +6483,7 @@ local function shadow_thrall_parasite_CreateFxFollowFrame(i)
     return inst
 end
 
-local function lunarplanthat_CreateFxFollowFrame(i)
+fns2.lunarplanthat_CreateFxFollowFrame = function(i)
 	local inst = CreateEntity()
 
 	--[[Non-networked entity]]
@@ -5907,7 +6510,7 @@ local function lunarplanthat_CreateFxFollowFrame(i)
 	return inst
 end
 
-local function lunarplanthat_fx_skinhashdirty(inst)
+fns2.lunarplanthat_fx_skinhashdirty = function(inst)
     if inst.fx ~= nil then
         local skinbuildhash = inst.skinbuildhash:value()
         if skinbuildhash ~= 0 then
@@ -5922,14 +6525,14 @@ local function lunarplanthat_fx_skinhashdirty(inst)
     end
 end
 
-local function lunarplanthat_fx_common_postinit(inst)
+fns2.lunarplanthat_fx_common_postinit = function(inst)
     inst.skinbuildhash = net_hash(inst.GUID, "lunarplanthat_fx.skinbuildhash", "skinhashdirty")
     if not TheNet:IsDedicated() then
-        inst:ListenForEvent("skinhashdirty", lunarplanthat_fx_skinhashdirty)
+		inst:ListenForEvent("skinhashdirty", fns2.lunarplanthat_fx_skinhashdirty)
     end
 end
 
-local function voidclothhat_CreateFxFollowFrame(i)
+fns2.voidclothhat_CreateFxFollowFrame = function(i)
 	local inst = CreateEntity()
 
 	--[[Non-networked entity]]
@@ -5951,7 +6554,7 @@ local function voidclothhat_CreateFxFollowFrame(i)
 	return inst
 end
 
-local function voidclothhat_fx_buffeddirty(inst)
+fns2.voidclothhat_fx_buffeddirty = function(inst)
 	if inst.fx ~= nil then
 		if inst.buffed:value() then
 			for i, v in ipairs(inst.fx) do
@@ -5972,14 +6575,14 @@ local function voidclothhat_fx_buffeddirty(inst)
 	end
 end
 
-local function voidclothhat_fx_common_postinit(inst)
+fns2.voidclothhat_fx_common_postinit = function(inst)
 	inst.buffed = net_bool(inst.GUID, "voidclothhat_fx.buffed", "buffeddirty")
 	if not TheNet:IsDedicated() then
-		inst:ListenForEvent("buffeddirty", voidclothhat_fx_buffeddirty)
+		inst:ListenForEvent("buffeddirty", fns2.voidclothhat_fx_buffeddirty)
 	end
 end
 
-local function inspectacleshat_CreateFxFollowFrame(i)
+fns2.inspectacleshat_CreateFxFollowFrame = function(i)
 	local inst = CreateEntity()
 
 	--[[Non-networked entity]]
@@ -6003,7 +6606,7 @@ local function inspectacleshat_CreateFxFollowFrame(i)
 	return inst
 end
 
-local function inspectacleshat_fx_SetLedEnabled(inst, enabled)
+fns2.inspectacleshat_fx_SetLedEnabled = function(inst, enabled)
 	if enabled then
 		inst.AnimState:OverrideSymbol("led_off", "hat_inspectacles", "led_on")
 		inst.AnimState:SetSymbolBloom("led_off")
@@ -6021,18 +6624,18 @@ local function inspectacleshat_fx_SetLedEnabled(inst, enabled)
 	end
 end
 
-local function inspectacleshat_fx_doblink(inst, ison)
+fns2.inspectacleshat_fx_doblink = function(inst, ison)
 	for i, v in ipairs(inst.fx) do
-		inspectacleshat_fx_SetLedEnabled(v, ison)
+		fns2.inspectacleshat_fx_SetLedEnabled(v, ison)
 	end
 	local delay =
 		inst.ledstate:value() == 1 and
 		(ison and 0.75 or 1.5) or
 		(ison and 0.1 or 0)
-	inst.blinktask = inst:DoTaskInTime(delay, inspectacleshat_fx_doblink, not ison)
+	inst.blinktask = inst:DoTaskInTime(delay, fns2.inspectacleshat_fx_doblink, not ison)
 end
 
-local function inspectacleshat_fx_ledstatedirty(inst)
+fns2.inspectacleshat_fx_ledstatedirty = function(inst)
 	if inst.fx then
 		if inst.ledstate:value() >= 2 then
 			local playsound = false
@@ -6042,7 +6645,7 @@ local function inspectacleshat_fx_ledstatedirty(inst)
 					v.AnimState:PlayAnimation(anim)
 					playsound = true
 				end
-				inspectacleshat_fx_SetLedEnabled(v, true)
+				fns2.inspectacleshat_fx_SetLedEnabled(v, true)
 			end
 			if playsound then
 				--NOTE: this is local fx on clients
@@ -6054,7 +6657,7 @@ local function inspectacleshat_fx_ledstatedirty(inst)
 					inst.blinktask = nil
 				end
 			elseif inst.blinktask == nil then
-				inspectacleshat_fx_doblink(inst, inst.initledstate or false)
+				fns2.inspectacleshat_fx_doblink(inst, inst.initledstate or false)
 			end
 		else
 			local playsound = false
@@ -6075,17 +6678,17 @@ local function inspectacleshat_fx_ledstatedirty(inst)
 					inst.blinktask = nil
 				end
 				for i, v in ipairs(inst.fx) do
-					inspectacleshat_fx_SetLedEnabled(v, false)
+					fns2.inspectacleshat_fx_SetLedEnabled(v, false)
 				end
 			elseif inst.blinktask == nil then
-				inspectacleshat_fx_doblink(inst, inst.initledstate or false)
+				fns2.inspectacleshat_fx_doblink(inst, inst.initledstate or false)
 			end
 		end
 	end
 	inst.initledstate = nil
 end
 
-local function inspectacleshat_fx_common_postinit(inst)
+fns2.inspectacleshat_fx_common_postinit = function(inst)
 	inst.entity:AddSoundEmitter()
 
 	inst.ledstate = net_tinybyte(inst.GUID, "inspectacleshat_fx.ledstate", "ledstatedirty")
@@ -6094,11 +6697,11 @@ local function inspectacleshat_fx_common_postinit(inst)
 	--2: on; dish up
 	if not TheNet:IsDedicated() then
 		inst.initledstate = true
-		inst:ListenForEvent("ledstatedirty", inspectacleshat_fx_ledstatedirty)
+		inst:ListenForEvent("ledstatedirty", fns2.inspectacleshat_fx_ledstatedirty)
 	end
 end
 
-local function rabbithat_CreateFxFollowFrame(i)
+fns2.rabbithat_CreateFxFollowFrame = function(i)
 	local inst = CreateEntity()
 
 	--[[Non-networked entity]]
@@ -6123,7 +6726,7 @@ local function rabbithat_CreateFxFollowFrame(i)
 	return inst
 end
 
-local function rabbithat_fx_iswinterdirty(inst)
+fns2.rabbithat_fx_iswinterdirty = function(inst)
 	if inst.fx then
 		local build = inst.iswinter:value() and "rabbit_winter_build" or "rabbit_build"
 		for i, v in ipairs(inst.fx) do
@@ -6132,11 +6735,237 @@ local function rabbithat_fx_iswinterdirty(inst)
 	end
 end
 
-local function rabbithat_fx_common_postinit(inst)
+fns2.rabbithat_fx_common_postinit = function(inst)
 	inst.iswinter = net_bool(inst.GUID, "rabbithat_fx.iswinter", "iswinterdirty")
 	if not TheNet:IsDedicated() then
-		inst:ListenForEvent("iswinterdirty", rabbithat_fx_iswinterdirty)
+		inst:ListenForEvent("iswinterdirty", fns2.rabbithat_fx_iswinterdirty)
 	end
+end
+
+fns2.pumpkinhat_fx_symbols = { "swap_r_eye", "swap_l_eye", "swap_mouth" }
+
+fns2.pumpkinhat_CreateFxFollowFrame = function(i)
+	local inst = CreateEntity()
+
+	--[[Non-networked entity]]
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	--Make all facings available; wearer anim chooses which facing to use
+	inst.Transform:SetEightFaced()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("pumpkinhat")
+	inst.AnimState:SetBuild("hat_pumpkin")
+	inst.AnimState:PlayAnimation("idle"..tostring(i))
+
+	--V2C: outlines are black when not lit, so can just set the light overrride as permanent
+	for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+		inst.AnimState:SetSymbolLightOverride(v.."_outline", 0.3)
+	end
+
+	inst:AddComponent("highlightchild")
+
+	inst.persists = false
+
+	return inst
+end
+
+fns2.pumpkinhat_fx_updatelight = function(inst, dt)
+	if inst._lightdelta > 0 then
+		if inst._light <= 0 then
+			local parent = inst.entity:GetParent()
+			local highlightchildren = parent and parent.highlightchildren
+			local function _initlight(ent)
+				if highlightchildren then
+					table.removearrayvalue(highlightchildren, ent)
+				end
+				ent.AnimState:SetHighlightColour()
+				--ent.AnimState:SetLightOverride(0.5)
+				ent.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+			end
+
+			if inst.fx then
+				for _, v in ipairs(inst.fx) do
+					_initlight(v)
+				end
+			elseif inst.prefab == nil then
+				_initlight(inst)
+			end
+		end
+		inst._light = math.min(1, inst._light + inst._lightdelta * dt)
+	else--if inst._lightdelta < 0 then
+		inst._light = math.max(0, inst._light + inst._lightdelta * dt)
+		if inst._light <= 0 then
+			local parent = inst.entity:GetParent()
+			local highlightchildren = parent and parent.highlightchildren
+			local function _clearlight(ent)
+				if highlightchildren and not table.contains(highlightchildren, ent) then
+					table.insert(highlightchildren, ent)
+				end
+				for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+					ent.AnimState:SetSymbolAddColour(v, 0, 0, 0, 0)
+					ent.AnimState:SetSymbolMultColour(v, 1, 1, 1, 1)
+					ent.AnimState:SetSymbolLightOverride(v, 0)
+				end
+				ent.AnimState:ClearBloomEffectHandle()
+			end
+
+			inst._light = nil
+			inst._lightdelta = nil
+			if inst.fx then
+				for _, v in ipairs(inst.fx) do
+					_clearlight(v)
+				end
+			elseif inst.prefab == nil then
+				_clearlight(inst)
+			end
+			inst.components.updatelooper:RemoveOnUpdateFn(fns2.pumpkinhat_fx_updatelight)
+			return
+		end
+	end
+
+	inst._s = inst._s + dt * 8
+	local s = 6.5 + math.sin(inst._s) * 14
+	inst._t = inst._t + dt * s
+	inst._a = inst._a + dt * s * 0.7
+	local a = 0.7 + math.sin(inst._a) * 0.1
+	local add = a + (math.sin(inst._t) + 1) / 2 * 0.2
+	local mult = (1 - add) / 2
+	local fade = easing.inOutQuad(inst._light, 0, 1, 1)
+	add = add * fade
+	mult = 1 - (1 - mult) * fade
+	local function _applylight(ent)
+		for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+			ent.AnimState:SetSymbolAddColour(v, add, add, 0.6 * add, 0)
+			ent.AnimState:SetSymbolMultColour(v, mult, mult, mult, 1)
+			ent.AnimState:SetSymbolLightOverride(v, 0.5 * fade)
+		end
+	end
+
+	if inst.fx then
+		for _, v in ipairs(inst.fx) do
+			_applylight(v)
+		end
+	elseif inst.prefab == nil then
+		_applylight(inst)
+	end
+end
+
+fns2.pumpkinhat_fx_hasface = function(inst)
+	return inst.face:value() ~= 0
+end
+
+fns2.pumpkinhat_fx_enablelight = function(inst, enable, instant)
+	if enable then
+		if inst._light == nil then
+			inst._light = 0
+			inst.components.updatelooper:AddOnUpdateFn(fns2.pumpkinhat_fx_updatelight)
+		end
+		if instant then
+			inst._lightdelta = math.huge
+			fns2.pumpkinhat_fx_updatelight(inst, 0)
+		else
+			inst._lightdelta = 1
+		end
+
+		if inst.fx then
+			for _, v in ipairs(inst.fx) do
+				for _, v1 in ipairs(fns2.pumpkinhat_fx_symbols) do
+					v.AnimState:SetSymbolAddColour(v1.."_outline", 0.2, 0.1, 0, 0)
+				end
+			end
+		elseif inst.prefab == nil then
+			for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+				inst.AnimState:SetSymbolAddColour(v.."_outline", 0.2, 0.1, 0, 0)
+			end
+		end
+	else
+		if inst._light then
+			if instant then
+				inst._lightdelta = -math.huge
+				fns2.pumpkinhat_fx_updatelight(inst, 0)
+			else
+				inst._lightdelta = -1
+			end
+		end
+
+		if inst.fx then
+			for _, v in ipairs(inst.fx) do
+				for _, v1 in ipairs(fns2.pumpkinhat_fx_symbols) do
+					v.AnimState:SetSymbolAddColour(v1.."_outline", 0, 0, 0, 0)
+				end
+			end
+		elseif inst.prefab == nil then
+			for _, v in ipairs(fns2.pumpkinhat_fx_symbols) do
+				inst.AnimState:SetSymbolAddColour(v.."_outline", 0, 0, 0, 0)
+			end
+		end
+	end
+end
+
+fns2.pumpkinhat_fx_onisday = function(inst, isday)
+	fns2.pumpkinhat_fx_enablelight(inst, not isday and fns2.pumpkinhat_fx_hasface(inst), POPULATING)
+end
+
+fns2._pumpkinhat_fx_applysymbol = function(v, sym, variation)
+	local swap_sym = "swap_"..sym
+	if variation <= 0 then
+		v.AnimState:ClearOverrideSymbol(swap_sym)
+		v.AnimState:ClearOverrideSymbol(swap_sym.."_outline")
+	else
+		sym = sym..tostring(variation)
+		v.AnimState:OverrideSymbol(swap_sym, "hat_pumpkin", sym)
+		v.AnimState:OverrideSymbol(swap_sym.."_outline", "hat_pumpkin", sym.."_outline")
+	end
+end
+
+fns2.pumpkinhat_fx_decodeface = function(face)
+	return bit.band(face, 31), bit.band(bit.rshift(face, 5), 31), bit.rshift(face, 10)
+end
+
+fns2.pumpkinhat_fx_facedirty = function(inst)
+	if inst.fx then
+		local reye, leye, mouth = fns2.pumpkinhat_fx_decodeface(inst.face:value())
+		for _, v in ipairs(inst.fx) do
+			fns2._pumpkinhat_fx_applysymbol(v, "r_eye", reye)
+			fns2._pumpkinhat_fx_applysymbol(v, "l_eye", leye)
+			fns2._pumpkinhat_fx_applysymbol(v, "mouth", mouth)
+		end
+		if not TheWorld.state.isday then
+			fns2.pumpkinhat_fx_enablelight(inst, fns2.pumpkinhat_fx_hasface(inst), true)
+		end
+	end
+end
+
+fns2.pumpkinhat_fx_common_postinit = function(inst)
+	inst.face = net_ushortint(inst.GUID, "pumpkinhat_fx.face", "facedirty")
+
+	if not TheNet:IsDedicated() then
+		inst._t = math.random() * TWOPI
+		inst._s = math.random() * TWOPI
+		inst._a = math.random() * TWOPI
+		inst:AddComponent("updatelooper")
+
+		inst:WatchWorldState("isday", fns2.pumpkinhat_fx_onisday)
+	end
+
+	if not TheWorld.ismastersim then
+		inst:ListenForEvent("facedirty", fns2.pumpkinhat_fx_facedirty)
+	end
+end
+
+fns2.pumpkinhat_fx_copyfacesymbols = function(inst, src)
+	if inst.face:value() ~= src.face:value() then
+		inst.face:set(src.face:value())
+		fns2.pumpkinhat_fx_facedirty(inst)
+	end
+end
+
+fns2.pumpkinhat_fx_master_postinit = function(inst)
+	inst.CopyFaceSymbols = fns2.pumpkinhat_fx_copyfacesymbols
 end
 
 --------------------------------------------------------------------------
@@ -6154,10 +6983,10 @@ local function FollowFx_ColourChanged(inst, r, g, b, a)
 end
 
 local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend, isfullhelm)
-	local follow_symbol = isfullhelm and owner:HasTag("player") and owner.AnimState:BuildHasSymbol("headbase_hat") and "headbase_hat" or "swap_hat"
+	local follow_symbol = isfullhelm and owner.isplayer and owner.AnimState:BuildHasSymbol("headbase_hat") and "headbase_hat" or "swap_hat"
 	inst.fx = {}
 	local frame
-	for i = framebegin, frameend do        
+	for i = framebegin, frameend do
 		local fx = createfn(i)
 		frame = frame or math.random(fx.AnimState:GetCurrentAnimationNumFrames()) - 1
 		fx.entity:SetParent(owner.entity)
@@ -6178,7 +7007,7 @@ local function MakeFollowFx(name, data)
 		end
 	end
 
-	local function AttachToOwner(inst, owner)        
+	local function AttachToOwner(inst, owner)
 		inst.entity:SetParent(owner.entity)
 		if owner.components.colouradder ~= nil then
 			owner.components.colouradder:AttachChild(inst)
@@ -6232,7 +7061,7 @@ end
 
 --------------------------------------------------------------------------
 
-local function tophatcontainerfn()
+fns2.tophatcontainerfn = function()
 	local inst = CreateEntity()
 
 	inst.entity:AddNetwork()
@@ -6341,41 +7170,42 @@ return  MakeHat("straw"),
         MakeHat("rabbit"),
 
         MakeHat("shadow_thrall_parasite"),
+		MakeHat("pumpkin"),
 
         MakeFollowFx("mask_halfwit_fx", {
-            createfn = mask_halfwit_CreateFxFollowFrame,
+			createfn = fns2.mask_halfwit_CreateFxFollowFrame,
             framebegin = 1,
             frameend = 3,
             assets = { Asset("ANIM", "anim/hat_mask_halfwit.zip") },
         }), 
 
         MakeFollowFx("shadow_thrall_parasitehat_fx", {
-            createfn = shadow_thrall_parasite_CreateFxFollowFrame,
-            common_postinit =  shadow_thrall_parasite_fx_common_postinit,
+			createfn = fns2.shadow_thrall_parasite_CreateFxFollowFrame,
+			common_postinit = fns2.shadow_thrall_parasite_fx_common_postinit,
             framebegin = 1,
             frameend = 3,
             assets = { Asset("ANIM", "anim/hat_shadow_thrall_parasite.zip") },
         }),
 
 		MakeFollowFx("lunarplanthat_fx", {
-			createfn = lunarplanthat_CreateFxFollowFrame,
-            common_postinit =  lunarplanthat_fx_common_postinit,
+			createfn = fns2.lunarplanthat_CreateFxFollowFrame,
+			common_postinit = fns2.lunarplanthat_fx_common_postinit,
 			framebegin = 1,
 			frameend = 3,
 			isfullhelm = true,
 			assets = { Asset("ANIM", "anim/hat_lunarplant.zip") },
 		}),
 		MakeFollowFx("voidclothhat_fx", {
-			createfn = voidclothhat_CreateFxFollowFrame,
-			common_postinit = voidclothhat_fx_common_postinit,
+			createfn = fns2.voidclothhat_CreateFxFollowFrame,
+			common_postinit = fns2.voidclothhat_fx_common_postinit,
 			framebegin = 1,
 			frameend = 3,
 			isfullhelm = true,
 			assets = { Asset("ANIM", "anim/hat_voidcloth.zip") },
 		}),
         MakeFollowFx("wagpunkhat_fx", {
-            createfn = wagpunkhat_CreateFxFollowFrame,
-            common_postinit = wagpunkhat_fx_common_postinit,
+			createfn = fns2.wagpunkhat_CreateFxFollowFrame,
+			common_postinit = fns2.wagpunkhat_fx_common_postinit,
             framebegin = 1,
             frameend = 3,
             assets = { Asset("ANIM", "anim/hat_wagpunk.zip"),
@@ -6385,15 +7215,15 @@ return  MakeHat("straw"),
                        Asset("ANIM", "anim/hat_wagpunk_05.zip") },
         }),
 		MakeFollowFx("inspectacleshat_fx", {
-			createfn = inspectacleshat_CreateFxFollowFrame,
-			common_postinit = inspectacleshat_fx_common_postinit,
+			createfn = fns2.inspectacleshat_CreateFxFollowFrame,
+			common_postinit = fns2.inspectacleshat_fx_common_postinit,
 			framebegin = 1,
 			frameend = 3,
 			assets = { Asset("ANIM", "anim/hat_inspectacles.zip") },
 		}),
 		MakeFollowFx("rabbithat_fx", {
-			createfn = rabbithat_CreateFxFollowFrame,
-			common_postinit = rabbithat_fx_common_postinit,
+			createfn = fns2.rabbithat_CreateFxFollowFrame,
+			common_postinit = fns2.rabbithat_fx_common_postinit,
 			framebegin = 1,
 			frameend = 3,
 			assets =
@@ -6404,10 +7234,17 @@ return  MakeHat("straw"),
 				Asset("ANIM", "anim/beard_monster.zip"),
 			},
 		}),
+		MakeFollowFx("pumpkinhat_fx", {
+			createfn = fns2.pumpkinhat_CreateFxFollowFrame,
+			common_postinit = fns2.pumpkinhat_fx_common_postinit,
+			master_postinit = fns2.pumpkinhat_fx_master_postinit,
+			framebegin = 1,
+			frameend = 2,
+			isfullhelm = true,
+			assets = { Asset("ANIM", "anim/hat_pumpkin.zip") },
+		}),
 
-        Prefab("minerhatlight", minerhatlightfn),
-        Prefab("alterguardianhatlight", alterguardianhatlightfn),
+		Prefab("minerhatlight", fns2.minerhatlightfn),
+		Prefab("alterguardianhatlight", fns2.alterguardianhatlightfn),
 
-		Prefab("tophat_container", tophatcontainerfn)
-
-
+		Prefab("tophat_container", fns2.tophatcontainerfn)

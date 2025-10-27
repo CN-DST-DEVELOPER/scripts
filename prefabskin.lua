@@ -3599,6 +3599,18 @@ function hawaiianshirt_clear_fn(inst)
 end
 
 
+function pumpkinhat_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "hat_pumpkin")
+	if not TheWorld.ismastersim then
+		return
+	end
+	inst:OnPumpkinHatSkinChanged(build_name)
+end
+function pumpkinhat_clear_fn(inst)
+    basic_clear_fn(inst, "hat_pumpkin")
+	inst:OnPumpkinHatSkinChanged(nil)
+end
+
 
 function CreatePrefabSkin(name, info)
     local prefab_skin = Prefab(name, nil, info.assets, info.prefabs)

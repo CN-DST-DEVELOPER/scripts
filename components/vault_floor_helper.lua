@@ -15,9 +15,10 @@ self.vault_origin_x:set(0)
 self.vault_origin_z:set(0)
 
 local scale = TILE_SCALE
-local SIZE_WIDE = 5.75 * scale
-local SIZE_SQUARE = 4.75 * scale
-local SIZE_SKINNY = 2 * scale -- Extra 0.25 to cover internal corners. Makes the outside nubs a bit bigger but fine.
+local EXTRA_PADDING = 1 * scale -- This is outside of the real area but the setpiece is supposed to have abyss around so it is fine.
+local SIZE_WIDE = 5.75 * scale + EXTRA_PADDING
+local SIZE_SQUARE = 4.75 * scale + EXTRA_PADDING
+local SIZE_SKINNY = 2 * scale + EXTRA_PADDING -- Extra 0.25 to cover internal corners. Makes the outside nubs a bit bigger but fine.
 
 -- Common.
 

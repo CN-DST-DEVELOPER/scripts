@@ -27,8 +27,6 @@ local assets =
 
     Asset("ANIM", "anim/merm_guard_transformation.zip"),
 
-    Asset("ANIM", "anim/merm_actions_skills.zip"),
-
     Asset("ANIM", "anim/ds_pig_parasite_death.zip"),    
 
     Asset("SOUND", "sound/merm.fsb"),
@@ -52,6 +50,8 @@ local prefabs =
     "shadow_merm_spawn_poof_fx",
     "shadow_merm_smacked_poof_fx",
     "merm_soil_marker",
+
+    "mermcorpse",
 }
 
 local merm_loot =
@@ -375,9 +375,17 @@ local function ShouldAcceptItem(inst, item, giver)
         inst.components.sleeper:WakeUp()
     end
 
+    local skilltreeupdater = giver.components.skilltreeupdater
+
+    -- Can't interact with Lunar merms/shadow mermsif we are not the respective alignment.
+    if inst:HasTag("lunarminion") and (skilltreeupdater and not skilltreeupdater:IsActivated("wurt_lunar_allegiance_1")) then
+        return false
+    elseif inst:HasTag("shadowminion") and (skilltreeupdater and not skilltreeupdater:IsActivated("wurt_shadow_allegiance_1")) then
+        return false
+    end
+
     -- Giving merm Moon Glass.
-    if giver.components.skilltreeupdater ~= nil and
-        giver.components.skilltreeupdater:IsActivated("wurt_lunar_allegiance_1") and
+    if skilltreeupdater ~= nil and skilltreeupdater:IsActivated("wurt_lunar_allegiance_1") and
         inst.components.follower ~= nil and inst.components.follower:GetLeader() == giver and
         item:HasTag("moonglass_piece") and not inst:HasTag("lunarminion") and not inst:HasTag("shadowminion")
     then
@@ -912,6 +920,17 @@ local function updateeyebuild(inst)
     end
 end
 
+local function SaveCorpseData(inst, corpse)
+    return { name = inst.components.named.name }
+end
+
+local function LoadCorpseData(inst, corpse)
+    local data = corpse.corpsedata
+    if data and data.name then
+        inst.components.named:SetName(data.name)
+    end
+end
+
 local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "ARM_carry_up" }
 
 local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,data)
@@ -1031,13 +1050,15 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         inst:ListenForEvent("unequip", onunequip)
         inst:ListenForEvent("equip", equip)
 
-
         inst.TestForLunarMutation = TestForLunarMutation
         inst.DoLunarMutation = DoLunarMutation
         inst.UpdateDamageAndHealth = UpdateDamageAndHealth
         inst.TestForShadowDeath = TestForShadowDeath
         inst.DoThorns = DoThorns
         inst.dohiremerms = dohiremerms
+
+        inst.SaveCorpseData = SaveCorpseData
+        inst.LoadCorpseData = LoadCorpseData
 
         if not data or not data.unliving then
             living_merm_common_master(inst)
@@ -1046,6 +1067,8 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         if master_postinit ~= nil then
             master_postinit(inst)
         end
+
+        inst.spawn_lunar_mutated_tuning = "SPAWN_MUTATED_MERMS"
 
         if inst.sg and inst.physicsradiusoverride then
             inst.sg.mem.radius = inst.physicsradiusoverride
@@ -1125,6 +1148,11 @@ local function guard_on_mermking_destroyed_anywhere(inst)
 end
 
 local function on_guard_initialize(inst)
+    if inst.initialize_task ~= nil then
+        inst.initialize_task:Cancel()
+        inst.initialize_task = nil
+    end
+
     if not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) then
         RoyalGuardDowngrade(inst)
     end
@@ -1214,7 +1242,10 @@ local function guard_master(inst)
     inst:ListenForEvent("onmermkingdestroyed_anywhere", function() guard_on_mermking_destroyed_anywhere(inst) end, TheWorld)
     inst:ListenForEvent("onattackother", OnAttackOther)
 
-    inst:DoTaskInTime(0, on_guard_initialize)
+    -- NOTE(Omar): This probably shouldn't a be a task in time anyways, but at risk of breaking things, here's a init function to instantly set and alter scale for
+    -- cases like lunar mutating
+    inst.OnGuardInitialize = on_guard_initialize
+    inst.initialize_task = inst:DoTaskInTime(0, inst.OnGuardInitialize)
 end
 
 -- Common
@@ -1339,6 +1370,7 @@ end
 local function shadow_merm_common(inst)
     common_common(inst)
     inst.AnimState:SetBuild("merm_shadow_build")
+    inst.AnimState:AddOverrideBuild("merm_actions_skills") -- For disappear and appear shadow effects to show.
     inst:SetPhysicsRadiusOverride(0.5)
 
     inst.DynamicShadow:Enable(false)

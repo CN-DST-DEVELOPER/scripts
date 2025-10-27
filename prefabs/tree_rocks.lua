@@ -27,6 +27,9 @@ local prefabs =
     "tree_rock_fall",
     "collapse_small",
     "tree_rock_seed",
+
+	--halloween
+	"spooked_spider_rock_fx",
 }
 
 SetSharedLootTable( 'tree_rock1_chop',
@@ -358,19 +361,22 @@ end
 
 local function PlayRockAnimation(inst, minesleft)
     --All trees use same mine animations
+	local anim
     if inst:HasTag("burnt") then
-        inst.AnimState:PlayAnimation(
+		anim =
             (minesleft < TUNING.TREE_ROCK.MINE / 3 and "burnt_low_normal") or
             (minesleft < TUNING.TREE_ROCK.MINE * 2 / 3 and "burnt_med_normal") or
             "burnt_full_normal"
-        )
     else
-        inst.AnimState:PlayAnimation(
+		anim =
             (minesleft < TUNING.TREE_ROCK.MINE / 3 and "fall_low_normal") or
             (minesleft < TUNING.TREE_ROCK.MINE * 2 / 3 and "fall_med_normal") or
             "fall_full_normal"
-        )
     end
+	if not inst.AnimState:IsCurrentAnimation(anim) then
+		inst.AnimState:PlayAnimation(anim)
+		return anim
+	end
 end
 
 local function PushRockAnimation(inst, minesleft)
@@ -398,7 +404,18 @@ local function OnMine(inst, miner, minesleft, nummines)
         inst:Remove()
     else
         --All trees use same mine animations
-        PlayRockAnimation(inst, minesleft)
+		local anim = PlayRockAnimation(inst, minesleft)
+
+		if anim and --nil if no change
+			--IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and
+			miner.components.spooked and
+			anim ~= "burnt_full_normal" and
+			anim ~= "fall_full_normal"
+		then
+			--higher chance on initial break
+			local spookmult = (anim == "burnt_med_normal" or anim == "fall_med_normal") and TUNING.MINE_SPOOKED_MULT_HIGH or TUNING.MINE_SPOOKED_MULT_LOW
+			miner.components.spooked:TryCustomSpook(inst, "spooked_spider_rock_fx", spookmult)
+		end
     end
 end
 
@@ -482,7 +499,7 @@ local function OnRockFall(inst)
         local build_data = GetBuild(inst)
         local damage = build_data.drop_damage
         for i, v in ipairs(GetAffectedEntities(inst)) do
-            v.components.combat:GetAttacked(inst, CalcDamagePlayerMultiplier(damage, v))
+            v.components.combat:GetAttacked(inst, PlayerDamageMod(v, damage, TUNING.TREE_ROCK.PLAYERDAMAGEPERCENT))
             v:PushEvent("knockback", { knocker = inst, radius = 2, strengthmult = 1, forcelanded = true })
         end
     end

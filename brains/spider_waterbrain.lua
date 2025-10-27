@@ -63,26 +63,29 @@ end
 
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 local SEE_FOOD_DIST = 10
+local function IsFoodValid(item, inst)
+    return inst.components.eater:CanEat(item)
+        and item:IsOnPassablePoint(true)
+        and item:GetTimeAlive() > TUNING.SPIDER_EAT_DELAY
+end
+
 local function EatFoodAction(inst)
     if inst.components.timer:TimerExists("eat_cooldown") then
         return nil
     end
 
-    local target = FindEntity(inst,
-        SEE_FOOD_DIST,
-        function(item)
-            return inst.components.eater:CanEat(item)
-                and item:IsOnValidGround()
-                and item:GetTimeAlive() > TUNING.SPIDER_EAT_DELAY
-        end,
-        nil,
-        EATFOOD_CANT_TAGS
-    )
+    local target = FindEntity(inst, SEE_FOOD_DIST, IsFoodValid, nil, EATFOOD_CANT_TAGS, inst.components.eater:GetEdibleTags())
     return target ~= nil and BufferedAction(inst, target, ACTIONS.EAT) or nil
 end
 
 local SEE_FISH_DISTANCE = 15
 local OCEANFISH_TAGS = {"oceanfish"}
+local function IsFishValid(fish)
+    -- TODO FIXME (Omar): Realistically enough, they probably shouldn't go after fish that aren't meat (e.g. corn cods)
+    -- But the fish mob itself does not have edible, so we can't do an eater check.
+    return TheWorld.Map:IsOceanAtPoint(fish.Transform:GetWorldPosition())
+end
+
 local function EatFishAction(inst)
     if inst.components.timer:TimerExists("eat_cooldown") then
         return nil
@@ -90,11 +93,7 @@ local function EatFishAction(inst)
 
     -- First, find our own target fish. We wouldn't reach this point if we already had one,
     -- or if our eat cooldown wasn't done (obviously).
-    local target_fish = FindEntity(inst, SEE_FISH_DISTANCE,
-        function(fish)
-            return TheWorld.Map:IsOceanAtPoint(fish.Transform:GetWorldPosition())
-        end,
-        OCEANFISH_TAGS)
+    local target_fish = FindEntity(inst, SEE_FISH_DISTANCE, IsFishValid, OCEANFISH_TAGS)
     if not target_fish then
         return nil
     end

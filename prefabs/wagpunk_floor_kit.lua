@@ -13,6 +13,11 @@ local function CLIENT_CanDeployKit(inst, pt, mouseover, deployer, rotation)
         return false
     end
 
+    if TheWorld.Map:IsXZWithThicknessInWagPunkArena(x, z, 0.02) then
+        -- NOTES(JBK): This is a small band rejection to stop edge placement outside of the desired arena due to tile placement logic < versus <= on tile edges.
+        return false
+    end
+
     local tile = TheWorld.Map:GetTileAtPoint(x, 0, z)
     if not TileGroupManager:IsOceanTile(tile) then
         return false

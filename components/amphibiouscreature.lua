@@ -1,3 +1,6 @@
+local function OnDeath(inst)
+    inst:StopUpdatingComponent(inst.components.amphibiouscreature)
+end
 
 local AmphibiousCreature = Class(function(self, inst)
 	self.inst = inst
@@ -10,10 +13,11 @@ local AmphibiousCreature = Class(function(self, inst)
 	self.land_bank = nil
 	self.ocean_bank = nil
 
-	if not self.inst:IsAsleep() then
+	if not self.inst:IsAsleep() and not IsEntityDead(self.inst) then
 		self.inst:StartUpdatingComponent(self)
 	end
 
+    self.inst:ListenForEvent("death", OnDeath)
 end)
 
 function AmphibiousCreature:OnEntitySleep()
@@ -21,7 +25,9 @@ function AmphibiousCreature:OnEntitySleep()
 end
 
 function AmphibiousCreature:OnEntityWake()
-	self.inst:StartUpdatingComponent(self)
+    if not IsEntityDead(self.inst) then
+	    self.inst:StartUpdatingComponent(self)
+    end
 end
 
 function AmphibiousCreature:SetBanks(land, ocean)

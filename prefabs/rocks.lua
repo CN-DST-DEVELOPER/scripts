@@ -57,6 +57,9 @@ local prefabs =
     "moonrockseed",
     "rock_break_fx",
     "collapse_small",
+
+	--halloween
+	"spooked_spider_rock_fx",
 }
 
 SetSharedLootTable( 'rock1',
@@ -177,11 +180,22 @@ local function OnWork(inst, worker, workleft)
 	        inst:Remove()
 		end
     else
-        inst.AnimState:PlayAnimation(
+		local anim = 
             (workleft < TUNING.ROCKS_MINE / 3 and "low") or
             (workleft < TUNING.ROCKS_MINE * 2 / 3 and "med") or
             "full"
-        )
+
+		if --IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and
+			worker.components.spooked and
+			not inst.AnimState:IsCurrentAnimation(anim) and
+			anim ~= "full"
+		then
+			--higher chance on initial break
+			local spookmult = anim == "med" and TUNING.MINE_SPOOKED_MULT_HIGH or TUNING.MINE_SPOOKED_MULT_LOW
+			worker.components.spooked:TryCustomSpook(inst, "spooked_spider_rock_fx", spookmult)
+		end
+
+		inst.AnimState:PlayAnimation(anim)
     end
 end
 

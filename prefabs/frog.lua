@@ -208,6 +208,7 @@ local function lunar_common_postinit(inst)
 	inst.Transform:SetScale(LUNARFROG_SCALE, LUNARFROG_SCALE, LUNARFROG_SCALE)
 
 	inst:AddTag("lunar_aligned")
+    inst:AddTag("gestaltmutant")
 
 	inst.AnimState:SetSymbolLightOverride("flameanim", 0.1)
 	inst.AnimState:SetSymbolBloom("flameanim")

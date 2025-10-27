@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "G-glurp... saw something...",
+    ANNOUNCE_SPOOKED = "G-glurp... no thank you!",
 	ANNOUNCE_BRAVERY_POTION = "Me was never scared, florp!",
 	ANNOUNCE_MOONPOTION_FAILED = "Awww... nothing happen.",
 
@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Grrr... go away, Shadowfolk!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzbirds! Glurph, look weird!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "Dead bird waking up! Florp!", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Dead bird even prettier.", -- Generic string
             EATING_CORPSE = "Flort! Stop that!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "Stink bug!",
 			SLEEPING = "Stink bug sleeping.",
             VENTING = "So stinky, flort!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Me carve best face.",
+			UNCARVED = "No face holes yet.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Dead bird. Glurgh.", --witnessing the corpse
+            BURNING  = "Florp! Burn bird!", --when its burning
+            REVIVING = "Dead bird waking up! Florp!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "That Spiderfolk dead.",
+			BURNING = "Better to burn dead Spiderfolk.",
+			REVIVING = "I know should have burned dead Spiderfolk!",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Mighty queen has died.",
+			BURNING = "Hope Webby-boy okay.",
+			REVIVING = "Florp. Not like this.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Who do this?!",
+			BURNING = "For best, my Mermfolk.",
+			REVIVING = "Better gone than like this. Glurgh.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

@@ -22,8 +22,17 @@ local DISLIKES_MOON_PHASES = {
 local function ShouldFlyAway(inst)
     return not IsSgBusy(inst)
         and ((TheWorld.state.isnight and DISLIKES_MOON_PHASES[TheWorld.state.moonphase]) or
-            (inst.components.health ~= nil and inst.components.health.takingfiredamage and not (inst.components.burnable and inst.components.burnable:IsBurning())) or
-            FindEntity(inst, inst.flyawaydistance, nil, nil, SHOULDFLYAWAY_CANT_TAGS, SHOULDFLYAWAY_ONEOF_TAGS) ~= nil)
+            (inst.components.health ~= nil and inst.components.health.takingfiredamage and not (inst.components.burnable and inst.components.burnable:IsBurning())))
+end
+
+local function ShouldFlyAwayFromThreat(inst)
+    if not IsSgBusy(inst) then
+        if inst.brain.threat == nil then
+            inst.brain.threat = FindEntity(inst, inst.flyawaydistance, nil, nil, SHOULDFLYAWAY_CANT_TAGS, SHOULDFLYAWAY_ONEOF_TAGS)
+        end
+
+        return inst.brain.threat ~= nil
+    end
 end
 
 local function FlyAway(inst)
@@ -51,18 +60,34 @@ local function FindAndMineLunarHailBuildup(inst)
 end
 
 function MutatedBirdBrain:OnStart()
-    local fly_away_fn = function() return FlyAway(self.inst) end
+    local function fly_away_fn()
+        FlyAway(self.inst)
+    end
+
+    local function flee_threat_fn()
+        -- dude, you pissed us off.
+        local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+        if mutatedbirdmanager then
+            mutatedbirdmanager:SetEnemyOfBirds(self.threat)
+        end
+        FlyAway(self.inst)
+    end
+    
     local root = PriorityNode(
     {
         WhileNode( function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted",
 			ActionNode(fly_away_fn)),
         IfNode(function() return ShouldFlyAway(self.inst) end, "Threat Near",
             ActionNode(fly_away_fn)),
+        IfNode(function() return ShouldFlyAwayFromThreat(self.inst) end, "Living threat Near",
+            ActionNode(flee_threat_fn)),
         EventNode(self.inst, "threatnear",
             ActionNode(fly_away_fn)),
 
-        IfNode( function() return not IsSgBusy(self.inst) and self.inst:GetBufferedAction() == nil end, "NotFlying", DoAction(self.inst, function() return FindFoodAction(self.inst) end, "EatGlass")),
-        IfNode( function() return not IsSgBusy(self.inst) and self.inst:GetBufferedAction() == nil  end, "NotFlying", DoAction(self.inst, function() return FindAndMineLunarHailBuildup(self.inst) end, "MineGlass")),
+        IfNode( function() return not IsSgBusy(self.inst) and self.inst:GetBufferedAction() == nil end, "NotFlying",
+            DoAction(self.inst, FindFoodAction, "EatGlass")),
+        IfNode( function() return not IsSgBusy(self.inst) and self.inst:GetBufferedAction() == nil  end, "NotFlying",
+            DoAction(self.inst, FindAndMineLunarHailBuildup, "MineGlass")),
 
         EventNode(self.inst, "gohome",
             ActionNode(fly_away_fn)),

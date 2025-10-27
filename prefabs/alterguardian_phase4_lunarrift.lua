@@ -1137,16 +1137,9 @@ local function slamfx_CreateGroundFx()
 	return fx
 end
 
-local function slamfx_CancelPostUpdate_Client(inst, slamfx_PostUpdate_Client)
-	inst._cancelpostupdatetask = nil
-	inst.components.updatelooper:RemovePostUpdateFn(slamfx_PostUpdate_Client)
-end
-
 local function slamfx_PostUpdate_Client(inst)
-	if inst._cancelpostupdatetask == nil then
-		inst._cancelpostupdatetask = inst:DoStaticTaskInTime(0, slamfx_CancelPostUpdate_Client, slamfx_PostUpdate_Client)
-		inst.ring.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
-	end
+	inst.ring.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
+	inst.components.updatelooper:RemovePostUpdateFn(slamfx_PostUpdate_Client)
 end
 
 local function slamfxfn()

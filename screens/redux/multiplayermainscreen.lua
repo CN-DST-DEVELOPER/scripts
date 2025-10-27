@@ -36,7 +36,7 @@ local KitcoonPuppet = require "widgets/kitcoonpuppet"
 local SHOW_DST_DEBUG_HOST_JOIN = BRANCH == "dev"
 local SHOW_QUICKJOIN = false
 
-local IS_BETA = BRANCH == "staging" or BRANCH == "dev"
+local IS_BETA = BRANCH == "staging" --or BRANCH == "dev"
 local IS_DEV_BUILD = BRANCH == "dev"
 
 local function PlayBannerSound(inst, self, sound)
@@ -468,6 +468,13 @@ local function MakeRift6Banner(self, banner_root, anim)
 	anim:SetScale(.667)
 end
 
+local function MakeHallowedNights2025Banner(self, banner_root, anim)
+	anim:GetAnimState():SetBuild("dst_menu_halloween4")
+	anim:GetAnimState():SetBank("dst_menu_halloween4")
+	anim:GetAnimState():PlayAnimation("loop", true)
+	anim:SetScale(0.667)
+end
+
 local function MakeDefaultBanner(self, banner_root, anim)
 	local banner_height = 350
 	banner_root:SetPosition(0, RESOLUTION_Y / 2 - banner_height / 2 + 1 ) -- positioning for when we had the top banner art
@@ -538,7 +545,7 @@ function MakeBanner(self)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
         MakeWintersFeast2024Banner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-        MakeHallowedNights2024Banner(self, banner_root, anim)
+		MakeHallowedNights2025Banner(self, banner_root, anim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
 		MakeCawnivalBanner(self, banner_root, anim)
 	else

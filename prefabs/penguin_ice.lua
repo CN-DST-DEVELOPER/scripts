@@ -148,6 +148,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst.MiniMapEntity:SetIcon("penguin.png")
+    inst.MiniMapEntity:SetPriority(1)
 
     inst:AddTag("NOCLICK")
 

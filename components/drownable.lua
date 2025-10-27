@@ -127,6 +127,7 @@ function Drownable:Teleport()
     end
 end
 
+--V2C: seems unused?
 function Drownable:GetWashingAshoreTeleportSpot(excludeclosest)
     local ex, ey, ez = self.inst.Transform:GetWorldPosition()
     local x, y, z = FindRandomPointOnShoreFromOcean(ex, ey, ez, excludeclosest)
@@ -181,11 +182,76 @@ function Drownable:ShouldDropItems()
 	return self.shoulddropitemsfn == nil and true or self.shoulddropitemsfn(self.inst)
 end
 
+function Drownable:GetTeleportPtFor(src)
+    if self.teleport_pt_stack then
+        for i = #self.teleport_pt_stack, 1, -1 do
+            local v = self.teleport_pt_stack[i]
+            if v.src == src then
+                return v.pt
+            end
+        end
+    end
+    return nil
+end
+
+function Drownable:PushTeleportPt(src, pt)
+	if self.teleport_pt_stack then
+		--See if src already exists; push to front
+		for i = #self.teleport_pt_stack, 1, -1 do
+			local v = self.teleport_pt_stack[i]
+			if v.src == src then
+				v.pt = pt
+				table.remove(self.teleport_pt_stack, i)
+				table.insert(self.teleport_pt_stack, v)
+				return
+			end
+		end
+	else
+		self.teleport_pt_stack = {}
+	end
+
+	table.insert(self.teleport_pt_stack, { src = src, pt = pt })
+	if EntityScript.is_instance(src) then
+		if self.teleport_pt_stack_ent_onremoved == nil then
+			self.teleport_pt_stack_ent_onremoved = function(ent) self:PopTeleportPt(ent) end
+		end
+		self.inst:ListenForEvent("onremove", self.teleport_pt_stack_ent_onremoved, src)
+	end
+end
+
+function Drownable:PopTeleportPt(src)
+	if self.teleport_pt_stack then
+		for i = #self.teleport_pt_stack, 1, -1 do
+			local v = self.teleport_pt_stack[i]
+			if v.src == src then
+				table.remove(self.teleport_pt_stack, i)
+				if EntityScript.is_instance(src) then
+					self.inst:RemoveEventCallback("onremove", self.teleport_pt_stack_ent_onremoved, src)
+				end
+				break
+			end
+		end
+	end
+end
+
+function Drownable:GetTeleportPtOverride()
+	if self.teleport_pt_stack then
+		if #self.teleport_pt_stack > 0 then
+			return self.teleport_pt_stack[#self.teleport_pt_stack].pt:Get()
+		end
+		self.teleport_pt_stack = nil
+		self.teleport_pt_stack_ent_onremoved = nil
+	end
+end
+
 function Drownable:OnFallInOcean(shore_x, shore_y, shore_z)
 	self.src_x, self.src_y, self.src_z = self.inst.Transform:GetWorldPosition()
 
 	if shore_x == nil then
-		shore_x, shore_y, shore_z = FindRandomPointOnShoreFromOcean(self.src_x, self.src_y, self.src_z)
+		shore_x, shore_y, shore_z = self:GetTeleportPtOverride()
+		if shore_x == nil then
+			shore_x, shore_y, shore_z = FindRandomPointOnShoreFromOcean(self.src_x, self.src_y, self.src_z)
+		end
 	end
 
 	self.dest_x, self.dest_y, self.dest_z = shore_x, shore_y, shore_z
@@ -232,7 +298,10 @@ function Drownable:OnFallInVoid(teleport_x, teleport_y, teleport_z)
 	self.src_x, self.src_y, self.src_z = self.inst.Transform:GetWorldPosition()
 
 	if teleport_x == nil then
-		teleport_x, teleport_y, teleport_z = FindRandomPointOnShoreFromOcean(self.src_x, self.src_y, self.src_z)
+		teleport_x, teleport_y, teleport_z = self:GetTeleportPtOverride()
+		if teleport_x == nil then
+			teleport_x, teleport_y, teleport_z = FindRandomPointOnShoreFromOcean(self.src_x, self.src_y, self.src_z)
+		end
 	end
 
 	self.dest_x, self.dest_y, self.dest_z = teleport_x, teleport_y, teleport_z

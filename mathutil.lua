@@ -100,3 +100,57 @@ end
 function DiffAngleRad(rot1, rot2)
     return math.abs(ReduceAngleRad(rot2 - rot1))
 end
+
+function BresenhamLineXZtoXZ(x1, z1, x2, z2) -- Orthogonal moves only for diagonals it will make a 2x2 block.
+
+    local dx, dz = math.abs(x2 - x1), -math.abs(z2 - z1)
+    local xstep, zstep = 1, 1
+    if x2 <= x1 then
+        xstep = -1
+    end
+    if z2 <= z1 then
+        zstep = -1
+    end
+
+    local err = dx + dz
+    local points = {}
+    while true do
+        table.insert(points, {x = x1, z = z1,})
+        if x1 == x2 and z1 == z2 then
+            break
+        end
+        local doubleerr = err * 2
+        local recordpoint = false
+        if doubleerr >= dz then
+            err = err + dz
+            x1 = x1 + xstep
+            recordpoint = true
+        end
+        if doubleerr <= dx then
+            if recordpoint then
+                table.insert(points, {x = x1, z = z1,})
+            end
+            err = err + dx
+            z1 = z1 + zstep
+            if recordpoint then
+                table.insert(points, {x = x1 - xstep, z = z1,})
+            end
+        end
+    end
+
+    return points
+end
+
+function BresenhamLineXZtoXZExcludeCaps(x1, z1, x2, z2, excludestart, excludeend)
+    local points = BresenhamLineXZtoXZ(x1, z1, x2, z2)
+    if excludestart then
+        for i = 2, #points do
+            points[i - 1] = points[i]
+        end
+        points[#points] = nil
+    end
+    if excludeend then
+        points[#points] = nil
+    end
+    return points
+end

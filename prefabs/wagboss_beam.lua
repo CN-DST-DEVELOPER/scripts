@@ -54,27 +54,16 @@ local function DoAnimSync_Client(inst)
 	end
 end
 
-local function CancelPostUpdate_Client(inst, PostUpdate_Client)
-	inst._cancelpostupdatetask = nil
+local function PostUpdate_Client(inst)
+	DoAnimSync_Client(inst)
 	inst._postupdating = nil
 	inst.components.updatelooper:RemovePostUpdateFn(PostUpdate_Client)
-end
-
-local function PostUpdate_Client(inst)
-	if inst._cancelpostupdatetask then
-		return
-	end
-	inst._cancelpostupdatetask = inst:DoStaticTaskInTime(0, CancelPostUpdate_Client, PostUpdate_Client)
-	DoAnimSync_Client(inst)
 end
 
 local function OnAnimSync_Client(inst)
 	if not inst._postupdating then
 		inst._postupdating = true
 		inst.components.updatelooper:AddPostUpdateFn(PostUpdate_Client)
-	elseif inst._cancelpostupdatetask then
-		inst._cancelpostupdatetask:Cancel()
-		inst._cancelpostupdatetask = nil
 	end
 end
 

@@ -367,8 +367,8 @@ local function master_postinit(inst)
 
     inst.components.sanity.night_drain_mult = TUNING.WENDY_SANITY_MULT
     inst.components.sanity.neg_aura_mult = TUNING.WENDY_SANITY_MULT
-    inst.components.sanity:AddSanityAuraImmunity("ghost")
-    inst.components.sanity:SetPlayerGhostImmunity(true)
+	inst.components.sanity:AddSanityAuraImmunity("ghost", inst)
+	inst.components.sanity:SetPlayerGhostImmunity(true, inst)
 
     inst:AddComponent("sanityauraadjuster")
     inst.components.sanityauraadjuster:SetAdjustmentFn(testForSanityAuraBuff)

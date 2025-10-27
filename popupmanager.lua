@@ -10,7 +10,7 @@ function PopupManagerWidget:Close(inst, ...)
         if not TheWorld.ismastersim then
             SendRPCToServer(RPC.ClosePopup, self.code, self.mod_name, ...)
         else
-            inst:PushEvent("ms_closepopup", {popup = self, args = {...}})
+			inst:PushEvent("ms_closepopup", { popup = self, args = toarray(...) })
         end
     end
 end
@@ -20,7 +20,7 @@ function PopupManagerWidget:SendMessageToServer(inst, ...)
         if not TheWorld.ismastersim then
             SendRPCToServer(RPC.RecievePopupMessage, self.code, self.mod_name, ...)
         else
-            inst:PushEvent("ms_popupmessage", {popup = self, args = {...}})
+			inst:PushEvent("ms_popupmessage", { popup = self, args = toarray(...) })
         end
     end
 end
@@ -30,7 +30,7 @@ function PopupManagerWidget:SendMessageToClient(inst, ...)
         if inst.userid ~= nil and (TheNet:IsDedicated() or (TheWorld.ismastersim and inst ~= ThePlayer)) then
             SendRPCToClient(CLIENT_RPC.RecievePopupMessage, inst.userid, self.code, self.mod_name, ...)
         else
-            inst:PushEvent("client_popupmessage", {popup = self, args = {...}})
+			inst:PushEvent("client_popupmessage", { popup = self, args = toarray(...) })
         end
     end
 end
@@ -50,6 +50,7 @@ POPUPS = {
     SCRAPBOOK = PopupManagerWidget(),
     INSPECTACLES = PopupManagerWidget(),
 	PUMPKINCARVING = PopupManagerWidget(),
+	PUMPKINHATCARVING = PopupManagerWidget(),
 	SNOWMANDECORATING = PopupManagerWidget(),
     BALATRO = PopupManagerWidget(),
 }
@@ -203,6 +204,33 @@ POPUPS.PUMPKINCARVING.fn = function(inst, show, target)
 			inst.HUD:ClosePumpkinCarvingScreen()
 		elseif not inst.HUD:OpenPumpkinCarvingScreen(target) then
 			POPUPS.PUMPKINCARVING.Close(inst)
+		end
+	end
+end
+
+POPUPS.PUMPKINHATCARVING.validaterpcfn = function(...)
+	local PumpkinHatCarvable = require("components/pumpkinhatcarvable")
+	local zerotest --can only have all 0, or no 0 at all
+	for i = 1, #PumpkinHatCarvable.PARTS do
+		local val = select(i, ...)
+		if not optuint(val) then
+			return false
+		end
+		local zeroval = val == 0
+		if zeroval == zerotest then
+			return false
+		end
+		zerotest = not zeroval
+	end
+	return true
+end
+
+POPUPS.PUMPKINHATCARVING.fn = function(inst, show, target)
+	if inst.HUD then
+		if not show then
+			inst.HUD:ClosePumpkinHatCarvingScreen()
+		elseif not inst.HUD:OpenPumpkinHatCarvingScreen(target) then
+			POPUPS.PUMPKINHATCARVING.Close(inst)
 		end
 	end
 end

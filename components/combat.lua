@@ -196,7 +196,7 @@ function Combat:ShareTarget(target, range, fn, maxnum, musttags)
         if v ~= self.inst
             and not (v.components.health ~= nil and
                     v.components.health:IsDead())
-            and (fn == nil or fn(v))
+            and (fn == nil or fn(v, self.inst))
             and v.components.combat:SuggestTarget(target) then
 
             --print("    share with", v)
@@ -217,8 +217,12 @@ function Combat:SetOnHit(fn)
     self.onhitfn = fn
 end
 
+function Combat:SetCanSuggestTargetFn(fn)
+    self.cansuggesttargetfn = fn
+end
+
 function Combat:SuggestTarget(target)
-    if self.target == nil and target ~= nil then
+    if self.target == nil and target ~= nil and (self.cansuggesttargetfn == nil or self.cansuggesttargetfn(self.inst, target)) then
         --print("Combat:SuggestTarget", self.inst, target)
         self:SetTarget(target)
         return true
@@ -365,18 +369,16 @@ end
 
 function Combat:EngageTarget(target)
     if target then
-		if not (self.inst.components.follower and self.inst.components.follower.leader == target and self.inst.components.follower.leader.components.leader ~= nil and self.inst.components.follower.keepleaderonattacked) then
-	        local oldtarget = self.target
-			self.target = target
-			self.inst:PushEvent("newcombattarget", {target=target, oldtarget=oldtarget})
-			self:StartTrackingTarget(target)
-			if self.keeptargetfn then
-				self.inst:StartUpdatingComponent(self)
-			end
-			if self.inst.components.follower and self.inst.components.follower.leader == target and self.inst.components.follower.leader.components.leader then
-				self.inst.components.follower.leader.components.leader:RemoveFollower(self.inst)
-			end
-		end
+        local oldtarget = self.target
+        self.target = target
+        self.inst:PushEvent("newcombattarget", {target=target, oldtarget=oldtarget})
+        self:StartTrackingTarget(target)
+        if self.keeptargetfn then
+            self.inst:StartUpdatingComponent(self)
+        end
+        if self.inst.components.follower and self.inst.components.follower.leader == target and self.inst.components.follower.leader.components.leader and not self.inst.components.follower.keepleaderonattacked then
+            self.inst.components.follower.leader.components.leader:RemoveFollower(self.inst)
+        end
     end
 end
 
@@ -694,75 +696,21 @@ function Combat:GetImpactSound(target, weapon)
         return
     end
 
-    --V2C: Considered creating a mapping for tags to strings, but we cannot really
-    --     rely on these tags being properly mutually exclusive, so it's better to
-    --     leave it like this as if explicitly ordered by priority.
-
-    local hitsound = "dontstarve/impacts/impact_"
     local weaponmod = weapon ~= nil and weapon:HasTag("sharp") and "sharp" or "dull"
     local tgtinv = target.components.inventory
     if tgtinv ~= nil and tgtinv:IsWearingArmor() then
-		--Order by priority
-		local armormod =
-			(tgtinv:ArmorHasTag("forcefield") and "forcefield_armour_") or
-			(tgtinv:ArmorHasTag("sanity") and "sanity_armour_") or
-			(tgtinv:ArmorHasTag("lunarplant") and "lunarplant_armour_") or
-			(tgtinv:ArmorHasTag("dreadstone") and "dreadstone_armour_") or
-			(tgtinv:ArmorHasTag("metal") and "metal_armour_") or
-			(tgtinv:ArmorHasTag("marble") and "marble_armour_") or
-			(tgtinv:ArmorHasTag("shell") and "shell_armour_") or
-			(tgtinv:ArmorHasTag("wood") and "wood_armour_") or
-			(tgtinv:ArmorHasTag("grass") and "straw_armour_") or
-			(tgtinv:ArmorHasTag("fur") and "fur_armour_") or
-			(tgtinv:ArmorHasTag("cloth") and "shadowcloth_armour_") or
-			nil
-		if armormod ~= nil then
-			return hitsound..armormod..weaponmod
-		end
+        local armor_impact_sound = GetArmorImpactSound(tgtinv, weaponmod)
+        if armor_impact_sound ~= nil then
+            return armor_impact_sound
+        end
 	end
+
 	if target:HasTag("wall") then
-        return
-            hitsound..(
-                (target:HasTag("grass") and "straw_wall_") or
-                (target:HasTag("stone") and "stone_wall_") or
-                (target:HasTag("marble") and "marble_wall_") or
-                (target:HasTag("fence_electric") and "metal_armour_") or
-                "wood_wall_"
-            )..weaponmod
-
+        return GetWallImpactSound(target, weaponmod)
     elseif target:HasTag("object") then
-        return
-            hitsound..(
-                (target:HasTag("clay") and "clay_object_") or
-                (target:HasTag("stone") and "stone_object_") or
-                "object_"
-            )..weaponmod
-
+        return GetObjectImpactSound(target, weaponmod)
     else
-        local tgttype =
-			(target:HasAnyTag("hive", "eyeturret", "houndmound") and "hive_") or
-            (target:HasTag("ghost") and "ghost_") or
-			(target:HasAnyTag("insect", "spider") and "insect_") or
-			(target:HasAnyTag("chess", "mech") and "mech_") or
-			--V2C: "mech" higher priority over "brightmare(boss)"
-			(target:HasAnyTag("brightmare", "brightmareboss") and "ghost_") or
-            (target:HasTag("mound") and "mound_") or
-			(target:HasAnyTag("shadow", "shadowminion", "shadowchesspiece") and "shadow_") or
-			(target:HasAnyTag("tree", "wooden") and "tree_") or
-            (target:HasTag("veggie") and "vegetable_") or
-            (target:HasTag("shell") and "shell_") or
-			(target:HasAnyTag("rocky", "fossil") and "stone_") or
-            target.override_combat_impact_sound or
-            nil
-        return
-            hitsound..(
-                tgttype or "flesh_"
-            )..(
-				(target:HasAnyTag("smallcreature", "small") and "sml_") or
-				(target:HasAnyTag("largecreature", "epic", "large") and not target:HasAnyTag("shadowchesspiece", "fossil", "brightmareboss") and "lrg_") or
-                (tgttype == nil and target:GetIsWet() and "wet_") or
-                "med_"
-            )..weaponmod
+        return GetCreatureImpactSound(target, weaponmod)
     end
 end
 
@@ -886,7 +834,7 @@ function Combat:CalcDamage(target, weapon, multiplier)
     local externaldamagemultipliers = self.externaldamagemultipliers
 	local damagetypemult = 1
     local bonus = self.damagebonus --not affected by multipliers
-	local playermultiplier = target ~= nil and (target.isplayer or target:HasTag("player_damagescale"))
+	local playermultiplier = CanApplyPlayerDamageMod(target)
 	local pvpmultiplier = playermultiplier and self.inst.isplayer and self.pvp_damagemod or 1
 	local mount = nil
 	local spdamage

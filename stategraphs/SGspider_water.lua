@@ -27,7 +27,8 @@ local events =
     CommonHandlers.OnDeath(),
 
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+        --V2C: health check since corpse shares this SG
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -68,6 +69,9 @@ local events =
             inst.sg:GoToState("mutate")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function SoundPath(event)
@@ -102,6 +106,13 @@ end
 
 local states =
 {
+    State{
+		name = "init",
+		onenter = function(inst)
+			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
+		end,
+	},
+
     State {
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -137,7 +148,13 @@ local states =
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:SetDeathLootLevel(1)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State {
@@ -557,4 +574,43 @@ nil,
 
 CommonStates.AddWalkStates(states)
 
-return StateGraph("spider_water", states, events, "idle", actionhandlers)
+CommonStates.AddCorpseStates(states,
+{
+    corpse = function() return "death_idle", true end,
+})
+
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutate_timeline = {
+        SoundFrameEvent(3, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(24, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(35, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(48, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(50, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(60, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(67, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(70, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(80, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(84, "lunarhail_event/creatures/lunar_mutation/mutate_rip_pre_31f"),
+        SoundFrameEvent(115, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+    },
+
+    mutatepst_timeline = {
+        SoundFrameEvent(0, "lunarhail_event/creatures/lunar_mutation/mutate_rip"),
+    },
+},
+{
+    mutate = "mutated_spider_reviving",
+    mutate_pst = "mutated_spider_spawn",
+},
+{
+    mutatepst_onenter = function(inst)
+        inst.SoundEmitter:PlaySound(SoundPath("scream"))
+    end,
+},
+{
+    mutated_spawn_timing = 115 * FRAMES,
+    post_mutate_state = "taunt",
+})
+
+return StateGraph("spider_water", states, events, "init", actionhandlers)

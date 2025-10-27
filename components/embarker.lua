@@ -92,7 +92,6 @@ end
 
 function Embarker:Embark()
     self.inst.Physics:Stop()
-	self.inst.components.locomotor.hopping = false
     --SendRPCToServer(RPC.FinishHop, self.inst, embark_x, embark_z)
     local embark_x, embark_z = self:GetEmbarkPosition()
 	self.inst.Transform:SetPosition(embark_x, 0, embark_z)
@@ -104,11 +103,11 @@ function Embarker:Embark()
 	self.max_hop_dist_sq = nil
 	self.hop_start_pt = nil
     self.inst:StopUpdatingComponent(self)
+    self.inst.components.locomotor:FinishHopping()
 end
 
 function Embarker:Cancel()
     self.inst.Physics:Stop()
-	self.inst.components.locomotor.hopping = false
     self.embarkable = nil
     self.disembark_x = nil
     self.disembark_z = nil
@@ -117,6 +116,7 @@ function Embarker:Cancel()
 	self.max_hop_dist_sq = nil
 	self.hop_start_pt = nil
     self.inst:StopUpdatingComponent(self)
+    self.inst.components.locomotor:FinishHopping()
 end
 
 function GetDisembarkPosAndDistance(inst, target_x, target_z)

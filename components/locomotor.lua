@@ -1181,6 +1181,16 @@ end
 
 function LocoMotor:FinishHopping()
     self.hopping = false
+
+    if self.reserved_platform then
+        local my_platform = self.inst:GetCurrentPlatform()
+        if my_platform ~= self.reserved_platform then
+            if self.reserved_platform.TryToClearReservedPlatform then
+				self.reserved_platform:TryToClearReservedPlatform(self.inst)
+            end
+        end
+        self.reserved_platform = nil
+    end
 end
 
 function LocoMotor:SetAllowPlatformHopping(enabled)
@@ -1661,7 +1671,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 				other_platform = my_platform
 			end
 			if other_platform == nil then
-				if self.inst.isplayer then
+				if self.inst.isplayer or TheWorld.Pathfinder:HasStaticHoppablePlatform(mypos_x, 0, mypos_z) then
 					other_platform, destpos_x, destpos_z = TheWorld.Map:GetNearestPlatformInDirection(mypos_x, mypos_z, forward_x, forward_z, hop_distance)
 					if other_platform and self:IsValidDestinationPlatform(my_platform, other_platform) then
 						destpos_y = 0
@@ -1683,6 +1693,17 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
             local too_early_top_hop = self.time_before_next_hop_is_allowed > 0
             if my_platform ~= other_platform and not too_early_top_hop then
                 can_hop, hop_x, hop_z, target_platform, blocked = self:ScanForPlatform(my_platform, destpos_x, destpos_z, hop_distance)
+                if can_hop and not blocked and target_platform then
+                    if target_platform.TryToReservePlatform then
+						if target_platform:TryToReservePlatform(self.inst) then
+                            self.reserved_platform = target_platform
+                        else
+                            can_hop = false
+                            target_platform = nil
+                            blocked = true
+                        end
+                    end
+                end
             end
             if not blocked then
                 if can_hop then
@@ -1749,7 +1770,28 @@ function LocoMotor:CanPathfindOnLand()
     return self.pathcaps == nil or (not self.pathcaps.ignoreLand)
 end
 
+function LocoMotor:AdjustPathCaps(enabled, capname)
+    if enabled then
+        if self.pathcaps == nil then
+            self.pathcaps = {}
+        end
+        self.pathcaps[capname] = true
+    else
+        if self.pathcaps ~= nil then
+            self.pathcaps[capname] = nil
+            if next(self.pathcaps) == nil then
+                self.pathcaps = nil
+            end
+        end
+    end
+end
+
 function LocoMotor:FindPath()
+    -- NOTES(JBK): This is a hack because of the handling of locomotor.pathcaps has no setter and we do not want a metatable hook for all of every instance of locomotor component.
+    -- So we will watch the state of allow_platform_hopping which is true or false if it was ever set or cleared later.
+    if self.allow_platform_hopping ~= nil then
+        self:AdjustPathCaps(self.allow_platform_hopping, "allowplatformhopping")
+    end
     --Print(VERBOSITY.DEBUG, "LocoMotor:FindPath", self.inst.prefab)
 
     --if self.inst.prefab ~= "wilson" then return end

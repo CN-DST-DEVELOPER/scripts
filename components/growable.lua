@@ -226,6 +226,7 @@ end
 
 function Growable:OnSave()
     local time = (self.pausedremaining ~= nil and math.floor(self.pausedremaining)) or (self.targettime ~= nil and math.floor(self.targettime - GetTime())) or nil
+    local sleeptime = self.sleeptime ~= nil and  math.floor(GetTime() - self.sleeptime) or nil
 
     if time ~= nil then
         time = math.max(0, time)
@@ -238,6 +239,7 @@ function Growable:OnSave()
     local data = {
         stage = self.stage,
         time = time,
+        sleeptime = self.sleeptime ~= nil and math.max(0, sleeptime) or nil,
         usetimemultiplier = self.usetimemultiplier,
     }
 
@@ -250,6 +252,10 @@ function Growable:OnLoad(data)
     end
 
     self:SetStage(data.stage or 1) -- 1 is kind of by default.
+
+    if data.sleeptime ~= nil then
+        self.sleeptime = GetTime() - data.sleeptime -- It's safe to have negative values for sleeptime.
+    end
 
     if data.time ~= nil then
         if data.usetimemultiplier then
@@ -320,21 +326,15 @@ function Growable:OnEntityWake()
         return
     end
 
-    if self.sleeptime ~= nil then
-        local dt = GetTime() - self.sleeptime
+    local time = GetTime()
+    local dt = self.sleeptime ~= nil and (time - self.sleeptime) or 0
+
+    if dt > 0 then
         self.sleeptime = nil
 
         self:LongUpdate(dt)
-
     else
-        -- Fallback to the old code.
-        local time = GetTime()
-
-        if self.targettime <= time then
-            self:DoGrowth()
-        else
-            self:StartGrowingTask(self.targettime - time)
-        end
+        self:StartGrowingTask(self.targettime - time)
     end
 end
 
@@ -346,12 +346,16 @@ function Growable:GetDebugString()
     return
         (
             self:IsGrowing() and self.stage ~= self:GetNextStage() and
-            string.format("Growing! stage %d, timeleft %2.2fs", self.stage, self.targettime - GetTime() - sleeptime)
+            string.format(
+                "Growing! Stage: %d  |  Timeleft: %2.2fs%s",
+                self.stage,
+                math.max(0, self.targettime - GetTime() - sleeptime),
+                sleeptime ~= 0 and string.format("  |  Sleep Time: %2.2fs", sleeptime) or "")
         )
         or
         (
             self:IsPaused() and
-            string.format("Paused! stage %d, timeleft %2.2fs", self.stage, self.pausedremaining))
+            string.format("Paused! Stage: %d,  |  Timeleft: %2.2fs", self.stage, self.pausedremaining))
         or
             "Not Growing"
 end

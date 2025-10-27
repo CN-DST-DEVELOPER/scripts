@@ -142,6 +142,10 @@ function Projectile:IsThrown()
     return self.target ~= nil
 end
 
+function Projectile:SetLaunchAngle(angle) -- Degrees.
+    self.launchangle = angle
+end
+
 function Projectile:Throw(owner, target, attacker)
     self.owner = owner
     self.target = target
@@ -158,7 +162,11 @@ function Projectile:Throw(owner, target, attacker)
         self.inst.Transform:SetPosition(x + self.launchoffset.x * math.cos(facing_angle), y + self.launchoffset.y, z - self.launchoffset.x * math.sin(facing_angle))
     end
 
-    self:RotateToTarget(self.dest)
+    if self.launchangle then
+        self.inst.Transform:SetRotation(self.launchangle)
+    else
+        self:RotateToTarget(self.dest)
+    end
     self.inst.Physics:SetMotorVel(self.speed, 0, 0)
     self.inst:StartUpdatingComponent(self)
     self.inst:AddTag("activeprojectile")

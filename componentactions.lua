@@ -1516,8 +1516,16 @@ local COMPONENT_ACTIONS =
         end,
 
 		pumpkincarver = function(inst, doer, target, actions)
-			if target.components.pumpkincarvable then --component exists on clients
+			--V2C: pumpkincarvable and pumpkinhatcarvable exist on clients
+			if target.components.pumpkincarvable then
 				table.insert(actions, ACTIONS.CARVEPUMPKIN)
+			elseif target.components.pumpkinhatcarvable then
+				local equippable = target.replica.equippable
+				if not (equippable and equippable:IsEquipped()) and
+					not (target.components.floater and target.components.floater:IsFloating())
+				then
+					table.insert(actions, ACTIONS.CARVEPUMPKIN)
+				end
 			end
 		end,
 

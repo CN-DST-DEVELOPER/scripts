@@ -201,21 +201,6 @@ local states =
             end),
         },
     },
-
-    State{
-        name = "parasite_revive",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("parasite_death_pst")
-            inst.Physics:Stop()
-        end,
-
-        events=
-        {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
-        },
-    },    
 }
 
 CommonStates.AddWalkStates(states, {
@@ -263,5 +248,6 @@ CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4 * FRAMES, { 
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
+CommonStates.AddParasiteReviveState(states)
 
 return StateGraph("bunnyman", states, events, "idle", actionhandlers)

@@ -14,6 +14,9 @@ local prefabs =
 	"bat",
 	"cookingrecipecard",
     "scrapbook_page",
+
+	--halloween
+	"spooked_worms_fx",
 }
 
 for k = 1, NUM_TRINKETS do
@@ -117,6 +120,12 @@ local function onfinishcallback(inst, worker)
                 inst.components.lootdropper:SpawnLootPrefab("halloween_ornament_1") -- ghost
 			end
         end
+
+		if --IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and
+			worker.components.spooked
+		then
+			worker.components.spooked:TryCustomSpook(inst, "spooked_worms_fx", TUNING.DIG_SPOOKED_MULT)
+		end
     end
 end
 

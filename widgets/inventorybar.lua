@@ -1269,8 +1269,12 @@ function Inv:UpdateCursor()
             self.active_slot:Highlight()
 
             self.cursor:MoveToBack()
-            self.active_slot.tile.spoilage:MoveToBack()
-            self.active_slot.tile.bg:MoveToBack()
+			if self.active_slot.tile.spoilage then
+				self.active_slot.tile.spoilage:MoveToBack()
+			end
+			if self.active_slot.tile.bg then
+				self.active_slot.tile.bg:MoveToBack()
+			end
         elseif self.active_slot.hide_cursor then
 			self.cursor:Hide()
             self.active_slot:Highlight()

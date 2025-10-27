@@ -52,9 +52,26 @@ local EXPERIMENT_RESULTS =
     },
 }
 
+local SMALL_TO_SPAWN = { [3] = 0.2, [4] = 0.6, [5] = 0.2 }
+local LARGE_TO_SPAWN = { [1] = 0.2, [2] = 0.6, [3] = 0.2 }
+
 local NUM_TO_SPAWN =
 {
-	halloweenpotion_moon = { [1] = 0.5, [2] = 0.3, [3] = 0.2 },
+	halloweenpotion_bravery_small = SMALL_TO_SPAWN,
+	halloweenpotion_bravery_large = LARGE_TO_SPAWN,
+
+	halloweenpotion_health_small = SMALL_TO_SPAWN,
+	halloweenpotion_health_large = LARGE_TO_SPAWN,
+
+	halloweenpotion_sanity_small = SMALL_TO_SPAWN,
+	halloweenpotion_sanity_large = LARGE_TO_SPAWN,
+
+	halloweenpotion_embers = SMALL_TO_SPAWN,
+	halloweenpotion_sparks = SMALL_TO_SPAWN,
+
+	halloweenpotion_moon = { [2] = 0.5, [3] = 0.3, [4] = 0.2 },
+
+	livingtree_root = LARGE_TO_SPAWN,
 }
 
 for _, v in pairs(EXPERIMENT_RESULTS) do

@@ -78,6 +78,7 @@ local events =
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
+    CommonHandlers.OnDeath(),
 
 	EventHandler("attacked", function(inst, data)
 		if not inst.components.health:IsDead() then
@@ -125,7 +126,6 @@ local events =
         end
     end),
 
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("entershield", function(inst)
         if not inst.components.health:IsDead() then
             inst.sg:GoToState("shield_pre") 

@@ -224,6 +224,7 @@ HapticEffects =
 	{ event="dontstarve/common/dropGeneric", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },			
 	{ event="turnoftides/common/together/moon_glass/mine", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="turnoftides/common/together/moon_glass/break", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="rifts6/rock_tree/chop_normal", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	
 	-- fishing
 	{ event="dontstarve/common/fishingpole_linebreak", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
@@ -604,6 +605,20 @@ HapticEffects =
 	{ event="wilson_rework/ui/lunar_skill", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="UI" },	
 	{ event="wilson_rework/ui/respec", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="UI" },		
 	-- HUD & UI effects end ------------------------------------------------------------------------------------------------------------------------
+
+	-- Rifts6 effects start ----------------------------------------------------------------------------------------------------------------------
+	{ event="rifts6/creatures/centipede/step", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/creatures/centipede/death", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/creatures/centipede/flip_hit_ground", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/creatures/centipede/struggle_pst", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/creatures/rockspider/appear_f1", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/creatures/rockspider/disappear_f22", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/rock_tree/fall_bounce", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/rock_tree/fall_break", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/whirlpool/whirlpool_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/rock_pillar/wobble_lp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts6/rock_pillar/fall", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	-- Rifts6 effects end   ----------------------------------------------------------------------------------------------------------------------
 }
 
 return HapticEffects

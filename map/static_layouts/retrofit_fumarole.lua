@@ -277,8 +277,8 @@ return {
           name = "",
           type = "cave_vent_rock",
           shape = "rectangle",
-          x = 994,
-          y = 1447,
+          x = 979,
+          y = 1392,
           width = 68,
           height = 66,
           visible = true,
@@ -2360,6 +2360,39 @@ return {
           y = 533,
           width = 17,
           height = 16,
+          visible = true,
+          properties = {}
+        },
+        {
+          name = "",
+          type = "cave_vent_mite_spawner",
+          shape = "rectangle",
+          x = 450,
+          y = 650,
+          width = 68,
+          height = 66,
+          visible = true,
+          properties = {}
+        },
+        {
+          name = "",
+          type = "cave_vent_mite_spawner",
+          shape = "rectangle",
+          x = 984,
+          y = 1434,
+          width = 68,
+          height = 66,
+          visible = true,
+          properties = {}
+        },
+        {
+          name = "",
+          type = "cave_vent_mite_spawner",
+          shape = "rectangle",
+          x = 1230,
+          y = 664,
+          width = 68,
+          height = 66,
           visible = true,
           properties = {}
         }

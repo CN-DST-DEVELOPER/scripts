@@ -54,7 +54,7 @@ function Spooked:ShouldSpook()
     return math.random() < k * k
 end
 
-local function CalcSpooked(self, t)
+function Spooked:CalcSpookedLevelDecay(t)
     local dt = (t or GetTime()) - self.lastspooktime
     return math.max(0, self.spookedlevel - dt * dt)
 end
@@ -66,7 +66,7 @@ end
 function Spooked:Spook(source)
     local t = GetTime()
     local agefactor = self.inst.components.age ~= nil and math.min(1, self.inst.components.age:GetAge() / self.maxspookage) or 1
-    self.spookedlevel = math.min(self.maxspookedlevel + self.maxspookdelta, CalcSpooked(self, t) + agefactor * agefactor * self.maxspookdelta)
+	self.spookedlevel = math.min(self.maxspookedlevel, self:CalcSpookedLevelDecay(t) + agefactor * agefactor * self.maxspookdelta)
     self.lastspooktime = t
 
     if source.monster then
@@ -82,6 +82,7 @@ function Spooked:Spook(source)
     if type(anim) == "table" then
         anim = anim[stage]
     end
+
     if anim ~= nil and self:ShouldSpook() then
         local x, y, z = source.Transform:GetWorldPosition()
         local fx = SpawnPrefab("battreefx")
@@ -95,8 +96,25 @@ function Spooked:Spook(source)
     end
 end
 
+function Spooked:TryCustomSpook(source, fxprefab, mult)
+	local t = GetTime()
+	local agefactor = self.inst.components.age and math.min(1, self.inst.components.age:GetAge() / self.maxspookage) or 1
+
+	--V2C: NOTE this is not the same math as Spook(source) above, this one by default maxes out your spook, unless you provide a mult
+	self.spookedlevel = math.min(self.maxspookedlevel, self:CalcSpookedLevelDecay(t) + agefactor * agefactor * self.maxspookedlevel * (mult or 1))
+	self.lastspooktime = t
+
+	if self:ShouldSpook() then
+		local x, _, z = source.Transform:GetWorldPosition()
+		local fx = SpawnPrefab(fxprefab).Transform:SetPosition(x, 0, z)
+		self.inst:DoTaskInTime(10 * FRAMES, DoSpooked, source)
+		self.spookedlevel = 0
+		return fx
+	end
+end
+
 function Spooked:GetDebugString()
-    return string.format("spookedlevel = %.2f", CalcSpooked(self))
+    return string.format("spookedlevel = %.2f", self:CalcSpookedLevelDecay())
 end
 
 return Spooked

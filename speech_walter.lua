@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Is... someone there?",
+    ANNOUNCE_SPOOKED = "Yikes! That gave me quite the start!",
 	ANNOUNCE_BRAVERY_POTION = "There's nothing to be afraid of!",
 	ANNOUNCE_MOONPOTION_FAILED = "Darnit, I must've done something wrong...",
 
@@ -1227,6 +1227,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Woby, did you see that hand? It's cheating!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Woby, look at those weird buzzards!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5825,7 +5827,7 @@ return{
             REVIVING = "Yes! I knew it!", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "I think it's a very bad sign.", -- Generic string
             EATING_CORPSE = "It's really feasting, Woby!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5897,6 +5899,45 @@ return{
 			GENERIC = "Careful Woby! It's gassy.",
 			SLEEPING = "Shh... don't wake it, Woby.",
             VENTING = "It's blowing off steam! Get it, Woby?", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "I can't wait to scare someone!",
+			UNCARVED = "Let's face it, Woby... This pumpkin doesn't have one! Get it?",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Stay away from it, Woby!", --witnessing the corpse
+            BURNING  = "Smells kinda yummy.", --when its burning
+            REVIVING = "Yes! I knew it!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "It looks dead, Woby. But be careful.",
+			BURNING = "That's a good habit.",
+			REVIVING = "We forgot to burn it. Oh well!",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Rest in peace, Your Majesty.",
+			BURNING = "We did the right thing, Woby.",
+			REVIVING = "We should have burned it. Oops.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Yikes, that smells fishy.",
+			BURNING = "It reminds me of barbequed fish.",
+			REVIVING = "It smells extra fishy!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

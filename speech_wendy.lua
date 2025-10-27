@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Did you see that, Abigail?",
+    ANNOUNCE_SPOOKED = "Yuck!",
 	ANNOUNCE_BRAVERY_POTION = "Bats can't scare me anymore. I can return to my melancholy.",
 	ANNOUNCE_MOONPOTION_FAILED = "Sigh... I didn't really expect that to work.",
 
@@ -1184,11 +1184,13 @@ return{
 
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "This is futile. I need something stronger.",
-    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Not working? That's it, light it up.",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "What now?",
 
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Like the death's own hand, come to snuff our fragile flame.",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzards. Something off about them.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5776,18 +5778,18 @@ return{
 
         BIRDCORPSE =
         {
-            GENERIC  = "There can be a fate worse than death.", --witnessing the corpse
+            GENERIC  = "Poor bird.", --witnessing the corpse
             BURNING  = "Now it is truly free.", --when its burning
-            REVIVING = "Poor bird.", --when its mutating and being revived
+            REVIVING = "There can be a fate worse than death.", --when its mutating and being revived
         },
 
         BUZZARDCORPSE = {
-            GENERIC  = "There can be a fate worse than death.", --witnessing the corpse
+            GENERIC  = "Poor bird.", --witnessing the corpse
             BURNING  = "Now it is truly free.", --when its burning
-            REVIVING = "Poor bird.", --when its mutating and being revived
+            REVIVING = "There can be a fate worse than death.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "A truly bad omen.", -- Generic string
             EATING_CORPSE = "Even in death, it consumes.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5815,7 +5817,7 @@ return{
             GAS     = "That's unpleasant.", -- Ventiliating Toadstools gas fumes and spores
             MIASMA  = "One could drown in that black fog.", -- Ventiliating the shadow rift miasma
         },
-        CAVE_FERN_WITHERED = "It's dead'.",
+        CAVE_FERN_WITHERED = "It's dead.",
         FLOWER_CAVE_WITHERED = "There's a sadness about how it flickers.",
 
 		ABYSSPILLAR_MINION =
@@ -5859,6 +5861,45 @@ return{
 			GENERIC = "Has it ever been above ground?",
 			SLEEPING = "It's asleep.",
             VENTING = "It smells terrible.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "I know that emptiness behind those eyes.",
+			UNCARVED = "It lacks character.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Poor bird.", --witnessing the corpse
+            BURNING  = "Now it is truly free. Well, as free as a flightless bird.", --when its burning
+            REVIVING = "There can be a fate worse than death.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "I hope it wasn't one of Webber's friends.",
+			BURNING = "It's for the best.",
+			REVIVING = "That's not good.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "She was just protecting her children.",
+			BURNING = "She can rest now.",
+			REVIVING = "Sometimes dead is better.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "I can't help feeling sorry for the horrid swamp thing.",
+			BURNING = "Their ashes belong in the swamp.",
+			REVIVING = "It's unnatural.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

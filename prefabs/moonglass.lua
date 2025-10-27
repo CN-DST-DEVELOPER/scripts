@@ -50,6 +50,7 @@ local function createglass(name, preinit, postinit)
 
 		inst:AddTag("moonglass_piece")
 		inst:AddTag("lunarhaildebris")
+        inst:AddTag("quakedebris")
 
         if preinit then
            inst = preinit(inst)

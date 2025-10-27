@@ -12,7 +12,7 @@ local assets =
     Asset("SOUND", "sound/hound.fsb"),
 
 	--DEPRECATED builds!!!
-	Asset("PKGREF", "anim/hound.zip"), --NOTE: unfortunately houndcorpse still uses this
+	Asset("PKGREF", "anim/hound.zip"),
 	Asset("PKGREF", "anim/hound_red.zip"),
 	Asset("PKGREF", "anim/hound_ice.zip"),
 }
@@ -296,6 +296,22 @@ local function OnSpawnedFromHaunt(inst)
     end
 end
 
+local function OnEnterWater(inst)
+    inst.landspeed = inst.components.locomotor.runspeed
+    inst.components.locomotor.runspeed = TUNING.HOUND_SWIM_SPEED
+    inst.hop_distance = inst.components.locomotor.hop_distance
+    inst.components.locomotor.hop_distance = 4
+end
+
+local function OnExitWater(inst)
+    if inst.landspeed then
+        inst.components.locomotor.runspeed = inst.landspeed
+    end
+    if inst.hop_distance then
+        inst.components.locomotor.hop_distance = inst.hop_distance
+    end
+end
+
 local function OnSave(inst, data)
     data.ispet = inst:HasTag("pet_hound") or nil
     --print("OnSave", inst, data.ispet)
@@ -410,19 +426,6 @@ local function OnStopFollowing(inst, data)
     end
 end
 
-local function CanMutateFromCorpse(inst)
-	if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
-		return false
-	elseif inst.forcemutate then
-		return true
-	elseif not TUNING.SPAWN_MUTATED_HOUNDS then
-		return false
-	elseif math.random() <= TUNING.MUTATEDHOUND_SPAWN_CHANCE then
-		return TheWorld.Map:IsInLunacyArea(inst.Transform:GetWorldPosition())
-	end
-	return false
-end
-
 local function OnChangedLeader(inst, new, old)
 	--ignore if new is nil, (always nil upon death)
 	if new ~= nil then
@@ -436,6 +439,13 @@ local function OnChangedLeader(inst, new, old)
 			inst.components.follower:LoseLeaderOnAttacked()
 		end
 	end
+end
+
+local function SaveCorpseData(inst, corpse)
+    if inst.wargleader ~= nil and inst.wargleader:IsValid() and not inst.wargleader.components.health:IsDead() then
+        corpse.components.entitytracker:TrackEntity("warg", inst.wargleader)
+	    inst.wargleader:RememberFollowerCorpse(corpse)
+    end
 end
 
 local function fncommon(bank, build, morphlist, custombrain, tag, data)
@@ -494,14 +504,13 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     -- NOTE(DiogoW): Ignore original dependencies.
     inst.scrapbook_deps = { }
 
-	inst._CanMutateFromCorpse = data.canmutatefn
-
 	inst.sounds = sounds
 
     inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
     inst.components.locomotor.runspeed = tag == "clay" and TUNING.CLAYHOUND_SPEED or TUNING.HOUND_SPEED
 
     inst:SetStateGraph("SGhound")
+    inst.sg.mem.nolunarmutate = not data.canlunarmutate
 
     if data.amphibious then
 		inst:AddComponent("embarker")
@@ -512,22 +521,8 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
 		inst:AddComponent("amphibiouscreature")
 		inst.components.amphibiouscreature:SetBanks(bank, bank.."_water")
-        inst.components.amphibiouscreature:SetEnterWaterFn(
-            function(inst)
-                inst.landspeed = inst.components.locomotor.runspeed
-                inst.components.locomotor.runspeed = TUNING.HOUND_SWIM_SPEED
-                inst.hop_distance = inst.components.locomotor.hop_distance
-                inst.components.locomotor.hop_distance = 4
-            end)
-        inst.components.amphibiouscreature:SetExitWaterFn(
-            function(inst)
-                if inst.landspeed then
-                    inst.components.locomotor.runspeed = inst.landspeed
-                end
-                if inst.hop_distance then
-                    inst.components.locomotor.hop_distance = inst.hop_distance
-                end
-            end)
+        inst.components.amphibiouscreature:SetEnterWaterFn(OnEnterWater)
+        inst.components.amphibiouscreature:SetExitWaterFn(OnExitWater)
 
 		inst.components.locomotor.pathcaps = { allowocean = true }
 	end
@@ -561,6 +556,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
     if tag == "clay" then
 		inst.sg.mem.noelectrocute = true
+        inst.sg.mem.nocorpse = true
         inst.sg:GoToState("statue")
 
         inst:AddComponent("hauntable")
@@ -590,6 +586,8 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
     inst:WatchWorldState("stopday", OnStopDay)
     inst.OnEntitySleep = OnEntitySleep
 
+    inst.SaveCorpseData = SaveCorpseData
+
     inst.OnSave = OnSave
     inst.OnLoad = OnLoad
 
@@ -602,7 +600,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 end
 
 local function fndefault()
-    local inst = fncommon("hound", "hound_ocean", { "firehound", "icehound" }, nil, nil, {amphibious = true, canmutatefn = CanMutateFromCorpse})
+    local inst = fncommon("hound", "hound_ocean", { "firehound", "icehound" }, nil, nil, {amphibious = true, canlunarmutate = true})
 
     if not TheWorld.ismastersim then
         return inst
@@ -615,6 +613,8 @@ local function fndefault()
 
 	inst:AddComponent("halloweenmoonmutable")
 	inst.components.halloweenmoonmutable:SetPrefabMutated("mutatedhound")
+
+    inst.spawn_lunar_mutated_tuning = "SPAWN_MUTATED_HOUNDS"
 
     return inst
 end
@@ -766,6 +766,15 @@ local function fnclay()
     return inst
 end
 
+local function LoadCorpseData(inst, corpse)
+    local warg = corpse.components.entitytracker:GetEntity("warg")
+	if warg ~= nil then
+		inst.components.follower:SetLeader(warg)
+		warg:ForgetFollowerCorpse(corpse)
+		corpse.components.entitytracker:ForgetEntity("warg")
+	end
+end
+
 local function fnmutated()
     local inst = fncommon("hound", "hound_mutated", nil, nil, "lunar_aligned", {amphibious = true})
 
@@ -774,6 +783,8 @@ local function fnmutated()
     end
 
 	inst.sounds = sounds_mutated
+
+    inst.LoadCorpseData = LoadCorpseData
 
     MakeMediumFreezableCharacter(inst, "hound_body")
     MakeMediumBurnableCharacter(inst, "hound_body")
@@ -845,6 +856,7 @@ local function fnhedge()
     inst:ListenForEvent("death", OnHedgeKilled)
 
 	inst.sg.mem.burn_on_electrocute = true
+    inst.sg.mem.nocorpse = true
 
     return inst
 end

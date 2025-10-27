@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Quite an expert illusion.",
+    ANNOUNCE_SPOOKED = "Disgusting!",
 	ANNOUNCE_BRAVERY_POTION = "I was never really scared of those trees anyhow.",
 	ANNOUNCE_MOONPOTION_FAILED = "How disappointing.",
 
@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Hmm... could you be... trying to help?",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "I hate buzzards, but these are... wrong.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5764,7 +5766,7 @@ return{
 
         FENCE_ELECTRIC = {
             LINKED = "I don't trust the power source.",      --NOTE: the fence post is fully linked to two other posts
-            GENERIC = "Perhaps its best left alone.",           --NOTE: no links or electricity, just boring ol fence post
+            GENERIC = "Perhaps it's best left alone.",           --NOTE: no links or electricity, just boring ol fence post
         },
         FENCE_ELECTRIC_ITEM = "I don't like it.",
 
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "Absolutely grotesque.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "It looks hungry.", -- Generic string
             EATING_CORPSE = "Chew with your beak closed!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "Leave me alone!",
 			SLEEPING = "Quickly, while it sleeps.",
             VENTING = "Ugh, I think I swallowed some.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Nice face.",
+			UNCARVED = "Without a face, it's just a pumpkin.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Yuck.", --witnessing the corpse
+            BURNING  = "Good riddance.", --when its burning
+            REVIVING = "Absolutely grotesque.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Hope it stays dead.",
+			BURNING = "Good idea.",
+			REVIVING = "Vile thing is coming back for more!",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "I hope she stays dead.",
+			BURNING = "That's a relief.",
+			REVIVING = "I was worried about this.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Smells like rotten fish.",
+			BURNING = "I didn't think it could smell worse.",
+			REVIVING = "Of course you don't even know how to stay dead.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

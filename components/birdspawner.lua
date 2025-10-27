@@ -147,8 +147,12 @@ local function SpawnCorpseForPlayer(player, reschedule)
         _scheduledtasks[player] = nil
         reschedule(player)
 
-        if corpse then --This was a scheduled spawn not the event spawn so put a fade on it
-            corpse:StartFadeTimer(GetRandomMinMax(_corpse_fade_min_time, _corpse_fade_max_time))
+        if corpse then --This was a scheduled spawn not the event spawn so put a fade on it (or mutate it!)
+            if CanLunarPreRiftMutateFromCorpse(inst) or math.random() < 0.25 then
+                corpse:SetNonGestaltCorpse()
+            else
+                corpse:StartFadeTimer(GetRandomMinMax(_corpse_fade_min_time, _corpse_fade_max_time))
+            end
         end
     end
     --
@@ -217,8 +221,12 @@ local function ToggleUpdate(force)
     end
 end
 
-local function GetMutatedBirdSpawnChance() --High chance at first then lowers
-    return inst.components.timer:TimerExists(HAIL_EVENT_TIMERS.POST_HAIL) and (1 - GetPostHailEasingMult()) * 0.6 or 0
+local function GetMutatedBirdSpawnChance(spawnpoint) --High chance at first then lowers
+    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+    return (
+        mutatedbirdmanager and mutatedbirdmanager:GetPopulationForNodeAtPoint("mutatedbird", spawnpoint.x, spawnpoint.z) > 0
+        and inst.components.timer:TimerExists(HAIL_EVENT_TIMERS.POST_HAIL)
+    )   and (1 - GetPostHailEasingMult()) * 0.6 or 0
 end
 
 local SCARECROW_TAGS = { "scarecrow" }
@@ -246,7 +254,7 @@ local function PickBird(spawnpoint)
 		end
 	end
 
-    if math.random() < GetMutatedBirdSpawnChance() and bird ~= "puffin" then --FIXME (Omar): NO PUFFIN SUPPORT!!! For now?
+    if math.random() < GetMutatedBirdSpawnChance(spawnpoint) and bird ~= "puffin" then --FIXME (Omar): NO PUFFIN SUPPORT!!! For now?
         bird = "mutatedbird"
     end
 
@@ -261,11 +269,14 @@ end
 
 local function AutoRemoveTarget(inst, target)
     if _birds[target] ~= nil and target:IsAsleep() then
-        --if target:HasTag("bird_mutant_rift") then
-        --    self:StoreMutatedBird(target)
-        --else
-            target:Remove()
-        --end
+        if target:HasTag("bird_mutant_rift") then
+            local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+            if mutatedbirdmanager then
+                mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", target, 1)
+            end
+        end
+
+        target:Remove()
     end
 end
 
@@ -285,8 +296,10 @@ local function OnLunarBirdEvent(inst)
             local corpse = SpawnCorpseForPlayer(player)
             if corpse then
                 corpse_spawned = true
-                if mutate then
+                if mutate and CanLunarRiftMutateFromCorpse(inst) then
                     corpse:StartGestaltTimer(GetRandomMinMax(_corpse_gestalt_min_time, _corpse_gestalt_max_time))
+                elseif CanLunarPreRiftMutateFromCorpse(inst) or math.random() < 0.25 then
+                    corpse:SetNonGestaltCorpse()
                 else
                     corpse:StartFadeTimer(GetRandomMinMax(_corpse_fade_min_time, _corpse_fade_max_time))
                 end
@@ -345,6 +358,7 @@ local function OnIsLunarHailing(inst, ishailing, onpostinit)
 
         --Restart the post hail period
         inst.components.timer:StopTimer(HAIL_EVENT_TIMERS.POST_HAIL)
+        inst.components.timer:StopTimer(HAIL_EVENT_TIMERS.RETURN_BIRD_AMBIENCE)
     else
         --It was hailing, now it's ended! The bird population has been destroyed!
         if _ishailing then
@@ -354,7 +368,7 @@ local function OnIsLunarHailing(inst, ishailing, onpostinit)
             inst.components.timer:StartTimer(HAIL_EVENT_TIMERS.POST_HAIL, _posthail_time)
             inst.components.timer:StartTimer(HAIL_EVENT_TIMERS.RETURN_BIRD_AMBIENCE, _returnbirdambience_time)
         end
-        
+
         ClearLunarBirdEventTimer()
     end
 
@@ -472,22 +486,12 @@ function self:GetSpawnPoint(pt, is_corpse)
             return false
         end
         local allow_water = true
-        local moonstorm = false
-        if TheWorld.net.components.moonstorms and next(TheWorld.net.components.moonstorms:GetMoonstormNodes()) then
-            local node_index = TheWorld.Map:GetNodeIdAtPoint(spawnpoint_x, 0, spawnpoint_z)
-            local nodes = TheWorld.net.components.moonstorms._moonstorm_nodes:value()
-            for i, node in pairs(nodes) do
-                if node == node_index then
-                    moonstorm = true
-                    break
-                end
-            end
-        end
+        local in_moonstorm = TheWorld.net.components.moonstorms and TheWorld.net.components.moonstorms:IsXZInMoonstorm(spawnpoint_x, spawnpoint_z)
 
         return _map:IsPassableAtPoint(spawnpoint_x, spawnpoint_y, spawnpoint_z, allow_water) and
                #(TheSim:FindEntities(spawnpoint_x, 0, spawnpoint_z, 4, BIRDBLOCKER_TAGS)) == 0 and
                --A corpse isn't gonna care if it's the moonstorm or on creep!
-               (is_corpse or (not moonstorm and not _groundcreep:OnCreep(spawnpoint_x, spawnpoint_y, spawnpoint_z)))
+               (is_corpse or (not in_moonstorm and not _groundcreep:OnCreep(spawnpoint_x, spawnpoint_y, spawnpoint_z)))
     end
 
     local theta = math.random() * TWOPI
@@ -507,6 +511,8 @@ function self:SpawnBirdCorpse(spawnpoint)
 
     local corpse = SpawnPrefab("birdcorpse")
     --Rotation is in stategraph
+    corpse.sg:GoToState("corpse_fall")
+
     corpse:SetAltBuild(prefab)
     corpse:SetAltBank(prefab)
 
@@ -569,6 +575,11 @@ function self:SpawnBird(spawnpoint, ignorebait)
     end
 
     bird.Physics:Teleport(spawnpoint:Get())
+
+    -- We chose a bright beaked to spawn, so let's remove one from the node.
+    if prefab == "mutatedbird" then
+        TheWorld.components.mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", bird, -1)
+    end
 
     return bird
 end

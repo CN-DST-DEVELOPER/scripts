@@ -80,10 +80,19 @@ local events=
 			end
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
 {
+    State{  name = "init",
+		    onenter = function(inst)
+		    	inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
+		    end,
+	},
+
     State{  name = "idle",
             tags = {"idle", "canrotate"},
             onenter = function(inst, playanim)
@@ -357,9 +366,15 @@ local states=
                 inst.AnimState:PlayAnimation("death")
                 inst.components.locomotor:StopMoving()
                 inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+                inst:SetDeathLootLevel(1)
 
                 RemovePhysicsColliders(inst)
             end,
+
+            events =
+            {
+                CommonHandlers.OnCorpseDeathAnimOver(),
+            },
 
         },
 
@@ -555,5 +570,34 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddCorpseStates(states)
 
-return StateGraph("penguin", states, events, "idle", actionhandlers)
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutate_timeline = {
+        SoundFrameEvent(7, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(18, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(44, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(55, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(62, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(69, "lunarhail_event/creatures/lunar_mutation/mutate_rip_pre_31f"),
+        SoundFrameEvent(73, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(77, "turnoftides/creatures/together/mutated_hound/punch"),
+    },
+
+    mutatepst_timeline = {
+        SoundFrameEvent(0, "lunarhail_event/creatures/lunar_mutation/mutate_rip"),
+        FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound(inst._soundpath.."jumpin") end),
+    },
+},
+{
+    mutate = "mutated_penguin_reviving",
+    mutate_pst = "mutated_penguin_spawn",
+},
+nil,
+{
+    mutated_spawn_timing = 97 * FRAMES,
+    post_mutate_state = "taunt",
+})
+
+return StateGraph("penguin", states, events, "init", actionhandlers)

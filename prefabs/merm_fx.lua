@@ -24,6 +24,7 @@ local function OnUpdateThorns(inst)
                     inst.owner = nil
                 end
 
+                local damage = PlayerDamageMod(potential_target, inst.damage, TUNING.MERM_LUNAR_THORN_PLAYERDAMAGEPERCENT)
                 if inst.owner ~= nil then
                     local leader = inst.owner.components.follower and inst.owner.components.follower.leader
                     if inst.owner.components.combat ~= nil and
@@ -35,7 +36,7 @@ local function OnUpdateThorns(inst)
                         local attacker = (potential_target.components.follower ~= nil
                             and potential_target.components.follower:GetLeader() == inst.owner
                             and inst) or inst.owner
-                        potential_target.components.combat:GetAttacked(attacker, inst.damage, nil, nil, inst.spdmg)
+                        potential_target.components.combat:GetAttacked(attacker, damage, nil, nil, inst.spdmg)
                     end
                 elseif potential_target.components.combat:CanBeAttacked() then
                     -- NOTES(JBK): inst.owner is nil here so this is for non worn things like the bramble trap.
@@ -50,7 +51,7 @@ local function OnUpdateThorns(inst)
                     end
                     if not isally then
                         inst.ignore[potential_target] = true
-                        potential_target.components.combat:GetAttacked(inst, inst.damage, nil, nil, inst.spdmg)
+                        potential_target.components.combat:GetAttacked(inst, damage, nil, nil, inst.spdmg)
                     end
                 end
             end

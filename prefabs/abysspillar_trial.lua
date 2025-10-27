@@ -359,7 +359,7 @@ local function TrySpawnMinionAt(inst, row, col, gridfacing, leftminion, flip)
 	local minion = inst.components.entitytracker:GetEntity(leftminion and "leftminion" or "rightminion")
 	if minion and not minion:IsActivated() then
 		local pillar = GetGridPillar(inst, row, col)
-		if pillar and pillar:TryReserveForMinion() then
+		if pillar and pillar:TryToReservePlatform(minion) then
 			minion:RemoveFromBigPillar()
 			minion:Activate()
 			minion = PuzzlePiece(minion, gridfacing)
@@ -543,7 +543,7 @@ local function fn()
 								v:SetWorldRotationRelativeTo(inst.dirx, inst.dirz)
 								drow1, dcol1 = v:GetDir()
 								vpillar = GetGridPillar(inst, vpillar.row + drow1, vpillar.col + dcol1)
-								if vpillar and vpillar ~= dest and vpillar:TryReserveForMinion() then
+								if vpillar and vpillar ~= dest and vpillar:TryToReservePlatform(v.ent) then
 									local x1, _, z1 = vpillar.Transform:GetWorldPosition()
 									v.ent.components.locomotor:StartHopping(x1, z1, vpillar)
 								end

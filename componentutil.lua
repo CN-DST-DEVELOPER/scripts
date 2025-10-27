@@ -886,19 +886,31 @@ end
 --For visual fx
 --e.g. used by electrocute_fx
 
+local function IsSmallCreature(inst)
+    return inst:HasAnyTag("smallcreature", "smallcreaturecorpse", "small")
+end
+
+local function IsEpicCreature(inst)
+    return inst:HasAnyTag("epic", "epiccorpse")
+end
+
+local function IsLargeCreature(inst)
+    return inst:HasAnyTag("largecreature", "largecreaturecorpse", "large")
+end
+
 function GetCombatFxSize(ent)
 	local r = ent.override_combat_fx_radius
 	local sz = ent.override_combat_fx_size
 	local ht = ent.override_combat_fx_height
 
 	local r1 = r or ent:GetPhysicsRadius(0)
-	if ent:HasTag("smallcreature") then
+	if IsSmallCreature(ent) then
 		r = r or math.min(0.5, r1)
 		sz = sz or "tiny"
-	elseif r1 >= 1.5 or ent:HasTag("epic") then
+	elseif r1 >= 1.5 or IsEpicCreature(ent) then
 		r = r or math.max(1.5, r1)
 		sz = sz or "large"
-	elseif r1 >= 0.9 or ent:HasTag("largecreature") then
+	elseif r1 >= 0.9 or IsLargeCreature(ent) then
 		r = r or math.max(1, r1)
 		sz = sz or "med"
 	else
@@ -1103,6 +1115,232 @@ end
 
 function GetActionPassableTestFn(inst)
 	return GetActionPassableTestFnAt(inst.Transform:GetWorldPosition())
+end
+
+--------------------------------------------------------------------------
+
+--Mutation stuff
+
+function EntityHasCorpse(inst)
+    return inst.sg and inst.sg:HasState("corpse")
+        and not inst.sg.mem.nocorpse
+end
+
+function CanEntityBeGestaltMutated(inst)
+    return inst.sg and inst.sg:HasState("corpse_lunarrift_mutate")
+        and not inst.sg.mem.nolunarmutate
+        and (inst.spawn_gestalt_mutated_tuning == nil or TUNING[inst.spawn_gestalt_mutated_tuning])
+end
+
+function CanEntityBeNonGestaltMutated(inst)
+    return inst.sg and inst.sg:HasState("corpse_prerift_mutate")
+        and not inst.sg.mem.nolunarmutate
+        and (inst.spawn_lunar_mutated_tuning == nil or TUNING[inst.spawn_lunar_mutated_tuning])
+end
+
+function GetLunarPreRiftMutationChance(inst)
+    return (
+        FunctionOrValue(inst.lunar_mutation_chance, inst) or TUNING.PRERIFT_MUTATION_SPAWN_CHANCE
+    ) * TheWorld.Map:GetLunacyAreaModifier(inst.Transform:GetWorldPosition())
+end
+
+function CanLunarPreRiftMutateFromCorpse(inst)
+    if not CanEntityBeNonGestaltMutated(inst) then
+        return false
+    elseif inst.spawn_lunar_mutated_tuning and not TUNING[inst.spawn_lunar_mutated_tuning] then
+        return false
+    elseif inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
+        return false
+    elseif inst.forcemutate then
+        return true
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
+    elseif math.random() <= GetLunarPreRiftMutationChance(inst) then -- mutation chance returns 0 if we're not in a lunacy area
+        return true
+    end
+end
+
+function CanLunarRiftMutateFromCorpse(inst)
+    local riftspawner = TheWorld.components.riftspawner
+    if not CanEntityBeGestaltMutated(inst) then
+        return false
+    elseif inst.spawn_gestalt_mutated_tuning and not TUNING[inst.spawn_gestalt_mutated_tuning] then
+        return false
+    elseif riftspawner and not riftspawner:IsLunarPortalActive() then
+        return false
+    elseif inst:IsOnOcean() then --TODO Support ocean lunar mutations?
+        return false
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
+    end
+
+    return true
+end
+
+function CanEntityBecomeCorpse(inst)
+    local corpsepersistmanager = TheWorld.components.corpsepersistmanager
+    if not EntityHasCorpse(inst) then
+        return false
+    elseif inst.forcecorpse then
+        return true
+    elseif corpsepersistmanager ~= nil and corpsepersistmanager:ShouldRetainCreatureAsCorpse(inst) then
+        return true
+    end
+end
+
+function TryEntityToCorpse(inst, corpseprefab)
+    local can_corpse = CanEntityBecomeCorpse(inst)
+    local can_rift_mutate = CanLunarRiftMutateFromCorpse(inst)
+    local can_prerift_mutate = CanLunarPreRiftMutateFromCorpse(inst)
+
+    if can_corpse or can_rift_mutate or can_prerift_mutate then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local rot = inst.Transform:GetRotation()
+        local sx, sy, sz = inst.Transform:GetScale()
+
+        local corpse = SpawnPrefab(corpseprefab)
+        corpse.Transform:SetPosition(x, y, z)
+        corpse.Transform:SetRotation(rot)
+        corpse.Transform:SetScale(sx, sy, sz) -- Corpses will copy scale from the original mob. Mutated will NOT.
+        corpse.AnimState:MakeFacingDirty()
+
+        local corpsedata = inst.SaveCorpseData ~= nil and inst:SaveCorpseData(corpse) or nil
+
+        if corpsedata then
+            corpse:SetCorpseData(corpsedata)
+        end
+
+        if can_rift_mutate then
+            corpse:SetGestaltCorpse()
+        elseif can_prerift_mutate then
+            corpse:SetNonGestaltCorpse()
+        end
+
+        inst:Remove()
+
+        return corpse
+    end
+end
+
+--------------------------------------------------------------------------
+
+function CanApplyPlayerDamageMod(target)
+    return target ~= nil and (target.isplayer or target:HasTag("player_damagescale"))
+end
+
+function PlayerDamageMod(target, damage, mod)
+    return CanApplyPlayerDamageMod(target) and damage * mod
+        or damage
+end
+
+--------------------------------------------------------------------------
+
+local BASE_HIT_SOUND = "dontstarve/impacts/impact_"
+
+--V2C: Considered creating a mapping for tags to strings, but we cannot really
+--     rely on these tags being properly mutually exclusive, so it's better to
+--     leave it like this as if explicitly ordered by priority.
+
+function GetArmorImpactSound(inventory, weaponmod) -- This can return nil.
+    weaponmod = weaponmod or "dull"
+    --Order by priority
+	local armormod =
+		(inventory:ArmorHasTag("forcefield") and "forcefield_armour_") or
+		(inventory:ArmorHasTag("sanity") and "sanity_armour_") or
+		(inventory:ArmorHasTag("lunarplant") and "lunarplant_armour_") or
+		(inventory:ArmorHasTag("dreadstone") and "dreadstone_armour_") or
+		(inventory:ArmorHasTag("metal") and "metal_armour_") or
+		(inventory:ArmorHasTag("marble") and "marble_armour_") or
+		(inventory:ArmorHasTag("shell") and "shell_armour_") or
+		(inventory:ArmorHasTag("wood") and "wood_armour_") or
+		(inventory:ArmorHasTag("grass") and "straw_armour_") or
+		(inventory:ArmorHasTag("fur") and "fur_armour_") or
+		(inventory:ArmorHasTag("cloth") and "shadowcloth_armour_") or
+		nil
+
+	if armormod ~= nil then
+		return BASE_HIT_SOUND..armormod..weaponmod
+	end
+end
+
+function GetWallImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    return
+        BASE_HIT_SOUND..(
+            (inst:HasTag("grass") and "straw_wall_") or
+            (inst:HasTag("stone") and "stone_wall_") or
+            (inst:HasTag("marble") and "marble_wall_") or
+            (inst:HasTag("fence_electric") and "metal_armour_") or
+            "wood_wall_"
+        )..weaponmod
+end
+
+function GetObjectImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    return
+        BASE_HIT_SOUND..(
+            (inst:HasTag("clay") and "clay_object_") or
+            (inst:HasTag("stone") and "stone_object_") or
+            "object_"
+        )..weaponmod
+end
+
+function GetCreatureImpactSound(inst, weaponmod)
+    weaponmod = weaponmod or "dull"
+
+    local tgttype =
+		(inst:HasAnyTag("hive", "eyeturret", "houndmound") and "hive_") or
+        (inst:HasTag("ghost") and "ghost_") or
+		(inst:HasAnyTag("insect", "spider") and "insect_") or
+		(inst:HasAnyTag("chess", "mech") and "mech_") or
+		--V2C: "mech" higher priority over "brightmare(boss)"
+		(inst:HasAnyTag("brightmare", "brightmareboss") and "ghost_") or
+        (inst:HasTag("mound") and "mound_") or
+		(inst:HasAnyTag("shadow", "shadowminion", "shadowchesspiece") and "shadow_") or
+		(inst:HasAnyTag("tree", "wooden") and "tree_") or
+        (inst:HasTag("veggie") and "vegetable_") or
+        (inst:HasTag("shell") and "shell_") or
+		(inst:HasAnyTag("rocky", "fossil") and "stone_") or
+        inst.override_combat_impact_sound or
+        nil
+
+    return
+        BASE_HIT_SOUND..(
+            tgttype or "flesh_"
+        )..(
+			(IsSmallCreature(inst) and "sml_") or
+			((IsLargeCreature(inst) or IsEpicCreature(inst)) and not inst:HasAnyTag("shadowchesspiece", "fossil", "brightmareboss") and "lrg_") or
+            (tgttype == nil and inst:GetIsWet() and "wet_") or
+            "med_"
+        )..weaponmod
+end
+
+--------------------------------------------------------------------------
+
+local function SplitTopologyId(s)
+	local a = {}
+    --
+	for word in string.gmatch(s, '[^/:]+') do
+		a[#a + 1] = word
+	end
+    --
+	return a
+end
+
+-- Useful for splitting a topology id into task, layout, index, and room id's for us to look at.
+function ConvertTopologyIdToData(idname)
+    if idname == "START" then -- Special case for the id that the portal spawns in.
+        return { task_id = "START" } -- Consider START as a task, for now?
+    else
+        local split_ids = SplitTopologyId(idname)
+        if split_ids[1] == "StaticLayoutIsland" then
+            return { layout_id = split_ids[2] }
+        else
+            return { task_id = split_ids[1], index_id = split_ids[2], room_id = split_ids[3] }
+        end
+    end
 end
 
 --------------------------------------------------------------------------

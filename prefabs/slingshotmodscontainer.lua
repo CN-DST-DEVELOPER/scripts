@@ -6,8 +6,6 @@ local assets =
 local function PostUpdate(inst)
 	TheFocalPoint.SoundEmitter:PlaySound("meta5/walter/slingshot_UI_modify")
 
-	--technically not safe to remove during update loop, but we will
-	--do it anyway as long as we don't use any other post update fns
 	inst.components.updatelooper:RemovePostUpdateFn(PostUpdate)
 	inst._sfxqueued = nil
 end

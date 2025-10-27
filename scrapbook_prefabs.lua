@@ -1983,6 +1983,10 @@ local PREFABS =
     ["playbill_the_veil"] = true,
     ["playbill_the_vault"] = true,
 
+    -- Hallowed Nights 2025
+    ["mutatedbuzzard_gestalt"] = true,
+    ["pumpkinhat"] = true,
+
     -----------------------------------------------
 
     --["archive_switch"] = true, proxy for archive_switch_base

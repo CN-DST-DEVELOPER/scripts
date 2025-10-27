@@ -1546,16 +1546,11 @@ local function finale_DoTalkSound(inst, len)
 	inst._talktask = inst:DoTaskInTime(len, finale_StopTalkSound)
 end
 
-local function finale_CancelPostUpdate(inst, finale_PostUpdate)
-	inst._cancelpostupdate = nil
-	inst.components.updatelooper:RemovePostUpdateFn(finale_PostUpdate)
-end
-
 local function finale_PostUpdate(inst)
-	if inst._cancelpostupdate == nil and inst.AnimState:IsCurrentAnimation("wagstaff_finale2") then
+	if inst.AnimState:IsCurrentAnimation("wagstaff_finale2") then
 		inst.fx.AnimState:PlayAnimation("wagstaff_finale2")
 		inst.fx.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
-		inst._cancelpostupdate = inst:DoStaticTaskInTime(0, finale_CancelPostUpdate, finale_PostUpdate)
+		inst.components.updatelooper:RemovePostUpdateFn(finale_PostUpdate)
 	end
 end
 

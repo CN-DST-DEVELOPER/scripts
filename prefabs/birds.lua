@@ -227,6 +227,8 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 
     if name == "canary" then
         table.insert(prefabs, "canary_poisoned")
+    elseif name == "puffin" then
+        table.insert(prefabs, "feather_crow")
     end
 
 	local soundbank = "dontstarve"
@@ -295,9 +297,14 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
             return inst
         end
 
+        inst.lunar_mutation_chance = TUNING.BIRD_PRERIFT_MUTATION_SPAWN_CHANCE
+
         inst.sounds = BIRD_SOUNDS
 
         inst.trappedbuild = name.."_build"
+
+        inst.spawn_lunar_mutated_tuning = "SPAWN_MUTATED_BIRDS"
+        inst.spawn_gestalt_mutated_tuning = "SPAWN_MUTATED_BIRDS_GESTALT"
 
         inst:AddComponent("locomotor") -- locomotor must be constructed before the stategraph
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
@@ -306,7 +313,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
 
         inst:AddComponent("lootdropper")
 		if custom_loot_setup ~= nil then
-			custom_loot_setup(inst, prefabs)
+			custom_loot_setup(inst)
 		else
 			if not no_feather then
 				inst.components.lootdropper:AddRandomLoot("feather_"..name, name == "canary" and .1 or 1)
@@ -379,6 +386,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         if birdspawner ~= nil then
             inst:ListenForEvent("onremove", birdspawner.StopTrackingFn)
             inst:ListenForEvent("enterlimbo", birdspawner.StopTrackingFn)
+            inst:ListenForEvent("death", birdspawner.StopTrackingFn)
             -- inst:ListenForEvent("exitlimbo", birdspawner.StartTrackingFn)
             birdspawner:StartTracking(inst)
         end
@@ -414,12 +422,10 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
     return Prefab(name, fn, assets, prefabs)
 end
 
-local function puffin_loot_setup(inst, prefab_deps)
+local function puffin_loot_setup(inst)
 	inst.components.lootdropper:AddRandomLoot("feather_crow", 1)
 	inst.components.lootdropper:AddRandomLoot("smallmeat", 1)
 	inst.components.lootdropper.numrandomloot = 1
-
-    table.insert(prefab_deps, "feather_crow")
 end
 
 return makebird("crow", "crow"),

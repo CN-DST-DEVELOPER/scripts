@@ -1,27 +1,10 @@
 require("stategraphs/commonstates")
 
-local actionhandlers =
-{
+local actionhandlers = {
 }
 
-local events =
-{
+local events = {
     CommonHandlers.OnLocomote(false, true),
-
-    EventHandler("death", function(inst)
-		inst.sg:GoToState("death", "death")
-	end),
-
-    EventHandler("doattack", function(inst)
-        if not (inst.sg:HasStateTag("busy")) then
-            inst.sg:GoToState("attack")
-        end
-    end),
-
-	EventHandler("captured", function(inst)
-		--can interrupt ANY state
-		inst.sg:GoToState("captured")
-	end),
 
     EventHandler("spawned", function(inst)
         if not (inst.sg:HasStateTag("busy")) then
@@ -29,81 +12,87 @@ local events =
         end
     end),
 
+    EventHandler("death", function(inst)
+        inst.sg:GoToState("death")
+    end),
+
+    EventHandler("doattack", function(inst) -- Melee.
+        if not (inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("attack")
+        end
+    end),
+
+    EventHandler("doattack_mid", function(inst)
+        if not (inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("attack_mid")
+        end
+    end),
+
+    EventHandler("doattack_far", function(inst)
+        if not (inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("attack_far")
+        end
+    end),
+
     EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and inst.sg:HasStateTag("idle") then
+        if not (inst.sg:HasStateTag("busy")) and not inst.components.health:IsDead() and inst.sg:HasStateTag("idle") then
             inst.sg:GoToState("hit")
         end
     end),
 
-    EventHandler("relocate", function(inst)
-        if (inst.sg.mem.missed_dashes or 0) > 3 or math.random() < TUNING.GESTALT_EVOLVED_EXPLODE_CHANCE then
-            inst.sg.mem.missed_dashes = nil
-            inst.sg:GoToState("attack_explode")
-        else
-            inst.sg:GoToState("relocate")
+    EventHandler("teleport", function(inst, data)
+        if not (inst.sg:HasStateTag("busy")) then
+            inst.sg:GoToState("teleport", data)
         end
     end),
 }
 
---NOTE: these are stategraph tags!
-local INVALID_ATTACK_STATE_TAGS = {"bedroll", "knockout", "sleeping", "tent", "waking"}
+local INVALID_ATTACK_STATE_TAGS = {"bedroll", "knockout", "sleeping", "tent", "waking"} -- NOTE: these are stategraph tags!
 local function IsValidAttackTarget(inst, target, x, z, rangesq)
-	local dsq = target:GetDistanceSqToPoint(x, 0, z)
-	return dsq < rangesq
-		and not (target.components.health and target.components.health:IsDead())
-		and not (target.sg and target.sg:HasAnyStateTag(INVALID_ATTACK_STATE_TAGS))
-		and not target:HasAnyTag("brightmare", "brightmareboss")
-		and inst.components.combat:CanTarget(target)
-		, dsq
+    local dsq = target:GetDistanceSqToPoint(x, 0, z)
+    return dsq < rangesq
+        and not (target.components.health and target.components.health:IsDead())
+        and not (target.sg and target.sg:HasAnyStateTag(INVALID_ATTACK_STATE_TAGS))
+        and not target:HasAnyTag("brightmare", "brightmareboss")
+        and inst.components.combat:CanTarget(target)
+        , dsq
 end
 
---These tags and testfn are used with DoAreaAttack below,
---and should give the same result as IsValidAttackTarget.
-local AREAATTACK_EXCLUDETAGS = { "INLIMBO", "notarget", "invisible", "noattack", "flight", "playerghost", "brightmare", "brightmareboss" }
-local function AreaAttackTestFn(target, inst)
-	return not (target.components.health and target.components.health:IsDead())
-		and not (target.sg and target.sg:HasAnyStateTag(INVALID_ATTACK_STATE_TAGS))
-		and inst.components.combat:CanTarget(target)
-end
+local function FindAoEChargeAttackTarget(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local rangesq = TUNING.GESTALT_ATTACK_HIT_RANGE_SQ
 
-local function FindBestAttackTarget(inst)
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local rangesq = TUNING.GESTALT_ATTACK_HIT_RANGE_SQ
-
-	local target = inst.components.combat.target
-	if target and IsValidAttackTarget(inst, target, x, z, rangesq) then
-		return target
+    local target = inst.components.combat.target
+    if target and IsValidAttackTarget(inst, target, x, z, rangesq) then
+        return target
     end
 
-	target = nil
+    target = nil
     for _, player in pairs(AllPlayers) do
-		local isvalid, dsq = IsValidAttackTarget(inst, player, x, z, rangesq)
-		if isvalid then
-			rangesq = dsq
-			target = player
+        local isvalid, dsq = IsValidAttackTarget(inst, player, x, z, rangesq)
+        if isvalid then
+            rangesq = dsq
+            target = player
         end
     end
-	return target
+    return target
 end
 
-local function DoSpecialAttack(inst, target)
-	if target.components.sanity ~= nil then
-		target.components.sanity:DoDelta(TUNING.GESTALT_ATTACK_DAMAGE_SANITY)
-	end
+local function DoAoEChargeAttackHitOn(inst, target)
+    if target.components.sanity then
+        target.components.sanity:DoDelta(TUNING.GESTALT_ATTACK_DAMAGE_SANITY)
+    end
 
     inst.components.combat:DoAttack(target)
-    if not (target.components.health ~= nil and target.components.health:IsDead()) then
+    if not (target.components.health and target.components.health:IsDead()) then
         local grogginess = target.components.grogginess
-        if grogginess ~= nil then
+        if grogginess then
             grogginess:AddGrogginess(TUNING.GESTALT_EVOLVED_ATTACK_DAMAGE_GROGGINESS, TUNING.GESTALT_EVOLVED_ATTACK_DAMAGE_KO_TIME)
         end
     end
 end
 
-local function go_to_idle(inst) inst.sg:GoToState("idle") end
-
-local states =
-{
+local states = {
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -113,16 +102,11 @@ local states =
             inst.AnimState:PlayAnimation("idle")
 
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/idle_LP", "idle_lp")
-
-            if inst._do_despawn then
-                inst.sg:GoToState("relocate")
-            end
         end,
 
-        events =
-        {
+        events = {
             EventHandler("animover", function(inst)
-                inst.sg:GoToState((inst._do_despawn and "relocate") or "idle")
+                inst.sg:GoToState("idle")
             end),
         },
 
@@ -142,9 +126,10 @@ local states =
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/emerge_vocals")
         end,
 
-        events =
-        {
-            EventHandler("animover", go_to_idle),
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
         },
     },
 
@@ -159,9 +144,10 @@ local states =
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/emerge_vocals")
         end,
 
-        events =
-        {
-            EventHandler("animover", go_to_idle),
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
         },
     },
 
@@ -171,217 +157,200 @@ local states =
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("melt")
+            inst.AnimState:PlayAnimation("mutate")
+            
+            local owner = inst.components.follower and inst.components.follower.leader or nil
+            if owner and owner.components.petleash then
+                owner.components.petleash:DetachPet(inst)
+            end
             inst.persists = false
 
-            inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/melt")
+            inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/mutate")
 
             inst.components.lootdropper:DropLoot(inst:GetPosition())
         end,
 
-        events =
-        {
-            EventHandler("animover", function(inst) inst:Remove() end),
-        },
-
-        onexit = function(inst) inst:Remove() end,
-    },
-
-    -- Relocation
-    State{
-        name = "relocate",
-        tags = {"busy", "noattack", "canrotate"},
-
-        onenter = function(inst)
-            inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("melt")
-
-            inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/melt")
-        end,
-
-        events =
-        {
+        events = {
             EventHandler("animover", function(inst)
-                if inst._do_despawn then
-                    inst:Remove()
-                else
-				    inst.sg:GoToState("relocating")
-                end
-			end),
+                inst:Remove()
+            end),
         },
-    },
 
-    State{
-        name = "relocating",
-		tags = { "busy", "noattack", "hidden", "invisible" },
-
-        onenter = function(inst)
-            inst.components.locomotor:Stop()
-			inst:Hide()
-            inst.sg:SetTimeout(
-                (math.random() * TUNING.GESTALT_EVOLVED_RELOCATE_TIME_RAND) + TUNING.GESTALT_EVOLVED_RELOCATE_TIME_BASE
-            )
+        onexit = function(inst)
+            inst:Remove()
         end,
-
-        ontimeout = function(inst)
-			inst.sg.statemem.dest = inst:FindRelocatePoint()
-			if inst.sg.statemem.dest ~= nil then
-				inst.sg:GoToState("emerge")
-			else
-				inst:Remove()
-			end
-		end,
-
-		onexit = function(inst)
-			if inst.sg.statemem.dest ~= nil then
-				inst.Transform:SetPosition(inst.sg.statemem.dest:Get())
-				inst:Show()
-			else
-				inst:Remove()
-			end
-		end
     },
 
-    -- Attacks
+    -- Melee attack
     State{
         name = "attack",
-        tags = { "busy", "noattack", "attack", "jumping" },
+        tags = { "busy", "attack", "jumping" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("attack")
 
-			inst.components.locomotor:Stop()
-			if inst.components.combat.target ~= nil then
-				inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
-			end
-	        inst.components.combat:StartAttack()
+            inst.components.locomotor:Stop()
+            if inst.components.combat.target ~= nil then
+                inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
+            end
+            inst.components.combat:StartAttack()
 
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/attack_vocals")
-		end,
+        end,
 
-        timeline =
-        {
+        timeline = {
             FrameEvent(15, function(inst)
                 inst.Physics:SetMotorVelOverride(20, 0, 0)
                 inst.sg.statemem.enable_attack = true
             end),
             FrameEvent(25, function(inst)
-                if inst.sg.statemem.enable_attack then
-                    -- We didn't hit anything... count it as a miss.
-                    inst.sg.statemem.enable_attack = false
-                    inst.sg.mem.missed_dashes = (inst.sg.mem.missed_dashes or 0) + 1
-                end
+                inst.sg.statemem.enable_attack = false
                 inst.Physics:ClearMotorVelOverride()
                 inst.components.locomotor:Stop()
-            end),
-            FrameEvent(30, function(inst)
-                inst.sg:RemoveStateTag("noattack")
             end),
         },
 
         onupdate = function(inst)
-			if inst.sg.statemem.enable_attack then
-				local target = FindBestAttackTarget(inst)
-				if target ~= nil then
-					DoSpecialAttack(inst, target)
+            if inst.sg.statemem.enable_attack then
+                local target = FindAoEChargeAttackTarget(inst)
+                if target ~= nil then
+                    DoAoEChargeAttackHitOn(inst, target)
                     inst.sg.statemem.enable_attack = false
-				end
-			end
+                end
+            end
         end,
 
-        events =
-        {
-            EventHandler("animover", go_to_idle),
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
         },
 
         onexit = function(inst)
-			inst.Physics:ClearMotorVelOverride()
-			inst.components.locomotor:Stop()
-		end,
+            inst.Physics:ClearMotorVelOverride()
+            inst.components.locomotor:Stop()
+        end,
     },
 
+    -- Mid range attack
     State{
-        name = "attack_explode",
-        tags = { "busy", "noattack", "attack", "jumping" },
+        name = "attack_mid",
+        tags = { "busy", "attack" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("summon")
+
+            inst.components.locomotor:Stop()
+            if inst.components.combat.target ~= nil then
+                inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
+            end
+
+            inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/attack_vocals")
+        end,
+
+        timeline = {
+            FrameEvent(8, function(inst)
+                inst:DoAttack_Mid()
+            end),
+        },
+
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
+        },
+    },
+
+    -- Far range attack
+    State{
+        name = "attack_far",
+        tags = { "busy", "attack" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("explode")
 
-			inst.components.locomotor:Stop()
-			if inst.components.combat.target ~= nil then
-				inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
-			end
-	        inst.components.combat:StartAttack()
+            inst.components.locomotor:Stop()
+            if inst.components.combat.target ~= nil then
+                inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
+            end
+            inst.components.combat:StartAttack()
 
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/attack_vocals")
-		end,
+        end,
 
-        timeline =
-        {
-            FrameEvent(28, function(inst)
-				inst.components.combat:DoAreaAttack(inst, 4, nil, AreaAttackTestFn, nil, AREAATTACK_EXCLUDETAGS)
+        timeline = {
+            FrameEvent(24, function(inst)
+                inst:DoAttack_Far()
             end),
         },
 
-        events =
-        {
+        events = {
             EventHandler("animover", function(inst)
-                inst.sg:GoToState("relocate")
+                inst.sg:GoToState("idle")
             end),
         },
-
-        onexit = function(inst)
-			inst.Physics:ClearMotorVelOverride()
-			inst.components.locomotor:Stop()
-		end,
     },
 
     State{
         name = "hit",
-        tags = { "busy", "hit" },
+        tags = { "hit" }, -- Intentionally not busy so it can attack back.
 
         onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("hit")
         end,
 
-        events =
-        {
-            EventHandler("animover", go_to_idle),
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("idle")
+            end),
         },
     },
 
-    --
-	State{
-		name = "captured",
-		tags = { "busy", "noattack", "nointerrupt" },
+    State{
+        name = "teleport",
+        tags = {"busy", "noattack", "canrotate"},
 
-		onenter = function(inst)
-			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("melt")
-			inst.AnimState:SetFrame(1)
-			inst.AnimState:SetDeltaTimeMultiplier(2)
-			inst:AddTag("NOCLICK")
+        onenter = function(inst, data)
+            inst.sg.statemem.data = data
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("melt")
 
             inst.SoundEmitter:PlaySound("rifts5/gestalt_evolved/melt")
-		end,
+        end,
 
-		events =
-		{
-			EventHandler("animover", function(inst)
-				if inst.AnimState:AnimDone() then
-					--shouldn't reach here
-					inst.sg:GoToState("emerge")
-				end
-			end),
-		},
+        events = {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("teleporting", inst.sg.statemem.data)
+            end),
+        },
+    },
 
-		onexit = function(inst)
-			--shouldn't reach here
-			inst.AnimState:SetDeltaTimeMultiplier(1)
-			inst:RemoveTag("NOCLICK")
-		end,
-	},
+    State{
+        name = "teleporting",
+        tags = { "busy", "noattack", "hidden", "invisible" },
+
+        onenter = function(inst, data)
+            inst.sg.statemem.data = data
+            inst.components.locomotor:Stop()
+            inst:Hide()
+
+            inst.sg:SetTimeout(TUNING.GESTALT_EVOLVED_TELEPORT_TIME_INVISIBLE)
+        end,
+
+        ontimeout = function(inst)
+            inst.sg:GoToState("emerge", inst.sg.statemem.data)
+        end,
+
+        onexit = function(inst)
+            inst._should_teleport = nil
+            local dest = inst.sg.statemem.data and inst.sg.statemem.data.dest or nil
+            if dest then
+                inst.Transform:SetPosition(dest:Get())
+            end
+            inst:Show()
+        end
+    },
 }
 
 CommonStates.AddWalkStates(states,

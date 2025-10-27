@@ -718,7 +718,7 @@ return {
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Did you see that?!",
+    ANNOUNCE_SPOOKED = "Ah!",
 	ANNOUNCE_BRAVERY_POTION = "Those trees don't seem so spooky anymore.",
 	ANNOUNCE_MOONPOTION_FAILED = "Perhaps I didn't let it steep long enough...",
 
@@ -1144,7 +1144,7 @@ return {
     ANNOUNCE_OTTERBOAT_OUTOFSHALLOWS = "I've got a sinking feeling this should've stayed in the shallows.",
     ANNOUNCE_OTTERBOAT_DENBROKEN = "Getting rid of that den might have started a chain reaction...",
 
-    ANNOUNCE_GATHER_MERM = "Must be a Merm thing.",
+    ANNOUNCE_GATHER_MERM = "Must be a merm thing.",
 
     -- rifts 4
     ANNOUNCE_EXIT_GELBLOB = "I was drowning in that... stuff!",
@@ -1195,6 +1195,8 @@ return {
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Wait a minute, what is that doing down here?",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzz off! We're not dead yet! Wait a minute, these ones are mutated.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5793,7 +5795,7 @@ return {
             REVIVING = "It's becoming a new species!", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "I admire its dead-ication.", -- Generic string
             EATING_CORPSE = "Don't mind me, just carrion eating.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5865,6 +5867,45 @@ return {
 			GENERIC = "What mite it be?",
 			SLEEPING = "Careful, it mite wake up.",
             VENTING = "It's fuming mad!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "That's a hollow expression.",
+			UNCARVED = "It's no gourd to wear without a face.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "I call fowl.", --witnessing the corpse
+            BURNING  = "That's what I call a firebird.", --when its burning
+            REVIVING = "It's becoming a new species!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Ewwww!",
+			BURNING = "Much better.",
+			REVIVING = "This is all wrong.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Eww! I feel sick.",
+			BURNING = "Much better.",
+			REVIVING = "This is not good.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "A merm has died.",
+			BURNING = "That smell is the worst.",
+			REVIVING = "Dead merm waking!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

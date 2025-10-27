@@ -89,7 +89,7 @@ local states =
 
                 -- corpse_gestalt handler.
                 elseif inst.sg.statemem.corpse ~= nil and inst.sg.statemem.corpse:IsValid() then
-                    inst.sg.statemem.corpse:StartMutation()
+                    inst.sg.statemem.corpse:StartLunarRiftMutation()
                 end
             end ),
             FrameEvent(30, function(inst)
@@ -134,7 +134,7 @@ local states =
 
 				-- corpse_gestalt handler.
 				elseif inst.sg.statemem.corpse ~= nil and inst.sg.statemem.corpse:IsValid() then
-                    inst.sg.statemem.corpse:StartMutation()
+                    inst.sg.statemem.corpse:StartLunarRiftMutation()
 
                     if TheWorld.components.lunarthrall_plantspawner ~= nil and not inst.sg.statemem.corpse:HasTag("small_corpse") then
                         TheWorld.components.lunarthrall_plantspawner:RemoveWave()

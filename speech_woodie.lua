@@ -709,7 +709,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "You see that, Lucy?",
+    ANNOUNCE_SPOOKED = "Oh geez!",
 	ANNOUNCE_BRAVERY_POTION = "Glad that's over. Never thought I'd be scared of trees.",
 	ANNOUNCE_MOONPOTION_FAILED = "Consider yourself lucky, eh?",
 
@@ -1186,6 +1186,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "You see that, Luce? That creepy hand snuffed a torch!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Those buzzards look different to you, Luce?", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5582,7 +5584,7 @@ return{
         MERM_SHADOW = "That lil' Merm really worked you to death, eh?",
         MERMGUARD_SHADOW = "There's no quit in these fellas.",
 
-        MERM_LUNAR = "What the heck is she feedin' you guys?",
+        MERM_LUNAR = "What the heck is happening to you guys?",
         MERMGUARD_LUNAR = "Those eyes have seen some things.",
 
         -- Rifts 4
@@ -5784,7 +5786,7 @@ return{
             REVIVING = "This is the worst.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Oh man. That's bad. So bad.", -- Generic string
             EATING_CORPSE = "We need to get outta here, Luce.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5856,6 +5858,45 @@ return{
 			GENERIC = "Stay away from me, bug!",
 			SLEEPING = "We should get it while it's sleeping.",
             VENTING = "Watch out for the gas!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "You know why I didn't ask you, Lucy. You would've butchered it.",
+			UNCARVED = "This should be fun.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "I still don't trust it.", --witnessing the corpse
+            BURNING  = "Finally.", --when its burning
+            REVIVING = "This is the worst.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Yuck.",
+			BURNING = "It's making me sick.",
+			REVIVING = "Why is this happening?",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "That's nasty.",
+			BURNING = "I can't look away!",
+			REVIVING = "Noooooo!",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "That's unfortunate.",
+			BURNING = "It's the safest thing to do.",
+			REVIVING = "I was afraid that might happen!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

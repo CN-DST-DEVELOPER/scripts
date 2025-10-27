@@ -184,7 +184,14 @@ local COMBAT_TIMELINES = {
     },
 }
 local COMBAT_ANIMS = { attack = "bite" }
-local COMBAT_FNS = { }
+local COMBAT_FNS = {
+    deathenter = function(inst)
+        local amphibiouscreature = inst.components.amphibiouscreature
+        if amphibiouscreature and amphibiouscreature.in_water then
+            inst.AnimState:PushAnimation("death_idle", true)
+        end
+    end,
+}
 CommonStates.AddCombatStates(states, COMBAT_TIMELINES, COMBAT_ANIMS, COMBAT_FNS)
 
 CommonStates.AddSleepExStates(states,

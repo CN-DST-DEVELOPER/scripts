@@ -16,10 +16,7 @@ end
 
 local Waxable = Class(function(self, inst)
     self.inst = inst
-
     self.needs_spray = false
-
-    self.inst:AddTag("waxable")
 end, nil,
 {
     waxfn = onwaxfn,

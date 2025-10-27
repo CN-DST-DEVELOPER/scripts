@@ -100,9 +100,15 @@ end
 
 ---------------------------------------------------------------------------
 
-local function push_twitch_idle(inst)
-    if inst.components.workable ~= nil and (inst.components.workable.workleft * 2) > TUNING.MOONSPIDERDEN_WORK then
+local function push_twitch_idle(inst, skip_anim_check)
+    if inst.components.workable ~= nil and (inst.components.workable.workleft * 2) > TUNING.MOONSPIDERDEN_WORK 
+        and (skip_anim_check or not inst.AnimState:IsCurrentAnimation("spawn")) then
         inst.AnimState:PlayAnimation("twitch")
+        inst:DoTaskInTime(0 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
+        inst:DoTaskInTime(3 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
+        inst:DoTaskInTime(6 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack") end)
+        inst:DoTaskInTime(27 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
+        inst:DoTaskInTime(47 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
         inst.AnimState:PushAnimation("full")
     end
 end
@@ -279,6 +285,51 @@ local function OnGoHome(inst, child)
     end
 end
 
+local function OnSpawnChild(inst, spider)
+    spider.sg:GoToState("taunt")
+end
+
+local function OnMutatePost_AnimOver(inst)
+    push_twitch_idle(inst, true)
+    inst:RemoveEventCallback("animover", OnMutatePost_AnimOver)
+end
+-- When spawning from the mutating spider queen
+local function OnMutatePost(inst)
+    inst.AnimState:PlayAnimation("spawn")
+    inst:DoTaskInTime(19 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy") end)
+    inst:DoTaskInTime(25 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack") end)
+    inst:DoTaskInTime(41 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
+    inst:DoTaskInTime(54 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_small") end)
+    inst:DoTaskInTime(57 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy") end)
+    inst:DoTaskInTime(59 * FRAMES, function() inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack") end)
+    inst:ListenForEvent("animover", OnMutatePost_AnimOver)
+end
+
+local function StartSpawning(inst)
+    if inst.components.childspawner ~= nil and not TheWorld.state.iscaveday then
+        inst.components.childspawner:StartSpawning()
+    end
+end
+
+local function StopSpawning(inst)
+    if inst.components.childspawner ~= nil then
+        inst.components.childspawner:StopSpawning()
+    end
+end
+
+local function OnIsCaveDay(inst, iscaveday)
+    if iscaveday then
+        StopSpawning(inst)
+    else
+        StartSpawning(inst)
+    end
+end
+
+local function OnInit(inst)
+    inst:WatchWorldState("iscaveday", OnIsCaveDay)
+    OnIsCaveDay(inst, TheWorld.state.iscaveday)
+end
+
 local function moonspiderden_fn()
     local inst = CreateEntity()
 
@@ -302,6 +353,7 @@ local function moonspiderden_fn()
     inst.MiniMapEntity:SetIcon("spidermoonden.png")
 
     inst:AddTag("spiderden")
+    --inst:AddTag("cavedweller") -- NOTE: Most cave spawners have cavedweller, but it only actually has a use for how sleeper perceives day phase, so it doesn't do anything here?
 
     MakeSnowCoveredPristine(inst)
 
@@ -325,6 +377,7 @@ local function moonspiderden_fn()
     inst.components.childspawner:SetRegenPeriod(TUNING.MOONSPIDERDEN_SPIDER_REGENTIME)
     inst.components.childspawner:SetSpawnPeriod(TUNING.MOONSPIDERDEN_RELEASE_TIME)
     inst.components.childspawner:SetGoHomeFn(OnGoHome)
+    inst.components.childspawner:SetSpawnedFn(OnSpawnChild)
 
     WorldSettings_ChildSpawner_SpawnPeriod(inst, TUNING.MOONSPIDERDEN_RELEASE_TIME, TUNING.MOONSPIDERDEN_ENABLED)
     WorldSettings_ChildSpawner_RegenPeriod(inst, TUNING.MOONSPIDERDEN_SPIDER_REGENTIME, TUNING.MOONSPIDERDEN_ENABLED)
@@ -350,7 +403,7 @@ local function moonspiderden_fn()
 
     set_stage(inst, TUNING.MOONSPIDERDEN_WORK, false)
 
-    inst.components.childspawner:StartSpawning()
+    inst:DoTaskInTime(0, OnInit)
 
     inst.OnEntitySleep = on_sleep
     inst.OnEntityWake = on_wake
@@ -360,6 +413,8 @@ local function moonspiderden_fn()
     inst.OnPreLoad = OnPreLoad
 
     inst.SummonChildren = SummonChildren
+
+    inst.OnMutatePost = OnMutatePost
 
     MakeSnowCovered(inst)
 

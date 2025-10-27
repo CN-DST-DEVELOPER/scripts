@@ -1979,7 +1979,11 @@ local events =
         end),
     EventHandler("spooked", --Hallowed nights
         function(inst)
-            if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead() or inst.components.rider:IsRiding()) then
+			if not (inst.sg:HasStateTag("busy") or
+					inst.components.health:IsDead() or
+					inst.components.rider:IsRiding() or
+					inst.components.inventory:EquipHasTag("spook_protection"))
+			then
                 inst.sg:GoToState("spooked")
             end
         end),
@@ -6571,7 +6575,9 @@ local states =
 			inst.components.inventory:Hide()
 			inst:PushEvent("ms_closepopups")
 			inst:ShowActions(false)
-			inst:ShowPopUp(POPUPS.PUMPKINCARVING, true, data and data.target or nil)
+
+			inst.sg.statemem.popup = data and data.popup or POPUPS.PUMPKINCARVING
+			inst:ShowPopUp(inst.sg.statemem.popup, true, data and data.target or nil)
 		end,
 
 		events =
@@ -6593,7 +6599,7 @@ local states =
 
 		onexit = function(inst)
 			inst.SoundEmitter:KillSound("make")
-			inst:ShowPopUp(POPUPS.PUMPKINCARVING, false)
+			inst:ShowPopUp(inst.sg.statemem.popup, false)
 			if inst.components.playercontroller then
 				inst.components.playercontroller:EnableMapControls(true)
 				inst.components.playercontroller:Enable(true)
@@ -6602,7 +6608,7 @@ local states =
 			inst:ShowActions(true)
 			if not inst.sg.statemem.isclosingpumpkin then
 				inst.sg.statemem.isclosingpumpkin = true
-				POPUPS.PUMPKINCARVING:Close(inst)
+				inst.sg.statemem.popup:Close(inst)
 			end
 		end,
 	},

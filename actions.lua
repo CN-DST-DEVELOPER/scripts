@@ -5777,17 +5777,37 @@ ACTIONS.BOTTLE.fn = function(act)
 end
 
 ACTIONS.CARVEPUMPKIN.fn = function(act)
-	if act.doer and act.target and act.target.components.pumpkincarvable then
-		local success, reason = act.target.components.pumpkincarvable:CanBeginCarving(act.doer)
-		if not success then
-			return false, reason
-		end
+	if act.doer and act.target then
+		local pumpkincarvable = act.target.components.pumpkincarvable or act.target.components.pumpkinhatcarvable
+		if pumpkincarvable then
+			--V2C: for searching =>
+			--  pumpkinhatcarvable:CanBeginCarving(act.doer)
+			--  pumpkinhatcarvable:BeginCarving(act.doer, act.target)
+			local success, reason = pumpkincarvable:CanBeginCarving(act.doer)
+			if not success then
+				return false, reason
+			end
 
-		--Silent fail for carving in the dark
-		if CanEntitySeeTarget(act.doer, act.target) then
-			act.target.components.pumpkincarvable:BeginCarving(act.doer)
+			--Silent fail for carving in the dark
+			if CanEntitySeeTarget(act.doer, act.target) then
+				local owner = act.target.components.inventoryitem and act.target.components.inventoryitem.owner
+				if owner then
+					local grandowner = act.target.components.inventoryitem:GetGrandOwner()
+					if grandowner ~= act.doer and grandowner.components.inventory then
+						return false --someone else holding it?!
+					end
+					local inventory = owner.components.inventory or owner.components.container
+					if inventory then
+						inventory:DropItem(act.target)
+					end
+					if act.target.components.inventoryitem:IsHeld() then
+						return false --failed to drop?!?!
+					end
+				end
+				pumpkincarvable:BeginCarving(act.doer)
+			end
+			return true
 		end
-		return true
 	end
 end
 
@@ -6276,7 +6296,9 @@ ACTIONS.POUNCECAPTURE.fn = function(act)
             return false, "ITEMMIMIC"
         end
 
-		return cage.components.gestaltcage:Capture(act.target, act.doer)
+        if act.target then
+			return cage.components.gestaltcage:Capture(act.target, act.doer)
+        end
 	end
 	return false
 end
@@ -6284,7 +6306,13 @@ end
 ACTIONS.DIVEGRAB.fn = function(act)
     local catcher = act.invobject
     if catcher and catcher.components.moonstormstaticcatcher then
-        return catcher.components.moonstormstaticcatcher:Catch(act.target, act.doer)
+        if catcher.components.itemmimic then
+            return false, "ITEMMIMIC"
+        end
+
+        if act.target then
+            return catcher.components.moonstormstaticcatcher:Catch(act.target, act.doer)
+        end
     end
     return false
 end

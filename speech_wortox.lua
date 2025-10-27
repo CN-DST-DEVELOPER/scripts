@@ -1204,6 +1204,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "And a hand came to snuff the flame!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Mutant munchers of murdered meat!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -4858,7 +4860,7 @@ return{
         MOONSTORM_SPARK = "Hyuyu, it tickles!",
 
         BIRD_MUTANT = "My my, you're looking rather pale!",
-        BIRD_MUTANT_SPITTER = "This peculiar storm has changed its form.",
+        BIRD_MUTANT_SPITTER = "Its new form is far from norm.",
 
         WAGSTAFF_NPC = "Hyuyuyu! He's not all there!",
 
@@ -5601,7 +5603,7 @@ return{
         MERM_SHADOW = "I'm afraid retirement will have to wait.",
         MERMGUARD_SHADOW = "And they say there are no second chances, hyuyu!",
 
-        MERM_LUNAR = "Ah, the latest from young Wurt. I wonder if those spikes hurt.",
+        MERM_LUNAR = "It rose from the dirt. I wonder if those spikes hurt.",
         MERMGUARD_LUNAR = "An ugly mutant from the Marsh. Pardon me, was that too harsh?",
 
         -- Rifts 4
@@ -5803,7 +5805,7 @@ return{
             REVIVING = "It's changing and deranging.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "A buzzard? Absurd!", -- Generic string
             EATING_CORPSE = "It eats the meats, the cycle repeats!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5875,6 +5877,45 @@ return{
 			GENERIC = "Don't make light of that mite!",
 			SLEEPING = "Not a peep, it's fast asleep.",
             VENTING = "Heehee! How crass to pester with gas!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "The carving is done, now comes the fun!",
+			UNCARVED = "It's not ready for my heady.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "It's dead but not done.", --witnessing the corpse
+            BURNING  = "Cremation to curb mutation!", --when its burning
+            REVIVING = "It's changing and deranging.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "That spider was a biter.",
+			BURNING = "The spider must burn or it will return.",
+			REVIVING = "It fills me with dread of the undead.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "A dead queen? That shall be seen.",
+			BURNING = "Never hesitate to incinerate.",
+			REVIVING = "We failed to burn, into a nest it shall turn.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "A corpse, of course.",
+			BURNING = "Burn, merm, burn!",
+			REVIVING = "And then the dead merm began to squirm.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

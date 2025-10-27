@@ -494,7 +494,7 @@ function PumpkinCarvingScreen:OnMouseButton(button, down, x, y) --window screen 
 				TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
 				if self:HasMaxCuts() then
 					self:ShowWarning()
-			end
+				end
 			end
 			return true
 		elseif button == MOUSEBUTTON_RIGHT then
@@ -518,13 +518,13 @@ function PumpkinCarvingScreen:OnControl(control, down)
 						self:ShowWarning()
 						TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
 					else
-					local x, y = self.dragline:GetPositionXYZ()
-					if _IsOnPumpkin(x, y) then
-						self:StampShapeAt(x, y, self.dragline.shape, self.dragline.rot)
-					else
-						TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
+						local x, y = self.dragline:GetPositionXYZ()
+						if _IsOnPumpkin(x, y) then
+							self:StampShapeAt(x, y, self.dragline.shape, self.dragline.rot)
+						else
+							TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/click_negative")
+						end
 					end
-				end
 				end
 				return true
 			end

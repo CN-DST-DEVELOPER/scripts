@@ -5976,9 +5976,6 @@ function Tune(overrides)
 
         QUAKE_FREQUENCY_MULTIPLIER = 1,
 
-        SPAWN_MOON_PENGULLS = true,
-        SPAWN_MUTATED_HOUNDS = true,
-
         RABBITHOLE_REGROWTH_TIME_MULT = 0,
         RABBITHOLE_REGROWTH_TIME_SUMMER_MULT = 1,
 
@@ -8145,6 +8142,7 @@ function Tune(overrides)
         MERM_LUNAR_GUARD_EXTRA_HEALTH = 40,
         MERM_LUNAR_EXTRA_HEALTH = 40,
         MERM_LUNAR_THORN_DAMAGE = 40,
+        MERM_LUNAR_THORN_PLAYERDAMAGEPERCENT = 0.5,
 
         -- Rifts 4
         WORM_BOSS_HEALTH = 5000,
@@ -8547,24 +8545,56 @@ function Tune(overrides)
         WANDERINGTRADER_WANDERING_PERIOD_VARIANCE = 4,
         WANDERINGTRADER_VIRTUALWALKING_SPEEDMULT = 4,
 
+        GESTALT_TIMEOUT = 30,
+        WAGBOSS_DEFEATED_GESTALT_SPAWN_FACTOR = 2,
+
+        -- Deprecated tuning variables for GESTALT_EVOLVED kept for mods but should be removed once mods have time to catch up.
+        GESTALT_EVOLVED_EXPLODE_CHANCE = 0.33, -- Deprecated.
+		GESTALT_EVOLVED_MAX_DISTSQ_RELOCATE = 30*30, -- Deprecated.
+        GESTALT_EVOLVED_RELOCATE_TIME_RAND = 0.5, -- Deprecated.
+        GESTALT_EVOLVED_RELOCATE_TIME_BASE = 0.5, -- Deprecated.
+        GESTALT_POPULATION_CHECK_TIME = 5, -- Deprecated.
+		GESTALT_EVOLVED_SPAWN_COOLDOWN = 2 * seg_time, -- Deprecated.
+        GESTALT_EVOLVED_MAXSPAWN = 1, -- Deprecated.
+        GESTALT_EVOLVED_MAXSPAWN_INDUCED = 3, -- Deprecated.
+        GESTALT_EVOLVED_MAXPOOL = 15, -- Deprecated.
+        GESTALT_EVOLVED_ADDTOPOOLTIME = total_day_time, -- Deprecated.
+        GESTALT_EVOLVED_REAL_DAMAGE = 165, -- Deprecated.
+        GESTALT_EVOLVED_PLANAR_DAMAGE = 15, -- Deprecated.
+        -- End deprecation.
+
         GESTALT_EVOLVED_ATTACK_DAMAGE_GROGGINESS = 0.5,
         GESTALT_EVOLVED_ATTACK_DAMAGE_KO_TIME = 1,
-        GESTALT_EVOLVED_REAL_DAMAGE = 165,
-        GESTALT_EVOLVED_RELOCATE_TIME_RAND = 0.5,
-        GESTALT_EVOLVED_RELOCATE_TIME_BASE = 0.5,
-		GESTALT_EVOLVED_HEALTH = 850,
-        GESTALT_EVOLVED_EXPLODE_CHANCE = 0.33,
-		GESTALT_EVOLVED_MAX_DISTSQ_RELOCATE = 30*30,
-        GESTALT_EVOLVED_PLANAR_DAMAGE = 15,
-		GESTALT_EVOLVED_SPAWN_COOLDOWN = 2 * seg_time,
-        GESTALT_EVOLVED_MAXSPAWN = 1,
-        GESTALT_EVOLVED_MAXSPAWN_INDUCED = 3,
-        GESTALT_EVOLVED_MAXPOOL = 15,
-        GESTALT_EVOLVED_ADDTOPOOLTIME = total_day_time,
-        GESTALT_TIMEOUT = 30,
-        GESTALT_POPULATION_CHECK_TIME = 5,
+		GESTALT_EVOLVED_HEALTH = 600,
 
-        WAGBOSS_DEFEATED_GESTALT_SPAWN_FACTOR = 2,
+        GESTALT_EVOLVED_TELEPORT_COOLDOWN = 10,
+        GESTALT_EVOLVED_TELEPORT_HITS_NEEDED = 3,
+        GESTALT_EVOLVED_TELEPORT_TIME_INVISIBLE = 0.5,
+
+        GESTALT_EVOLVED_CLOSE_RANGE = 4,
+        GESTALT_EVOLVED_CLOSE_DAMAGE = 100,
+        GESTALT_EVOLVED_CLOSE_PLANAR_DAMAGE = 10,
+        GESTALT_EVOLVED_CLOSE_COOLDOWN = 3,
+
+        GESTALT_EVOLVED_MID_RANGE = 12,
+        GESTALT_EVOLVED_MID_DAMAGE = 40,
+        GESTALT_EVOLVED_MID_PLANAR_DAMAGE = 15,
+        GESTALT_EVOLVED_MID_COOLDOWN = 3.75,
+
+        GESTALT_EVOLVED_FAR_RANGE = 20,
+        GESTALT_EVOLVED_FAR_DAMAGE = 50,
+        GESTALT_EVOLVED_FAR_PLANAR_DAMAGE = 5,
+        GESTALT_EVOLVED_FAR_COOLDOWN = 4.5,
+        GESTALT_EVOLVED_FAR_SPEED = 12,
+        GESTALT_EVOLVED_FAR_SPLIT_ANGLE = 15, -- Degrees.
+
+        GESTALT_EVOLVED_PLANTING_MAX_SPAWNS_PER_PLAYER = 3,
+        GESTALT_EVOLVED_PLANTING_TICK_TIME = 1,
+        GESTALT_EVOLVED_PLANTING_RADIUS_FROM_HAT = 8,
+        GESTALT_EVOLVED_PLANTING_RADIUS_FROM_MOONGLASS = 4,
+        GESTALT_EVOLVED_PLANTING_MOONGLASS_REQUIREMENT = 3,
+
+        GESTALT_EVOLVED_LOSE_AGGRO_TIME = 10, -- Time since last hit from the non-summoner to lose the aggro.
 
         ARMOR_LUNACYHAT = wilson_health * 9 * multiplayer_armor_durability_modifier,
         ARMOR_LUNACYHAT_ABSORPTION = .7 * multiplayer_armor_absorption_modifier,
@@ -8593,6 +8623,7 @@ function Tune(overrides)
         RUMMAGE_COUNT_FOR_FENCE_BLUEPRINT = 10,
 
         RIFT_BIRD_WALKSPEED = 4,
+        RIFT_BIRD_RUNSPEED = 12,
         RIFT_BIRD_DAMAGE = 10,
         RIFT_BIRD_PLANAR_DAMAGE = 10,
         RIFT_BIRD_HEALTH = 25,
@@ -8623,11 +8654,15 @@ function Tune(overrides)
 
         MUTATEDBUZZARD_DAMAGE = 25,
         MUTATEDBUZZARD_PLANAR_DAMAGE = 25,
-        MUTATEDBUZZARD_ATTACK_RANGE = 2,
-        MUTATEDBUZZARD_ATTACK_PERIOD = 2,
+        MUTATEDBUZZARD_ATTACK_RANGE = 10,
+        MUTATEDBUZZARD_HIT_RANGE = 2,
+        MUTATEDBUZZARD_ATTACK_PERIOD = 1.5,
         MUTATEDBUZZARD_WALK_SPEED = 4,
         MUTATEDBUZZARD_RUN_SPEED = 8,
-        MUTATEDBUZZARD_HEALTH = 125 * 2, -- harder for multiplayer
+        MUTATEDBUZZARD_HEALTH = 200 * 2, -- harder for multiplayer
+        MUTATEDBUZZARD_FLAMETHROWER_CD = 5,
+        MUTATEDBUZZARD_FLAMETHROWER_CD_VARIANCE = 2,
+        MUTATEDBUZZARD_FIND_TARGET_DIST = 10,
 
         BIRD_SPAWNER_POST_HAIL_TIME = 6 * total_day_time,
 
@@ -8776,6 +8811,66 @@ function Tune(overrides)
         CAVE_MITE_ENABLED = true,
 
         CAVE_MITE_SPAWN_RADIUSSQ = 16 * 16,
+
+        PRERIFT_MUTATION_SPAWN_CHANCE = 0.5,
+        PRERIFT_MUTATION_SPAWN_DELAY_BASE = 4,
+        PRERIFT_MUTATION_SPAWN_DELAY_VARIANCE = 1,
+
+        SPIDER_PRERIFT_MUTATION_SPAWN_CHANCE = 1 / 3, -- 33.333%~
+        SPIDER_WARRIOR_PRERIFT_MUTATION_SPAWN_CHANCE = 0.5,
+
+        BIRD_PRERIFT_MUTATION_SPAWN_CHANCE = 1,
+
+        CORPSE_REMOVE_ON_SLEEP_TIME = 10,
+
+        -- Halloween 2025
+
+		--V2C: O.G. spooked was tuned for each individual CHOP
+		--     mining/digging only triggers TryCustomSpook on state changes
+		MINE_SPOOKED_MULT_HIGH = 0.315,
+		MINE_SPOOKED_MULT_LOW = 0.1,
+		DIG_SPOOKED_MULT = 0.456,
+
+        -- Migrations are per node
+        RIFT_BIRD_MIGRATE_TIME_BASE = seg_time,
+        RIFT_BIRD_MIGRATE_TIME_VAR = seg_time * 0.5,
+
+        RIFT_BIRD_MIGRATE_TIME_RAIN_FACTOR = 1 / 4, -- Rain lengthens migration by 4x
+
+        RIFT_BIRD_MIGRATE_TIME_MOONPHASE_FACTOR =
+        {
+            ["new"] = 1 / (5 / 3), -- 1.667
+            ["quarter"] = 1 / (4 / 3), -- 1.334
+            ["half"] = 1,
+            ["threequarter"] = 1 / 0.5, -- 2x
+            ["full"] = 1 / 0.25, -- 4x
+        },
+
+        RIFT_BIRD_MIGRATE_TIME_NON_NIGHT_FACTOR = 1 / 1.5,
+
+        MUTATEDBUZZARD_MIGRATE_TIME_BASE = seg_time*3,
+        MUTATEDBUZZARD_MIGRATE_TIME_VAR = seg_time*2,
+        MUTATEDBUZZARD_FIND_CORPSE_DELAY = 10,
+        MUTATEDBUZZARD_CORPSE_RANGE = 25, -- mobs die within this range of a buzzard to be corpsed
+        MUTATEDBUZZARD_ENTER_MIGRATION_ON_SLEEP_TIME = 20,
+        MUTATEDBUZZARD_MAX_TARGET_COUNT = 3, -- 3 buzzards can share a target, the rest should EAT!
+
+        MUTATEDBUZZARD_FLAMETHROWER_DAMAGE = 20,
+
+        -- Kill buzzards in the hail level between 27 and 32
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = 27,
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = 5,
+
+        SPAWN_MOON_PENGULLS = true,
+        SPAWN_MUTATED_HOUNDS = true,
+        SPAWN_MUTATED_MERMS = true,
+        SPAWN_MUTATED_SPIDERQUEEN = true,
+        SPAWN_MUTATED_BIRDS = true,
+        SPAWN_MUTATED_BIRDS_GESTALT = true,
+        SPAWN_MUTATED_BUZZARDS_GESTALT = true,
+        SPAWN_MUTATED_DEERCLOPS = true,
+        SPAWN_MUTATED_BEARGER = true,
+        SPAWN_MUTATED_WARG = true,
     }
 
     TUNING_MODIFIERS = {}

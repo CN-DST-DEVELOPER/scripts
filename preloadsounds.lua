@@ -246,6 +246,9 @@ local MainSounds =
 
     "rifts6.fev",
     "rifts6.fsb",
+
+    "hallowednights2025.fev",
+    "hallowednights2025.fsb",
 }
 
 function PreloadSoundList(list)

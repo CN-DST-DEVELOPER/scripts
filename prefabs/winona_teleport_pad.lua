@@ -221,36 +221,34 @@ local function SyncAnims(inst, anim, frame)
 end
 
 --V2C: -using PostUpdate because AnimState hasn't updated yet when OnSyncAnimsDirty is triggered
---     -NOTE: cannot remove PostUpdateFn during PostUpdate
 local SYNC_ANIMS = { "pad_deploy", "pad_hit", "pad_collapse_empty", "pad_destroyed_empty", "burnt" }
 local function PostUpdateSyncAnims(inst)
-	if inst._updatingsyncanims then
-		inst._updatingsyncanims = false
-
-		for i, v in ipairs(SYNC_ANIMS) do
-			if inst.AnimState:IsCurrentAnimation(v) then
-				SyncAnims(inst, v, inst.AnimState:GetCurrentAnimationFrame())
-				return
-			end
+	for i, v in ipairs(SYNC_ANIMS) do
+		if inst.AnimState:IsCurrentAnimation(v) then
+			SyncAnims(inst, v, inst.AnimState:GetCurrentAnimationFrame())
+			return
 		end
-		SyncAnims(inst, nil, nil)
 	end
+	SyncAnims(inst, nil, nil)
+
+	inst._updatingsyncanims = nil
+	inst.components.updatelooper:RemovePostUpdateFn(PostUpdateSyncAnims)
 end
 
 local function OnSyncAnimsDirty(inst)
 	if inst:HasTag("burnt") then
-		if inst._updatingsyncanims ~= nil then
+		if inst._updatingsyncanims then
 			inst._updatingsyncanims = nil
 			inst.components.updatelooper:RemovePostUpdateFn(PostUpdateSyncAnims)
 		end
 		SyncAnims(inst, "burnt", nil)
 	elseif inst._syncanims:value() then
-		if inst._updatingsyncanims == nil then
+		if not inst._updatingsyncanims then
+			inst._updatingsyncanims = true
 			inst.components.updatelooper:AddPostUpdateFn(PostUpdateSyncAnims)
 		end
-		inst._updatingsyncanims = true
 	else
-		if inst._updatingsyncanims ~= nil then
+		if inst._updatingsyncanims then
 			inst._updatingsyncanims = nil
 			inst.components.updatelooper:RemovePostUpdateFn(PostUpdateSyncAnims)
 		end

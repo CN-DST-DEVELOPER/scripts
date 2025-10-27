@@ -116,15 +116,38 @@ function self:Kill(reset)
 end
 ]]
 
+local function UpdateColonyMutatedStatus(colony)
+    -- The colony has become majority mutated, become mutated!
+    local total_pengs = GetTableSize(colony.members)
+    local num_mutated = 0
+    for penguin in pairs(colony.members) do
+        if penguin:HasTag("mutated_penguin") then
+            num_mutated = num_mutated + 1
+        end
+    end
+
+    if num_mutated > math.floor(total_pengs * 0.5) then
+        colony.is_mutated = true
+        if colony.ice ~= nil then
+            colony.ice.MiniMapEntity:SetIcon("mutated_penguin.png")
+        end
+    else
+        colony.is_mutated = false
+        if colony.ice ~= nil then
+            colony.ice.MiniMapEntity:SetIcon("penguin.png")
+        end
+    end
+end
 
 local function LostPenguin(pengu)
-    for i,v in ipairs(_colonies) do
+    for i, v in ipairs(_colonies) do
         local members = v.members or {}
         if members[pengu] then
             members[pengu] = nil
             _totalBirds = _totalBirds-1
             self.inst:RemoveEventCallback("death", pengu.deathfn, pengu)
             self.inst:RemoveEventCallback("onremove", pengu.deathfn, pengu)
+            UpdateColonyMutatedStatus(v)
             return
         end
     end
@@ -461,6 +484,8 @@ function self:AddToColony(colonyNum,pengu)
         self.inst:ListenForEvent("onremove", pengu.deathfn, pengu )
         pengu.components.knownlocations:RememberLocation("rookery", colony.rookery)
         pengu.components.knownlocations:RememberLocation("home", colony.rookery) -- important for sleep
+
+        UpdateColonyMutatedStatus(colony)
     end
 end
 

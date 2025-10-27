@@ -1571,7 +1571,7 @@ local function wortox_decoy_fn()
     local follower = inst:AddComponent("follower") -- For leader combat targets.
     follower.noleashing = true
     follower.keepdeadleader = true
-    follower.keepleaderonattacked = true
+    follower:KeepLeaderOnAttacked()
     follower.keepleaderduringminigame = true
     follower.neverexpire = true
 

@@ -539,20 +539,6 @@ local applyoverrides_pre = {
 
 
     --monsters
-    mutated_hounds = function(difficulty)
-        local tuning_vars =
-        {
-            never = {
-                SPAWN_MUTATED_HOUNDS = false,
-            },
-            --[[
-            default = {
-                SPAWN_MUTATED_HOUNDS = true,
-            }
-            --]]
-        }
-        OverrideTuningVariables(tuning_vars[difficulty])
-    end,
     lureplants = function(difficulty)
         local tuning_vars =
         {
@@ -956,49 +942,6 @@ local applyoverrides_pre = {
             },
             always = {
                 SPIDERHOLE_SPITTER_CHANCE = 0.67,
-            },
-        }
-        OverrideTuningVariables(tuning_vars[difficulty])
-    end,
-    moon_spider = function(difficulty)
-        local tuning_vars =
-        {
-            never = {
-                MOONSPIDERDEN_ENABLED = false,
-            },
-            few = {
-                MOONSPIDERDEN_SPIDERS = {1, 2, 3},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*8,
-                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*6,
-                MOONSPIDERDEN_EMERGENCY_RADIUS = {5, 10, 15},
-                MOONSPIDERDEN_MAX_INVESTIGATORS = {1, 1, 1},
-            },
-            --[[
-            default = {
-                MOONSPIDERDEN_SPIDERS = {2, 3, 4},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*4,
-                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*3,
-                MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 0, 0},
-                MOONSPIDERDEN_EMERGENCY_RADIUS = {10, 15, 20},
-                MOONSPIDERDEN_MAX_INVESTIGATORS = {1, 2, 2},
-                MOONSPIDERDEN_ENABLED = true,
-            },
-            --]]
-            many = {
-                MOONSPIDERDEN_SPIDERS = {3, 4, 5},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*2,
-                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*1.5,
-                MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 1, 2},
-                MOONSPIDERDEN_EMERGENCY_RADIUS = {15, 20, 25},
-                MOONSPIDERDEN_MAX_INVESTIGATORS = {2, 3, 3},
-            },
-            always = {
-                MOONSPIDERDEN_SPIDERS = {4, 5, 6},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME,
-                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*0.75,
-                MOONSPIDERDEN_EMERGENCY_WARRIORS = {1, 2, 3},
-                MOONSPIDERDEN_EMERGENCY_RADIUS = {20, 25, 30},
-                MOONSPIDERDEN_MAX_INVESTIGATORS = {3, 4, 4},
             },
         }
         OverrideTuningVariables(tuning_vars[difficulty])
@@ -1471,20 +1414,6 @@ local applyoverrides_pre = {
                 PENGUINS_SPAWN_INTERVAL = 10,
                 PENGUINS_DEFAULT_NUM_BOULDERS = 14,
             },
-        }
-        OverrideTuningVariables(tuning_vars[difficulty])
-    end,
-    penguins_moon = function(difficulty)
-        local tuning_vars =
-        {
-            never = {
-                SPAWN_MOON_PENGULLS = false,
-            },
-            --[[
-            default = {
-                SPAWN_MOON_PENGULLS = true,
-            }
-            --]]
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
@@ -3458,6 +3387,203 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+
+    -- lunar mutations
+    mutated_hounds = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_HOUNDS = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_HOUNDS = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    moon_spider = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                MOONSPIDERDEN_ENABLED = false, -- This also disables the mutation
+            },
+            few = {
+                MOONSPIDERDEN_SPIDERS = {1, 2, 3},
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*8,
+                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*6,
+                MOONSPIDERDEN_EMERGENCY_RADIUS = {5, 10, 15},
+                MOONSPIDERDEN_MAX_INVESTIGATORS = {1, 1, 1},
+            },
+            --[[
+            default = {
+                MOONSPIDERDEN_SPIDERS = {2, 3, 4},
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*4,
+                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*3,
+                MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 0, 0},
+                MOONSPIDERDEN_EMERGENCY_RADIUS = {10, 15, 20},
+                MOONSPIDERDEN_MAX_INVESTIGATORS = {1, 2, 2},
+                MOONSPIDERDEN_ENABLED = true,
+            },
+            --]]
+            many = {
+                MOONSPIDERDEN_SPIDERS = {3, 4, 5},
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*2,
+                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*1.5,
+                MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 1, 2},
+                MOONSPIDERDEN_EMERGENCY_RADIUS = {15, 20, 25},
+                MOONSPIDERDEN_MAX_INVESTIGATORS = {2, 3, 3},
+            },
+            always = {
+                MOONSPIDERDEN_SPIDERS = {4, 5, 6},
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME,
+                MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*0.75,
+                MOONSPIDERDEN_EMERGENCY_WARRIORS = {1, 2, 3},
+                MOONSPIDERDEN_EMERGENCY_RADIUS = {20, 25, 30},
+                MOONSPIDERDEN_MAX_INVESTIGATORS = {3, 4, 4},
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    penguins_moon = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MOON_PENGULLS = false,
+            },
+            --[[
+            default = {
+                SPAWN_MOON_PENGULLS = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_birds = function(difficulty) -- this refers to moonblind crow and misshapen bird
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_BIRDS = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_BIRDS = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_merm = function(difficulty) -- this doesn't affect wurts skill tree
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_MERMS = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_MERMS = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_spiderqueen = function(difficulty) -- this prevents her from turning to the spider nest
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_SPIDERQUEEN = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_SPIDERQUEEN = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    -- gestalt mutations
+
+    mutated_bird_gestalt = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_BIRDS_GESTALT = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_BIRDS_GESTALT = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_buzzard_gestalt = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_BUZZARDS_GESTALT = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_BUZZARDS_GESTALT = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_deerclops = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_DEERCLOPS = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_DEERCLOPS = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_bearger = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_BEARGER = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_BEARGER = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+
+    mutated_warg = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                SPAWN_MUTATED_WARG = false,
+            },
+            --[[
+            default = {
+                SPAWN_MUTATED_WARG = true,
+            }
+            --]]
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
 }
 
 local applyoverrides_post = {
@@ -3649,7 +3775,7 @@ local applyoverrides_post = {
     end,
     rifts_enabled_cave = function(difficulty)
         TheWorld:PushEvent("rifts_settingsenabled_cave", difficulty)
-    end,   
+    end,
 }
 
 local applyoverrides_sync = {

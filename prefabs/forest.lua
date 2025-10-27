@@ -719,6 +719,9 @@ local function master_postinit(inst)
     inst:AddComponent("lunaralterguardianspawner")
     inst:AddComponent("wagboss_tracker")
     inst:AddComponent("wanderingtraderspawner")
+
+    -- Hallowed Nights 2025
+    inst:AddComponent("mutatedbirdmanager")
 end
 
 return MakeWorld("forest", prefabs, assets, common_postinit, master_postinit, {"forest"}, {

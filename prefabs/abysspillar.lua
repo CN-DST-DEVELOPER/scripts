@@ -153,6 +153,19 @@ local function CreateItemCollision()
 end
 
 --used by fx prefab as well
+local function AlignToWall(inst)
+	local x, _, z = inst.Transform:GetWorldPosition()
+    local x1, z1 = math.floor(x) + 0.5, math.floor(z) + 0.5
+	inst.Transform:SetPosition(x1, 0, z1)
+	if inst.player_collision then
+		inst.player_collision.Physics:Teleport(x1, 0, z1)
+	end
+	if inst.item_collision then
+		inst.item_collision.Physics:Teleport(x1, 0, z1)
+	end
+end
+
+--used by fx prefab as well
 local function AlignToTile(inst)
 	local x, _, z = inst.Transform:GetWorldPosition()
 	local x1, _, z1 = TheWorld.Map:GetTileCenterPoint(x, 0, z)
@@ -350,9 +363,42 @@ local function OnRemovePlatformFollower(inst, child)
 	end
 end
 
-local function TryReserveForMinion(inst)
+local function DoPopTeleportPt(ent, trial)
+	trial._fall_tp_overrides[ent] = nil
+	if ent.components.drownable then
+		ent.components.drownable:PopTeleportPt(trial)
+	end
+end
+
+local function TryToReservePlatform(inst, ent)
 	if inst.state == PillarStates.EMPTY and not inst.components.walkableplatform:IsFull() then
 		inst.components.walkableplatform:SetIsFull(true)
+		if ent and ent.components.drownable then
+			local trial = inst._abysspillargroup and inst._abysspillargroup.inst
+			if trial and trial:IsValid() then
+				if trial._fall_tp_overrides == nil then
+					trial._fall_tp_overrides = {}
+				end
+				if trial._fall_tp_overrides[ent] then
+					trial._fall_tp_overrides[ent]:Cancel()
+				else
+					ent.components.drownable:PushTeleportPt(
+						trial,
+						trial.spawnx and
+						Vector3(trial.spawnx, 0, trial.spawnz) or
+						trial:GetPosition()
+					)
+				end
+				trial._fall_tp_overrides[ent] = ent:DoTaskInTime(1, DoPopTeleportPt, trial)
+			end
+		end
+		return true
+	end
+end
+
+local function TryToClearReservedPlatform(inst, ent)
+	if inst.state == PillarStates.EMPTY and inst.components.walkableplatform:IsFull() then
+		inst.components.walkableplatform:SetIsFull(false)
 		return true
 	end
 end
@@ -362,7 +408,12 @@ local function CollapsePillar(inst)
 end
 
 local function MakeNonCollapsible(inst)
+    inst:AlignToWall()
+    if inst.abovefx then
+        inst.abovefx:AlignToWall()
+    end
 	inst.nocollapse = true
+    inst._ispathfinding:set(true)
 end
 
 --------------------------------------------------------------------------
@@ -421,6 +472,69 @@ local function OnEntitySleep_Server(inst)
 end
 
 --Server & client
+local function AddPathfindingToTile(x1, z1, x2, z2)
+    if TheWorld.Map:IsVisualGroundAtPoint(x2, 0, z2) then
+        local points = BresenhamLineXZtoXZ(x1, z1, x2, z2)
+        for i, point in ipairs(points) do
+            TheWorld.Pathfinder:AddStaticHoppablePlatform(point.x, 0, point.z)
+        end
+    end
+end
+local function RemovePathfindingToTile(x1, z1, x2, z2)
+    if TheWorld.Map:IsVisualGroundAtPoint(x2, 0, z2) then
+        local points = BresenhamLineXZtoXZ(x1, z1, x2, z2)
+        for i, point in ipairs(points) do
+            TheWorld.Pathfinder:RemoveStaticHoppablePlatform(point.x, 0, point.z)
+        end
+    end
+end
+local PILLAR_MUST_TAGS = {"abysspillar"}
+local function OnIsPathFindingDirty(inst)
+    local HOP_DISTANCE = inst.components.walkableplatform.max_hop_distance
+    if inst._ispathfinding:value() then
+        if inst._pfpos == nil and inst:GetCurrentPlatform() == nil then
+            inst.components.walkableplatform.player_only = false
+            inst._pfpos = inst:GetPosition()
+            local x, y, z = inst._pfpos:Get()
+            local ents = TheSim:FindEntities(x, y, z, HOP_DISTANCE, PILLAR_MUST_TAGS)
+            for _, v in ipairs(ents) do
+                local ex, ey, ez = v.Transform:GetWorldPosition()
+                if x == ex or ez == z then -- Only connect orthogonal connections!
+                    local points = BresenhamLineXZtoXZ(x, z, ex, ez)
+                    for _, point in ipairs(points) do
+                        TheWorld.Pathfinder:AddStaticHoppablePlatform(point.x, 0, point.z)
+                    end
+                end
+            end
+            AddPathfindingToTile(x, z, x - HOP_DISTANCE, z)
+            AddPathfindingToTile(x, z, x + HOP_DISTANCE, z)
+            AddPathfindingToTile(x, z, x, z - HOP_DISTANCE)
+            AddPathfindingToTile(x, z, x, z + HOP_DISTANCE)
+        end
+    elseif inst._pfpos ~= nil then
+        inst.components.walkableplatform.player_only = true
+        local x, y, z = inst._pfpos:Get()
+        local ents = TheSim:FindEntities(x, y, z, HOP_DISTANCE, PILLAR_MUST_TAGS)
+        for _, v in ipairs(ents) do
+            local ex, ey, ez = v.Transform:GetWorldPosition()
+            if x == ex or ez == z then -- Only connect orthogonal connections!
+                local points = BresenhamLineXZtoXZExcludeCaps(x, z, ex, ez, false, true)
+                for _, point in ipairs(points) do
+                    TheWorld.Pathfinder:RemoveStaticHoppablePlatform(point.x, 0, point.z)
+                end
+            end
+        end
+        RemovePathfindingToTile(x, z, x - HOP_DISTANCE, z)
+        RemovePathfindingToTile(x, z, x + HOP_DISTANCE, z)
+        RemovePathfindingToTile(x, z, x, z - HOP_DISTANCE)
+        RemovePathfindingToTile(x, z, x, z + HOP_DISTANCE)
+        inst._pfpos = nil
+    end
+end
+local function InitializePathFinding(inst)
+    inst:ListenForEvent("onispathfindingdirty", OnIsPathFindingDirty)
+    OnIsPathFindingDirty(inst)
+end
 local function OnRemoveEntity(inst)
 	if inst.player_collision then
 		inst.player_collision:Remove()
@@ -435,6 +549,8 @@ local function OnRemoveEntity(inst)
 	--     - inst still returns as Valid at that point.
 	--     - It is past EntityScript's call to CancelAllPendingTasks().
 	inst:CancelAllPendingTasks()
+    inst._ispathfinding:set_local(false)
+    OnIsPathFindingDirty(inst)
 end
 
 local function OnSave(inst, data)
@@ -454,7 +570,9 @@ local function OnLoad(inst, data)--, ents)
 			inst:Hide()
 			inst:DoTaskInTime(0, SetState, PillarStates.COLLAPSE)
 		end
-		inst.nocollapse = data.nocollapse or inst.nocollapse
+        if data.nocollapse then
+            inst:MakeNonCollapsible()
+        end
 	end
 end
 
@@ -487,6 +605,9 @@ local function fn()
 	inst.components.walkableplatform.player_only = true
 	inst.components.walkableplatform.no_mounts = true
 
+    inst._ispathfinding = net_bool(inst.GUID, "_ispathfinding", "onispathfindingdirty")
+    inst:DoTaskInTime(0, InitializePathFinding)
+
 	inst.entity:SetPristine()
 
 	inst.OnRemoveEntity = OnRemoveEntity
@@ -503,10 +624,12 @@ local function fn()
 	inst.OnEntityWake = OnEntityWake_Server
 	inst.OnEntitySleep = OnEntitySleep_Server
 	inst.AlignToTile = AlignToTile
+    inst.AlignToWall = AlignToWall
 	inst.Flip = Flip
 	inst.OnAddPlatformFollower = OnAddPlatformFollower
 	inst.OnRemovePlatformFollower = OnRemovePlatformFollower
-	inst.TryReserveForMinion = TryReserveForMinion
+	inst.TryToReservePlatform = TryToReservePlatform
+    inst.TryToClearReservedPlatform = TryToClearReservedPlatform
 	inst.CollapsePillar = CollapsePillar
 	inst.MakeNonCollapsible = MakeNonCollapsible
 	inst.OnSave = OnSave
@@ -694,6 +817,7 @@ local function fxfn()
 	inst.StartForming = fx_StartForming
 	inst.OnEntitySleep = fx_Finish
 	inst.AlignToTile = AlignToTile
+    inst.AlignToWall = AlignToWall
 	inst.Flip = Flip
 	inst.OnSave = fx_OnSave
 	inst.OnLoadPostPass = fx_OnLoadPostPass

@@ -88,16 +88,16 @@ local function UpdateRift(inst)
     local riftspawner = TheWorld.components.riftspawner
     if riftspawner and riftspawner:IsShadowPortalActive() then
         if inst.components.planarentity == nil then
+            inst:AddTag("shadow_aligned")
             inst:AddComponent("planarentity")
             inst:AddComponent("planardamage")
             inst.components.planardamage:SetBaseDamage(TUNING.CAVE_MITE_PLANAR_DAMAGE)
-            inst.components.lootdropper:AddChanceLoot("horrorfuel", 0.5)
 			inst.AnimState:ShowSymbol("red_vent")
         end
     elseif inst.components.planarentity ~= nil then
+        inst:RemoveTag("shadow_aligned")
         inst:RemoveComponent("planarentity")
         inst:RemoveComponent("planardamage")
-		inst.components.lootdropper.chanceloot = nil
         inst.AnimState:HideSymbol("red_vent")
     end
     SetUpChanceLoot(inst)

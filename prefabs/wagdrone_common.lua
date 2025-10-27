@@ -1,6 +1,5 @@
 local REGISTERED_TARGET_TAGS
 
---(Omar): NOTE This is also used for electric fence fx
 local function FindShockTargets(x, z, radius)
 	if REGISTERED_TARGET_TAGS == nil then
 		REGISTERED_TARGET_TAGS = TheSim:RegisterFindTags(

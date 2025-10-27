@@ -2095,6 +2095,8 @@ function EntityScript:IsLightGreaterThan(lightThresh)
     end
 end
 
+--
+
 function EntityScript:DebuffsEnabled()
     return self.components.debuffable == nil or self.components.debuffable:IsEnabled()
 end
@@ -2130,5 +2132,25 @@ function EntityScript:RemoveDebuff(name)
         self.components.debuffable:RemoveDebuff(name)
     end
 end
+
+--
+
+-- For mob/corpse death states on save/load
+function EntityScript:SetDeathLootLevel(num)
+    local deathloothandler = self.components.deathloothandler
+    if deathloothandler == nil then
+        deathloothandler = self:AddComponent("deathloothandler")
+    end
+
+    deathloothandler:SetLevel(num)
+end
+
+function EntityScript:GetDeathLootLevel()
+    local deathloothandler = self.components.deathloothandler
+    return (deathloothandler and deathloothandler:GetLevel())
+        or 0
+end
+
+--
 
 require("entityscriptproxy")

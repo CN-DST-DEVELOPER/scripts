@@ -69,16 +69,8 @@ local function CheckToggleWaveBlocker(inst)
     end
 end
 
-local function CancelPostUpdate_Client(inst, PostUpdate_Client)
-	inst.cancelpostupdating = nil
-	inst.postupdating = nil
-	inst.components.updatelooper:RemovePostUpdateFn(PostUpdate_Client)
-end
-
 local function PostUpdate_Client(inst)
-	if inst.cancelpostupdating then
-		return
-	elseif inst.AnimState:IsCurrentAnimation("closed") then
+	if inst.AnimState:IsCurrentAnimation("closed") then
 		DoSyncPlayAnim(inst, "closed")
 	elseif inst.AnimState:IsCurrentAnimation("open_pst") then
 		DoSyncPlayAnim(inst, "open_pst")
@@ -95,15 +87,13 @@ local function PostUpdate_Client(inst)
 		assert(false)
 	end
     CheckToggleWaveBlocker(inst)
-	inst.cancelpostupdating = inst:DoStaticTaskInTime(0, CancelPostUpdate_Client, PostUpdate_Client)
+	inst.postupdating = nil
+	inst.components.updatelooper:RemovePostUpdateFn(PostUpdate_Client)
 end
 
 --client
 local function OnSyncAnims(inst)
-	if inst.cancelpostupdating then
-		inst.cancelpostupdating:Cancel()
-		inst.cancelpostupdating = nil
-	elseif not inst.postupdating then
+	if not inst.postupdating then
 		inst.postupdating = true
 		inst.components.updatelooper:AddPostUpdateFn(PostUpdate_Client)
 	end

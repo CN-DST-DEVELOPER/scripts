@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "I'm seein' things!",
+    ANNOUNCE_SPOOKED = "Oof! Gross!",
 	ANNOUNCE_BRAVERY_POTION = "I got my moxie back. Now to tackle those trees.",
 	ANNOUNCE_MOONPOTION_FAILED = "Back to the drawing board.",
 
@@ -1191,6 +1191,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Hey, quit it! You ain't even supposed to be down here!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Dang buzzards! Hm, they look kinda off.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5789,7 +5791,7 @@ return{
             REVIVING = "Great. We missed our chance.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "As if a regular buzzard weren't bad luck enough...", -- Generic string
             EATING_CORPSE = "I'm gonna lose my lunch soon...", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5861,6 +5863,45 @@ return{
 			GENERIC = "That critter is trouble!",
 			SLEEPING = "It's sleepin'.",
             VENTING = "It ain't shy about passin' gas.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "How ya doin, Jack?",
+			UNCARVED = "Didn't put on your face yet?",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "It ain't the end.", --witnessing the corpse
+            BURNING  = "That'll do the trick.", --when its burning
+            REVIVING = "Great. We missed our chance.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "I prefer my spiders dead.",
+			BURNING = "Just to be sure.",
+			REVIVING = "Here we go again.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "That is one big ol' dead spider.",
+			BURNING = "Nothin' comin' back from that.",
+			REVIVING = "That is so gross!",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "That merm ain't sleepin'.",
+			BURNING = "Burnin' to a crisp.",
+			REVIVING = "Dead merm walkin'!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

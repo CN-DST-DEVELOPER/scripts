@@ -3,7 +3,8 @@ require("stategraphs/commonstates")
 local events=
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+        --V2C: health check since corpse shares this SG
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (inst.sg:HasAnyStateTag("nointerrupt", "attack", "electrocute") or
@@ -13,7 +14,6 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
 	EventHandler("doattack", function(inst)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			inst.sg:GoToState("attack")
@@ -25,10 +25,21 @@ local events=
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
+    CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
 {
+    State{
+		name = "init",
+		onenter = function(inst)
+			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
+		end,
+	},
+
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -241,7 +252,13 @@ local states=
             inst.components.locomotor:StopMoving()
             RemovePhysicsColliders(inst)
             inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:SetDeathLootLevel(1)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 }
 
@@ -279,5 +296,52 @@ CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
+CommonStates.AddCorpseStates(states)
 
-return StateGraph("spiderqueen", states, events, "idle")
+-- Mutated den doesn't have a stategraph, so we handle that a bit uniquely!
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutate_timeline = {
+        SoundFrameEvent(3, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+        SoundFrameEvent(4, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(17, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(19, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(35, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(33, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+        SoundFrameEvent(38, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(43, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(50, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(55, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(62, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(63, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(63, "lunarhail_event/creatures/lunar_mutation/mutate_rip_pre_31f"),
+        SoundFrameEvent(63, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+        SoundFrameEvent(66, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(67, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(68, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+        SoundFrameEvent(71, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(73, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(75, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(77, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(79, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(80, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(81, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(82, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+        SoundFrameEvent(83, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(85, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump_small"),
+        SoundFrameEvent(89, "lunarhail_event/creatures/lunar_mutation/mutate_crack_small"),
+        SoundFrameEvent(91, "lunarhail_event/creatures/lunar_mutation/mutate_crack"),
+        SoundFrameEvent(91, "lunarhail_event/creatures/lunar_mutation/mutate_crack_fleshy"),
+
+        SoundFrameEvent(94, "lunarhail_event/creatures/lunar_mutation/mutate_rip"),
+    },
+},
+{
+    mutate = "spider_queen_reviving",
+},
+nil, -- fns
+{
+    mutated_spawn_timing = 93 * FRAMES,
+})
+
+return StateGraph("spiderqueen", states, events, "init")

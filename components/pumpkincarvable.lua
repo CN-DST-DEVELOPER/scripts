@@ -89,7 +89,6 @@ local function Cut_OnIsDay(inst, isday, instant)
 	if isday then
 		if inst.isfill then
 			if inst._light then
-				inst._lightdelta = -1
 				if instant then
 					inst._lightdelta = -math.huge
 					Fill_OnUpdate(inst, 0)
@@ -148,7 +147,7 @@ local function CreateCut(owner, shape, rot, isfill, rnd1, rnd2, rnd3)
 		inst.isfill = true
 		inst._t = rnd1 * TWOPI
 		inst._s = rnd2 * TWOPI
-		inst._a = rnd2 * TWOPI
+		inst._a = rnd3 * TWOPI
 		inst:AddComponent("updatelooper")
 		inst.AnimState:PlayAnimation(string.format("cut_fill_%s_%d", shape, rot))
 		--highlightchildren managed by Cut_OnIsDay
@@ -159,6 +158,9 @@ local function CreateCut(owner, shape, rot, isfill, rnd1, rnd2, rnd3)
 
 	inst:WatchWorldState("isday", Cut_OnIsDay)
 	Cut_OnIsDay(inst, TheWorld.state.isday, true)
+	if isfill and inst._light == nil then
+		table.insert(owner.highlightchildren, inst)
+	end
 
 	inst.OnRemoveEntity = Cut_OnRemoveEntity
 
@@ -215,13 +217,18 @@ local function _DoCut(shape, rot, x, y, pass, tbl, owner, swapsymbol, swapframe,
 	table.insert(tbl, cut)
 end
 
+local function TryDecodeCutData(cutdata)
+	cutdata = string.len(cutdata) > 0 and DecodeAndUnzipString(cutdata) or nil
+	return type(cutdata) == "table" and #cutdata > 0 and cutdata or nil
+end
+
 local function ApplyCuts(cutdata, cuts, owner, swapsymbol, swapframe, offsetx, offsety)
 	for i = 1, #cuts do
 		cuts[i]:Remove()
 		cuts[i] = nil
 	end
-	cutdata = string.len(cutdata) > 0 and DecodeAndUnzipString(cutdata) or nil
-	if type(cutdata) == "table" and #cutdata > 0 then
+	cutdata = TryDecodeCutData(cutdata)
+	if cutdata then
 		offsetx = offsetx or 0
 		offsety = offsety or 0
 		local rnd1, rnd2, rnd3 = math.random(), math.random(), math.random()
@@ -237,8 +244,8 @@ end
 
 local function _ValidateCutData(doer, cutdata)
 	if doer and doer.components.inventory then
-		cutdata = string.len(cutdata) > 0 and DecodeAndUnzipString(cutdata) or nil
-		if type(cutdata) == "table" and #cutdata > 0 then
+		cutdata = TryDecodeCutData(cutdata)
+		if cutdata then
 			local supported_shapes = {}
 			for i = 1, 3 do
 				local tool = "pumpkincarver"..tostring(i)
@@ -327,14 +334,16 @@ local PumpkinCarvable = Class(function(self, inst)
 	end
 	self.onclosepumpkin = function(doer, cutdata)
 		if type(cutdata) == "string" then
-			self.cutdata:set(_ValidateCutData(doer, cutdata))
-			if not TheNet:IsDedicated() and self:DoRefreshCutData() then
+			cutdata = _ValidateCutData(doer, cutdata)
+			self.cutdata:set(cutdata)
+			if not TheNet:IsDedicated() then
+				self:DoRefreshCutData()
+			end
+			if #cutdata > 0 then
 				local x, y, z = inst.Transform:GetWorldPosition()
 				SpawnPrefab("pumpkincarving_shatter_fx").Transform:SetPosition(x, 1, z)
 			end
-			if self.ismastersim then
-				OnIsDay_Server(self, TheWorld.state.isday)
-			end
+			OnIsDay_Server(self, TheWorld.state.isday)
 		end
 		self:EndCarving(doer)
 	end
@@ -395,7 +404,7 @@ function PumpkinCarvable:BeginCarving(doer)
 		self.inst:ListenForEvent("onremove", self.onclosepumpkin, doer)
 		self.inst:ListenForEvent("ms_closepopup", self.onclosepopup, doer)
 
-		doer.sg:GoToState("pumpkincarving", { target = self.inst })
+		doer.sg:GoToState("pumpkincarving", { popup = POPUPS.PUMPKINCARVING, target = self.inst })
 
 		self.inst:StartUpdatingComponent(self)
 
@@ -476,7 +485,7 @@ function PumpkinCarvable:OnUpdate(dt)
 		self.inst:StopUpdatingComponent(self)
 	elseif not (self.carver:IsNear(self.inst, self.range) and CanEntitySeeTarget(self.carver, self.inst)) then
 		self:EndCarving(self.carver)
-    end
+	end
 end
 
 return PumpkinCarvable

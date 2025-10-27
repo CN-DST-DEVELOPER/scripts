@@ -315,6 +315,10 @@ function Combat:CanTarget(target)
 end
 
 function Combat:IsAlly(guy)
+    if guy:HasTag("alwayshostile") then
+        return false
+    end
+
     if guy == self.inst or
         (self.inst.replica.follower ~= nil and guy == self.inst.replica.follower:GetLeader()) then
         --It's me! or it's my leader
@@ -407,6 +411,8 @@ function Combat:CanBeAttacked(attacker)
                     end
                 end
             end
+        --elseif self.inst:HasAllTags("buzzard", "lunar_aligned") and attacker:HasTag("lunar_aligned") then
+        --    return false
         end
 
 		sanity = attacker.replica.sanity

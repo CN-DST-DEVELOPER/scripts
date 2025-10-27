@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Doth mine eyes deceive me?",
+    ANNOUNCE_SPOOKED = "What foul fiends be these?!",
 	ANNOUNCE_BRAVERY_POTION = "Fear! I hath bested you!",
 	ANNOUNCE_MOONPOTION_FAILED = "'Twas all in vain!",
 
@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Curses! I shall hew off thy dark meddling hand!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Twisted dead-eaters doth circle above!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -4837,7 +4839,7 @@ return{
         MOONSTORM_STATIC_ROAMER = "The power roams free.",
         MOONSTORM_SPARK = "It sends a curious tickle through my bones.",
 
-        BIRD_MUTANT = "The beasts are changed by the storm!",
+        BIRD_MUTANT = "The beasts are changed by some strange force!",
         BIRD_MUTANT_SPITTER = "You think you can challenge me, winged fiend?",
 
         WAGSTAFF_NPC = "Hail stranger! Are ye friend or foe?",
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "Unnatural metamorphosis!", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Thou art blasphemy made flesh!", -- Generic string
             EATING_CORPSE = "Curses! The dead devoureth the dead!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "Come, stinking beast!",
 			SLEEPING = "To slay it in its sleep is simple, swift and without honor.",
             VENTING = "Spew not they noxious vapors upon me, vile insect!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "The trickster children shall tremble as I don this ghoulish helm!",
+			UNCARVED = "This gourd doth lack a visage!",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "A bad omen.", --witnessing the corpse
+            BURNING  = "It shall not rise from these ashes.", --when its burning
+            REVIVING = "Unnatural metamorphosis!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "And it shall not be the last dead spider.",
+			BURNING = "A mediocre offering to the gods.",
+			REVIVING = "Curses!",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Here lieth a worthy foe.",
+			BURNING = "May you be honored in your burning.",
+			REVIVING = "Rest was your right, not this accursed waking.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "'Tis but another fallen fish beast.",
+			BURNING = "Good riddance to foul company.",
+			REVIVING = "You've returned for a second helping of my steel, have you?",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

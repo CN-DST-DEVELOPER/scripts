@@ -204,6 +204,7 @@ local HEAT_MODULE_DATA =
 table.insert(module_definitions, HEAT_MODULE_DATA)
 
 AddCreatureScanDataDefinition("firehound", "heat", 4)
+AddCreatureScanDataDefinition("cave_vent_mite", "heat", 8)
 AddCreatureScanDataDefinition("dragonfly", "heat", 10)
 
 ---------------------------------------------------------------

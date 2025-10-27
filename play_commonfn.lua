@@ -413,12 +413,17 @@ fns.do_emote_fx = function(inst, line, cast)
 
 		local fx = SpawnPrefab("emote_fx")
     	if fx ~= nil then
-    	    if actor.components.rider:IsRiding() then
+    	    if actor.components.rider and actor.components.rider:IsRiding() then
     	        fx.Transform:SetSixFaced()
     	    end
     	    fx.entity:SetParent(actor.entity)
     	    fx.entity:AddFollower()
-    	    fx.Follower:FollowSymbol(actor.GUID, "emotefx", 0, 0, 0)
+
+			if actor:HasTag("equipmentmodel") then
+				fx.Follower:FollowSymbol(actor.GUID, "headbase", 0, -200, 0)
+			else
+    	    	fx.Follower:FollowSymbol(actor.GUID, "emotefx", 0, 0, 0)
+			end
     	end
   	end
 end

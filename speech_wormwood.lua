@@ -1189,6 +1189,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Bad hand friend! Why doing that?",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Hmmm... meat tweeter look different", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5787,7 +5789,7 @@ return{
             REVIVING = "Meat tweeter back...", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "Dead not dead meat tweeter", -- Generic string
             EATING_CORPSE = "Forever hungry", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5834,7 +5836,7 @@ return{
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Who friend lose ball?",
         VAULT_LOBBY_EXIT = "Jump!",
-		VAULT_CHANDELIER_BROKEN = "Ball fall down.",
+		VAULT_CHANDELIER_BROKEN = "Ball fall down",
 
 		ANCIENT_HUSK = "Why, friends? Why?",
 		MASK_ANCIENT_HANDMAIDHAT = "Friend face hard!",
@@ -5859,6 +5861,45 @@ return{
 			GENERIC = "Hello gassy friend",
 			SLEEPING = "Dream rock friends or bug friends?",
             VENTING = "Gassy friend gassing!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Wear pumpkin friend face?!",
+			UNCARVED = "Don't be scared, pumpkin friend",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Ice tweeter dead", --witnessing the corpse
+            BURNING  = "Hot ice tweeter", --when its burning
+            REVIVING = "Ice tweeter back...", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "Dead leggy bug",
+			BURNING = "Leggy bug burn",
+			REVIVING = "Leggy bug again",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "Leggy bug mommy dead",
+			BURNING = "Bye, leggy bug mommy",
+			REVIVING = "Leggy bug mommy turn buggy home",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Aw, Glub Glub.",
+			BURNING = "Sorry Glub Glub",
+			REVIVING = "Back but not same Glub Glub",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

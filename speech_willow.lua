@@ -710,7 +710,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Were those bats, or am I just seeing things.",
+    ANNOUNCE_SPOOKED = "Aww, gross!",
 	ANNOUNCE_BRAVERY_POTION = "Haha! Those bats don't scare me anymore!",
 	ANNOUNCE_MOONPOTION_FAILED = "Huh. Alright then.",
 
@@ -1187,11 +1187,13 @@ return{
 
     -- Rift 6
     ANNOUNCE_WEAPON_TOOWEAK = "Useless! I need something stronger!",
-    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "What now?!",
+    ANNOUNCE_VAULT_TELEPORTER_DOES_NOTHING = "Not working? That's it, light it up.",
 
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "Stupid hand! What is your problem?!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Stupid buzzards. Hey, what's wrong with them?", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5790,7 +5792,7 @@ return{
             REVIVING = "Do I even have to say it?", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "That buzzard's up to no good.", -- Generic string
             EATING_CORPSE = "Nasty!", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5862,6 +5864,45 @@ return{
 			GENERIC = "You're real a pain, aren't you!",
 			SLEEPING = "That's right, keep sleeping...",
             VENTING = "How rude!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "What are you looking at, pumpkin head?",
+			UNCARVED = "Stupid no-face pumpkin.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "Shall I do the honors?", --witnessing the corpse
+            BURNING  = "Burn, pengie, burn.", --when its burning
+            REVIVING = "Do I even have to say it?", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "What's the big deal?",
+			BURNING = "Seeya!",
+			REVIVING = "Oh great.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "I say light her up. Just in case.",
+			BURNING = "Ah, sweet sweet flames.",
+			REVIVING = "Told ya so.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "Ew! Burn it!",
+			BURNING = "Frankly, I'm surprised these soggy guys burn so well.",
+			REVIVING = "I knew it!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

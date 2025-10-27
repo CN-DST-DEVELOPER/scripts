@@ -9,7 +9,7 @@ local GenericWaitingPopup = require "screens/redux/genericwaitingpopup"
 local AchievementsPopup = require "screens/redux/achievementspopup"
 local CreditsScreen = require "screens/creditsscreen"
 local MovieDialog = require "screens/moviedialog"
-local PopupDialogScreen = require "screens/popupdialog"
+local PopupDialogScreen = require "screens/redux/popupdialog"
 
 local TEMPLATES = require "widgets/redux/templates"
 
@@ -159,25 +159,36 @@ end
 
 function HistoryOfTravelsPanel:_BuildFestivalHistoryButton(festival_key, season)
     local function onclick()
-        local event_wait_popup = PushWaitingPopup()
-        wxputils.GetEventStatus(festival_key, season, function(success)
-            self.inst:DoTaskInTime(0, function() --we need to delay a frame so that the popping of the screens happens at the right time in the frame.
-                event_wait_popup:Close()
+		if (TheFrontEnd:GetIsOfflineMode() or not TheNet:IsOnlineMode()) then
+			TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.PLAYERSUMMARYSCREEN.FESTIVAL_HISTORY, STRINGS.UI.PLAYERSUMMARYSCREEN.NOT_AVAILABLE_OFFLINE, 
+				{
+					{text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_LOGIN, cb = function()
+							SimReset()
+						end},
+					{text=STRINGS.UI.FESTIVALEVENTSCREEN.OFFLINE_POPUP_BACK, cb=function() TheFrontEnd:PopScreen() end },
+				}))
 
-                if success then
-                    local screen = AchievementsPopup(self.prev_screen, festival_key, season)
-                    TheFrontEnd:PushScreen(screen)
-                else
-                    local ok_scr = PopupDialogScreen( STRINGS.UI.PLAYERSUMMARYSCREEN.FESTIVAL_HISTORY, STRINGS.UI.ITEM_SERVER.FAILED_DEFAULT,
-					{
-						{text=STRINGS.UI.PURCHASEPACKSCREEN.OK, cb = function()
-							TheFrontEnd:PopScreen()
-						end },
-					})
-                    TheFrontEnd:PushScreen(ok_scr)
-                end
-            end, self)
-        end)
+		else
+			local event_wait_popup = PushWaitingPopup()
+			wxputils.GetEventStatus(festival_key, season, function(success)
+				self.inst:DoTaskInTime(0, function() --we need to delay a frame so that the popping of the screens happens at the right time in the frame.
+					event_wait_popup:Close()
+
+					if success then
+						local screen = AchievementsPopup(self.prev_screen, festival_key, season)
+						TheFrontEnd:PushScreen(screen)
+					else
+						local ok_scr = PopupDialogScreen( STRINGS.UI.PLAYERSUMMARYSCREEN.FESTIVAL_HISTORY, STRINGS.UI.ITEM_SERVER.FAILED_DEFAULT,
+						{
+							{text=STRINGS.UI.PURCHASEPACKSCREEN.OK, cb = function()
+								TheFrontEnd:PopScreen()
+							end },
+						})
+						TheFrontEnd:PushScreen(ok_scr)
+					end
+				end, self)
+			end)
+		end
     end
 
     local festival_title = STRINGS.UI.FESTIVALEVENTSCREEN.TITLE[string.upper(festival_key) .. (season > 1 and tostring(season) or "")]

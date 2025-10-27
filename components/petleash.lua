@@ -89,7 +89,15 @@ function PetLeash:GetNumPetsForPrefab(prefab)
         return 0
     end
 
-    return self.numpetsperprefab and self.numpetsperprefab[prefab] or 0
+    return self.numpetsperprefab[prefab] or 0
+end
+
+function PetLeash:GetNumReservedPetsForPrefab(prefab)
+    if self.reservedpetsperprefab == nil then
+        return 0
+    end
+
+    return self.reservedpetsperprefab[prefab] or 0
 end
 
 function PetLeash:GetPetsWithPrefab(prefab)
@@ -108,7 +116,28 @@ function PetLeash:GetPetsWithPrefab(prefab)
 end
 
 function PetLeash:IsFullForPrefab(prefab)
-    return self:GetNumPetsForPrefab(prefab) >= self:GetMaxPetsForPrefab(prefab)
+    return self:GetNumPetsForPrefab(prefab) + self:GetNumReservedPetsForPrefab(prefab) >= self:GetMaxPetsForPrefab(prefab)
+end
+
+function PetLeash:ReservePetWithPrefab(prefab)
+    self.reservedpetsperprefab = self.reservedpetsperprefab or {}
+    self.reservedpetsperprefab[prefab] = (self.reservedpetsperprefab[prefab] or 0) + 1
+end
+
+function PetLeash:UnreservePetWithPrefab(prefab)
+    if self.reservedpetsperprefab == nil then
+        return
+    end
+
+    local count = (self.reservedpetsperprefab[prefab] or 1) - 1
+    if count <= 0 then
+        self.reservedpetsperprefab[prefab] = nil
+        if next(self.reservedpetsperprefab) == nil then
+            self.reservedpetsperprefab = nil
+        end
+    else
+        self.reservedpetsperprefab[prefab] = count
+    end
 end
 
 function PetLeash:HasPetWithTag(tag)
@@ -176,6 +205,20 @@ function PetLeash:SpawnPetAt(x, y, z, prefaboverride, skin)
     return pet
 end
 
+function PetLeash:DetachPet(pet) -- NOTES(JBK): This is for when something outside of petleash wants to control what happens to the pet for custom despawning without this component despawning them.
+    if self.pets[pet] ~= nil then
+        self.pets[pet] = nil
+
+        if self:IsPetAPrefabLimitedOne(pet.prefab) then
+            self.numpetsperprefab[pet.prefab] = self.numpetsperprefab[pet.prefab] - 1
+        else
+            self.numpets = self.numpets - 1
+        end
+
+        self.inst:RemoveEventCallback("onremove", self._onremovepet, pet)
+    end
+end
+
 function PetLeash:DespawnPet(pet)
     if self.pets[pet] ~= nil then
         if self.ondespawnfn ~= nil then
@@ -190,6 +233,18 @@ function PetLeash:DespawnAllPets()
     local toremove = {}
     for k, v in pairs(self.pets) do
         table.insert(toremove, v)
+    end
+    for i, v in ipairs(toremove) do
+        self:DespawnPet(v)
+    end
+end
+
+function PetLeash:DespawnAllPetsWithPrefab(prefab)
+    local toremove = {}
+    for k, v in pairs(self.pets) do
+        if v.prefab == prefab then
+            table.insert(toremove, v)
+        end
     end
     for i, v in ipairs(toremove) do
         self:DespawnPet(v)

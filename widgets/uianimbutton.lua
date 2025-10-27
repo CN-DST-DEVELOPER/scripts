@@ -51,22 +51,24 @@ function UIAnimButton:OnControl(control, down)
 
     if control == self.control then
         if down then
-            if self.downanimation and not self.animstate:IsCurrentAnimation(self.downanimation) then
-                self.animstate:PlayAnimation(self.downanimation, self.loops[self.downanimation])
-            end
+			if not self.down then
+				if self.downanimation and not self.animstate:IsCurrentAnimation(self.downanimation) then
+					self.animstate:PlayAnimation(self.downanimation, self.loops[self.downanimation])
+				end
 
-            if not self.stopclicksound then
-				TheFrontEnd:GetSound():PlaySound(self.overrideclicksound or "dontstarve/HUD/click_move")
-            end
+				if not self.stopclicksound then
+					TheFrontEnd:GetSound():PlaySound(self.overrideclicksound or "dontstarve/HUD/click_move")
+				end
 
-            self.down = true
-            if self.whiledown then
-                self:StartUpdating()
-            end
-            if self.ondown then
-                self.ondown()
-            end
-        else
+				self.down = true
+				if self.whiledown then
+					self:StartUpdating()
+				end
+				if self.ondown then
+					self.ondown()
+				end
+			end
+		elseif self.down then
             if self.downanimation and not self.animstate:IsCurrentAnimation(self.focusanimation) then
                 self.animstate:PlayAnimation(self.focusanimation, self.loops[self.focusanimation])
             end

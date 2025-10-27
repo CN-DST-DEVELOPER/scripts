@@ -1476,6 +1476,16 @@ MISC_ITEMS =
 		rarity = "HeirloomElegant",
 		release_group = 124,
 	},
+	mysterybox_trickortreat_2025 =
+	{
+		type = "mysterybox",
+		skin_tags = { "MYSTERYBOX", },
+		build_name_override = "pack_hallowed",
+		box_build = "box_shop_hallowed",
+		rarity = "Distinguished",
+		rarity_modifier = "Woven",
+		release_group = 173,
+	},
 	mysterybox_trickortreat_alt =
 	{
 		type = "mysterybox",
@@ -8267,6 +8277,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 39,
 	},
+	playerportrait_bg_heatrock_planet =
+	{
+		type = "playerportrait",
+		skin_tags = { "PLANETS", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 173,
+	},
 	playerportrait_bg_heatrockfire =
 	{
 		type = "playerportrait",
@@ -9444,6 +9461,13 @@ MISC_ITEMS =
 		skin_tags = { "CRYSTAL", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 65,
+	},
+	profileflair_heatrock_planet =
+	{
+		type = "profileflair",
+		skin_tags = { "PLANETS", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 173,
 	},
 	profileflair_hivehat_an =
 	{

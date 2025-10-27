@@ -168,7 +168,9 @@ function FormationLeader:NewFormationMember(member)
         member.components.formationfollower.formationleader = self
         member.components.formationfollower.in_formation = true
 
-        member.components.follower:SetLeader(self.target)
+        if member.components.follower ~= nil then
+            member.components.follower:SetLeader(self.target)
+        end
     end
 end
 
@@ -188,7 +190,9 @@ function FormationLeader:OnLostFormationMember(member)
         member.components.formationfollower.in_formation = false
         member.components.combat:DropTarget()
 
-        member.components.follower:StopFollowing()
+        if member.components.follower ~= nil then
+            member.components.follower:StopFollowing()
+        end
     end
 end
 

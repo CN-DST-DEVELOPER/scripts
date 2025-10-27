@@ -28,6 +28,8 @@ local prefabs =
     "strawhat",
     "pigskin",
     PIG_TOKEN_PREFAB,
+
+    --"pigcorpse",
 }
 
 local MAX_TARGET_SHARES = 5

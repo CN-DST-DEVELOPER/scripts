@@ -95,7 +95,8 @@ local Sanity = Class(function(self, inst)
     self.neg_aura_modifiers = SourceModifierList(self.inst)
     self.neg_aura_absorb = 0
 
-	--self.neg_aura_immune = nil
+	--self.neg_aura_immune = nil --deprecated, use self.neg_aura_immune_sources below
+	self.neg_aura_immune_sources = SourceModifierList(inst, false, SourceModifierList.boolean)
     self.dapperness_mult = 1
     self.penalty = 0
 
@@ -105,11 +106,14 @@ local Sanity = Class(function(self, inst)
 
     self.custom_rate_fn = nil
 
-    --self.sanity_aura_immune = false -- is unaffected by ANY auras
+	--self.sanity_aura_immune = false --deprecated, use self.sanity_aura_immune_sources below
+	self.sanity_aura_immune_sources = SourceModifierList(inst, false, SourceModifierList.boolean) -- is unaffected by ANY auras
     --self.sanity_aura_immunities = nil -- protects against specific auras, like Wendy with the ghosts
-    --self.player_ghost_immune = false
+	--self.player_ghost_immune = false --deprecated, use self.player_ghost_immune_sources below
+	self.player_ghost_immune_sources = SourceModifierList(inst, false, SourceModifierList.boolean)
 
-    --self.light_drain_immune = false
+	--self.light_drain_immune = false --deprecated, use self.light_drain_immune_sources below
+	self.light_drain_immune_sources = SourceModifierList(inst, false, SourceModifierList.boolean)
 
     self._oldissane = self:IsSane()
     self._oldpercent = self:GetPercent()
@@ -206,34 +210,49 @@ function Sanity:RecalculatePenalty()
     self:DoDelta(0)
 end
 
-function Sanity:AddSanityAuraImmunity(tag)
+function Sanity:AddSanityAuraImmunity(tag, source)
+	local sources
 	if self.sanity_aura_immunities == nil then
 		self.sanity_aura_immunities = {}
+	else
+		sources = self.sanity_aura_immunities[tag]
 	end
-	self.sanity_aura_immunities[tag] = true
+	if sources == nil then
+		sources = SourceModifierList(self.inst, false, SourceModifierList.boolean)
+		self.sanity_aura_immunities[tag] = sources
+	end
+	sources:SetModifier(source or self.inst, true)
 end
 
-function Sanity:RemoveSanityAuraImmunity(tag)
-	self.sanity_aura_immunities[tag] = nil
-	if next(self.sanity_aura_immunities) == nil then
-		self.sanity_aura_immunities = nil
+function Sanity:RemoveSanityAuraImmunity(tag, source)
+	if self.sanity_aura_immunities then
+		local sources = self.sanity_aura_immunities[tag]
+		if sources then
+			sources:RemoveModifier(source or self.inst)
+			if not sources:Get() then
+				self.sanity_aura_immunities[tag] = nil
+				if next(self.sanity_aura_immunities) == nil then
+					self.sanity_aura_immunities = nil
+				end
+			end
+		end
 	end
 end
 
-function Sanity:SetFullAuraImmunity(immunity)
-    self.sanity_aura_immune = immunity
+function Sanity:SetFullAuraImmunity(immunity, source)
+	self.sanity_aura_immune_sources:SetModifier(source or self.inst, immunity)
 end
 
-function Sanity:SetNegativeAuraImmunity(immunity)
-    self.neg_aura_immune = immunity
+function Sanity:SetNegativeAuraImmunity(immunity, source)
+	self.neg_aura_immune_sources:SetModifier(source or self.inst, immunity)
 end
 
-function Sanity:SetPlayerGhostImmunity(immunity)
-    self.player_ghost_immune = immunity
+function Sanity:SetPlayerGhostImmunity(immunity, source)
+	self.player_ghost_immune_sources:SetModifier(source or self.inst, immunity)
 end
 
-function Sanity:SetLightDrainImmune(immunity)
-    self.light_drain_immune = immunity
+function Sanity:SetLightDrainImmune(immunity, source)
+	self.light_drain_immune_sources:SetModifier(source or self.inst, immunity)
 end
 
 function Sanity:OnSave()
@@ -430,7 +449,7 @@ function Sanity:OnUpdate(dt)
 end
 
 function Sanity:RecalcGhostDrain()
-    if GetGhostSanityDrain(TheNet:GetServerGameMode()) and not self.player_ghost_immune then
+	if GetGhostSanityDrain(TheNet:GetServerGameMode()) and not self.player_ghost_immune_sources:Get() then
         local num_ghosts = TheWorld.shard.components.shard_players:GetNumGhosts()
         local num_alive = TheWorld.shard.components.shard_players:GetNumAlive()
         local group_resist = num_alive > num_ghosts and 1 - num_ghosts / num_alive or 0
@@ -484,7 +503,7 @@ function Sanity:Recalc(dt)
     local light_sanity_drain = LIGHT_SANITY_DRAINS[self.mode]
 	local light_delta = 0
 
-    if not self.light_drain_immune then
+	if not self.light_drain_immune_sources:Get() then
         if TheWorld.state.isday and not TheWorld:HasTag("cave") then
             light_delta = light_sanity_drain.DAY
         else
@@ -498,15 +517,21 @@ function Sanity:Recalc(dt)
     end
 
     local aura_delta = 0
-	if not self.sanity_aura_immune then
+	if not self.sanity_aura_immune_sources:Get() then
 		local x, y, z = self.inst.Transform:GetWorldPosition()
 	    local ents = TheSim:FindEntities(x, y, z, TUNING.SANITY_AURA_SEACH_RANGE, SANITYRECALC_MUST_TAGS, SANITYRECALC_CANT_TAGS)
 	    for i, v in ipairs(ents) do
 	        if v.components.sanityaura ~= nil and v ~= self.inst then
                 local is_aura_immune = false
 				if self.sanity_aura_immunities ~= nil then
-					for tag, _ in pairs(self.sanity_aura_immunities) do
-						if v:HasTag(tag) then
+					for tag, sources in pairs(self.sanity_aura_immunities) do
+						if not sources:Get() then
+							self.sanity_aura_immunities[tag] = nil
+							if next(self.sanity_aura_immunities) == nil then
+								self.sanity_aura_immunities = nil
+								break
+							end
+						elseif v:HasTag(tag) then
 							is_aura_immune = true
 							break
 						end
@@ -516,7 +541,7 @@ function Sanity:Recalc(dt)
                 if not is_aura_immune then
                     local aura_val = v.components.sanityaura:GetAura(self.inst)
 					aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
-                    aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune) and 0 or aura_val)
+					aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
                 end
             end
         end
@@ -526,7 +551,7 @@ function Sanity:Recalc(dt)
     if mount ~= nil and mount.components.sanityaura ~= nil then
         local aura_val = mount.components.sanityaura:GetAura(self.inst)
 		aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
-        aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune) and 0 or aura_val)
+		aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
     end
 
     self:RecalcGhostDrain()

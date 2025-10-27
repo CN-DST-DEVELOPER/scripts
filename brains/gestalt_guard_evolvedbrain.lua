@@ -1,91 +1,75 @@
-require "behaviours/follow"
-require "behaviours/wander"
-require "behaviours/standstill"
-require "behaviours/faceentity"
-
-local BRIGHTMARE_AVOID_DIST = 2
-local BRIGHTMARE_AVOID_STOP = 4
-
-local MAX_CHASE_TIME = 10
-local MAX_CHASE_DIST = 20
-
-local ATTACK_CHASE_TIME = 5
-
-local WANDER_TIMES = { minwalktime = 2, randwalktime = 2, minwaittime = 3, randwaittime = 3 }
-
-local RUN_AWAY_DIST = 4
-local RUN_AWAY_DSQ = RUN_AWAY_DIST * RUN_AWAY_DIST
-local STOP_RUN_AWAY_DIST = 8
-
-local GETFACINGTARGET_DISTSQ = TUNING.GESTALTGUARD_WATCHING_RANGE*TUNING.GESTALTGUARD_WATCHING_RANGE
+require("behaviours/standstill")
 
 local GestaltGuardEvolvedBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-local function GetFacingTarget(inst)
-	local target = (inst.behaviour_level or 0) > 1 and inst.components.combat.target or nil
-	if target ~= nil and target:IsValid() then
-		local p1x, _, p1z = inst.Transform:GetWorldPosition()
-		local p2x, _, p2z = target.Transform:GetWorldPosition()
-		return (distsq(p1x, p1z, p2x, p2z) <= GETFACINGTARGET_DISTSQ) and target or nil
-	end
+local function GetTarget(inst)
+    return inst.components.combat.target
 end
 
-local function KeepFacingTarget(inst, target)
-	return GetFacingTarget(inst) == target
+local function GetTargetPos(inst)
+    local target = GetTarget(inst)
+    return target and target:GetPosition() or nil
 end
 
-local AGMAXHAT_TAGS = {"_equippable", "lunarseedmaxed"}
-local AGMAXHAT_RADIUS = 30
-local function GetWanderHome(inst)
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local ents = TheSim:FindEntities(x, y, z, AGMAXHAT_RADIUS, AGMAXHAT_TAGS)
-	for _, e in ipairs(ents) do
-		return e:GetPosition()
-	end
-
-	return inst.components.knownlocations:GetLocation("spawnpoint")
+local function IsTarget(inst, target)
+    return inst.components.combat:TargetIs(target)
 end
 
 function GestaltGuardEvolvedBrain:OnStart()
-	local function should_dodge()
-		if not self.inst.components.combat:InCooldown() then
-			return false
-		end
+    local distancetotarget = nil
+    local function hastarget()
+        return distancetotarget ~= nil
+    end
+    local function calculatedistancetotarget()
+        if not (self.inst.components.combat.target and self.inst.components.combat.target:IsValid()) then
+            distancetotarget = nil
+            return
+        end
 
-		-- Relocate away from our combat target, but also players, because we're angry at them/scared of them.
-		local ix, iy, iz = self.inst.Transform:GetWorldPosition()
-		return (self.inst.components.combat.target
-			and self.inst.components.combat.target:GetDistanceSqToPoint(ix, iy, iz) <= RUN_AWAY_DSQ)
-			or IsAnyPlayerInRangeSq(ix, iy, iz, RUN_AWAY_DSQ, true)
-	end
+        distancetotarget = math.sqrt(self.inst:GetDistanceSqToInst(self.inst.components.combat.target))
+    end
+    local function startcombatphase()
+        self.inst:FacePoint(self.inst.components.combat.target.Transform:GetWorldPosition()) -- Always do this.
 
+        if self.inst._should_teleport then
+            if self.inst:TryAttack_Teleport_GetCloser() then
+                return true
+            end
+        end
+
+        if self.inst:TryAttack_Teleport_Evade() then
+            return true
+        end
+
+        return false
+    end
     local root = PriorityNode({
-		WhileNode(function() return not self.inst.sg:HasStateTag("attack") end, "Not Attacking",
-			PriorityNode({
-				WhileNode( function() return not self.inst.components.combat:InCooldown() end, "Aggressive",
-					ChaseAndAttack(self.inst, ATTACK_CHASE_TIME, nil, nil, nil, true)
-				),
-
-				WhileNode(should_dodge, "Relocate",
-					SequenceNode{
-						WaitNode(1.75),
-						ActionNode(function() self.inst:PushEvent("relocate") end),
-						StandStill(self.inst),
-					}
-				),
-
-				FaceEntity(self.inst, GetFacingTarget, KeepFacingTarget),
-				Wander(self.inst, GetWanderHome, 0.33 * AGMAXHAT_RADIUS, WANDER_TIMES),
-			}, 0.1)),
-		}, 0.1)
+        WhileNode(
+            function()
+                return not self.inst.sg:HasStateTag("busy")
+            end,
+            "<busy state guard>",
+            PriorityNode({
+                FailIfSuccessDecorator(ActionNode(calculatedistancetotarget)),
+                IfNode(hastarget, "Combat",
+                    PriorityNode({
+                        ConditionNode(startcombatphase),
+                        IfNode(function() return distancetotarget < TUNING.GESTALT_EVOLVED_CLOSE_RANGE end, "Range: Close",
+                            ActionNode(function() return self.inst:TryAttack_Close() end)),
+                        IfNode(function() return distancetotarget < TUNING.GESTALT_EVOLVED_MID_RANGE end, "Range: Mid",
+                            ActionNode(function() return self.inst:TryAttack_Mid() end)),
+                        IfNode(function() return distancetotarget < TUNING.GESTALT_EVOLVED_FAR_RANGE end, "Range: Far",
+                            ActionNode(function() return self.inst:TryAttack_Far() end)),
+                        ActionNode(function() return self.inst:TryAttack_Teleport_GetCloser() end),
+                    }, 0.5)),
+                StandStill(self.inst),
+            }, 0.5)),
+        -- Do nothing while in busy state guard.
+    }, 0.5)
 
     self.bt = BT(self.inst, root)
-end
-
-function GestaltGuardEvolvedBrain:OnInitializationComplete()
-    self.inst.components.knownlocations:RememberLocation("spawnpoint", self.inst:GetPosition(), true)
 end
 
 return GestaltGuardEvolvedBrain

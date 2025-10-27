@@ -23,6 +23,10 @@ local Circler = Class(function(self, inst)
     self.sine = 0
 end)
 
+function Circler:SetMode(mode)
+    self.circlerMode = mode
+end
+
 function Circler:Start()
     if self.circleTarget == nil or not self.circleTarget:IsValid() then
         self.circleTarget = nil
@@ -69,7 +73,7 @@ function Circler:GetMinScale()
     return self.minScale * .1
 end
 
-function  Circler:GetMaxScale()
+function Circler:GetMaxScale()
     return self.maxScale * .1
 end
 

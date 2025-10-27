@@ -842,7 +842,7 @@ local function DoSpookedSanity(inst)
 end
 
 local function OnSpooked(inst)
-    if not GetGameModeProperty("no_sanity") then
+	if not (GetGameModeProperty("no_sanity") or inst.components.inventory:EquipHasTag("spook_protection")) then
         --Delay to match bat overlay timing
         inst:DoTaskInTime(1.35, DoSpookedSanity)
     end

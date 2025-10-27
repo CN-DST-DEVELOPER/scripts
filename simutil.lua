@@ -572,6 +572,7 @@ function ErodeAway(inst, erode_time)
     if inst.components.floater ~= nil then
         inst.components.floater:Erode(time_to_erode)
     end
+    inst._eroding_away = true
 
     inst:StartThread(function()
         local ticks = 0

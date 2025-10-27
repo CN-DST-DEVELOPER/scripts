@@ -200,8 +200,8 @@ AddTask("CentipedeCaveTask", {
     locks={ LOCKS.CAVE, LOCKS.TIER4, },
     keys_given={ KEYS.CAVE, KEYS.TIER5, KEYS.CENTIPEDE },
     room_choices={
-        ["VentsRoom"] = 2 + math.random(2),
-        ["RockTreeRoom"] = 1 + math.random(2),
+        ["VentsRoom"] = function() return 2 + math.random(2) end,
+        ["RockTreeRoom"] = function() return 1 + math.random(2) end,
         ["VentsRoom_exit"] = 3,
         ["CentipedeNest"] = 1,
     },

@@ -96,15 +96,8 @@ local function RememberVisualLaunchPt(inst)
 	end
 end
 
-local function CancelLaunchOffset(inst, UpdateLaunchOffset)
-	inst.canceloffsettask = nil
-	inst.components.updatelooper:RemovePostUpdateFn(UpdateLaunchOffset)
-end
-
 local function UpdateLaunchOffset(inst)
-	if inst.canceloffsettask then
-		return
-	elseif inst.rotator then
+	if inst.rotator then
 		if inst.rotator.isnew then
 			inst.rotator.isnew = nil
 			RememberVisualLaunchPt(inst)
@@ -135,7 +128,7 @@ local function UpdateLaunchOffset(inst)
 	end
 
 	if inst.launchpt == nil then
-		inst.canceloffsettask = inst:DoStaticTaskInTime(0, CancelLaunchOffset, UpdateLaunchOffset)
+		inst.components.updatelooper:RemovePostUpdateFn(UpdateLaunchOffset)
 	end
 end
 

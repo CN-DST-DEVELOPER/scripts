@@ -512,6 +512,24 @@ function ChangeToGhostPhysics(inst)
     return phys
 end
 
+function ChangeToFlyingCharacterPhysics(inst, mass, rad)
+    local phys = inst.Physics
+    if mass then
+        phys:SetMass(mass)
+        phys:SetFriction(0)
+        phys:SetDamping(5)
+    end
+    phys:SetCollisionGroup(COLLISION.FLYERS)
+	phys:SetCollisionMask(
+		TheWorld:CanFlyingCrossBarriers() and COLLISION.GROUND or COLLISION.WORLD,
+		COLLISION.FLYERS
+	)
+    if rad then
+        phys:SetCapsule(rad, 1)
+    end
+    return phys
+end
+
 function ChangeToCharacterPhysics(inst, mass, rad)
     local phys = inst.Physics
     if mass then

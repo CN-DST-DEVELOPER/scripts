@@ -25,11 +25,16 @@ local HOUSE_RETURN_DIST = 50
 
 local SIT_BOY_DIST = 10
 
+local function IsFoodValid(item, inst)
+    return inst.components.eater:CanEat(item)
+        and item:IsOnPassablePoint(true)
+end
+
 local function EatFoodAction(inst)
 	if inst.sg:HasStateTag("busy") and not inst.sg:HasStateTag("wantstoeat") then
 		return
 	end
-	local target = FindEntity(inst, SEE_DIST, function(item) return inst.components.eater:CanEat(item) and item:IsOnPassablePoint(true) end, nil, FINDFOOD_CANT_TAGS)
+	local target = FindEntity(inst, SEE_DIST, IsFoodValid, nil, FINDFOOD_CANT_TAGS, inst.components.eater:GetEdibleTags())
     return target ~= nil and BufferedAction(inst, target, ACTIONS.EAT) or nil
 end
 
@@ -202,7 +207,7 @@ function HoundBrain:OnStart()
 										function() return self.inst.components.combat:GetHitRange() + self.carcass:GetPhysicsRadius(0) - 1 end,
 										true)),
 								IfNode(function() return self:CheckCarcass() and not self.inst.components.combat:InCooldown() end, "chomp",
-									ActionNode(function() self.inst.sg:HandleEvent("chomp", { target = self.carcass }) end)),
+									ActionNode(function() self.inst:PushEventImmediate("chomp", { target = self.carcass }) end)),
 								FaceEntity(self.inst,
 									function() return self.carcass end,
 									function() return self:CheckCarcass() end),

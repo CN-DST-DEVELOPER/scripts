@@ -21,7 +21,8 @@ end
 local events =
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+        --V2C: health check since corpse shares this SG
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
@@ -29,8 +30,13 @@ local events =
 			end
 		end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death", inst.sg.statemem.dead)
+    EventHandler("death", function(inst, data) -- We should use CommonHandlers.OnDeath, but SGhound has a special case for death states param.
+        local use_corpse_state = CommonHandlers.ShouldUseCorpseStateOnLoad(inst, data.cause)
+        if use_corpse_state then
+            inst.sg:GoToState("corpse", true)
+        else
+            inst.sg:GoToState("death", inst.sg.statemem.dead)
+        end
     end),
     EventHandler("doattack", function(inst, data)
         if not inst.components.health:IsDead() and
@@ -112,6 +118,9 @@ local events =
             inst.sg:GoToState("transformstatue")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function SpawnHound(inst)
@@ -189,6 +198,13 @@ end
 
 local states =
 {
+    State{
+		name = "init",
+		onenter = function(inst)
+			inst.sg:GoToState(inst.components.locomotor ~= nil and "taunt" or "corpse_idle")
+		end,
+	},
+
     State{
         name = "idle",
         tags = { "idle", "canrotate" },
@@ -696,6 +712,7 @@ local states =
             end
             inst.SoundEmitter:PlaySound(inst.sounds.death)
             inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:SetDeathLootLevel(1)
         end,
 
         timeline =
@@ -714,22 +731,8 @@ local states =
 
         events =
         {
-            EventHandler("animover", function(inst)
-				if inst._CanMutateFromCorpse ~= nil and inst:_CanMutateFromCorpse() then
-					local corpse = SpawnPrefab("houndcorpse")
-					corpse.Transform:SetPosition(inst.Transform:GetWorldPosition())
-					corpse.Transform:SetRotation(inst.Transform:GetRotation())
-					corpse.AnimState:MakeFacingDirty() -- Not needed for clients.
-					if inst.wargleader ~= nil and
-                            not inst.wargleader.components.health:IsDead()
-                            and inst.wargleader:IsValid() then
-						corpse:RememberWargLeader(inst.wargleader)
-					end
-					inst:Remove()
-				end
-            end),
+            CommonHandlers.OnCorpseDeathAnimOver(),
         },
-
 
         onexit = function(inst)
             if not inst:IsInLimbo() then
@@ -959,15 +962,21 @@ local states =
         end,
     },
 
+    -- Corpse and Mutate states
 
     State{
         name = "mutated_spawn",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", },
 
         onenter = function(inst, data)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("mutated_hound_spawn")
         end,
+
+        timeline =
+        {
+            FrameEvent(18, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.howl) end),
+        },
 
         events =
         {
@@ -1048,4 +1057,46 @@ CommonStates.AddRunStates(states,
 CommonStates.AddFrozenStates(states, HideEyeFX, ShowEyeFX)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("hound", states, events, "taunt", actionhandlers)
+CommonStates.AddCorpseStates(states,
+{
+    corpse = function(inst)
+        local amphibiouscreature = inst.components.amphibiouscreature
+        if amphibiouscreature and amphibiouscreature.in_water then
+            return "death_idle", true
+        end
+    end,
+})
+
+CommonStates.AddLunarPreRiftMutationStates(states,
+{
+    mutate_timeline = {
+        SoundFrameEvent(11, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(21, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(31, "dontstarve/movement/body_fall"),
+        SoundFrameEvent(40, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(47, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(54, "turnoftides/creatures/together/mutated_hound/punch"),
+        SoundFrameEvent(59, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+        SoundFrameEvent(73, "lunarhail_event/creatures/lunar_mutation/mutate_crack_thump"),
+    },
+
+    mutatepst_timeline = {
+        FrameEvent(18, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.howl) end),
+    },
+},
+{
+    mutate = "mutated_hound_reviving",
+    mutate_pst = "mutated_hound_spawn",
+},
+{
+    mutate_onenter = function(inst)
+        inst.SoundEmitter:PlaySound("turnoftides/creatures/together/mutated_hound/mutate")
+        inst.SoundEmitter:PlaySound("turnoftides/creatures/together/mutated_hound/punch")
+    end,
+},
+{
+    mutated_spawn_timing = 104 * FRAMES,
+    post_mutate_state = "taunt",
+})
+
+return StateGraph("hound", states, events, "init", actionhandlers)

@@ -447,9 +447,10 @@ local states=
             TimeEvent(6*FRAMES, function(inst)
                 inst.Physics:SetMotorVelOverride(12,0,0)
                 -- When the catcoon jumps, check if the target is a bird. If so, roll a chance for the bird to fly away
-                local isbird = inst.components.combat and inst.components.combat.target and inst.components.combat.target:HasTag("bird")
+                local target = inst.components.combat and inst.components.combat.target
+                local isbird = target and target:HasTag("bird")
                 if isbird and math.random() > TUNING.CATCOON_ATTACK_CONNECT_CHANCE then
-                    inst.components.combat.target:PushEvent("threatnear")
+                    target:PushEvent("threatnear", { threat = inst })
                 end
             end),
             TimeEvent(14*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/catcoon/jump") end),

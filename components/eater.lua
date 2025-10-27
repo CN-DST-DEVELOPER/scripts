@@ -333,13 +333,7 @@ function Eater:PrefersToEat(food)
         return false
     elseif self.preferseatingtags ~= nil then
         --V2C: now it has the warly hack for only eating prepared foods ;-D
-        local preferred = false
-        for i, v in ipairs(self.preferseatingtags) do
-            if food:HasTag(v) then
-                preferred = true
-                break
-            end
-        end
+        local preferred = food:HasAnyTag(self.preferseatingtags)
         if not preferred then
             return false
         end

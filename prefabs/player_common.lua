@@ -573,6 +573,8 @@ end
 --------------------------------------------------------------------------
 --Enlightenment events
 --------------------------------------------------------------------------
+
+--NOTE (Omar): If adding a new lunacy source, think about whether its applicable for Map:IsInLunacyArea too.
 fns.OnChangeArea = function(inst, area)
 	local enable_lunacy = area ~= nil and area.tags and table.contains(area.tags, "lunacyarea")
 	inst.components.sanity:EnableLunacy(enable_lunacy, "lunacyarea")
@@ -2060,6 +2062,7 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_mount_hornblow.zip"),
         Asset("ANIM", "anim/player_mount_strum.zip"),
 		Asset("ANIM", "anim/player_mount_deploytoss.zip"),
+		Asset("ANIM", "anim/player_mount_attacks_recoil.zip"),
 
         Asset("ANIM", "anim/player_mighty_gym.zip"),
         Asset("ANIM", "anim/mighty_gym.zip"),
@@ -2729,6 +2732,7 @@ end
 
         inst:AddComponent("petleash")
         inst.components.petleash:SetMaxPets(1)
+        inst.components.petleash:SetMaxPetsForPrefab("gestalt_guard_evolved", TUNING.GESTALT_EVOLVED_PLANTING_MAX_SPAWNS_PER_PLAYER)
         inst.components.petleash:SetOnSpawnFn(OnSpawnPet)
         inst.components.petleash:SetOnDespawnFn(OnDespawnPet)
 
@@ -2859,7 +2863,7 @@ end
         inst.IsActing = ex_fns.IsActing
 
 		fns.OnAlterNight(inst)
-        fns.OnFullMoonEnlightenment(inst)
+        fns.OnFullMoonEnlightenment(inst, TheWorld.state.isfullmoon)
 
         --V2C: used by multiplayer_portal_moon
         inst.SaveForReroll = SaveForReroll

@@ -1,3 +1,5 @@
+local easing = require("easing")
+
 CommonStates = {}
 CommonHandlers = {}
 
@@ -351,9 +353,20 @@ CommonHandlers.OnAttack = function()
 end
 
 --------------------------------------------------------------------------
+
+local function should_use_corpse_state_on_load(inst, cause)
+    return cause == "file_load" and EntityHasCorpse(inst) and inst:GetDeathLootLevel() > 0
+end
+CommonHandlers.ShouldUseCorpseStateOnLoad = should_use_corpse_state_on_load
+
 local function ondeath(inst, data)
 	if not inst.sg:HasStateTag("dead") then
-		inst.sg:GoToState("death", data)
+        local use_corpse_state = should_use_corpse_state_on_load(inst, data.cause)
+        if use_corpse_state then
+            inst.sg:GoToState("corpse", true)
+        else
+            inst.sg:GoToState("death", data)
+        end
 	end
 end
 
@@ -1024,11 +1037,9 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
 			if inst.components.embarker:HasDestination() then
 				if inst.sg.statemem.embarked then
 					inst.components.embarker:Embark()
-					inst.components.locomotor:FinishHopping()
 					inst.sg:GoToState("hop_pst", false)
 				elseif inst.sg.statemem.timeout then
 					inst.components.embarker:Cancel()
-					inst.components.locomotor:FinishHopping()
 
 					local x, y, z = inst.Transform:GetWorldPosition()
 					inst.sg:GoToState("hop_pst", not TheWorld.Map:IsVisualGroundAtPoint(x, y, z) and inst:GetCurrentPlatform() == nil)
@@ -1037,7 +1048,6 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
                    (inst.sg.statemem.tryexit and inst.sg.statemem.swimming == TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition())) or
                    (not inst.components.locomotor.dest and not inst.components.locomotor.wantstomoveforward) then
 				inst.components.embarker:Cancel()
-				inst.components.locomotor:FinishHopping()
 				local x, y, z = inst.Transform:GetWorldPosition()
 				inst.sg:GoToState("hop_pst", not TheWorld.Map:IsVisualGroundAtPoint(x, y, z) and inst:GetCurrentPlatform() == nil)
 			end
@@ -1076,7 +1086,6 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
             inst.Physics:CollidesWith(COLLISION.LIMITS)
 			if inst.components.embarker:HasDestination() then
 				inst.components.embarker:Cancel()
-				inst.components.locomotor:FinishHopping()
 			end
 
 			if onexits ~= nil and onexits.hop_pre ~= nil then
@@ -1423,9 +1432,13 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns)
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
-            inst.AnimState:PlayAnimation(anims ~= nil and anims.death or "death")
+            inst.AnimState:PlayAnimation(anims ~= nil and anims.death or (fns and fns.deathanimfn and fns.deathanimfn(inst)) or "death")
             RemovePhysicsColliders(inst)
             inst.components.lootdropper:DropLoot(inst:GetPosition())
+
+            if fns ~= nil and fns.deathenter ~= nil then
+                fns.deathenter(inst)
+            end
         end,
 
         timeline = timelines ~= nil and timelines.deathtimeline or nil,
@@ -2436,3 +2449,394 @@ CommonStates.AddIpecacPoopState = function(states, anim)
 end
 
 --------------------------------------------------------------------------
+
+CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab)
+    anims = anims or {}
+    -- For actual mob
+    local function DoCorpseErode(inst)
+        ErodeAway(inst)
+        --
+        if fns and fns.corpseonerode then
+            fns.corpseonerode(inst)
+        end
+    end
+
+    table.insert(states, State{
+		name = "corpse",
+		tags = { "dead", "busy", "noattack" },
+
+		onenter = function(inst, loading)
+            if fns and fns.corpseonenter then
+                fns.corpseonenter(inst, loading)
+            end
+
+            -- Assuming the death animation is one animation. Is there a case where it's split up?
+            inst.sg.statemem.deathtimeelapsed = (inst.AnimState:GetCurrentAnimationNumFrames() + 1) * FRAMES
+			inst.components.locomotor:Stop()
+
+            local anim, loop = FunctionOrValue(anims.corpse, inst)
+			inst.AnimState:PlayAnimation(anim or "corpse", loop)
+		end,
+
+		timeline =
+		{
+            --a 1 frame delay in case we are loading
+            FrameEvent(1, function(inst)
+                local corpseprefab = overridecorpseprefab or inst.sg.sg.name.."corpse"
+                local corpse = not inst:HasTag("lunar_aligned") and TryEntityToCorpse(inst, corpseprefab) or nil
+                if corpse == nil then
+	        		inst:AddTag("NOCLICK")
+	        		inst.persists = false
+	        		RemovePhysicsColliders(inst)
+
+	        		-- time since death anim started
+	        		local delay = (inst.components.health.destroytime or 2) - inst.sg.statemem.deathtimeelapsed
+                    if delay > 0 then
+	        			inst.sg:SetTimeout(delay)
+	        		else
+	        			DoCorpseErode(inst)
+	        		end
+                elseif fns and fns.corpseoncreate ~= nil then
+                    fns.corpseoncreate(inst, corpse)
+                end
+            end)
+		},
+
+		ontimeout = DoCorpseErode,
+	})
+
+    -- For corpse prefab
+    table.insert(states, State{
+        name = "corpse_idle",
+        tags = { "corpse" },
+
+        onenter = function(inst, start_anim)
+            local anim, loop = FunctionOrValue(anims.corpse, inst)
+            anim = anim or "corpse"
+            if start_anim then
+                inst.AnimState:PlayAnimation(start_anim)
+                inst.AnimState:PushAnimation(anim, loop)
+            else
+                inst.AnimState:PlayAnimation(anim, loop)
+            end
+        end,
+    })
+
+    table.insert(states, State{
+        name = "corpse_hit",
+        tags = { "corpse", "hit" },
+
+        onenter = function(inst, data)
+            local weapon_sound_modifier = "dull"
+            if data.weapon_sound_modifier ~= nil then
+                weapon_sound_modifier = data.weapon_sound_modifier
+            end
+            local anim, loop = FunctionOrValue(anims.corpse_hit, inst)
+            --
+            inst.AnimState:PlayAnimation(anim or "corpse_hit", loop)
+            inst.SoundEmitter:PlaySound(GetCreatureImpactSound(inst, weapon_sound_modifier))
+        end,
+
+        timeline =
+        {
+            -- Allow being hit again.
+            FrameEvent(6, function(inst) inst.sg:RemoveStateTag("hit") end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("corpse_idle")
+                end
+            end),
+        },
+    })
+end
+
+--[[
+Notes on the mutations
+
+Pre Rift Mutations:
+-Animation is like something is punching inside, a new body appears out of it
+-Revival is very cartoony, corpse rips apart like paper
+-Mutated mob is quite horrific,
+-Mutated mob still has SOME of its instinctual and animalistic behaviours
+-Catalyst is general lunar energy
+
+
+Rift Mutations:
+-Gestalt is posessing the body,
+-Mutated mob does not have instinctual and animalistic behaviours, Alter is in full control!
+-Revival is quite horrific, crackling, glass sounds, corpse is tearing and distorting.
+-Mutated mob is a bit more "elegant" and "pretty" looking sporting beautiful crystals,
+-Catalyst is a Incursive Gestalt
+]]
+
+CommonStates.AddLunarPreRiftMutationStates = function(states, timelines, anims, fns, data)
+    data = data or {}
+    anims = anims or {}
+    -- These states are played on the corpse
+
+    table.insert(states, State{
+        name = "corpse_prerift_mutate",
+        tags = { "prerift_mutating" },
+
+        onenter = function(inst, mutantprefab)
+            if fns and fns.mutate_onenter then
+                fns.mutate_onenter(inst)
+            end
+            local anim_mutate, loop = FunctionOrValue(anims.mutate, inst)
+            inst.AnimState:PlayAnimation(anim_mutate or "reviving", loop)
+            inst.sg:SetTimeout(data.mutated_spawn_timing)
+            inst.sg.statemem.mutantprefab = mutantprefab
+        end,
+
+        ontimeout = function(inst)
+            local mutant = SpawnPrefab(inst.sg.statemem.mutantprefab)
+            mutant.Transform:SetPosition(inst.Transform:GetWorldPosition())
+            mutant.Transform:SetRotation(inst.Transform:GetRotation())
+
+            if mutant.sg then
+                mutant.sg:GoToState("corpse_prerift_mutate_pst")
+            elseif mutant.OnMutatePost ~= nil then -- For special cases like the moon spider den
+                mutant:OnMutatePost()
+            end
+
+            if mutant.LoadCorpseData ~= nil then
+                mutant:LoadCorpseData(inst)
+            end
+
+            if fns and fns.mutate_createmutant then
+                fns.mutate_createmutant(inst, mutant)
+            end
+
+            inst:AddTag("NOCLICK")
+            inst:AddTag("NOBLOCK")
+            inst:RemoveComponent("inspectable")
+	        inst:RemoveComponent("burnable")
+	        inst:RemoveComponent("propagator")
+            inst.DynamicShadow:Enable(false)
+
+            inst.sg:RemoveStateTag("prerift_mutating")
+            inst.OnEntitySleep = inst.Remove
+            inst.persists = false
+        end,
+
+        events =
+		{
+			EventHandler("animover", function(inst) inst:Remove() end),
+		},
+
+        timeline = timelines ~= nil and timelines.mutate_timeline or nil,
+    })
+
+    -- These states are played on the actual mutation mob
+
+    local mutatepst_onanimover = fns ~= nil and fns.mutatepst_onanimover or nil
+
+    table.insert(states, State{
+        name = "corpse_prerift_mutate_pst",
+        tags = { "prerift_mutating", "busy" },
+
+        onenter = function(inst)
+            if fns and fns.mutatepst_onenter then
+                fns.mutatepst_onenter(inst)
+            end
+            local anim_mutate, loop = FunctionOrValue(anims.mutate_pst, inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation(anim_mutate or "mutated_spawn", loop)
+        end,
+
+        timeline = timelines ~= nil and timelines.mutatepst_timeline or nil,
+
+        events =
+		{
+			EventHandler("animover", mutatepst_onanimover or function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState(data.post_mutate_state or "idle")
+				end
+			end),
+		},
+    })
+end
+
+CommonStates.AddLunarRiftMutationStates = function(states, timelines, anims, fns, data)
+    anims = anims or {}
+    data = data or {}
+
+    -- These states are played on the corpse
+
+    table.insert(states, State{
+        name = "corpse_lunarrift_mutate_pre",
+        tags = { "lunarrift_mutating" },
+
+        onenter = function(inst, mutantprefab)
+            if fns and fns.mutatepre_onenter then
+                fns.mutatepre_onenter(inst, mutantprefab)
+            end
+            local anim_mutate_pre, loop = FunctionOrValue(anims.mutate_pre, inst)
+            if loop ~= false then
+                loop = true
+            end
+            inst.AnimState:PlayAnimation(anim_mutate_pre or "twitch", loop)
+            inst.sg:SetTimeout(3)
+            inst.sg.statemem.mutantprefab = mutantprefab
+            if data.twitch_lp then
+                inst.SoundEmitter:PlaySound(data.twitch_lp, "loop")
+            end
+        end,
+
+        timeline = timelines ~= nil and timelines.mutatepre_timeline or nil,
+
+        ontimeout = function(inst)
+            inst.sg.statemem.ismutating = true
+            inst.sg:GoToState("corpse_lunarrift_mutate", inst.sg.statemem.mutantprefab)
+        end,
+
+        onexit = function(inst)
+            if inst.sg.statemem.ismutating and not data.keep_twitch_lp then
+                inst.SoundEmitter:KillSound("loop")
+            end
+        end,
+    })
+
+    table.insert(states, State{
+        name = "corpse_lunarrift_mutate",
+        tags = { "lunarrift_mutating" },
+
+        onenter = function(inst, mutantprefab)
+            if fns and fns.mutate_onenter then
+                fns.mutate_onenter(inst, mutantprefab)
+            end
+            local anim_mutate = FunctionOrValue(anims.mutate, inst)
+            inst.AnimState:PlayAnimation(anim_mutate or "mutate_pre", false)
+            inst.sg.statemem.mutantprefab = mutantprefab
+        end,
+
+        timeline = timelines ~= nil and timelines.mutate_timeline or nil,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+                    local x, y, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+					local creature = SpawnPrefab(inst.sg.statemem.mutantprefab)
+                    creature.Transform:SetPosition(x, y, z)
+					creature.Transform:SetRotation(rot)
+					creature.AnimState:MakeFacingDirty() --not needed for clients
+					creature.sg:GoToState("corpse_lunarrift_mutate_pst")
+
+                    if creature.LoadCorpseData ~= nil then
+                        creature:LoadCorpseData(inst)
+                    end
+
+                    inst:Remove()
+				end
+			end),
+        },
+
+        onexit = function(inst)
+            -- Shouldn't reach here!
+            if BRANCH == "dev" then
+                assert(false, "Bad! We somehow exited the corpse_lunarrift_mutate state for: "..inst:GetDisplayName())
+            else
+                inst.AnimState:ClearAllOverrideSymbols()
+			    inst.AnimState:SetAddColour(0, 0, 0, 0)
+			    inst.AnimState:SetLightOverride(0)
+			    inst.SoundEmitter:KillSound("loop")
+			    inst.components.burnable:SetBurnTime(TUNING.MED_BURNTIME)
+			    inst.components.burnable.fastextinguish = false
+            end
+        end,
+    })
+
+    -- These states are played on the actual mutation mob
+
+    table.insert(states, State{
+        name = "corpse_lunarrift_mutate_pst",
+        tags = { "busy", "noattack", "temp_invincible", "noelectrocute" },
+
+        onenter = function(inst)
+            if fns and fns.mutatepst_onenter then
+                fns.mutatepst_onenter(inst)
+            end
+            local anim_mutate_pst = FunctionOrValue(anims.mutate_pst, inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation(anim_mutate_pst or "mutate", false)
+            inst.sg.statemem.flash = data.mutatepst_flashtime or 24
+        end,
+
+        timeline = timelines ~= nil and timelines.mutatepst_timeline or nil,
+
+        onupdate = function(inst)
+			local c = inst.sg.statemem.flash
+			if c >= 0 then
+				inst.sg.statemem.flash = c - 1
+				c = easing.inOutQuad(math.min(20, c), 0, 1, 20)
+				inst.AnimState:SetAddColour(c, c, c, 0)
+				inst.AnimState:SetLightOverride(c)
+			end
+		end,
+
+        events =
+		{
+			EventHandler("animover", fns.mutatepst_onanimover or function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState(data.post_mutate_state or "idle")
+				end
+			end),
+		},
+
+        onexit = function(inst)
+			inst.AnimState:SetAddColour(0, 0, 0, 0)
+			inst.AnimState:SetLightOverride(0)
+		end,
+    })
+end
+
+local function oncorpsedeathanimover(inst)
+    if inst.AnimState:AnimDone() and EntityHasCorpse(inst) then
+        inst.sg:GoToState("corpse")
+    end
+end
+
+CommonHandlers.OnCorpseDeathAnimOver = function(cancorpsefn)
+    local custom_handler = cancorpsefn and function(inst)
+        if cancorpsefn(inst) then
+            oncorpsedeathanimover(inst)
+        end
+    end or nil
+    --
+    return EventHandler("animover", custom_handler or oncorpsedeathanimover)
+end
+
+local function oncorpsechomped(inst, data)
+    if inst.sg:HasStateTag("corpse") and not inst.sg:HasStateTag("hit") then
+        inst.sg:GoToState("corpse_hit", data)
+    end
+end
+
+CommonHandlers.OnCorpseChomped = function()
+    return EventHandler("chomped", oncorpsechomped)
+end
+
+--------------------------------------------------------
+
+CommonStates.AddParasiteReviveState = function(states)
+    table.insert(states, State{
+        name = "parasite_revive",
+        tags = { "busy", "noelectrocute" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("parasite_death_pst")
+            inst.Physics:Stop()
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+        },
+    })
+end

@@ -584,6 +584,8 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
         inst:AddComponent("nightlightmanager")
         inst:AddComponent("winonateleportpadmanager")
 
+        inst:AddComponent("corpsepersistmanager")
+
         --World health management
         inst:AddComponent("skeletonsweeper")
 

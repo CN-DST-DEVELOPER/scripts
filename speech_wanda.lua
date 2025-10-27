@@ -708,7 +708,7 @@ return{
 	},
 
     --hallowed nights
-    ANNOUNCE_SPOOKED = "Ack! Leave me alone!!",
+    ANNOUNCE_SPOOKED = "Ack! I don't need this in my life!!",
 	ANNOUNCE_BRAVERY_POTION = "It doesn't seem quite as scary this time around.",
 	ANNOUNCE_MOONPOTION_FAILED = "Well that didn't work out like I hoped.",
 
@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "That's strange. You don't belong down here.",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "I know what those are... nothing right about them.", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "I hate this part.", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "This is not good.", -- Generic string
             EATING_CORPSE = "I see it hasn't lost its appetite.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "I was hoping not to see or smell you again.",
 			SLEEPING = "That's one way to pass the time.",
             VENTING = "Disgusting.", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "Yes, that will no nicely.",
+			UNCARVED = "Pumpkin carving reminds me of a simpler time.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "I know what comes next.", --witnessing the corpse
+            BURNING  = "This should put an end to it.", --when its burning
+            REVIVING = "I hate this part.", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "I have a bad feeling about it.",
+			BURNING = "A wise choice.",
+			REVIVING = "This was predictable.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "We should burn it, if I recall correctly.",
+			BURNING = "I hope I never see you again.",
+			REVIVING = "A new cycle begins.",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "That merm needs to be burned.",
+			BURNING = "It's the right thing to do.",
+			REVIVING = "What a terrible fate for that poor merm.",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

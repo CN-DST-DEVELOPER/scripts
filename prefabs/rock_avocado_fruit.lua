@@ -125,6 +125,7 @@ local function rock_avocado_fruit_full()
     inst.pickupsound = "rock"
 
     inst:AddTag("molebait")
+    inst:AddTag("quakedebris")
 
     MakeInventoryPhysics(inst)
 

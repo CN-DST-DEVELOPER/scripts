@@ -12,14 +12,91 @@ local actionhandlers =
     end),
 }
 
-local events=
+local function ChooseAttack(inst, target)
+    target = target or inst.components.combat.target
+	if target ~= nil and not target:IsValid() then
+		target = nil
+	end
+
+    if inst.canflamethrower and not inst.components.timer:TimerExists("flamethrower_cd") then
+		inst.sg:GoToState("flamethrower_pre", target)
+    elseif inst:IsNear(target, inst.components.combat:GetHitRange()) then
+        inst.sg:GoToState("attack", target)
+	end
+end
+
+local function SpawnBreathFX(inst, angle, dist, targets)
+	local fx = table.remove(inst.flame_pool)
+	if fx == nil then
+		fx = SpawnPrefab("warg_mutated_breath_fx")
+		fx:SetFXOwner(inst)
+	end
+
+	local scale = (0.8 + math.random() * 0.25)
+
+	local x, y, z = inst.Transform:GetWorldPosition()
+	angle = (inst.Transform:GetRotation() + angle) * DEGREES
+	x = x + math.cos(angle) * dist
+	z = z - math.sin(angle) * dist
+	dist = dist / 20
+	angle = math.random() * PI2
+	x = x + math.cos(angle) * dist
+	z = z - math.sin(angle) * dist
+
+	fx.Transform:SetPosition(x, 0, z)
+    fx:ConfigureDamage(TUNING.MUTATEDBUZZARD_DAMAGE, TUNING.MUTATEDBUZZARD_FLAMETHROWER_DAMAGE)
+	fx:RestartFX(scale, "nofade", targets, true)
+end
+
+local function ShouldDistress(inst) -- Mutated don't distress
+    return not inst:HasTag("lunar_aligned")
+end
+
+local function GetLunarFlamePuffAnim(sz, ht)
+	return string.format(ht and "lunarflame_puff_%s_%s" or "lunarflame_puff_%s", sz or "small", ht)
+end
+
+local SIZE_TO_CORPSE_HEALTH = { -- How many times to feast on this corpse for us to consume it?
+    ["tiny"] = 1, -- e.g. rabbits
+    ["small"] = 4, -- e.g. hounds
+    ["med"] = 9, -- e.g. beefalo
+    ["large"] = 25, -- e.g. bosses, like bearger or deerclops
+}
+
+local function FlyAwayToSky(inst)
+    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+    local ismutated = inst:HasTag("lunar_aligned")
+
+    if ismutated then
+        if mutatedbirdmanager then
+            mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbuzzard_gestalt", inst, 1)
+        end
+        inst:Remove()
+    elseif inst.components.homeseeker ~= nil then
+        inst.components.homeseeker.home.components.childspawner:GoHome(inst)
+    else
+        --V2C: Debug spawned?
+        inst:Remove()
+    end
+end
+
+local events =
 {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
-    CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+
+    EventHandler("doattack", function(inst, data)
+        if inst.components.health and not inst.components.health:IsDead() and
+	    	(	not inst.sg:HasStateTag("busy") or
+	    		(inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute"))
+	    	)
+	    then
+            ChooseAttack(inst, data ~= nil and data.target or nil)
+        end
+    end),
 
     EventHandler("flyaway", function(inst)
         if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -28,12 +105,15 @@ local events=
     end),
 
 	EventHandler("onignite", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute"))
+            and ShouldDistress(inst) then
 			inst.sg:GoToState("distress_pre")
 		end
 	end),
 	EventHandler("locomote", function(inst)
         if (not inst.sg:HasStateTag("idle") and not inst.sg:HasStateTag("moving")) then return end
+
+        local ismutated = inst:HasTag("lunar_aligned")
 
         if not inst.components.locomotor:WantsToMoveForward() or inst.components.combat.target then
             if not inst.sg:HasStateTag("idle") then
@@ -45,6 +125,14 @@ local events=
             end
         end
     end),
+
+    EventHandler("corpse_eat", function(inst, data)
+		if data ~= nil and data.corpse ~= nil and not inst.components.health:IsDead() then
+			if not inst.sg:HasAnyStateTag("eating_corpse", "busy") then
+				inst.sg:GoToState("corpse_eat_pre", data.corpse)
+			end
+		end
+	end),
 }
 
 local function IsStuck(inst)
@@ -95,19 +183,6 @@ local states =
     },
 
     State{
-        name = "death",
-        tags = {"busy"},
-
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("death")
-            inst.Physics:Stop()
-            RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
-            inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/death")
-        end,
-    },
-
-    State{
         name = "taunt",
         tags = {"busy"},
 
@@ -118,7 +193,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/taunt") end)
+            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.taunt) end)
         },
 
         events=
@@ -136,7 +211,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/squack") end)
+            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
         },
 
         events=
@@ -149,6 +224,7 @@ local states =
         name = "distress_pre",
         tags = {"busy"},
         onenter= function(inst)
+            inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("flap_pre")
         end,
         events=
@@ -167,19 +243,19 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/squack") end)
+            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
         },
 
         events=
         {
             EventHandler("animover", function(inst) inst.sg:GoToState("distress") end ),
 			EventHandler("stop_honey_ammo_afflicted", function(inst)
-				if not (inst.components.health:IsDead() or (inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
+				if not (inst.components.health:IsDead() or (ShouldDistress(inst) and inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
 					inst.sg:GoToState("flyaway")
 				end
 			end),
 			EventHandler("stop_gelblob_ammo_afflicted", function(inst)
-				if not (inst.components.health:IsDead() or (inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
+				if not (inst.components.health:IsDead() or (ShouldDistress(inst) and inst.components.burnable and inst.components.burnable:IsBurning()) or IsStuck(inst)) then
 					inst.sg:GoToState("flyaway")
 				end
 			end),
@@ -200,7 +276,7 @@ local states =
             inst.Physics:SetMotorVelOverride(0,-15,0)
             inst.flapSound = inst:DoPeriodicTask(6*FRAMES,
                 function(inst)
-                    inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/flap")
+                    inst.SoundEmitter:PlaySound(inst.sounds.flap)
                 end)
         end,
 
@@ -256,7 +332,7 @@ local states =
                 end
             end),
             TimeEvent(27*FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/attack")
+                inst.SoundEmitter:PlaySound(inst.sounds.attack)
                 local target = inst.sg.statemem.target
 
                 if target ~= nil and
@@ -306,7 +382,8 @@ local states =
 				return
 			end
 
-            inst.Physics:Stop()
+            inst.components.locomotor:Stop()
+
             inst.sg:SetTimeout(.1+math.random()*.2)
             inst.sg.statemem.vert = math.random() > .5
 
@@ -314,13 +391,9 @@ local states =
                 inst.components.periodicspawner:TrySpawn()
             end
 
-            if inst.sg.statemem.vert then
-                inst.AnimState:PlayAnimation("takeoff_vertical_pre")
-            else
-                inst.AnimState:PlayAnimation("takeoff_diagonal_pre")
-            end
+            inst.AnimState:PlayAnimation(inst.sg.statemem.vert and "takeoff_vertical_pre" or "takeoff_diagonal_pre")
 
-            inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/flyout")
+            inst.SoundEmitter:PlaySound(inst.sounds.flyout)
         end,
 
         ontimeout= function(inst)
@@ -337,14 +410,7 @@ local states =
 
         timeline =
         {
-            TimeEvent(2, function(inst)
-                if inst.components.homeseeker ~= nil then
-                    inst.components.homeseeker.home.components.childspawner:GoHome(inst)
-                else
-                    --V2C: Debug spawned?
-                    inst:Remove()
-                end
-            end),
+            TimeEvent(2, FlyAwayToSky),
         },
 
 		onexit = function(inst)
@@ -371,8 +437,7 @@ local states =
         timeline=
         {
             TimeEvent(8*FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/hurt")
-
+                inst.SoundEmitter:PlaySound(inst.sounds.hop)
                 inst.Physics:Stop()
             end),
         },
@@ -383,21 +448,71 @@ local states =
     },
 
     State{
-        name = "hit",
-        tags = {"busy"},
+        name = "attack",
+        tags = { "attack", "busy" },
 
-        onenter = function(inst)
-            inst.AnimState:PlayAnimation("hit")
-            inst.Physics:Stop()
-            local pt = Vector3(inst.Transform:GetWorldPosition())
-            if pt.y > 1 then
-                inst.sg:GoToState("fall")
-            end
+        onenter = function(inst, target)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("atk")
+            inst.components.combat:StartAttack()
+            inst.sg.statemem.target = target
         end,
 
-        events=
+        timeline =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+            TimeEvent(15*FRAMES, function(inst)
+                inst.components.combat:DoAttack(inst.sg.statemem.target)
+                inst.SoundEmitter:PlaySound(inst.sounds.attack)
+            end),
+            TimeEvent(20*FRAMES, function(inst) inst.sg:RemoveStateTag("attack") end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "hit",
+        tags = { "hit", "busy" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("hit")
+			CommonHandlers.UpdateHitRecoveryDelay(inst)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "death",
+        tags = { "busy" },
+
+        onenter = function(inst)
+            inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("death")
+            RemovePhysicsColliders(inst)
+            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:SetDeathLootLevel(1)
+            inst.SoundEmitter:PlaySound(inst.sounds.death)
+        end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
         },
     },
 
@@ -426,129 +541,174 @@ local states =
 		end,
     },
 
-    State{
-        name = "stunned",
-        tags = {"busy"},
+    -- Mutated states
 
-        onenter = function(inst)
-            inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("stunned_loop", true)
-            inst.sg:SetTimeout(GetRandomWithVariance(6, 2) )
-            if inst.components.inventoryitem then
-                inst.components.inventoryitem.canbepickedup = true
+    State{
+        name = "flamethrower_pre",
+        tags = { "attack", "busy", "flamethrowering" },
+
+        onenter = function(inst, target)
+            if IsStuck(inst) then
+				inst.sg:GoToState("distress_pre")
+				return
+			end
+
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("atk_flame_pre")
+            inst:SwitchToEightFaced()
+
+            RaiseFlyingCreature(inst)
+            ChangeToFlyingCharacterPhysics(inst, 15, .25)
+
+            if target and target:IsValid() then
+                if inst.components.combat:TargetIs(target) then
+                    inst.components.combat:StartAttack()
+                end
+
+                inst.sg.statemem.target = target
+                inst.sg.statemem.targetpos = target:GetPosition()
+            end
+
+            inst.Physics:SetMotorVelOverride(-1, 0, 0)
+            inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_FLAMETHROWER_DAMAGE)
+        end,
+
+        onupdate = function(inst)
+            local target = inst.sg.statemem.target
+			if target ~= nil and target:IsValid() then
+                inst:ForceFacePoint(inst.sg.statemem.target:GetPosition())
+			else
+				inst.sg.statemem.target = nil
             end
         end,
 
-        onexit = function(inst)
-            if inst.components.inventoryitem then
-                inst.components.inventoryitem.canbepickedup = false
-            end
-        end,
+        timeline =
+        {
+            FrameEvent(12, function(inst) inst.Physics:SetMotorVelOverride(-5, 0, 0) end),
+            FrameEvent(20, function(inst) inst.Physics:SetMotorVelOverride(-3, 0, 0) end),
+        },
 
-        ontimeout = function(inst) inst.sg:GoToState("flyaway") end,
-    },
-
-    State{
-		name = "corpse_idle",
-
-		onenter = function(inst)
-			inst.AnimState:PlayAnimation("corpse")
-		end,
-	},
-
-	State{
-		name = "corpse_mutate_pre",
-		tags = { "mutating" },
-
-		onenter = function(inst, mutantprefab)
-			inst.AnimState:PlayAnimation("twitch", true)
-			inst.sg:SetTimeout(3)
-			inst.sg.statemem.mutantprefab = mutantprefab
-
-            --inst.SoundEmitter:PlaySound("rifts3/mutated_deerclops/twitching_LP", "loop")
-		end,
-
-		ontimeout = function(inst)
-			inst.sg:GoToState("corpse_mutate", inst.sg.statemem.mutantprefab)
-		end,
-
-		onexit = function(inst)
-			inst.SoundEmitter:KillSound("loop")
-		end,
-	},
-
-	State{
-		name = "corpse_mutate",
-		tags = { "mutating" },
-
-		onenter = function(inst, mutantprefab)
-			inst.AnimState:OverrideSymbol("lunar_parts", "buzzard_lunar_build", "lunar_parts")
-			inst.AnimState:OverrideSymbol("fx_puff_hi", "buzzard_lunar_build", "fx_puff_hi")
-			inst.AnimState:OverrideSymbol("fx_puff2", "buzzard_lunar_build", "fx_puff2")
-
-			inst.AnimState:PlayAnimation("mutate_pre")
-
-			--inst.SoundEmitter:PlaySound("rifts3/mutated_deerclops/ice_crackling_LP", "loop")
-			inst.sg.statemem.mutantprefab = mutantprefab
-		end,
-
-		timeline =
-		{
-			FrameEvent(0, function(inst)
-
-            end),
-		},
-
-		events =
+        events =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
-					local rot = inst.Transform:GetRotation()
-					local creature = ReplacePrefab(inst, inst.sg.statemem.mutantprefab)
-					creature.Transform:SetRotation(rot)
-					creature.AnimState:MakeFacingDirty() --not needed for clients
-					creature.sg:GoToState("mutate_pst")
+					inst.sg.statemem.attacking = true
+					inst.sg:GoToState("flamethrower_loop")
 				end
 			end),
 		},
 
-		onexit = function(inst)
-			--Shouldn't reach here!
-			inst.AnimState:ClearAllOverrideSymbols()
-			inst.AnimState:SetAddColour(0, 0, 0, 0)
-			inst.AnimState:SetLightOverride(0)
-			inst.SoundEmitter:KillSound("loop")
-			inst.components.burnable:SetBurnTime(TUNING.MED_BURNTIME)
-			inst.components.burnable.fastextinguish = false
+        onexit = function(inst)
+			if not inst.sg.statemem.attacking then
+                LandFlyingCreature(inst)
+                ChangeToCharacterPhysics(inst, 15, .25)
+				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
+				inst.SoundEmitter:KillSound("loop")
+			end
 		end,
-	},
+    },
 
-	--------------------------------------------------------------------------
-	--Transitions from corpse_mutate after prefab switch
-	State{
-		name = "mutate_pst",
-		tags = { "busy", "noattack", "temp_invincible", "noelectrocute" },
+    State{
+		name = "flamethrower_loop",
+		tags = { "attack", "busy", "flight", "noelectrocute", "flamethrowering" }, -- To dodge electric fence.
 
-		onenter = function(inst)
-			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("mutate")
-			inst.sg.statemem.flash = 24
-		end,
+		onenter = function(inst, targets)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("atk_flame_loop", true)
+            inst.Physics:SetMotorVelOverride(12, 0, 0)
+            inst:SwitchToEightFaced()
 
-		onupdate = function(inst)
-			local c = inst.sg.statemem.flash
-			if c >= 0 then
-				inst.sg.statemem.flash = c - 1
-				c = easing.inOutQuad(math.min(20, c), 0, 1, 20)
-				inst.AnimState:SetAddColour(c, c, c, 0)
-				inst.AnimState:SetLightOverride(c)
+            inst.sg.statemem.targets = targets or {}
+
+            if inst.SetFlameThrowerOnCd then
+                inst:SetFlameThrowerOnCd()
+            end
+
+            if not inst.SoundEmitter:PlayingSound("loop") then
+				inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/fire_breath_LP", "loop")
 			end
 		end,
 
 		timeline =
 		{
-			FrameEvent(16, function(inst)
+            FrameEvent(4, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(7, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(10, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(13, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(16, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(19, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(22, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(25, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(28, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
 
+            FrameEvent(30, function(inst)
+                inst.sg.statemem.attacking = true
+                inst.sg:GoToState("flamethrower_pst", inst.sg.statemem.targets)
+            end),
+		},
+
+		events =
+		{
+            --[[
+			EventHandler("attacked", function(inst, data)
+				if not inst.components.health:IsDead() then
+					local dohit
+					if data and data.spdamage and data.spdamage.planar then
+						if not inst.sg.mem.dostagger then
+							inst.sg.mem.dostagger = true
+							inst.sg.statemem.staggertime = GetTime() + 0.3
+						elseif GetTime() > inst.sg.statemem.staggertime then
+							dohit = true
+						end
+					end
+					if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+						return
+					elseif dohit then
+						inst.sg:GoToState("hit")
+					end
+				end
+				return true
+			end),
+            ]]
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.attacking then
+				inst:SwitchToFourFaced()
+                ChangeToCharacterPhysics(inst, 15, .25)
+				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
+				inst.SoundEmitter:KillSound("loop")
+			elseif not inst.sg.statemem.loop then
+				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
+			end
+		end,
+	},
+
+    State{
+		name = "flamethrower_pst",
+		tags = { "attack", "busy", "flamethrowering" },
+
+		onenter = function(inst, targets)
+			inst.sg.statemem.targets = targets or {}
+
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("atk_flame_pst")
+
+            ChangeToCharacterPhysics(inst, 15, .25)
+
+            inst:SwitchToEightFaced()
+            inst.Physics:SetMotorVelOverride(10, 0, 0)
+		end,
+
+		timeline =
+		{
+			FrameEvent(2, function(inst) SpawnBreathFX(inst, 0, 1.5, inst.sg.statemem.targets) end),
+            FrameEvent(4, function(inst) inst.SoundEmitter:KillSound("loop") end),
+			FrameEvent(6, function(inst) inst.Physics:SetMotorVelOverride(8, 0, 0) end),
+            FrameEvent(10, function(inst) inst.Physics:SetMotorVelOverride(4, 0, 0) end),
+			FrameEvent(13, function(inst)
+                inst.Physics:SetMotorVelOverride(0, 0, 0)
+                inst.sg:RemoveStateTag("busy")
             end),
 		},
 
@@ -556,43 +716,217 @@ local states =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
-					inst.sg:GoToState("caw")
+					inst.sg:GoToState("idle")
 				end
 			end),
 		},
 
 		onexit = function(inst)
-			inst.AnimState:SetAddColour(0, 0, 0, 0)
-			inst.AnimState:SetLightOverride(0)
+			inst:SwitchToFourFaced()
+            inst.Physics:SetMotorVelOverride(0, 0, 0)
+			inst.SoundEmitter:KillSound("loop")
 		end,
 	},
+
+    State{
+		name = "corpse_eat_pre",
+		tags = { "eating_corpse", "busy", "caninterrupt" },
+
+		onenter = function(inst, corpse)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("corpse_eat_pre")
+			inst.SoundEmitter:PlaySound(inst.sounds.attack)
+
+            inst.sg.statemem.corpse = corpse
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst)
+
+			end),
+		},
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("corpse_eat_loop", inst.sg.statemem.corpse)
+            end)
+        },
+	},
+
+    State{
+        name = "corpse_eat_loop",
+        tags = { "eating_corpse" },
+
+        onenter = function(inst, corpse)
+            inst.AnimState:PlayAnimation("corpse_eat_loop")
+            inst.SoundEmitter:PlaySound(inst.sounds.spit)
+
+            if not inst.SoundEmitter:PlayingSound("eating_loop") then
+                inst.SoundEmitter:PlaySound(inst.sounds.eat, "eating_loop")
+            end
+
+            if corpse ~= nil and corpse:IsValid() then
+                inst.sg.statemem.corpse = corpse
+
+                if not corpse:IsFading() and not corpse:WillMutate() then
+                    local _, sz, ht = GetCombatFxSize(corpse)
+
+                    if not corpse._eaten_times then
+                        corpse._eaten_times = 0
+                    end
+
+                    if corpse.components.burnable and corpse.components.burnable:IsBurning() then
+                        -- Hack!
+                        corpse._skip_extinguish_fade = true
+                        corpse.components.burnable:Extinguish()
+                        corpse._skip_extinguish_fade = nil
+
+                        local fx = SpawnPrefab(GetLunarFlamePuffAnim(sz, ht))
+                        fx.Transform:SetPosition(corpse.Transform:GetWorldPosition())
+                    end
+
+                    corpse:PushEvent("chomped", { eater = inst, amount = 1, weapon_sound_modifier = "sharp" })
+
+                    if CanEntityBeNonGestaltMutated(corpse) then
+                        corpse:StartReviveMutateTimer(.5 + math.random() * .1)
+                    elseif math.random() < 0.33 then
+                        corpse._eaten_times = corpse._eaten_times + 1
+
+                        if corpse._eaten_times >= SIZE_TO_CORPSE_HEALTH[sz] then
+                            corpse:StartFadeTimer(3 + math.random() * 2)
+                        end
+                    end
+                end
+            end
+        end,
+
+        timeline =
+        {
+            FrameEvent(12, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.spit) end)
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                local corpse = inst.sg.statemem.corpse
+                if corpse and corpse:IsValid() and not corpse._eroding_away and not corpse:IsMutating() then
+                    inst.sg:GoToState("corpse_eat_loop", corpse)
+                else
+                    inst.sg:GoToState("corpse_eat_pst")
+                end
+            end),
+        },
+
+        onexit = function(inst, new_state)
+            if new_state ~= "corpse_eat_loop" then
+                inst.SoundEmitter:KillSound("eating_loop")
+            end
+        end,
+    },
+
+    State{
+        name = "corpse_eat_pst",
+        tags = { "busy", "caninterrupt", },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("corpse_eat_pst")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end),
+        }
+    },
+
+    --------------------------------------------------------------------------
+	--Used by "buzzardcorpse"
+
+    State{
+        name = "corpse_fall",
+		tags = { "corpse", "busy", "noelectrocute" },
+
+        onenter = function(inst)
+            inst.Physics:Stop()
+			inst.DynamicShadow:Enable(false)
+
+            inst.sg.statemem.vert = math.random() < .5
+            inst.Transform:SetRotation(math.random(360))
+
+            inst.AnimState:PlayAnimation(inst.sg.statemem.vert and "fall_corpse_spiral" or "fall_corpse", true)
+
+            local rot = inst.Transform:GetRotation() * DEGREES
+            if inst.sg.statemem.vert then
+                inst.Physics:SetVel(math.random() * 4 - 2, 0, math.random() * 4 - 2)
+            else
+                inst.Physics:SetVel(10 * math.cos(rot), 0, 10 * -math.sin(rot))
+            end
+        end,
+
+        onupdate = function(inst)
+            local x, y, z = inst.Transform:GetWorldPosition()
+            if y <= .2 then
+                inst.Physics:Stop()
+                inst.Physics:Teleport(x, 0, z)
+                inst.DynamicShadow:Enable(true)
+
+                --Slide a lil if we were going diagonally
+                if not inst.sg.statemem.vert then
+                    local rot = inst.Transform:GetRotation() * DEGREES
+                    inst.Physics:SetVel(math.random(6, 10) * math.cos(rot), 0, math.random(6, 10) * -math.sin(rot))
+                end
+
+                inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
+                inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/ground_hit")
+
+                --Can't use inventoryitem:TryToSink, not an item!
+                if ShouldEntitySink(inst, true) then
+                    inst:DoTaskInTime(0, SinkEntity)
+                end
+            end
+        end,
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+		end,
+    },
 }
 
-CommonStates.AddCombatStates(states,
-{
-    attacktimeline =
-    {
-        TimeEvent(15*FRAMES, function(inst)
-            inst.components.combat:DoAttack(inst.sg.statemem.target)
-            inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/buzzard/attack")
-        end),
-        TimeEvent(20*FRAMES, function(inst) inst.sg:RemoveStateTag("attack") end),
-    },
-})
-
+CommonStates.AddCorpseStates(states)
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states, nil, nil,
 {
 	onanimover = function(inst)
 		if inst.AnimState:AnimDone() then
-			if inst.components.burnable and inst.components.burnable:IsBurning() then
+			if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
 				inst.sg:GoToState("distress_pre")
 			else
 				inst.sg:GoToState("flyaway")
 			end
 		end
 	end,
+})
+
+CommonStates.AddLunarRiftMutationStates(states, nil, nil,
+{ -- fns
+    mutate_onenter = function(inst)
+        inst.AnimState:OverrideSymbol("lunar_parts", "buzzard_lunar_build", "lunar_parts")
+		inst.AnimState:OverrideSymbol("fx_puff_hi", "buzzard_lunar_build", "fx_puff_hi")
+		inst.AnimState:OverrideSymbol("fx_puff2", "buzzard_lunar_build", "fx_puff2")
+        inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/mutate_pre")
+    end,
+
+    mutatepst_onenter = function(inst)
+        inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/mutate_hit")
+        inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_mutation/mutate_crack")
+    end,
+},
+{
+    twitch_lp = "lunarhail_event/creatures/lunar_crow/twitch_LP",
+    keep_twitch_lp = true,
+    post_mutate_state = "flyaway",
 })
 
 return StateGraph("buzzard", states, events, "init", actionhandlers)

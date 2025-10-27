@@ -1,3 +1,6 @@
+-- Note for this component (Omar):
+-- This doesn't actually manage all lunar rift mutations, just the quest line logic for Wagstaff's appearances and such, and the defeated boss mutations
+
 -- DO NOT change their order.
 local MUTATIONS_NAMES =
 {
@@ -44,13 +47,10 @@ function LunarRiftMutationsManager:HasDefeatedAllMutations()
 end
 
 function LunarRiftMutationsManager:_CanCorpseMutate(ent)
-    return
-        TheWorld.components.riftspawner ~= nil and
-        TheWorld.components.riftspawner:IsLunarPortalActive() and
-        not ent:IsOnOcean() and
-        (ent.components.burnable == nil or not ent.components.burnable:IsBurning())
+    return CanLunarRiftMutateFromCorpse(ent)
 end
 
+-- NOTE (Omar): Not used anymore.
 function LunarRiftMutationsManager:TryMutate(ent, corpseprefab)
     if self:_CanCorpseMutate(ent) then
         local rot = ent:GetRotation()

@@ -838,7 +838,7 @@ SPECIAL_EVENTS =
     YOTS = "year_of_the_snake",
 }
 --WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE --IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.CARNIVAL
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.HALLOWED_NIGHTS --IS_BETA and SPECIAL_EVENTS.NONE or SPECIAL_EVENTS.CARNIVAL
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -888,6 +888,13 @@ FESTIVAL_EVENT_FRONTEND_PREFABS = { WORLD_FESTIVAL_EVENT.."_fest_frontend" }
 ---------------------------------------------------------
 SPECIAL_EVENT_MUSIC =
 {
+	--hallowed nights
+	[SPECIAL_EVENTS.HALLOWED_NIGHTS] =
+	{
+		bank = "music_frontend_hallowednights2024.fsb",
+		sound = "dontstarve/music/music_FE_hallowednights2025",
+	},
+
     --winter's feast carol
     [SPECIAL_EVENTS.WINTERS_FEAST] =
     {
@@ -1151,7 +1158,6 @@ FE_MUSIC =
     "dontstarve/music/music_FE_cavepuzzle"
     --"dontstarve/music/music_FE_wagboss"
     --"dontstarve/music/music_FE_balatro"
-    --"dontstarve/music/music_FE_hallowednights2024"
     --"dontstarve/music/music_FE_rifts4"
     --"dontstarve/music/music_FE_winonawurt"
     --"dontstarve/music/music_FE_junkyardhog"
@@ -2901,11 +2907,19 @@ EQUIVALENT_ATTUNABLE_TAGS =
 -- This must match the Categories enum in HapticsManager
 HAPTICS = 
 {
-    Category_Default     = 1,       -- 0x01
-    Category_UI          = 2,       -- 0x02
-    Category_Danger 	 = 4,       -- 0x04
-    Category_Player      = 8,       -- 0x08
-    Category_Environment = 16,      -- 0x10
-    Category_Boss        = 32,      -- 0x20
-    Category_All         = 255,     -- 0xFF
+    CATEGORIES = 
+    {
+        ["ui"]          = 2,       -- 0x02
+        ["danger"] 	    = 4,       -- 0x04
+        ["player"]      = 8,       -- 0x08
+        ["environment"] = 16,      -- 0x10
+        ["boss"]        = 32,      -- 0x20
+
+        -- These are included here for reference only since they exist and have meaning in C++
+        -- I won't include them in the table so we don't accidentally iterate over them        
+        -- ["default"]     = 1,       -- 0x01
+        -- ["all"]         = 255,     -- 0xFF    
+    },
+
+    CATEGORY_ENABLED_BY_DEFAULT = rawget(_G, "IsPS5") and IsPS5() or false,
 }

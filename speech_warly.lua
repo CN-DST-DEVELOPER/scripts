@@ -1185,6 +1185,8 @@ return{
 	-- Rift 6.1
 	ANNOUNCE_LIGHTSOUT_SHADOWHAND = "There are too many cooks in this kitchen!",
 
+    -- Hallowed Nights 2025
+    ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Those strange and terrible birds have come to feast!", -- Mutated buzzards arrive to lurk and circle the player
 
 	BATTLECRY =
 	{
@@ -5783,7 +5785,7 @@ return{
             REVIVING = "The meat is turning!", --when its mutating and being revived
         },
 
-        MUTATEDBUZZARD = {
+        MUTATEDBUZZARD_GESTALT = {
             GENERIC = "It looks famished.", -- Generic string
             EATING_CORPSE = "Bon appetit.", -- Eating from a fresh corpse (might be from the players kill or another creatures kill)
         },
@@ -5855,6 +5857,45 @@ return{
 			GENERIC = "A walking pressure cooker!",
 			SLEEPING = "Perhaps a good time to harvest?",
             VENTING = "Most unappetizing!", -- in the shield state and venting out gasses
+        },
+
+		--Hallowed Nights 2025
+
+		PUMPKINHAT =
+		{
+			GENERIC = "One should never play with food, but wearing it is another matter.",
+			UNCARVED = "This pumpkin is in need of my knife skills.",--can't wear it unless it's carved.
+		},
+
+        PENGUINCORPSE =
+		{
+            GENERIC  = "It is about to turn.", --witnessing the corpse
+            BURNING  = "Mmm, that aroma!", --when its burning
+            REVIVING = "The meat is turning!", --when its mutating and being revived
+		},
+        SPIDERCORPSE =
+		{
+			GENERIC = "It is dead, yes?",
+			BURNING = "Burnt to perfection.",
+			REVIVING = "It makes my stomach turn.",
+		},
+        SPIDERQUEENCORPSE =
+		{
+			GENERIC = "She looks dead...",
+			BURNING = "She is developing a nice char.",
+			REVIVING = "No, thank you!",
+		},
+        MERMCORPSE =
+		{
+			GENERIC = "The poor fishmonger.",
+			BURNING = "Smoky.",
+			REVIVING = "This is terrible!",
+		},
+        GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
+        {
+            GENERIC = "TODO",
+            BURNING = "TODO",
+            REVIVING = "TODO",
         },
     },
 

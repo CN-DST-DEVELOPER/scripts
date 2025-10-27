@@ -285,6 +285,10 @@ ITEM_DISPLAY_BLACKLIST =
 	wall_dreadstone_relicitem = true,
 	wall_hay_cornitem = true,
 	wall_moonrock_victorianitem = true,
+	wall_ruins_thulecite2 = true,
+	wall_ruins_thulecite2_alt = true,
+	wall_ruins_thulecite2item = true,
+	wall_ruins_thulecite2item_alt = true,
 	wall_ruins_thulecite_alt_item = true,
 	wall_ruins_thuleciteitem = true,
 	wall_ruins_victorianitem = true,
@@ -319,5 +323,7 @@ ITEM_DISPLAY_BLACKLIST =
 	wx78_scanner_succeeded_catcoon = true,
 	wx78_scanner_succeeded_fancy = true,
 	wx78_scanner_succeeded_junky = true,
+	pumpkinhat_2 = true,
+	pumpkinhat_3 = true,
 }
 
