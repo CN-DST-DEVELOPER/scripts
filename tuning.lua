@@ -8659,7 +8659,7 @@ function Tune(overrides)
         MUTATEDBUZZARD_ATTACK_PERIOD = 1.5,
         MUTATEDBUZZARD_WALK_SPEED = 4,
         MUTATEDBUZZARD_RUN_SPEED = 8,
-        MUTATEDBUZZARD_HEALTH = 200 * 2, -- harder for multiplayer
+        MUTATEDBUZZARD_HEALTH = 150 * 2, -- harder for multiplayer
         MUTATEDBUZZARD_FLAMETHROWER_CD = 5,
         MUTATEDBUZZARD_FLAMETHROWER_CD_VARIANCE = 2,
         MUTATEDBUZZARD_FIND_TARGET_DIST = 10,
@@ -8848,7 +8848,7 @@ function Tune(overrides)
 
         RIFT_BIRD_MIGRATE_TIME_NON_NIGHT_FACTOR = 1 / 1.5,
 
-        MUTATEDBUZZARD_MIGRATE_TIME_BASE = seg_time*3,
+        MUTATEDBUZZARD_MIGRATE_TIME_BASE = seg_time*4,
         MUTATEDBUZZARD_MIGRATE_TIME_VAR = seg_time*2,
         MUTATEDBUZZARD_FIND_CORPSE_DELAY = 10,
         MUTATEDBUZZARD_CORPSE_RANGE = 25, -- mobs die within this range of a buzzard to be corpsed

@@ -292,6 +292,8 @@ local EXTRA_LOOT_MODIFIERS = {
 local TASKS_TO_LOOT_KEY = {
     -- [[ Forest ]] --
 
+    ["START"]                   = "FOREST_AREA",
+
     -- FOREST_AREA
     ["Forest hunters"]          = "FOREST_AREA",
     ["Befriend the pigs"]       = "FOREST_AREA",

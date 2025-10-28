@@ -1,3 +1,6 @@
+--V2C: -For popups validaterpcfn, ALL params should be optional.
+--     -If validation fails, the RPC will still trigger ClosePopup, but without passing any params.
+
 PopupManagerWidget = Class(function(self, data)
     data = data or {}
 

@@ -423,6 +423,7 @@ local function mutated_fn()
     inst:AddTag("scarytoprey")
     inst:AddTag("lunar_aligned")
     inst:AddTag("gestaltmutant")
+    inst:AddTag("hostile")
 
     inst.entity:SetPristine()
 

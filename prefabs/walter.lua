@@ -1237,13 +1237,22 @@ end
 -------------------------------------------------------------------------------
 
 local function CampfireStory_OnNotNight(inst, isnight)
-	if not isnight and inst.storyteller ~= nil and inst.storyteller:IsValid() and inst.storyteller.components.storyteller ~= nil then
+	if not isnight and
+		inst.storyteller and
+		inst.storyteller:IsValid() and
+		inst.storyteller.components.storyteller
+	then
 		inst.storyteller.components.storyteller:AbortStory(GetString(inst.storyteller, "ANNOUNCE_STORYTELLING_ABORT_NOT_NIGHT"))
 	end
 end
 
 local function CampfireStory_CheckFire(inst, data)
-	if data ~= nil and data.newsection == 0 and inst.storyteller:IsValid() and inst.components.storyteller ~= nil then
+	if data and
+		data.newsection == 0 and
+		inst.storyteller and
+		inst.storyteller:IsValid() and
+		inst.storyteller.components.storyteller
+	then
 		inst.storyteller.components.storyteller:AbortStory(GetString(inst.storyteller, "ANNOUNCE_STORYTELLING_ABORT_FIREWENTOUT"))
 	end
 end

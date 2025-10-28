@@ -879,10 +879,19 @@ function self:OnValidMarkers()
             self:SetRoom(1)
         end
     end
+    self.inst:StartUpdatingComponent(self)
 end
 function self:OnInvalidMarkers()
+    self.inst:StopUpdatingComponent(self)
     self:ClearAllExits(true)
     self:SetRoom(nil)
+    for _, player in ipairs(AllPlayers) do
+        self:StopTrackingPlayer(player)
+        local drownable = player.components.drownable
+        if drownable then
+            drownable:PopTeleportPt("VAULT")
+        end
+    end
 end
 function self:ValidateMarkers_Internal()
     for _, markername in ipairs(self.MARKERSTOREGISTER) do
@@ -1166,7 +1175,7 @@ function self:TryToSpawnStaticLayouts()
     self:PlaceStaticLayout(Vault_Vault, tx, ty)
     return true
 end
-function self:CheckToTryToSpawnStaticLayouts()
+function self:OnPostInit()
     -- NOTES(JBK): This is for post world creation to create the set layouts for the Vault.
     -- This should only happen once per world even if it is being loaded from an old world.
     if self.spawnedlayouts then
@@ -1175,7 +1184,6 @@ function self:CheckToTryToSpawnStaticLayouts()
 
     self.spawnedlayouts = self:TryToSpawnStaticLayouts()
 end
-self.inst:DoTaskInTime(0, function() self:CheckToTryToSpawnStaticLayouts() end)
 
 function self:GetDebugString()
     local roomdata = self.rooms[self.roomindex]
@@ -1184,8 +1192,6 @@ function self:GetDebugString()
     end
     return string.format("Room:%s/%d", roomdata.roomid, self.roomindex)
 end
-
-self.inst:StartUpdatingComponent(self)
 
 end)
 return VaultRoomManager

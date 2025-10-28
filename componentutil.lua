@@ -1210,6 +1210,8 @@ function TryEntityToCorpse(inst, corpseprefab)
             corpse:SetCorpseData(corpsedata)
         end
 
+        corpse.sg.mem.nolunarmutate = inst.sg.mem.nolunarmutate -- This is saved.
+
         if can_rift_mutate then
             corpse:SetGestaltCorpse()
         elseif can_prerift_mutate then

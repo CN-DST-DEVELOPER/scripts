@@ -5899,8 +5899,8 @@ return{
 		},
         GENERIC_CORPSE = -- A generic set of lines for ANY corpse, until they get their own unique lines at least.
         {
-            GENERIC = "TODO",
-            BURNING = "TODO",
+            GENERIC = "Dead-er than a doornail.",
+            BURNING = "Better safe than sorry.",
             REVIVING = "TODO",
         },
     },

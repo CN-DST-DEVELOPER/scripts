@@ -5919,10 +5919,10 @@ local function MakeHat(name)
 		data.reye = data.reye > 0 and data.reye or nil
 		data.leye = data.leye > 0 and data.leye or nil
 		data.mouth = data.mouth > 0 and data.mouth or nil
-		data.waxed = inst.components.pumpkinhatcarvable == nil or nil
+		data.waxed = inst.waxed:value() or nil
 	end
 
-	--V2C: also used by client pumpkinhatcarvable.onchangefacedatafn
+	--V2C: also used by server pumpkinhatcarvable.onchangefacedatafn
 	fns.pumpkin_onload = function(inst, data)--, ents)
 		if data then
 			fns.pumpkin_setfacesymbols(inst, data.reye, data.leye, data.mouth)

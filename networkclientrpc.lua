@@ -993,6 +993,8 @@ local RPC_HANDLERS =
         local popup = GetPopupFromPopupCode(popupcode, mod_name)
         if not popup.validaterpcfn(...) then
             printinvalid("ClosePopup"..tostring(popup.id), player)
+			popup:Close(player)
+			return
         end
         popup:Close(player, ...)
     end,

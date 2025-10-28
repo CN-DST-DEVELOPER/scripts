@@ -54,6 +54,8 @@ local PumpkinHatCarvable = Class(function(self, inst)
 	self.inst = inst
 	self.ismastersim = TheWorld.ismastersim
 
+	self.collectfacedatafn = nil
+
 	if not self.ismastersim then
 		return inst
 	end
@@ -61,7 +63,6 @@ local PumpkinHatCarvable = Class(function(self, inst)
 	self.carver = nil
 	self.range = 3
 	self.onchangefacedatafn = nil
-	self.collectfacedatafn = nil
 	self.onopenfn = nil
 	self.onclosefn = nil
 

@@ -1058,12 +1058,17 @@ CommonStates.AddFrozenStates(states, HideEyeFX, ShowEyeFX)
 CommonStates.AddElectrocuteStates(states)
 
 CommonStates.AddCorpseStates(states,
-{
+{ -- anims
     corpse = function(inst)
         local amphibiouscreature = inst.components.amphibiouscreature
         if amphibiouscreature and amphibiouscreature.in_water then
             return "death_idle", true
         end
+    end,
+},
+{ -- fns
+    corpseoncreate = function(inst, corpse)
+        corpse:SetAltBuild(inst.prefab)
     end,
 })
 

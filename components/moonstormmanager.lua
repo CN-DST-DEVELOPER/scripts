@@ -979,7 +979,7 @@ function self:OnLoad(data)
 			end
 			self.inst:DoTaskInTime(0, DefeatedChampionAndMoonstormActive)
 		elseif _moonstyle_altar then
-			self.isnt:DoTaskInTime(0, setmoonphasestyle)
+			self.inst:DoTaskInTime(0, setmoonphasestyle)
 		elseif champion_defeated then
 			local function DefeatedChampion()
 				TheWorld:PushEvent("ms_setmoonphasestyle", {style = "glassed_default"})

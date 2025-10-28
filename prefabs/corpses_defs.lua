@@ -46,6 +46,8 @@ local BUILDS =
     hound =
     {
         default = "hound_ocean",
+        icehound = "hound_ice_ocean",
+        firehound = "hound_red_ocean",
     },
 
     penguin =
@@ -99,6 +101,13 @@ local BUILDS_TO_NAMES =
         canary_build = "canary",
         quagmire_pigeon_build = "quagmire_pigeon",
         puffin_build = "puffin",
+    },
+
+    hound =
+    {
+        hound_ocean = "hound",
+        hound_red_ocean = "icehound",
+        hound_ice_ocean = "firehound",
     },
 
     spider =

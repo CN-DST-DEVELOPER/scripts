@@ -1,5 +1,16 @@
 --local easing = require("easing")
 
+local function IsValidToEnterNode(inst)
+    return not inst._killed and inst:IsValid()
+end
+
+local function OnRemove(inst)
+    local mutatedbuzzardcircler = inst.components.mutatedbuzzardcircler
+    if mutatedbuzzardcircler then
+        mutatedbuzzardcircler:SetCircleTarget(nil)
+    end
+end
+
 local MutatedBuzzardCircler = Class(function(self, inst)
     self.inst = inst
 
@@ -11,7 +22,7 @@ local MutatedBuzzardCircler = Class(function(self, inst)
     self.max_speed = 7
 
     self.min_dist = 8
-    self.max_dist = 20
+    self.max_dist = 12
 
     self.min_scale = 8
     self.max_scale = 12
@@ -21,6 +32,8 @@ local MutatedBuzzardCircler = Class(function(self, inst)
 
     self.update_target_pos_cooldown = 0
     self.last_valid_migration_node = nil
+
+    self.inst:ListenForEvent("onremove", OnRemove)
 end)
 
 function MutatedBuzzardCircler:SetMode(mode)
@@ -29,7 +42,7 @@ end
 
 function MutatedBuzzardCircler:Start()
     if self.circle_target == nil or not self.circle_target:IsValid() then
-        self.circle_target = nil
+        self:SetCircleTarget(nil)
         return
     end
 
@@ -54,6 +67,8 @@ end
 
 function MutatedBuzzardCircler:SetCircleTarget(tar)
     if self.circle_target then
+        self.circle_target._num_circling_buzzards = self.circle_target._num_circling_buzzards - 1
+
 		self.inst:RemoveEventCallback("onremove", self._ontargetremoved, self.circle_target)
 		self.inst:RemoveEventCallback("death", self._ontargetremoved, self.circle_target)
 		self._ontargetremoved = nil
@@ -62,9 +77,11 @@ function MutatedBuzzardCircler:SetCircleTarget(tar)
     self.circle_target = tar
 
     if self.circle_target then
+        self.circle_target._num_circling_buzzards = (self.circle_target._num_circling_buzzards or 0) + 1
+
         self._ontargetremoved = function()
             local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-            if mutatedbirdmanager then
+            if mutatedbirdmanager and IsValidToEnterNode(self.inst) then
                 mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
                 mutatedbirdmanager:RemoveBuzzardShadow(self.inst)
             end
@@ -102,7 +119,7 @@ end
 
 function MutatedBuzzardCircler:UpdateMigrationNode()
     if self.circle_target == nil or not self.circle_target:IsValid() then
-        self.circle_target = nil
+        self:SetCircleTarget(nil)
         return
     end
 
@@ -114,8 +131,10 @@ function MutatedBuzzardCircler:UpdateMigrationNode()
             self.last_valid_migration_node = migration_node
         else
             -- Migration node is invalid, either because it doesn't exist, or it's too far away. Return.
-            mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
-            mutatedbirdmanager:RemoveBuzzardShadow(self.inst)
+            if IsValidToEnterNode(self.inst) then
+                mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
+                mutatedbirdmanager:RemoveBuzzardShadow(self.inst)
+            end
         end
     end
 end
@@ -125,7 +144,7 @@ local MAX_DIST_SQ = 30 * 30
 function MutatedBuzzardCircler:OnUpdate(dt)
     if self.circle_target == nil or not self.circle_target:IsValid() then
         self:Stop()
-        self.circle_target = nil
+        self:SetCircleTarget(nil)
         return
     end
 
@@ -181,8 +200,10 @@ function MutatedBuzzardCircler:OnEntitySleep()
     local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
     if mutatedbirdmanager then
         local function StoreInMigrationNode()
-            mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
-            self.inst:Remove()
+            if IsValidToEnterNode(self.inst) then
+                mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
+                self.inst:Remove()
+            end
         end
 
         if self.circle_target and self.circle_target:IsValid() then

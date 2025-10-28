@@ -76,18 +76,15 @@ local CheckModifyLootArea = TREE_ROCK_DATA.CheckModifyLootArea
 TREE_ROCK_DATA = nil
 
 local function GetLootKey(id)
-    local _, static_layout_name = id:match("(.*):(.*)")
-    local task_name, _, room_name = id:match("(.*):(.*):(.*)")
+    local gen_data = ConvertTopologyIdToData(id)
     local loot_key
 
-    if id == "START" then
-        loot_key = "FOREST_AREA" -- Default to FOREST_AREA for now.
-    elseif static_layout_name and STATIC_LAYOUTS_TO_LOOT_KEY[static_layout_name] then
-        loot_key = STATIC_LAYOUTS_TO_LOOT_KEY[static_layout_name]
-    elseif room_name and ROOMS_TO_LOOT_KEY[room_name] then
-        loot_key = ROOMS_TO_LOOT_KEY[room_name]
-    elseif task_name and TASKS_TO_LOOT_KEY[task_name] then
-        loot_key = TASKS_TO_LOOT_KEY[task_name]
+    if gen_data.layout_id and STATIC_LAYOUTS_TO_LOOT_KEY[gen_data.layout_id] then
+        loot_key = STATIC_LAYOUTS_TO_LOOT_KEY[gen_data.layout_id]
+    elseif gen_data.room_id and ROOMS_TO_LOOT_KEY[gen_data.room_id] then
+        loot_key = ROOMS_TO_LOOT_KEY[gen_data.room_id]
+    elseif gen_data.task_id and TASKS_TO_LOOT_KEY[gen_data.task_id] then
+        loot_key = TASKS_TO_LOOT_KEY[gen_data.task_id]
     end
 
     return CheckModifyLootArea(loot_key)

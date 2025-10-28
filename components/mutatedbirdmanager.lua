@@ -296,6 +296,31 @@ local function RegisterMutatedBuzzard(inst, buzzard)
 	inst:ListenForEvent("onremove", OnRemoveMutatedBuzzard, buzzard)
 end
 
+local function OnRiftRemovedFromPool()
+    local riftspawner = _world.components.riftspawner
+    if riftspawner and not riftspawner:IsLunarPortalActive() then
+        -- TODO make them fall! just temporary deletion for now.
+        for migrator_type, map in pairs(_migrationpopulations) do
+            for task, data in pairs(map) do
+                if data.current then
+                    data.current = 0
+                end
+            end
+        end
+
+        local shadows_to_delete = {}
+        --
+        for i, shadow in ipairs(_buzzardshadows) do
+            table.insert(shadows_to_delete, shadow) -- don't remove here while iterating.
+        end
+        --
+        for i, shadow in ipairs(shadows_to_delete) do
+            if not shadow._killed and shadow:IsValid() then
+                self:RemoveBuzzardShadow(shadow)
+            end
+        end
+    end
+end
 
 --------------------------------------------------------------------------
 --[[ Initialization ]]
@@ -310,6 +335,8 @@ end
 inst:ListenForEvent("ms_playerjoined", OnPlayerJoined, _world)
 inst:ListenForEvent("ms_playerleft", OnPlayerLeft, _world)
 inst:ListenForEvent("ms_registermutatedbuzzard", RegisterMutatedBuzzard)
+
+inst:ListenForEvent("ms_riftremovedfrompool", OnRiftRemovedFromPool)
 
 inst:WatchWorldState("islunarhailing", OnIsLunarHailing)
 
@@ -563,7 +590,7 @@ end
 local function SendBuzzardToCorpse(buzzardshadow, corpse)
     local x, y, z = corpse.Transform:GetWorldPosition()
     local buzzard = SpawnPrefab("mutatedbuzzard_gestalt")
-	buzzard.Transform:SetPosition(x + math.random() * 3 - 1.5, 30, z + math.random() * 3 - 1.5)
+	buzzard.Transform:SetPosition(x + math.random() * 10 - 5, 30, z + math.random() * 10 - 5)
 	buzzard:FacePoint(x, y, z)
     buzzard.sg:GoToState("glide")
 
@@ -649,11 +676,15 @@ function self:OnUpdate(dt)
         local mutatedbuzzard_population = _migrationpopulations["mutatedbuzzard_gestalt"][player_task]
         if mutatedbuzzard_population then
             if mutatedbuzzard_population.current > 0 and not player:HasTag("playerghost") and not player.components.health:IsDead() then
-                for i = 1, mutatedbuzzard_population.current do
-                    SpawnBuzzardShadow(player)
-                end
+                local num_current_buzzards = player._num_circling_buzzards or 0
+                local num_to_spawn = math.min(mutatedbuzzard_population.current, 10 - num_current_buzzards)
+                if num_to_spawn > 0 then
+                    for i = 1, num_to_spawn do
+                        SpawnBuzzardShadow(player)
+                    end
 
-                mutatedbuzzard_population.current = 0
+                    mutatedbuzzard_population.current = mutatedbuzzard_population.current - num_to_spawn
+                end
             end
         end
 

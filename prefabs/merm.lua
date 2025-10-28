@@ -669,6 +669,8 @@ local function spawn_shadow_merm(inst)
         inst.old_leader.components.leader:AddFollower(shadowmerm)
     end
 
+    inst.sg.mem.nolunarmutate = true -- No lunar mutation !
+
     local home = inst.components.homeseeker ~= nil and inst.components.homeseeker:GetHome() or nil
 
     inst:PushEvent("detachchild")
@@ -1066,6 +1068,10 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
 
         if master_postinit ~= nil then
             master_postinit(inst)
+        end
+
+        if data and data.unliving then
+            inst.sg.mem.nocorpse = true
         end
 
         inst.spawn_lunar_mutated_tuning = "SPAWN_MUTATED_MERMS"

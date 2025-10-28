@@ -217,7 +217,7 @@ local function DoSpinningAOE(inst, targets)
 								PlayMiningFX(inst, v)
 								v.components.workable:WorkedBy(inst, 0.5)
 								numuses = numuses + 1
-								if v:IsValid() and v.components.workable:CanBeWorked() then
+								if v:IsValid() and v.components.workable and v.components.workable:CanBeWorked() then
 									slowdown = true
 								end
 								targets[v] = t + 0.2
@@ -225,7 +225,7 @@ local function DoSpinningAOE(inst, targets)
 								PlayMiningFX(inst, v)
 								v.components.workable:WorkedBy(inst, 0.5)
 								numuses = numuses + 1
-								if v:IsValid() and v.components.workable:CanBeWorked() then
+								if v:IsValid() and v.components.workable and v.components.workable:CanBeWorked() then
 									recoil = true
 								end
 								targets[v] = t + 0.5

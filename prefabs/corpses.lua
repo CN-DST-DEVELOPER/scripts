@@ -90,11 +90,12 @@ end
 
 local function OnSave(inst, data)
     data.is_reviving = inst.sg and inst.sg:HasStateTag("prerift_mutating") or nil
-    data.is_gestalt_mutating = inst and inst.sg:HasStateTag("lunarrift_mutating") or nil
+    data.is_gestalt_mutating = inst.sg and inst.sg:HasStateTag("lunarrift_mutating") or nil
     data.build = inst.build
     data.bank = inst.bank
     -- Extra data from the creature
     data.corpsedata = inst.corpsedata
+    data.nolunarmutate = inst.sg and inst.sg.mem.nolunarmutate or nil
 end
 
 local function OnLoad(inst, data)
@@ -103,6 +104,9 @@ local function OnLoad(inst, data)
         SetAltBuild(inst, data.build)
         if data.bank then
             SetAltBank(inst, data.bank)
+        end
+        if data.nolunarmutate then
+            inst.sg.mem.nolunarmutate = true
         end
         -- data.ready is deprecated, kept for backwards compat
         if data.ready or data.is_gestalt_mutating then
