@@ -132,6 +132,7 @@ local function KillFX(inst, fadeoption)
 	inst.AnimState:PlayAnimation("flame"..tostring(math.random(3)).."_pst")
 	inst.components.updatelooper:RemoveOnUpdateFn(OnUpdateHitbox)
 	inst.targets = nil
+	inst.fadeoption = nil
 
 	if inst.embers ~= nil then
 		if inst.embers:IsValid() then
@@ -179,6 +180,11 @@ local function ClearTasks(inst)
 	end
 end
 
+local function GetFlameTime(tallflame)
+	return (tallflame and TUNING.TALL_FLAMEWALL_BASE_TIME + math.random() * TUNING.TALL_FLAMEWALL_VAR_TIME)
+		or math.random(18, 22) * FRAMES
+end
+
 local function RestartFX(inst, scale, fadeoption, targets, tallflame)
 	if inst:IsInLimbo() then
 		inst:ReturnToScene()
@@ -197,7 +203,9 @@ local function RestartFX(inst, scale, fadeoption, targets, tallflame)
 		inst.AnimState:PushAnimation(anim.."_loop", true)
 	end
 
+	inst.tallflame = tallflame
 	inst.scale = scale or 1
+	inst.fadeoption = fadeoption
 	inst.AnimState:SetScale(math.random() < 0.5 and -inst.scale or inst.scale, inst.scale)
 
 	if fadeoption == "latefade" then
@@ -207,11 +215,7 @@ local function RestartFX(inst, scale, fadeoption, targets, tallflame)
 	end
 	inst.spawn_embers_task = inst:DoTaskInTime(2 * FRAMES, SpawnEmbers, inst.scale * 1.1, fadeoption)
 
-	local flametime = math.random(18, 22)
-	if not tallflame then
-		flametime = flametime * FRAMES
-	end
-	inst.kill_fx_task = inst:DoTaskInTime(flametime, KillFX, fadeoption)
+	inst.kill_fx_task = inst:DoTaskInTime(GetFlameTime(tallflame), KillFX, fadeoption)
 
 	if inst.embers ~= nil then
 		if inst.embers:IsValid() then
@@ -224,6 +228,13 @@ local function RestartFX(inst, scale, fadeoption, targets, tallflame)
 		inst.targets = targets or {}
 		inst.components.updatelooper:AddOnUpdateFn(OnUpdateHitbox)
 	end
+end
+
+local function ExtendFx(inst, time)
+	ClearTasks(inst)
+
+	inst.spawn_embers_task = inst:DoTaskInTime(2 * FRAMES, SpawnEmbers, inst.scale * 1.1, inst.fadeoption)
+	inst.kill_fx_task = inst:DoTaskInTime(GetFlameTime(inst.tallflame), KillFX, inst.fadeoption)
 end
 
 local function ConfigureDamage(inst, default_damage, base_planar_damage)
@@ -279,6 +290,7 @@ local function fn()
 	inst.SetFXOwner = SetFXOwner
 	inst.RestartFX = RestartFX
 	inst.ConfigureDamage = ConfigureDamage
+	inst.ExtendFx = ExtendFx
 
 	inst.AnimState:PushAnimation("flame1_loop", true)
 	RestartFX(inst)

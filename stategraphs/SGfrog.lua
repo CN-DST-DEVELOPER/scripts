@@ -8,7 +8,7 @@ local actionhandlers =
 
 local events=
 {
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
     EventHandler("doattack", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then inst.sg:GoToState("attack") end end),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),

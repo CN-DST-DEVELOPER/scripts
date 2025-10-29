@@ -20,9 +20,6 @@ local events=
 			end
         end
     end),
-    EventHandler("death", function(inst, data)
-				inst.sg:GoToState("death", data)
-			end),
     EventHandler("trapped", function(inst) inst.sg:GoToState("trapped") end),
     EventHandler("locomote",
         function(inst)
@@ -47,6 +44,7 @@ local events=
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned")
     end),
+    CommonHandlers.OnDeath(),
 }
 
 local states=

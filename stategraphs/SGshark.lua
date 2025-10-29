@@ -30,7 +30,6 @@ local events =
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death", inst.sg.statemem.dead) end),
 	EventHandler("doattack", function(inst, data)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			inst.sg:GoToState("attack", data.target)
@@ -49,6 +48,7 @@ local events =
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+    CommonHandlers.OnDeath(),
 }
 
 local AOE_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget"}

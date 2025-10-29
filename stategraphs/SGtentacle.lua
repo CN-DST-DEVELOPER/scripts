@@ -11,7 +11,6 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
     EventHandler("newcombattarget", function(inst,data)
@@ -19,7 +18,8 @@ local events=
             if inst.sg:HasStateTag("idle") and data.target then
                 inst.sg:GoToState("taunt")
             end
-        end)
+        end),
+    CommonHandlers.OnDeath(),
 }
 
 local function OnEntitySleep(inst)

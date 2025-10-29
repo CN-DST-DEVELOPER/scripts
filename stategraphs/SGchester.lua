@@ -85,7 +85,6 @@ local events=
 			end
         end
     end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("morph", function(inst, data)
         inst.sg:GoToState("morph", data.morphfn)
     end),
@@ -101,6 +100,7 @@ local events=
             inst.sg:GoToState("devoured", data)
         end
     end),
+    CommonHandlers.OnDeath(),
 }
 
 local states=

@@ -99,7 +99,8 @@ function self:OnUpdate(dt)
         check_corpses_cooldown = check_corpses_cooldown - dt
     end
 end
-self.LongUpdate = self.OnUpdate
+-- LongUpdate is not supported for now due to issues with the order code can be ran in.
+--self.LongUpdate = self.OnUpdate
 
 --------------------------------------------------------------------------
 --[[ Debug ]]

@@ -55,39 +55,21 @@ end
 
 local RETARGET_MUST_TAGS = { "_combat" }
 local INVADER_RETARGET_CANT_TAGS = { "playerghost", "INLIMBO"}
+local function IsValidTarget(guy, inst)
+    local can = inst.components.combat:CanTarget(guy)
+    if guy == inst.components.entitytracker:GetEntity("swarmTarget") then
+        return can
+    end
+
+    local guy_leader = guy.components.follower and guy.components.follower:GetLeader()
+    if guy:HasTag("player") or (guy_leader and guy_leader:HasTag("player")) then
+        return can
+    end
+end
+
 local function Retarget(inst)
     return IsNearInvadeTarget(inst, TUNING.MUTANT_BIRD_AGGRO_DIST)
-    --[[
-        and FindEntity(
-                inst,
-                TUNING.MUTANT_BIRD_TARGET_DIST,
-                function(guy)
-                    local can = inst.components.combat:CanTarget(guy)
-                    if guy:HasTag("player") or (guy.components.follower and guy.components.follower:GetLeader() and guy.components.follower:GetLeader():HasTag("player")) then
-                        return can
-                    end
-                end,
-                RETARGET_MUST_TAGS,
-                INVADER_RETARGET_CANT_TAGS
-            )
-            ]]
-
-        and FindEntity(
-                inst,
-                TUNING.MUTANT_BIRD_TARGET_DIST,
-                function(guy)
-                    local can = inst.components.combat:CanTarget(guy)
-                    if guy == inst.components.entitytracker:GetEntity("swarmTarget") then
-                        return can
-                    end
-                    if guy:HasTag("player") or (guy.components.follower and guy.components.follower:GetLeader() and guy.components.follower:GetLeader():HasTag("player")) then
-                        return can
-                    end
-                end,
-                RETARGET_MUST_TAGS,
-                INVADER_RETARGET_CANT_TAGS
-            )
-
+        and FindEntity(inst, TUNING.MUTANT_BIRD_TARGET_DIST, IsValidTarget, RETARGET_MUST_TAGS, INVADER_RETARGET_CANT_TAGS)
         or nil
 end
 

@@ -64,7 +64,7 @@ local states =
 
     State{
         name = "infest",
-        tags = {"busy", "noattack"},
+        tags = {"busy", "noattack", "infesting"},
 
         onenter = function(inst)
             inst.AnimState:SetFinalOffset(3)
@@ -104,7 +104,7 @@ local states =
 
 	State{
 		name = "infest_corpse",
-		tags = { "busy", "noattack" },
+		tags = { "busy", "noattack", "infesting" },
 
 		onenter = function(inst)
             inst.sg.statemem.corpse = inst.components.entitytracker ~= nil and inst.components.entitytracker:GetEntity("corpse") or nil

@@ -3412,7 +3412,7 @@ local applyoverrides_pre = {
             },
             few = {
                 MOONSPIDERDEN_SPIDERS = {1, 2, 3},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*8,
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*4,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*6,
                 MOONSPIDERDEN_EMERGENCY_RADIUS = {5, 10, 15},
                 MOONSPIDERDEN_MAX_INVESTIGATORS = {1, 1, 1},
@@ -3420,7 +3420,7 @@ local applyoverrides_pre = {
             --[[
             default = {
                 MOONSPIDERDEN_SPIDERS = {2, 3, 4},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*4,
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*2,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*3,
                 MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 0, 0},
                 MOONSPIDERDEN_EMERGENCY_RADIUS = {10, 15, 20},
@@ -3430,7 +3430,7 @@ local applyoverrides_pre = {
             --]]
             many = {
                 MOONSPIDERDEN_SPIDERS = {3, 4, 5},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*2,
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*1,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*1.5,
                 MOONSPIDERDEN_EMERGENCY_WARRIORS = {0, 1, 2},
                 MOONSPIDERDEN_EMERGENCY_RADIUS = {15, 20, 25},
@@ -3438,7 +3438,7 @@ local applyoverrides_pre = {
             },
             always = {
                 MOONSPIDERDEN_SPIDERS = {4, 5, 6},
-                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME,
+                MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*0.5,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*0.75,
                 MOONSPIDERDEN_EMERGENCY_WARRIORS = {1, 2, 3},
                 MOONSPIDERDEN_EMERGENCY_RADIUS = {20, 25, 30},

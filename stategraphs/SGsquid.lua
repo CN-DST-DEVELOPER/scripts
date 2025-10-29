@@ -29,9 +29,7 @@ local events =
 			end
         end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death", inst.sg.statemem.dead)
-    end),
+    CommonHandlers.OnDeath(),
     EventHandler("doattack", function(inst, data)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
             inst.sg:GoToState("attack", data.target)
@@ -702,40 +700,16 @@ local states =
         name = "death",
         tags = { "busy" },
 
-        onenter = function(inst, reanimating)
-            if reanimating then
-                inst.AnimState:Pause()
-            else
-                inst.AnimState:PlayAnimation("dead")
-                if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
-                    inst.AnimState:PushAnimation("dead_loop", true)
-                end
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("dead")
+            if inst.components.amphibiouscreature ~= nil and inst.components.amphibiouscreature.in_water then
+                inst.AnimState:PushAnimation("dead_loop", true)
             end
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.SoundEmitter:PlaySound(inst.sounds.death)
             inst.components.lootdropper:DropLoot(inst:GetPosition())
             inst.eyeglow.Light:Enable(false)
-        end,
-
-        timeline =
-        {
-            TimeEvent(TUNING.GARGOYLE_REANIMATE_DELAY, function(inst)
-                if not inst:IsInLimbo() then
-                    inst.AnimState:Resume()
-                end
-            end),
-            TimeEvent(11 * FRAMES, function(inst)
-                if inst.sg.statemem.clay then
-                    PlayClayFootstep(inst)
-                end
-            end),
-        },
-
-        onexit = function(inst)
-            if not inst:IsInLimbo() then
-                inst.AnimState:Resume()
-            end
         end,
     },
 

@@ -24,7 +24,7 @@ local events=
             inst.sg:GoToState("makenest")
         end
     end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
@@ -47,7 +47,6 @@ local states=
         end,
 
     },
-
 
     State{
         name = "idle",

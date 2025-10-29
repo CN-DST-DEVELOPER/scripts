@@ -24,9 +24,6 @@ local events =
             inst.sg:GoToState("attack")
         end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death")
-    end),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
@@ -37,6 +34,7 @@ local events =
             inst.sg:GoToState(inst.sg:HasStateTag("moving") and "idle" or "premoving")
         end
     end),
+    CommonHandlers.OnDeath(),
 }
 
 local function StartBuzz(inst)

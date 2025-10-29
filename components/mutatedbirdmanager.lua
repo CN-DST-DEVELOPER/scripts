@@ -340,14 +340,6 @@ inst:ListenForEvent("ms_riftremovedfrompool", OnRiftRemovedFromPool)
 
 inst:WatchWorldState("islunarhailing", OnIsLunarHailing)
 
-local corpsepersistmanager = _world.components.corpsepersistmanager
-if corpsepersistmanager ~= nil then
-    corpsepersistmanager:AddPersistSourceFn(CORPSE_PERSIST_SOURCE, function(corpse)
-        -- corpse can also be a creature as it died.
-        return self:GetPopulationForNodeAtInst("mutatedbuzzard_gestalt", corpse) > 0 or IsAnyBuzzardInRange(corpse:GetPosition())
-    end)
-end
-
 --------------------------------------------------------------------------
 --[[ Post initialization ]]
 --------------------------------------------------------------------------
@@ -355,6 +347,14 @@ end
 function self:OnPostInit()
     InitializeMigrationMapFromTopology()
     OnIsLunarHailing(inst, _worldstate.islunarhailing, true)
+
+    local corpsepersistmanager = _world.components.corpsepersistmanager
+    if corpsepersistmanager ~= nil then
+        corpsepersistmanager:AddPersistSourceFn(CORPSE_PERSIST_SOURCE, function(corpse)
+            -- corpse can also be a creature as it died.
+            return self:GetPopulationForNodeAtInst("mutatedbuzzard_gestalt", corpse) > 0 or IsAnyBuzzardInRange(corpse:GetPosition())
+        end)
+    end
 end
 
 --------------------------------------------------------------------------

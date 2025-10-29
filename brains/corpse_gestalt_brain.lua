@@ -42,7 +42,7 @@ local function MoveToPointAction(inst)
     end
 
     -- Move around freely.
-    if not pos then
+    if not pos and not inst.sg:HasStateTag("infesting") then
         local x, y, z = inst.Transform:GetWorldPosition()
         local inview = IsAnyPlayerInRangeSq(x, y, z, SCREEN_DIST_SQ)
 

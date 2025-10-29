@@ -41,9 +41,7 @@ local events =
 			end
 		end
     end),
-    EventHandler("death", function(inst)
-        inst.sg:GoToState("death")
-    end),
+    CommonHandlers.OnDeath(),
     EventHandler("trapped", function(inst)
         inst.flee = true
         inst:DoTaskInTime(math.random(3, 6), onstopflee)

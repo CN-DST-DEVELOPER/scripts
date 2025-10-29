@@ -23,9 +23,7 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst, data)
-				inst.sg:GoToState("death", data)
-			end),
+    CommonHandlers.OnDeath(),
     EventHandler("flyaway", function(inst, data)
                 if not inst.components.health:IsDead() then
 					if inst.sg:HasStateTag("electrocute") then

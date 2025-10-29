@@ -30,15 +30,6 @@ local events =
     EventHandler("exitshield", function(inst) inst.sg:GoToState("shield_end") end),
 }
 
-local function pickrandomstate(inst, choiceA, choiceB, chance)
-	if math.random() >= chance then
-		inst.sg:GoToState(choiceA)
-	else
-		inst.sg:GoToState(choiceB)
-	end
-end
-
-
 local states =
 {
 

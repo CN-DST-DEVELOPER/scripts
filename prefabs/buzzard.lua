@@ -424,6 +424,7 @@ local function mutated_fn()
     inst:AddTag("lunar_aligned")
     inst:AddTag("gestaltmutant")
     inst:AddTag("hostile")
+    inst:AddTag("mutantdominant") -- Dominant over lunar mutations like horror hounds, permafrost pengulls, etc
 
     inst.entity:SetPristine()
 
@@ -469,7 +470,7 @@ local function mutated_fn()
 
     inst:AddComponent("timer")
     if not POPULATING then
-        inst.components.timer:StartTimer("flamethrower_cd", TUNING.MUTATEDBUZZARD_FLAMETHROWER_CD + math.random() * 2)
+        inst.components.timer:StartTimer("flamethrower_cd", 5 + math.random() * 2)
     end
 
     inst.sounds = mutated_sounds

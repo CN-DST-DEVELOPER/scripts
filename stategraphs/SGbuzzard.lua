@@ -25,7 +25,14 @@ local function ChooseAttack(inst, target)
 	end
 end
 
+local FINDFIRE_TAGS = {"FX"}
+local function IsValidFlameToExtend(inst)
+    -- kill_fx_task means its still alive.
+    return inst.prefab == "warg_mutated_breath_fx" and inst.tallflame and inst.kill_fx_task ~= nil
+end
+
 local function SpawnBreathFX(inst, angle, dist, targets)
+	local x, y, z = inst.Transform:GetWorldPosition()
 	local fx = table.remove(inst.flame_pool)
 	if fx == nil then
 		fx = SpawnPrefab("warg_mutated_breath_fx")
@@ -34,7 +41,6 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 
 	local scale = (0.8 + math.random() * 0.25)
 
-	local x, y, z = inst.Transform:GetWorldPosition()
 	angle = (inst.Transform:GetRotation() + angle) * DEGREES
 	x = x + math.cos(angle) * dist
 	z = z - math.sin(angle) * dist
@@ -43,8 +49,16 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 	x = x + math.cos(angle) * dist
 	z = z - math.sin(angle) * dist
 
+    local potential_flames = TheSim:FindEntities(x, 0, z, .8, FINDFIRE_TAGS)
+    for i, flame in ipairs(potential_flames) do
+        if IsValidFlameToExtend(flame) then
+            flame:ExtendFx()
+            return
+        end
+    end
+
 	fx.Transform:SetPosition(x, 0, z)
-    fx:ConfigureDamage(TUNING.MUTATEDBUZZARD_DAMAGE, TUNING.MUTATEDBUZZARD_FLAMETHROWER_DAMAGE)
+    fx:ConfigureDamage(TUNING.MUTATEDBUZZARD_FLAMETHROWER_DAMAGE, TUNING.MUTATEDBUZZARD_FLAMETHROWER_PLANAR_DAMAGE)
 	fx:RestartFX(scale, "nofade", targets, true)
 end
 

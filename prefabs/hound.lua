@@ -171,6 +171,16 @@ local function OnNewTarget(inst, data)
 end
 
 local RETARGET_CANT_TAGS = { "wall", "houndmound", "hound", "houndfriend" }
+local function IsValidTarget(guy, inst)
+    -- Horror hounds won't attack our reviver! (Crystal-Crested Buzzards)
+    if inst:HasTag("lunar_aligned") and guy:HasTag("mutantdominant") then
+        return false
+    end
+    --
+    local leader = inst.components.follower.leader
+    return guy ~= leader and inst.components.combat:CanTarget(guy)
+end
+
 local function retargetfn(inst)
     if inst.sg:HasStateTag("statue") then
         return
@@ -184,15 +194,7 @@ local function retargetfn(inst)
     return (leader == nil or
             (ispet and not playerleader) or
             inst:IsNear(leader, TUNING.HOUND_FOLLOWER_AGGRO_DIST))
-        and FindEntity(
-                inst,
-                (ispet or leader ~= nil) and TUNING.HOUND_FOLLOWER_TARGET_DIST or TUNING.HOUND_TARGET_DIST,
-                function(guy)
-                    return guy ~= leader and inst.components.combat:CanTarget(guy)
-                end,
-                nil,
-                RETARGET_CANT_TAGS
-            )
+        and FindEntity(inst, (ispet or leader ~= nil) and TUNING.HOUND_FOLLOWER_TARGET_DIST or TUNING.HOUND_TARGET_DIST, IsValidTarget, nil, RETARGET_CANT_TAGS)
         or nil
 end
 

@@ -23,7 +23,7 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
 	EventHandler("doattack", function(inst)
 		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
 			inst.sg:GoToState("attack")

@@ -162,6 +162,10 @@ function MutatedBuzzardCircler:OnUpdate(dt)
         self:UpdateMigrationNode()
     end
 
+    if not self.inst:IsValid() then -- Might become invalid from UpdateMigrationNode
+        return
+    end
+
     local reverse = self.direction > 0
 
     self.sine = GetSineVal(self.sine_mod, true, self.inst)

@@ -33,7 +33,6 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
     EventHandler("doattack", function(inst)
 		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
             if inst.components.combat.target and inst:IsNear(inst.components.combat.target, TUNING.WALRUS_MELEE_RANGE) then
@@ -47,6 +46,7 @@ local events=
             end
         end
     end),
+    CommonHandlers.OnDeath(),
 }
 
 local states=

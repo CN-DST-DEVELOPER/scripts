@@ -100,18 +100,16 @@ end
 local RETARGET_MUST_TAGS = { "_combat" }
 local RETARGET_CANT_TAGS = { "penguin" }
 local RETARGET_ONEOF_TAGS = { "character", "monster", "wall" }
+local function IsValidTarget(guy, inst)
+    return inst.components.combat:CanTarget(guy)
+end
+
 local function Retarget(inst)
     if inst.components.hunger and not inst.components.hunger:IsStarving() then
         return nil
     end
 
-    local newtarget = FindEntity(inst, 3, function(guy)
-            return inst.components.combat:CanTarget(guy)
-            end,
-            RETARGET_MUST_TAGS,
-            RETARGET_CANT_TAGS,
-            RETARGET_ONEOF_TAGS
-            )
+    local newtarget = FindEntity(inst, 3, IsValidTarget, RETARGET_MUST_TAGS, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS)
 
     local teamattacker = inst.components.teamattacker
     if newtarget and teamattacker and not teamattacker.inteam and not teamattacker:SearchForTeam() then
@@ -125,16 +123,14 @@ local function Retarget(inst)
 end
 
 local RETARGET_MUTATED_MUST_TAGS = { "_combat" }
-local RETARGET_MUTATED_CANT_TAGS = { "penguin" }
-local RETARGET_MUTATED_ONEOF_TAGS = {"character","monster","smallcreature","animal","wall"}
+local RETARGET_MUTATED_CANT_TAGS = { "penguin", "mutantdominant" }
+local RETARGET_MUTATED_ONEOF_TAGS = { "character", "monster", "smallcreature", "animal", "wall" }
+local function MutatedIsValidTarget(guy, inst)
+    return inst.components.combat:CanTarget(guy)
+end
+
 local function MutatedRetarget(inst)
-    local newtarget = FindEntity(inst, 4, function(guy)
-            return inst.components.combat:CanTarget(guy)
-            end,
-            RETARGET_MUTATED_MUST_TAGS,
-            RETARGET_MUTATED_CANT_TAGS,
-            RETARGET_MUTATED_ONEOF_TAGS
-            )
+    local newtarget = FindEntity(inst, 4, MutatedIsValidTarget, RETARGET_MUTATED_MUST_TAGS, RETARGET_MUTATED_CANT_TAGS, RETARGET_MUTATED_ONEOF_TAGS)
 
     local teamattacker = inst.components.teamattacker
     if newtarget and teamattacker and not teamattacker.inteam and not teamattacker:SearchForTeam() then

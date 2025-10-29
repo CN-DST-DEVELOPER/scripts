@@ -26,7 +26,7 @@ local events =
             inst.sg:GoToState("attack")
         end
     end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
 }
 
 local function CheckForNewLeader(inst)

@@ -17,7 +17,6 @@ local events=
 			end
 		end
 	end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
 	EventHandler("doattack", function(inst)
 		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			inst.sg:GoToState("attack")
@@ -28,6 +27,7 @@ local events=
     CommonHandlers.OnLocomote(true,false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+    CommonHandlers.OnDeath(),
 }
 
 local states=
