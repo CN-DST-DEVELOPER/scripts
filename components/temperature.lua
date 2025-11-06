@@ -172,7 +172,7 @@ function Temperature:SetTemperature(value)
         self.inst:PushEvent(self.current > self.overheattemp and "startoverheating" or "stopoverheating")
     end
 
-    self.inst:PushEvent("temperaturedelta", { last = last, new = self.current })
+    self.inst:PushEvent("temperaturedelta", { last = last, new = self.current, hasrate = self.rate ~= 0 })
 end
 
 function Temperature:GetDebugString()
@@ -293,6 +293,8 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
     local inside_pocket_container = owner ~= nil and owner:HasTag("pocketdimension_container")
 
     local ambient_temperature = inside_pocket_container and TheWorld.state.temperature or GetTemperatureAtXZ(x, z)
+
+    local ratemult = owner and owner.components.preserver and owner.components.preserver:GetTemperatureRateMultiplier(self.inst) or 1
 
     if owner ~= nil and owner:HasTag("fridge") and not owner:HasTag("nocool") then
         -- Inside a fridge, excluding icepack ("nocool")
@@ -461,6 +463,8 @@ function Temperature:OnUpdate(dt, applyhealthdelta)
         --print(self.delta + self.current, "after insulation")
         --print(self.rate, "final rate\n\n")
     end
+
+    self.rate = self.rate * ratemult
 
     self:SetTemperature(math.clamp(self.current + self.rate * dt, mintemp, maxtemp))
 

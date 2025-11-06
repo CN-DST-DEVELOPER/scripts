@@ -112,7 +112,7 @@ function self:FindWalkableOffsetInArena(sharkboi)
         return nil
     end
 
-    if sharkboi and self.arena.sharkbois[sharkboi] == nil then
+    if sharkboi and (self.arena.sharkbois == nil or self.arena.sharkbois[sharkboi] == nil) then
         return nil
     end
 

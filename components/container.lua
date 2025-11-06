@@ -1406,6 +1406,7 @@ function Container:EnableReadOnlyContainer(enable)
                 self.readonlycontainer_addedpreserver = true
                 self.inst:AddComponent("preserver")
                 self.inst.components.preserver:SetPerishRateMultiplier(0)
+                self.inst.components.preserver:SetTemperatureRateMultiplier(0)
             end
 
             self.inst:ListenForEvent("itemget", ReadOnlyContainerAssert_in)

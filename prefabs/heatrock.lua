@@ -140,8 +140,9 @@ local function TemperatureChange(inst, data)
     if range ~= inst.currentTempRange then
         UpdateImages(inst, range)
 
-        if (inst.lowTemp ~= nil and range >= 3) or
-            (inst.highTemp ~= nil and range <= 3) then
+        local hasrate = data and data.hasrate or false
+        if hasrate and ((inst.lowTemp ~= nil and range >= 3) or
+            (inst.highTemp ~= nil and range <= 3)) then
             inst.lowTemp = nil
             inst.highTemp = nil
             inst.components.fueled:SetPercent(inst.components.fueled:GetPercent() - 1 / TUNING.HEATROCK_NUMUSES)

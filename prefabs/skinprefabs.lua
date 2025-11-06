@@ -17548,6 +17548,7 @@ table.insert(prefs, CreatePrefabSkin("wortox_noeyeddeer",
 	bigportrait_anim = { build = "bigportraits/wortox_noeyeddeer.xml", symbol = "wortox_noeyeddeer_oval.tex"},
 	skins = { ghost_skin = "ghost_wortox_noeyeddeer", normal_skin = "wortox_noeyeddeer", },
 	torso_tuck_builds = { "wortox_noeyeddeer", },
+	torso_untuck_wide_builds = { "wortox_noeyeddeer", },
 	release_group = 124,
 }))
 

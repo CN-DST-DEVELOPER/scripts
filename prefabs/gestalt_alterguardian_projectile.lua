@@ -113,7 +113,7 @@ end
 
 local function start_motion(inst)
     inst.Physics:SetMotorVelOverride(inst.attack_speed * (inst.attack_speed_mod or 1), 0, 0)
-    if inst.components.combat then
+    if not inst._no_combat_gestalt then
         inst._attack_task = inst:DoPeriodicTask(2*FRAMES, try_attack)
     end
 end
@@ -419,6 +419,8 @@ local function plantingvisualfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst._no_combat_gestalt = true
 
     inst.scrapbook_hide = SPIKE_LAYER
 

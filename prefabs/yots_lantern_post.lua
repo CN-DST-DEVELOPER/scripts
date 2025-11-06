@@ -622,7 +622,7 @@ end
 local near_prox = 39*39
 local far_prox = 41*41
 local function OnUpdateFn(inst, dt)
-	local dist = inst:GetDistanceSqToInst(ThePlayer)
+	local dist = ThePlayer and inst:GetDistanceSqToInst(ThePlayer) or math.huge
 
 	if dist < near_prox and not inst.near then
 		onNear(inst)

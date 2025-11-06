@@ -225,6 +225,7 @@ local function fn()
 
     inst:AddComponent("preserver")
     inst.components.preserver:SetPerishRateMultiplier(0)
+    inst.components.preserver:SetTemperatureRateMultiplier(0)
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.DIG)
