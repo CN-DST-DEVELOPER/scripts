@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "Its soul hath departed to the realm of the dead.",
             BURNING = "Blaze brightly, for all to see.",
-            REVIVING = "TODO",
+            REVIVING = "Back for more, are we?",
         },
     },
 

@@ -5902,7 +5902,7 @@ return{
         {
             GENERIC = "Gross!",
             BURNING = "Ahhh, that's better.",
-            REVIVING = "TODO",
+            REVIVING = "Yup, preventable.",
         },
     },
 

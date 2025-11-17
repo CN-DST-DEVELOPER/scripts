@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "A DEAD FLESHLING. POINT AND LAUGH",
             BURNING = "REBOOT DISABLED",
-            REVIVING = "TODO",
+            REVIVING = "UNIT REBOOTING",
         },
     },
 

@@ -71,5 +71,5 @@ function AvoidElectricFence:Visit()
 end
 
 function AvoidElectricFence:__tostring()
-    return string.format("AVOIDELECTRICFENCE, %s", self.run_angle)
+    return string.format("AVOIDELECTRICFENCE, %s", tostring(self.run_angle))
 end

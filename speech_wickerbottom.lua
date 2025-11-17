@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "It appears to be deceased.",
             BURNING = "A necessary precaution.",
-            REVIVING = "TODO",
+            REVIVING = "It is reviving, unfortunately.",
         },
     },
 

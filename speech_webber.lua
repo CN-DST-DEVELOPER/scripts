@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "Are we sure it's not just sleeping?",
             BURNING = "We really hope it wasn't just sleeping.",
-            REVIVING = "TODO",
+            REVIVING = "We thought it was dead.",
         },
     },
 

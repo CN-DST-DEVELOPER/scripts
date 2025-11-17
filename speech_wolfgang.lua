@@ -5896,7 +5896,7 @@ return{
         {
             GENERIC = "Is dead. Too bad.",
             BURNING = "Wolfgang feel safer now.",
-            REVIVING = "TODO",
+            REVIVING = "No! Is wrong!",
         },
     },
 

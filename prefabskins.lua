@@ -436,6 +436,7 @@ PREFAB_SKINS = {
 	},
 	cookpot =
 	{
+		"cookpot_candy",
 		"cookpot_cauldron",
 		"cookpot_cauldronp",
 		"cookpot_clay",
@@ -1442,6 +1443,7 @@ PREFAB_SKINS = {
 	},
 	saddle_basic =
 	{
+		"saddle_basic_western",
 		"saddle_basic_yotb",
 		"saddle_basic_yotbalt",
 	},

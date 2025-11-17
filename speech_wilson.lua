@@ -5905,7 +5905,7 @@ return {
         {
             GENERIC = "It's definitely dead.",
             BURNING = "No coming back from that.",
-            REVIVING = "TODO",
+            REVIVING = "Many unhappy returns.",
         },
     },
 

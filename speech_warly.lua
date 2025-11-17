@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "It has passed on.",
             BURNING = "Flame-seared.",
-            REVIVING = "TODO",
+            REVIVING = "It is unnatural.",
         },
     },
 

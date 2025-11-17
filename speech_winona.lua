@@ -5901,7 +5901,7 @@ return{
         {
             GENERIC = "Dead-er than a doornail.",
             BURNING = "Better safe than sorry.",
-            REVIVING = "TODO",
+            REVIVING = "Why can't it stay dead?",
         },
     },
 

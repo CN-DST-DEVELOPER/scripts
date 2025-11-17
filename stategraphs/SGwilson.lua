@@ -24666,6 +24666,8 @@ local states =
 
 			inst.Transform:SetSixFaced()
 
+            inst.sg.statemem.didletgo = false
+
 			if inst.prefab == "wx78" then
 				inst.sg.statemem.wx = true
 				inst.AnimState:PlayAnimation("float_let_go_wx_pre") --16 frames
@@ -24715,6 +24717,7 @@ local states =
 			end),
 			FrameEvent(9 + 27, function(inst)
 				if not inst.sg.statemem.wx then
+                    inst.sg.statemem.didletgo = true
 					local floater = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 					if floater and floater.components.playerfloater then
 						floater.components.playerfloater:LetGo(inst, true)
@@ -24759,6 +24762,7 @@ local states =
 			end),
 			FrameEvent(16 + 18, function(inst)
 				if inst.sg.statemem.wx then
+                    inst.sg.statemem.didletgo = true
 					local floater = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 					if floater and floater.components.playerfloater then
 						floater.components.playerfloater:LetGo(inst, true)
@@ -24828,6 +24832,13 @@ local states =
 		},
 
 		onexit = function(inst)
+            if not inst.sg.statemem.didletgo then
+                local floater = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+                if floater and floater.components.playerfloater then
+                    floater.components.playerfloater:LetGo(inst, true)
+                end
+            end
+
 			if inst.sg.statemem.isphysicstoggle then
 				ToggleOnPhysics(inst)
 			end

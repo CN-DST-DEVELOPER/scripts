@@ -5915,7 +5915,7 @@ return{
         {
             GENERIC = "I'm not mistaken, its life's been taken.",
             BURNING = "Cleansing fire, so the worst won't transpire.",
-            REVIVING = "TODO",
+            REVIVING = "It's turning and returning.",
         },
     },
 

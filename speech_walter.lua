@@ -5937,7 +5937,7 @@ return{
         {
             GENERIC = "That's just how things go in the wilderness, sometimes.",
             BURNING = "We gotta make sure it doesn't rise from the dead!",
-            REVIVING = "TODO",
+            REVIVING = "Woby! It's back from the dead!",
         },
     },
 

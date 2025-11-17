@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "Apologies, Higgsbury. I thought that stench was coming from you.",
             BURNING = "The pragmatic approach.",
-            REVIVING = "TODO",
+            REVIVING = "It can't even die properly.",
         },
     },
 

@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "I'd better burn that thing before it's too late.",
             BURNING = "One less potential reanimated corpse to worry about.",
-            REVIVING = "TODO",
+            REVIVING = "I was afraid of this.",
         },
     },
 

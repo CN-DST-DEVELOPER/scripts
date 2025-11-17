@@ -5895,7 +5895,7 @@ return{
         {
             GENERIC = "It dead. But will poke to make sure.",
             BURNING = "Bye-bye dead thing!",
-            REVIVING = "TODO",
+            REVIVING = "Oh florp.",
         },
     },
 

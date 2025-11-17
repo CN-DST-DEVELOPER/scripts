@@ -1073,12 +1073,12 @@ function Inventory:GiveItem(inst, slot, src_pos)
     return returnvalue
 end
 
-function Inventory:Unequip(equipslot, slip)
+function Inventory:Unequip(equipslot, slip, force)
     local item = self.equipslots[equipslot]
     --print("Inventory:Unequip", item)
     if item ~= nil then
         if item.components.equippable ~= nil then
-            if item.components.equippable:ShouldPreventUnequipping() then
+			if not force and item.components.equippable:ShouldPreventUnequipping() then
                 return nil
             end
             item.components.equippable:Unequip(self.inst)
@@ -1278,7 +1278,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers, keepoverstac
 
     for k, v in pairs(self.equipslots) do
         if v == item then
-            self:Unequip(k)
+			self:Unequip(k, nil, true) --force unequip even if prevents unequipping, since we're going ahead with dropping it already
             item.components.inventoryitem:OnRemoved()
             item.prevslot = prevslot
             item.prevcontainer = nil

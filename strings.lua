@@ -1503,7 +1503,7 @@ STRINGS =
         SEEDS = "Seeds",
         HOUND = "Hound",
 		--HOUNDCORPSE = "Hound", -- NOTE: Deprecated.
-        FIREHOUND = "Red Hound",
+        FIREHOUND = "Fire Hound",
         SEEDS_COOKED = "Toasted Seeds",
         SILK = "Silk",
         SPIDERGLAND = "Spider Gland",
@@ -1967,7 +1967,7 @@ STRINGS =
         YELLOWSTAFF = "Star Caller's Staff",
         OPALSTAFF = "Moon Caller's Staff",
 
-        ICEHOUND = "Blue Hound",
+        ICEHOUND = "Ice Hound",
         PENGUIN = "Pengull",
         DEERCLOPS_EYEBALL = "Deerclops Eyeball",
         GEARS = "Gears",

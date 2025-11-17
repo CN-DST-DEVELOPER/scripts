@@ -2995,6 +2995,16 @@ table.insert(prefs, CreatePrefabSkin("coldfirepit_teeth",
 	release_group = 77,
 }))
 
+table.insert(prefs, CreatePrefabSkin("cookpot_candy",
+{
+	base_prefab = "cookpot",
+	type = "item",
+	rarity = "ProofOfPurchase",
+	init_fn = function(inst) cookpot_init_fn(inst, "cookpot_candy") end,
+	skin_tags = { "CROCKPOT", "CRAFTABLE", },
+	release_group = 174,
+}))
+
 table.insert(prefs, CreatePrefabSkin("cookpot_cauldron",
 {
 	base_prefab = "cookpot",
@@ -9271,6 +9281,16 @@ table.insert(prefs, CreatePrefabSkin("ruinsrelic_chair_toilet",
 	init_fn = function(inst) ruinsrelic_chair_init_fn(inst, "ruinsrelic_chair_toilet") end,
 	skin_tags = { "SHADOW", "RUINSRELIC_CHAIR", "CRAFTABLE", },
 	release_group = 145,
+}))
+
+table.insert(prefs, CreatePrefabSkin("saddle_basic_western",
+{
+	base_prefab = "saddle_basic",
+	type = "item",
+	rarity = "ProofOfPurchase",
+	init_fn = function(inst) saddle_basic_init_fn(inst, "saddle_basic_western") end,
+	skin_tags = { "SADDLE_BASIC", "CRAFTABLE", },
+	release_group = 174,
 }))
 
 table.insert(prefs, CreatePrefabSkin("saddle_basic_yotb",

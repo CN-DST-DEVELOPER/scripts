@@ -5899,7 +5899,7 @@ return{
         {
             GENERIC = "The shadow of death lies upon it.",
             BURNING = "May you find peace.",
-            REVIVING = "TODO",
+            REVIVING = "Awakened from its eternal slumber.",
         },
     },
 

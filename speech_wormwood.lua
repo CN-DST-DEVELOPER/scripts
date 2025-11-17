@@ -5899,7 +5899,7 @@ return{
         {
             GENERIC = "Won't wake up",
             BURNING = "Bye bye",
-            REVIVING = "TODO",
+            REVIVING = "Back?",
         },
     },
 
