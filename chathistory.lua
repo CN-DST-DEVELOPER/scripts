@@ -55,7 +55,7 @@ function ChatHistoryManager:OnChatterMessage(inst, name_colour, message, colour,
     colour.name_colour = name_colour
     local vanity = {icon = user_vanity, iconbg = user_vanity_bg}
 
-    self:AddToHistory(ChatTypes.ChatterMessage, nil, nil, inst:GetDisplayName(), message, colour, vanity)
+    self:AddToHistory(ChatTypes.ChatterMessage, nil, nil, (inst.GetChatterMessageName and inst:GetChatterMessageName()) or inst:GetDisplayName(), message, colour, vanity)
 end
 
 function ChatHistoryManager:OnSay(guid, userid, netid, name, prefab, message, colour, whisper, isemote, user_vanity)

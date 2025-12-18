@@ -108,13 +108,6 @@ local events =
 local states =
 {
     State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "glide" or "corpse_idle")
-		end,
-	},
-
-    State{
         name = "idle",
         tags = { "idle", "canrotate" },
 
@@ -156,8 +149,7 @@ local states =
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
-            inst:SetDeathLootLevel(1)
+            inst:DropDeathLoot()
             if inst.sounds.death then
                 inst.SoundEmitter:PlaySound(inst.sounds.death)
             end
@@ -312,7 +304,9 @@ local states =
 		onexit = function(inst)
 			inst:RemoveTag("NOCLICK")
             inst:RemoveTag("NOBLOCK")
-			inst.DynamicShadow:Enable(true)
+            if inst.components.inventoryitem == nil or not inst.components.inventoryitem:IsHeld() then
+			    inst.DynamicShadow:Enable(true)
+            end
 		end,
     },
 
@@ -891,12 +885,7 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 	end,
 })
 
-CommonStates.AddCorpseStates(states, nil,
-{
-    corpseoncreate = function(inst, corpse)
-        corpse:SetAltBuild(inst.prefab)
-    end,
-}, "birdcorpse")
+CommonStates.AddCorpseStates(states, nil, nil, "birdcorpse")
 -- Mutant birds use a different sg, so we do not actually use the _pst here!
 CommonStates.AddLunarPreRiftMutationStates(states,
 {
@@ -933,5 +922,7 @@ CommonStates.AddLunarRiftMutationStates(states, nil, nil,
     twitch_lp = "lunarhail_event/creatures/lunar_crow/twitch_LP",
     post_mutate_state = "caw",
 })
+
+CommonStates.AddInitState(states, "glide")
 
 return StateGraph("bird", states, events, "init", actionhandlers)

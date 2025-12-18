@@ -111,6 +111,12 @@ local function regular_postinit(inst)
 	return inst
 end
 
+local function displayadjectivefn(inst)
+	return inst:HasTag("stale") and STRINGS.UI.HUD.STALE_POWER
+        or inst:HasTag("spoiled") and STRINGS.UI.HUD.SPOILED_POWER
+        or nil
+end
+
 local function infused_preinit(inst)
     inst.entity:AddLight()
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
@@ -124,6 +130,8 @@ local function infused_preinit(inst)
     inst.Light:SetFalloff(0.5)
     inst.Light:SetRadius(1)
     inst.Light:Enable(true)
+
+    inst.displayadjectivefn = displayadjectivefn
 
     return inst
 end

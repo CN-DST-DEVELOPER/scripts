@@ -205,6 +205,12 @@ function PetLeash:SpawnPetAt(x, y, z, prefaboverride, skin)
     return pet
 end
 
+function PetLeash:AttachPet(pet) -- NOTES(OMAR): This is for when something outside of petleash wants to control what happens to the pet for custom spawning without this component spawning them.
+    if self.pets[pet] == nil then
+        LinkPet(self, pet)
+    end
+end
+
 function PetLeash:DetachPet(pet) -- NOTES(JBK): This is for when something outside of petleash wants to control what happens to the pet for custom despawning without this component despawning them.
     if self.pets[pet] ~= nil then
         self.pets[pet] = nil

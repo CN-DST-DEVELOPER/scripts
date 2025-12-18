@@ -2,6 +2,10 @@ require("stategraphs/commonstates")
 
 local PLAYER_TAGS = {"player"}
 
+local function IsItemMeat(item)
+    return item.components.edible and item.components.edible.foodtype == FOODTYPE.MEAT
+end
+
 local function DoEquipmentFoleySounds(inst)
     for k, v in pairs(inst.components.inventory.equipslots) do
         if v.foleysound ~= nil then
@@ -295,10 +299,7 @@ local actionhandlers =
     ActionHandler(ACTIONS.GIVETOPLAYER, "give"),
     ActionHandler(ACTIONS.GIVEALLTOPLAYER, "give"),
     ActionHandler(ACTIONS.FEEDPLAYER, "give"),
-    ActionHandler(ACTIONS.HARVEST,
-        function(inst)
-            return "harvest"
-        end),
+    ActionHandler(ACTIONS.HARVEST, "harvest"),
 
     ActionHandler(ACTIONS.BUNDLE, "bundle"),
 
@@ -330,6 +331,18 @@ local actionhandlers =
     ActionHandler(ACTIONS.WALKTO, "fishing_ocean_pre"),
     ActionHandler(ACTIONS.WATER_TOSS, "toss"),
 	ActionHandler(ACTIONS.SITON, "start_sitting"),
+	ActionHandler(ACTIONS.SOAKIN, "soakin_pre"),
+    ActionHandler(ACTIONS.FEED, function(inst, action)
+		if action.invobject and action.invobject:HasTag("quickfeed") then
+			if action.target then
+				if not action.target:IsInLimbo() then
+					return "give"
+				end
+			end
+			return "doshortaction"
+		end
+		return "dolongaction"
+	end),
 }
 
 local events =
@@ -352,6 +365,8 @@ local events =
             inst.sg:GoToState("idle")
         end
     end),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("blocked", function(inst, data)
         if inst.sg:HasStateTag("shell") then
@@ -402,7 +417,13 @@ local events =
 
     EventHandler("ontalk", function(inst, data)
         if not inst.sg:HasStateTag("talking") and not inst.components.locomotor.dest then
-            inst.sg:GoToState("talkto")
+            if inst.sg:HasStateTag("teashop") then
+                if not inst.sg:HasStateTag("busy") then
+                    inst.sg:GoToState("talk_teashop")
+                end
+            else
+                inst.sg:GoToState("talkto")
+            end
         end
     end),
 
@@ -515,6 +536,20 @@ local events =
 
     CommonHandlers.OnHop(),
 	CommonHandlers.OnElectrocute(),
+
+    -- Tea shop events
+
+    EventHandler("enter_teashop", function(inst)
+        inst.sg:GoToState("arrive_teashop")
+    end),
+
+    EventHandler("leave_teashop", function(inst)
+        inst.sg:GoToState("leave_teashop")
+    end),
+
+    EventHandler("hermitcrab_startbrewing", function(inst, data)
+        inst.sg:GoToState("brewing_teashop", data.product)
+    end),
 }
 
 local statue_symbols =
@@ -541,6 +576,11 @@ local states =
         onenter = function(inst, pushanim)
             inst.components.locomotor:Stop()
             inst.components.locomotor:Clear()
+
+            if inst.sg.mem.tea_shop_teleport then
+                inst.sg:GoToState("dancebusy")
+                return
+            end
 
             if inst.sg.mem.teleporting and not inst.components.npc_talker:haslines() then
                 inst.sg:GoToState("dancebusy")
@@ -583,6 +623,14 @@ local states =
                 for k, v in pairs(anims) do
                     inst.AnimState:PushAnimation(v, k == #anims)
                 end
+			elseif anims[1] == "idle_loop" and #anims == 1 then
+				if inst.AnimState:IsCurrentAnimation("idle_loop_nofaced") then
+					local t = inst.AnimState:GetCurrentAnimationTime()
+					inst.AnimState:PlayAnimation("idle_loop", true)
+					inst.AnimState:SetTime(t)
+				elseif not inst.AnimState:IsCurrentAnimation("idle_loop") then
+					inst.AnimState:PlayAnimation("idle_loop", true)
+				end
             else
                 inst.AnimState:PlayAnimation(anims[1], #anims == 1)
                 for k, v in pairs(anims) do
@@ -664,6 +712,14 @@ local states =
                 for k, v in pairs(anims) do
                     inst.AnimState:PushAnimation(v, k == #anims)
                 end
+			elseif anims[1] == "idle_loop" and #anims == 1 then
+				if inst.AnimState:IsCurrentAnimation("idle_loop_nofaced") then
+					local t = inst.AnimState:GetCurrentAnimationTime()
+					inst.AnimState:PlayAnimation("idle_loop", true)
+					inst.AnimState:SetTime(t)
+				elseif not inst.AnimState:IsCurrentAnimation("idle_loop") then
+					inst.AnimState:PlayAnimation("idle_loop", true)
+				end
             else
                 inst.AnimState:PlayAnimation(anims[1], #anims == 1)
                 for k, v in pairs(anims) do
@@ -940,10 +996,9 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("idle_clack_pre")
             if inst.sg.mem.teleporting then
-                local hermitcrab_relocation_manager = TheWorld.components.hermitcrab_relocation_manager
-                if hermitcrab_relocation_manager then
-                    hermitcrab_relocation_manager:InitiatePearlTeleport()
-                end
+                TheWorld:PushEvent("ms_hermitcrab_wants_to_teleport", inst)
+            elseif inst.sg.mem.tea_shop_teleport then
+                SpawnPrefab("hermitcrab_fx_small").Transform:SetPosition(inst.Transform:GetWorldPosition())
             end
         end,
 
@@ -969,6 +1024,19 @@ local states =
 
         timeline = ----jason
         {
+            FrameEvent(2, function(inst)
+                if not inst.sg.mem.teleporting then
+                    local teashop = inst.sg.mem.tea_shop_teleport
+                    if teashop and teashop:IsValid() then
+                        inst.Transform:SetPosition(teashop.Transform:GetWorldPosition())
+                        teashop:PushEventImmediate("hermitcrab_entered", { hermitcrab = inst })
+                        inst.sg.mem.tea_shop_teleport = nil
+                    end
+                end
+
+                inst.sg.mem.tea_shop_teleport = nil
+            end),
+            --
             TimeEvent(13*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
             TimeEvent(29*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
             TimeEvent((13+31)*FRAMES, function(inst) inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/clap") end),
@@ -1956,7 +2024,7 @@ local states =
             inst.stoptalktask = inst:DoTaskInTime(2,function()
                 inst.stoptalktask = nil
                 StopTalkSound(inst)
-                inst.AnimState:PlayAnimation("idle")
+				inst.AnimState:PlayAnimation("idle_loop_nofaced", true)
             end)
         end,
 
@@ -2299,14 +2367,15 @@ local states =
             inst.SoundEmitter:KillSound("make")
             inst.AnimState:PlayAnimation("build_pst")
             inst:PerformBufferedAction()
-            local food = inst.components.inventory:FindItems(function(testitem)
-                    if testitem.components.edible and testitem.components.edible.foodtype == FOODTYPE.MEAT then
-                        return true
+            local food = inst.components.inventory:FindItems(IsItemMeat)
+            for _, item in ipairs(food) do
+                if inst.driedthings then
+                    inst.driedthings = inst.driedthings + 1
+                    if inst.driedthings == 6 then
+                        inst.driedthings = nil
                     end
-                end)
-
-            for i=#food,1,-1 do
-                food[i]:Remove()
+                end
+                item:Remove()
             end
         end,
 
@@ -2620,8 +2689,13 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                local gfl = inst.getgeneralfriendlevel(inst)
-                inst.components.npc_talker:Chatter("HERMITCRAB_THROWBOTTLE."..gfl)
+                local wagpunkarenamanager = TheWorld.components.wagpunk_arena_manager
+                if wagpunkarenamanager and wagpunkarenamanager.pearlmap then -- We've moved on, we won't talk about him anymore.
+                    inst.components.npc_talker:Chatter("HERMITCRAB_THROWBOTTLE_POST_RELOCATION")
+                else
+                    local gfl = inst.getgeneralfriendlevel(inst)
+                    inst.components.npc_talker:Chatter("HERMITCRAB_THROWBOTTLE."..gfl)
+                end
                 inst.sg:GoToState("idle")
             end),
         },
@@ -2742,6 +2816,18 @@ local states =
             end
 
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+
+            local selected_tea_shop = inst.brain and inst.brain:GetSelectedTeaShop()
+            if inst.components.stuckdetection:IsStuck() and selected_tea_shop then
+                inst.sg.mem.tea_shop_teleport = selected_tea_shop
+                inst.sg:GoToState("idle")
+            end
+        end,
+
+        onexit = function(inst, new_state)
+            if new_state ~= "walk" then
+                inst.components.stuckdetection:Reset()
+            end
         end,
 
         onupdate = function(inst)
@@ -4293,15 +4379,41 @@ local states =
 			inst.sg.statemem.chair = chair
 
 			local bank = "wilson_sit"
+			local isrocking = false
 			inst:AddTag("sitting_on_chair")
 			if chair:HasTag("limited_chair") then
 				inst.Transform:SetNoFaced()
 				bank = "wilson_sit_nofaced"
+				isrocking = chair:HasTag("rocking_chair")
 			end
-
+			if isrocking then
+				inst.sg.statemem.play_sit_loop = function()
+					inst.AnimState:PlayAnimation("rocking_pre")
+					inst.AnimState:PushAnimation("rocking_loop")
+					chair:PushEvent("ms_sync_chair_rocking", inst)
+				end
+				inst.sg.statemem.push_sit_loop = function()
+					inst.AnimState:PushAnimation("rocking_pre")
+					inst.AnimState:PushAnimation("rocking_loop")
+					chair:PushEvent("ms_sync_chair_rocking", inst)
+				end
+			else
+				if inst.sg.statemem.play_sit_loop == nil then
+					inst.sg.statemem.play_sit_loop = function()
+						inst.AnimState:PlayAnimation("sit"..math.random(2).."_loop", true)
+					end
+					inst.sg.statemem.push_sit_loop = function()
+						inst.AnimState:PushAnimation("sit"..math.random(2).."_loop")
+					end
+				end
+			end
 			if landed then
 				inst.AnimState:SetBankAndPlayAnimation(bank, "sit_loop_pre")
-				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+				inst.sg.statemem.push_sit_loop()
+			elseif isrocking then
+				inst.AnimState:SetBankAndPlayAnimation(bank, "rocking_pre")
+				inst.AnimState:PushAnimation("rocking_loop")
+				chair:PushEvent("ms_sync_chair_rocking", inst)
 			else
 				inst.AnimState:SetBankAndPlayAnimation(bank, "sit"..tostring(math.random(2)).."_loop", true)
 			end
@@ -4317,13 +4429,16 @@ local states =
 			EventHandler("ontalk", function(inst)
 				local duration = inst.sg.statemem.talktask ~= nil and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * .5
 				inst.AnimState:PlayAnimation("sit_dial", true)
+				if inst.sg.statemem.chair then
+					inst.sg.statemem.chair:PushEvent("ms_sync_chair_rocking", inst)
+				end
 				if inst.sg.statemem.sittalktask then
 					inst.sg.statemem.sittalktask:Cancel()
 				end
 				inst.sg.statemem.sittalktask = inst:DoTaskInTime(duration, function(inst)
 					inst.sg.statemem.sittalktask = nil
 					if inst.AnimState:IsCurrentAnimation("sit_dial") then
-						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+						inst.sg.statemem.play_sit_loop()
 					end
 				end)
 				return OnTalk_Override(inst)
@@ -4333,23 +4448,23 @@ local states =
 					inst.sg.statemem.sittalktask:Cancel()
 					inst.sg.statemem.sittalktask = nil
 					if inst.AnimState:IsCurrentAnimation("sit_dial") then
-						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+						inst.sg.statemem.play_sit_loop()
 					end
 				end
 				return OnDoneTalking_Override(inst)
 			end),
 			EventHandler("equip", function(inst, data)
 				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_out" or "sit_item_hat")
-				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+				inst.sg.statemem.push_sit_loop()				
 			end),
 			EventHandler("unequip", function(inst, data)
 				inst.AnimState:PlayAnimation(data.eslot == EQUIPSLOTS.HANDS and "sit_item_in" or "sit_item_hat")
-				inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+				inst.sg.statemem.push_sit_loop()
 			end),
 			EventHandler("performaction", function(inst, data)
 				if data and data.action and data.action.action == ACTIONS.DROP then
 					inst.AnimState:PlayAnimation("sit_item_hat")
-					inst.AnimState:PushAnimation("sit"..tostring(math.random(2)).."_loop")
+					inst.sg.statemem.push_sit_loop()
 				end
 			end),
 			EventHandler("locomote", function(inst, data)
@@ -4448,6 +4563,7 @@ local states =
 			inst.components.locomotor:StopMoving()
 
 			inst.AnimState:SetBankAndPlayAnimation("wilson", "sit_jump_off")
+			chair:PushEvent("ms_sync_chair_rocking", inst)
 			local radius = inst:GetPhysicsRadius(0) + chair:GetPhysicsRadius(0)
 			if radius > 0 then
 				inst.Physics:SetMotorVel(radius * 30 / inst.AnimState:GetCurrentAnimationNumFrames(), 0, 0)
@@ -4501,11 +4617,645 @@ local states =
 		end,
 	},
 	--------------------------------------------------------------------------
+    
+
+    -- Tea shop states
+
+    -- Use of talker instead of npc_talker is intentional.
+
+    State{
+        name = "idle_teashop",
+        tags = { "idle", "teashop" },
+
+        onenter = function(inst)
+            if not inst.AnimState:IsCurrentAnimation("idle_teashop") then
+                inst.AnimState:PlayAnimation("idle_teashop", true)
+            end
+
+            inst.sg:SetTimeout(2 + math.random())
+        end,
+
+        ontimeout = function(inst)
+            if math.random() < 1 / 3 then
+                inst.components.talker:Chatter("HERMITCRAB_TEASHOP_IDLE", math.random(#STRINGS.HERMITCRAB_TEASHOP_IDLE), nil, nil, CHATPRIORITIES.LOW)
+            end
+            inst.sg:GoToState("idle_teashop")
+        end,
+    },
+
+    State{
+        name = "hit_teashop",
+        tags = { "hit", "teashop" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("hit_teashop")
+            inst.components.talker:Chatter("HERMITCRAB_TEASHOP_HIT", math.random(#STRINGS.HERMITCRAB_TEASHOP_HIT), nil, nil, CHATPRIORITIES.LOW)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle_teashop") end)
+        },
+    },
+
+    State{
+        name = "arrive_teashop",
+        tags = { "busy", "teashop" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.components.locomotor:Clear()
+
+            inst.AnimState:PlayAnimation("appear_teashop")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle_teashop") end)
+        },
+    },
+
+    State{
+        name = "talk_teashop",
+        tags = { "idle", "talking", "teashop" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("talk_teashop")
+            DoTalkSound(inst)
+        end,
+
+        onexit = function(inst)
+            inst.SoundEmitter:KillSound("talking")
+        end,
+
+        events =
+        {
+            EventHandler("donetalking", function(inst) inst.sg:GoToState("idle_teashop") end),
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle_teashop") end),
+        },
+    },
+
+    -- brewing state tag is used for save/load purposes
+    State{
+        name = "brewing_teashop",
+        tags = { "busy", "brewing", "teashop" },
+
+        onenter = function(inst, product)
+            inst.sg.mem.tea_product = product
+            inst.AnimState:PlayAnimation("brew_teashop_pre")
+            inst.AnimState:PlayAnimation("brewing_teashop")
+
+            inst.components.talker:Chatter("HERMITCRAB_TEASHOP_TRADE", math.random(#STRINGS.HERMITCRAB_TEASHOP_TRADE), nil, nil, CHATPRIORITIES.LOW)
+            inst.SoundEmitter:PlaySound("hookline_2/characters/hermit/tea_stand/making_jingle")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("throwtea_teashop", inst.sg.mem.tea_product)
+                end
+            end),
+        }
+    },
+
+    State{
+        name = "throwtea_teashop",
+        tags = { "busy", "brewing", "teashop" },
+
+        onenter = function(inst, product)
+            inst.sg.mem.tea_product = product
+            inst.AnimState:PlayAnimation("brew_teashop_finish")
+        end,
+
+        timeline =
+        {
+            FrameEvent(1, function(inst)
+                inst.sg:RemoveStateTag("brewing")
+                local x, y, z = inst.Transform:GetWorldPosition()
+                LaunchAt(SpawnPrefab(inst.sg.mem.tea_product), inst, FindClosestPlayer(x, y, z, true), 1, 2.5, 1)
+                inst.tea_shop:MakePrototyper()
+            end),
+        },
+
+        events =
+        {
+            EventHandler("animover", function(inst) inst.sg:GoToState("idle_teashop") end),
+        },
+    },
+
+    State{
+        name = "leave_teashop",
+        tags = { "busy", "teashop" },
+
+        onenter = function(inst)
+            inst.AnimState:PlayAnimation("disappear_teashop")
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.tea_shop then
+                    inst.tea_shop:ShowHermitCrab()
+                end
+            end),
+        },
+    },
+
+	--------------------------------------------------------------------------
+	-- Soakin states for Hot Springs
+	-- "soakin" sg tag for hermitcrabbrain
+
+	State{
+		name = "soakin_pre",
+		tags = { "soakin", "busy", "canrotate" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("jump_pre")
+		end,
+
+		events =
+		{
+			EventHandler("ms_enterbathingpool", function(inst, data)
+				if data and data.target and data.dest then
+					inst.sg:GoToState("soakin_jump", data)
+				end
+			end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem._soakin_pending = inst.sg.currentstate
+					inst:PerformBufferedAction()
+					if inst.sg.statemem._soakin_pending == inst.sg.currentstate then
+						--never left state, action must've failed
+						inst.sg:GoToState("idle")
+					end
+				end
+			end),
+		},
+	},
+
+	State{
+		name = "soakin_jump",
+		tags = { "soakin", "busy", "nopredict", "nomorph", "jumping" },
+
+		onenter = function(inst, data)
+			if not (data and data.dest and data.target and data.target:IsValid() and data.target.components.bathingpool) then
+				inst.sg:GoToState("idle")
+				return
+			end
+
+			inst.sg.statemem.data = data
+
+			--required by bathingpool component
+			inst.sg.statemem.occupying_bathingpool = data.target
+
+			inst:ForceFacePoint(data.dest)
+
+			local x, y, z = inst.Transform:GetWorldPosition()
+			local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			local item2 = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+			if item or item2 then
+				local pos = Vector3(x, y, z)
+				if item then
+					inst.components.inventory:DropItem(item, true, false, pos)
+				end
+				if item2 then
+					inst.components.inventory:DropItem(item2, true, false, pos)
+				end
+			end
+			ForceStopHeavyLifting(inst)
+			ToggleOffPhysics(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("hotspring_pre")
+			inst.AnimState:AddOverrideBuild("player_hotspring")
+
+			local dsq = distsq(x, z, data.dest.x, data.dest.z)
+			if dsq > 0 then
+				inst.Physics:SetMotorVel(math.sqrt(dsq) / (10 * FRAMES), 0 , 0)
+			end
+
+			local house = inst.components.homeseeker and inst.components.homeseeker.home
+			local pearldecorationscore = house and house.components.pearldecorationscore
+			local soaktime = pearldecorationscore and pearldecorationscore:IsEnabled() and pearldecorationscore:GetScore() < TUNING.HERMITCRAB_DECOR_HAPPY_SCORE and TUNING.HERMITCRAB_HOTSPRING_SOAK_TIME or TUNING.HERMITCRAB_HOTSPRING_HAPPY_SOAK_TIME
+			inst.components.timer:StartTimer("soaktime", soaktime)
+			inst.components.timer:StartTimer("soaked_in_hotspring", TUNING.TOTAL_DAY_TIME * 0.7)
+
+			--[[inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
+			inst:ShowActions(false)
+			inst:SetBathingPoolCamera(data.target)]]
+		end,
+
+		timeline =
+		{
+			FrameEvent(9, function(inst) inst.SoundEmitter:PlaySound("hookline_2/common/hotspring/use") end),
+			FrameEvent(10, function(inst)
+				inst.Physics:SetMotorVel(0, 0, 0)
+				inst.Physics:Stop()
+				inst.Physics:Teleport(inst.sg.statemem.data.dest:Get())
+				inst.sg:RemoveStateTag("jumping")
+			end),
+			FrameEvent(17, function(inst)
+				inst.sg.statemem.not_interrupted = true
+				inst.sg:GoToState("soakin", inst.sg.statemem.data)
+			end),
+		},
+
+		onexit = function(inst)
+			local target = inst.sg.statemem.occupying_bathingpool
+			if target then
+				if inst.sg:HasStateTag("jumping") then
+					inst.Physics:SetMotorVel(0, 0, 0)
+					inst.Physics:Stop()
+				end
+				if not inst.sg.statemem.not_interrupted then
+					if inst.sg.statemem.isphysicstoggle then
+						ToggleOnPhysics(inst)
+					end
+					--[[inst.components.inventory:Show()
+					inst:ShowActions(true)
+					inst:SetBathingPoolCamera(nil)]]
+				end
+			end
+			if not inst.sg.statemem.not_interrupted then
+				inst.AnimState:ClearOverrideBuild("player_hotspring")
+				inst.components.timer:StopTimer("soaktime")
+			end
+		end,
+	},
+
+	State{
+		name = "soakin",
+		tags = { "soakin", "busy", "nopredict", "nomorph", "overridelocomote" },
+
+		onenter = function(inst, data)
+			--required by bathingpool component
+			inst.sg.statemem.occupying_bathingpool = data and data.target
+
+			if not (data and data.dest and data.target and data.target:IsValid() and data.target.components.bathingpool) then
+				inst.sg:GoToState("soakin_cancel")
+				return
+			end
+
+			--required by bathingpool component
+			inst.sg.statemem.occupying_bathingpool = data.target
+
+			inst:ForceFacePoint(data.target.Transform:GetWorldPosition())
+
+			local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			local item2 = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.BODY)
+			if item or item2 then
+				local pos = inst:GetPosition()
+				if item then
+					inst.components.inventory:DropItem(item, true, false, pos)
+				end
+				if item2 then
+					inst.components.inventory:DropItem(item2, true, false, pos)
+				end
+			end
+			ForceStopHeavyLifting(inst)
+			ToggleOffPhysics(inst)
+			inst.components.locomotor:StopMoving()
+			inst.DynamicShadow:Enable(false)
+			if inst.AnimState:IsCurrentAnimation("hotspring_pre") then
+				inst.AnimState:PushAnimation("hotspring_loop")
+			else
+				inst.AnimState:PlayAnimation("hotspring_loop", true)
+			end
+			--V2C: should already have it
+			--inst.AnimState:AddOverrideBuild("player_hotspring")
+
+			inst.sg.statemem.range = math.max(0, data.target.components.bathingpool:GetRadius() - inst:GetPhysicsRadius(0))
+			inst.Physics:Teleport(data.dest:Get())
+
+			--[[inst.components.inventory:Hide()
+			inst:PushEvent("ms_closepopups")
+			inst:ShowActions(false)
+			inst:SetBathingPoolCamera(data.target)
+			inst.player_classified.busyremoteoverridelocomote:set(true)
+			inst.player_classified.busyremoteoverridelocomoteclick:set(true)]]
+		end,
+
+		onupdate = function(inst)
+			local target = inst.sg.statemem.occupying_bathingpool
+			if not (target:IsValid() and
+					target.components.bathingpool and
+					target.components.bathingpool:IsOccupant(inst) and
+					inst:IsNear(target, inst.sg.statemem.range + 0.1))
+			then
+				inst.sg.statemem.not_interrupted = true
+				inst.DynamicShadow:Enable(true)
+				inst.sg:GoToState("soakin_cancel", true)
+			--[[else
+				local dir = GetLocalAnalogDir(inst)
+				if dir then
+					dir = math.atan2(-dir.z, dir.x) * RADIANS
+					if inst.sg.statemem.range == 0 then
+						inst.sg.statemem.not_interrupted = true
+						inst.sg.statemem.jumpout = true
+						inst.sg:GoToState("soakin_jumpout", { target = target, dir = dir })
+					elseif DiffAngle(inst.Transform:GetRotation(), dir) > 110 then
+						inst.sg.statemem.not_interrupted = true
+						inst.sg.statemem.jumpout = true
+						inst.sg:GoToState("soakin_jumpout", target)
+					end
+				end]]
+			end
+		end,
+
+		events =
+		{
+			EventHandler("ontalk", function(inst)
+				if inst.sg.statemem.soakintalktask then
+					inst.sg.statemem.soakintalktask:Cancel()
+					inst.sg.statemem.soakintalktask = nil
+				end
+				local duration = inst.sg.statemem.talktask and GetTaskRemaining(inst.sg.statemem.talktask) or 1.5 + math.random() * 0.5
+				--[[if inst:HasTag("mime") then
+					inst.AnimState:PlayAnimation("hotspring_mime")
+					for i = 2, math.floor(duration / inst.AnimState:GetCurrentAnimationLength() + 0.5) do
+						inst.AnimState:PushAnimation("hotspring_mime")
+					end
+					inst.AnimState:PushAnimation("hotspring_loop")
+				else]]
+					inst.AnimState:PlayAnimation("hotspring_dial_loop", true)
+					inst.sg.statemem.soakintalktask = inst:DoTaskInTime(duration, function(inst)
+						inst.sg.statemem.soakintalktask = nil
+						if inst.AnimState:IsCurrentAnimation("hotspring_dial_loop") then
+							inst.AnimState:PlayAnimation("hotspring_loop", true)
+						end
+					end)
+				--end
+				return OnTalk_Override(inst)
+			end),
+			EventHandler("donetalking", function(inst)
+				if inst.sg.statemem.soakintalktask then
+					inst.sg.statemem.soakintalktask:Cancel()
+					inst.sg.statemem.soakintalktask = nil
+					if inst.AnimState:IsCurrentAnimation("hotspring_dial_loop") then
+						inst.AnimState:PlayAnimation("hotspring_loop", true)
+					end
+				end
+				return OnDoneTalking_Override(inst)
+			end),
+			EventHandler("locomote", function(inst, data)
+				if data and
+					(data.remoteoverridelocomote or inst.components.locomotor:WantsToMoveForward()) and
+					(data.dir and DiffAngle(inst.Transform:GetRotation(), data.dir) > 110)
+				then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg.statemem.jumpout = true
+					inst.sg:GoToState("soakin_jumpout", inst.sg.statemem.occupying_bathingpool)
+				end
+				return true
+			end),
+			--[[EventHandler("ms_overridelocomote_click", function(inst, data)
+				if data and data.dir and DiffAngle(inst.Transform:GetRotation(), data.dir) > 110 then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg.statemem.jumpout = true
+					inst.sg:GoToState("soakin_jumpout", inst.sg.statemem.occupying_bathingpool)
+				end
+			end),]]
+			EventHandler("ms_leavebathingpool", function(inst, target)
+				if target == inst.sg.statemem.occupying_bathingpool then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg.statemem.jumpout = true
+					inst.sg:GoToState("soakin_jumpout", target)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			--[[if not inst.sg.statemem.jumpout then
+				inst.components.inventory:Show()
+				inst:ShowActions(true)
+				inst:SetBathingPoolCamera(nil)
+			end]]
+
+			local target = inst.sg.statemem.occupying_bathingpool
+			if target then
+				if not inst.sg.statemem.not_interrupted then
+					if inst.sg.statemem.isphysicstoggle then
+						ToggleOnPhysics(inst)
+					end
+					inst.DynamicShadow:Enable(true)
+
+					if target:IsValid() then
+						local radius = inst:GetPhysicsRadius(0) + target:GetPhysicsRadius(0)
+						if radius > 0 then
+							local x, _, z = target.Transform:GetWorldPosition()
+							local _ispassableatpoint = GetActionPassableTestFnAt(x, 0, z)
+							local dir = inst:GetAngleToPoint(x, 0, z)
+							dir = (dir + 180) * DEGREES
+							x = x + radius * math.cos(dir)
+							z = z - radius * math.sin(dir)
+							if _ispassableatpoint(x, 0, z) then
+								inst.Physics:Teleport(x, 0, z)
+							end
+						end
+					end
+				end
+				--inst.player_classified.busyremoteoverridelocomote:set(false)
+				--inst.player_classified.busyremoteoverridelocomoteclick:set(false)
+			end
+
+			if not inst.sg.statemem.jumpout then
+				inst.AnimState:ClearOverrideBuild("player_hotspring")
+			end
+			inst.components.timer:StopTimer("soaktime")
+
+			if inst.sg.statemem.soakintalktask then
+				inst.sg.statemem.soakintalktask:Cancel()
+			end
+			CancelTalk_Override(inst)
+		end,
+	},
+
+	State{
+		name = "soakin_jumpout",
+		tags = { "soakin", "busy", "nopredict", "nomorph", "jumping" },
+
+		onenter = function(inst, target)
+			if target and not EntityScript.is_instance(target) then
+				inst.sg.statemem.dir = target.dir
+				target = target.target
+			end
+			if not (target and target:IsValid()) then
+				assert(false)
+				inst.sg:GoToState("soakin_cancel", target ~= nil)
+				return
+			end
+			inst.sg.statemem.exiting_bathingpool = target
+			inst.sg.statemem.isphysicstoggle = true
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("hotspring_pst")
+			--V2C: should already have it
+			--inst.AnimState:AddOverrideBuild("player_hotspring")
+
+			inst.sg.statemem.water = SpawnPrefab("player_hotspring_water_fx")
+			inst.sg.statemem.water.entity:SetParent(inst.entity)
+			inst.sg.statemem.water.AnimState:MakeFacingDirty() -- Not needed for clients.
+		end,
+
+		timeline =
+		{
+			FrameEvent(1, function(inst)
+				inst.sg.statemem.water.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
+			end),
+			FrameEvent(5, function(inst)
+				local x, y, z = inst.Transform:GetWorldPosition()
+				local rot = inst.Transform:GetRotation()
+				local water = inst.sg.statemem.water
+				inst.sg.statemem.water = nil --clear ref so it doesn't get removed onexit
+				water.entity:SetParent(nil)
+				water.Transform:SetPosition(x, y, z)
+				water.Transform:SetRotation(rot)
+				water.AnimState:MakeFacingDirty() -- Not needed for clients.
+
+				local target = inst.sg.statemem.exiting_bathingpool
+				if target:IsValid() then
+					local radius = inst:GetPhysicsRadius(0) + target:GetPhysicsRadius(0)
+					if radius > 0 then
+						local x1, _, z1 = target.Transform:GetWorldPosition()
+						if inst.sg.statemem.dir == nil then
+							if x ~= x1 or z ~= z1 then
+								inst.sg.statemem.dir = math.atan2(z1 - z, x - x1) * RADIANS
+							else
+								inst.sg.statemem.dir = rot + 180
+							end
+						end
+						local dist = math.sqrt(distsq(x, z, x1, z1))
+						if dist < radius then
+							dist = radius - dist
+							inst.sg.statemem.speed = dist / (8 * FRAMES)
+							local theta = (inst.sg.statemem.dir - rot) * DEGREES
+							inst.Physics:SetMotorVel(inst.sg.statemem.speed * math.cos(theta), 0, -inst.sg.statemem.speed * math.sin(theta))
+						end
+					else
+						inst.sg.statemem.dir = nil
+					end
+				end
+				--inst:SetBathingPoolCamera(nil)
+				inst.SoundEmitter:PlaySound("hookline_2/common/hotspring/use")
+			end),
+			FrameEvent(6, function(inst) inst.DynamicShadow:Enable(true) end),
+			FrameEvent(8, function(inst)
+				if inst.sg.statemem.dir then
+					inst.Transform:SetRotation(inst.sg.statemem.dir)
+				end
+				if inst.sg.statemem.speed then
+					inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
+				end
+			end),
+			FrameEvent(12, function(inst)
+				if inst.sg.statemem.isphysicstoggle then
+					ToggleOnPhysics(inst)
+				end
+				inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
+			end),
+			FrameEvent(13, function(inst)
+				inst.Physics:SetMotorVel(0, 0, 0)
+				inst.Physics:Stop()
+				inst.sg:RemoveStateTag("jumping")
+				--[[inst.components.inventory:Show()
+				inst:ShowActions(true)]]
+			end),
+			FrameEvent(15, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.water then
+				--interrupted while still parented
+				inst.sg.statemem.water:Remove()
+			end
+			--[[inst.components.inventory:Show()
+			inst:ShowActions(true)
+			inst:SetBathingPoolCamera(nil)]]
+			inst.AnimState:ClearOverrideBuild("player_hotspring")
+			inst.DynamicShadow:Enable(true)
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+			inst.Physics:SetMotorVel(0, 0, 0)
+			inst.Physics:Stop()
+		end,
+	},
+
+	State{
+		name = "soakin_cancel",
+		tags = { "busy", "nomorph", "nopredict" },
+
+		onenter = function(inst, isphysicstoggle)
+			ClearStatusAilments(inst)
+			ForceStopHeavyLifting(inst)
+			inst.components.locomotor:Stop()
+			inst.components.locomotor:Clear()
+			inst:ClearBufferedAction()
+
+			inst.AnimState:PlayAnimation("slip_fall_idle")
+			inst.AnimState:SetFrame(inst.AnimState:GetCurrentAnimationNumFrames() - 9)
+			inst.AnimState:PushAnimation("slip_fall_pst", false)
+			inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/bird")
+			PlayFootstep(inst, 0.6)
+
+			inst.sg.statemem.isphysicstoggle = isphysicstoggle
+		end,
+
+		timeline =
+		{
+			FrameEvent(0, function(inst)
+				if inst.sg.statemem.isphysicstoggle then
+					ToggleOnPhysics(inst)
+				end
+			end),
+			FrameEvent(9 + 6, function(inst) PlayFootstep(inst, 0.6) end),
+			FrameEvent(9 + 12, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.isphysicstoggle then
+				ToggleOnPhysics(inst)
+			end
+		end,
+	},
+
+	State{
+		name = "gohome",
+		tags = { "busy", "ishome" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("give")
+			inst.AnimState:SetFrame(5)
+		end,
+
+		timeline =
+		{
+			FrameEvent(5, function(inst)
+				inst:PerformBufferedAction()
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+	},
 }
 
 CommonStates.AddSimpleState(states, "refuse", "idle_loop", { "busy" })
-CommonStates.AddSimpleActionState(states, "gohome", "pickup", 4 * FRAMES, { "busy", "ishome" })
 CommonStates.AddSimpleActionState(states, "pickup", "pickup", 10 * FRAMES, { "busy" })
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit"})
+CommonStates.AddVoidFallStates(states, {voiddrop = "hit"})
 
 return StateGraph("hermit", states, events, "idle", actionhandlers)

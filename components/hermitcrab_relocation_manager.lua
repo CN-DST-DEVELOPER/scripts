@@ -32,6 +32,9 @@ local PEARLSETPIECE_MONKEYISLAND = { -- x, z, rot
         {PEARLSETPIECE_CENTER_X - 9 * TILE_SCALE, PEARLSETPIECE_CENTER_Z + 3 * TILE_SCALE, 0},
         {PEARLSETPIECE_CENTER_X - 9 * TILE_SCALE, PEARLSETPIECE_CENTER_Z + 4 * TILE_SCALE, 0},
     },
+    ["hermithouse2"] = { -- 1
+        {PEARLSETPIECE_CENTER_X, PEARLSETPIECE_CENTER_Z, 0}, -- Center of arena is on a tile corner.
+    },
     ["hermithouse"] = { -- 1
         {PEARLSETPIECE_CENTER_X, PEARLSETPIECE_CENTER_Z, 0}, -- Center of arena is on a tile corner.
     },
@@ -182,6 +185,15 @@ self.validspotfn_clearthisarea = function(x, z, r)
     return true
 end
 
+local PLACER_RADIUS = { -- NOTES(JBK): Keep in sync with hermitcrab_relocation_kit. [HCRMRCS]
+    --["hermitcrab_marker"] = NO_RADIUS,
+    ["hermitcrab_lure_marker"] = 1,
+    ["hermitcrab_marker_fishing"] = 1,
+    ["hermithouse_construction3"] = 3,
+    --["hermitcrab"] = NO_RADIUS,
+    ["meatrack_hermit"] = 1.5,
+    ["beebox_hermit"] = 1.5,
+}
 local TELEPORT_TIME_FX_SYNC = 12 * FRAMES
 function self:OnFinishedTeleportPearlEntity(ent, deleted)
     if not deleted then
@@ -202,12 +214,19 @@ self.OnRemove_TeleportingPearlEntity = function(ent, data)
     self:OnFinishedTeleportPearlEntity(ent, true)
 end
 self.TeleportingStep_Arrive = function(ent)
-    ent:ReturnToScene()
+    local movingdata = self.pearlmovingdata[ent]
+    if not movingdata.isinlimbo then
+        ent:ReturnToScene()
+    end
+    if movingdata.fxprefab and not movingdata.isinlimbo then -- We have visuals for everything that is mandatory to move.
+        local radius = PLACER_RADIUS[ent.prefab] or ent:GetPhysicsRadius(0)
+        self.validspotfn_clearthisarea(movingdata.x, movingdata.z, radius)
+    end
     self:OnFinishedTeleportPearlEntity(ent)
 end
 self.TeleportingStep_Appear = function(ent)
     local movingdata = self.pearlmovingdata[ent]
-    if movingdata.fxprefab and not ent:IsAsleep() then
+    if movingdata.fxprefab and not movingdata.isinlimbo and not ent:IsAsleep() then
         local fx = SpawnPrefab(movingdata.fxprefab)
         fx.Transform:SetPosition(movingdata.x, 0, movingdata.z)
         ent:DoTaskInTime(TELEPORT_TIME_FX_SYNC, self.TeleportingStep_Arrive)
@@ -217,14 +236,13 @@ self.TeleportingStep_Appear = function(ent)
 end
 self.TeleportingStep_Teleport = function(ent)
     local movingdata = self.pearlmovingdata[ent]
-    local radius = ent:GetPhysicsRadius(0)
-    ent:RemoveFromScene()
-    if movingdata.fxprefab then -- We have visuals for everything that is mandatory to move.
-        self.validspotfn_clearthisarea(movingdata.x, movingdata.z, radius)
+    if not movingdata.isinlimbo then
+        ent:RemoveFromScene()
     end
     ent.Transform:SetPosition(movingdata.x, 0, movingdata.z)
     ent.Transform:SetRotation(movingdata.rot)
-    if movingdata.fxprefab and not ent:IsAsleep() then
+    ent:PushEvent("teleport_move")
+    if movingdata.fxprefab and not movingdata.isinlimbo and not ent:IsAsleep() then
         ent:DoTaskInTime(movingdata.delay, self.TeleportingStep_Appear)
     else
         self.TeleportingStep_Arrive(ent)
@@ -232,7 +250,8 @@ self.TeleportingStep_Teleport = function(ent)
 end
 self.TeleportingStep_Disappear = function(ent)
     local movingdata = self.pearlmovingdata[ent]
-    if movingdata.fxprefab and not ent:IsAsleep() then
+    movingdata.isinlimbo = ent:IsInLimbo()
+    if movingdata.fxprefab and not movingdata.isinlimbo and not ent:IsAsleep() then
         local ex, ey, ez = ent.Transform:GetWorldPosition()
         local fx = SpawnPrefab(movingdata.fxprefab)
         fx.Transform:SetPosition(ex, ey, ez)
@@ -249,6 +268,7 @@ function self:InitiatePearlTeleport()
         for ent, _ in pairs(self.pearlsentities) do
             local movingdata = pearlmovingdata[ent]
             if movingdata then -- From load can have partial finish teleports.
+                movingdata.isinlimbo = ent:IsInLimbo() -- Recache.
                 if movingdata.fxprefab and not ent:IsAsleep() then
                     ent:DoTaskInTime(movingdata.delay, self.TeleportingStep_Disappear)
                 else
@@ -296,6 +316,7 @@ function self:SetupTeleportingPearlToSetPieceData(setpiecedata, centerx, centerz
     -- NOTES(JBK): Argument setpiecedata is expected to be in the format of PEARLSETPIECE_MONKEYISLAND above.
     self.pearlmovingdata = {}
     self.pearlmovingcounter = 0
+    self:SetupTeleportingPearlEntityWithSetPieceData(setpiecedata, centerx, centerz, "hermithouse2", "hermitcrab_fx_tall")
     self:SetupTeleportingPearlEntityWithSetPieceData(setpiecedata, centerx, centerz, "hermithouse", "hermitcrab_fx_tall")
     self:SetupTeleportingPearlEntityWithSetPieceData(setpiecedata, centerx, centerz, "hermithouse_construction1", "hermitcrab_fx_tall")
     self:SetupTeleportingPearlEntityWithSetPieceData(setpiecedata, centerx, centerz, "hermithouse_construction2", "hermitcrab_fx_tall")
@@ -312,7 +333,7 @@ function self:SetupTeleportingPearlToSetPieceData(setpiecedata, centerx, centerz
     else
         if self.hermitcrab then
             self.hermitcrab.sg.mem.teleporting = true
-            if self.hermitcrab:IsAsleep() or self.hermitcrab:HasTag("INLIMBO") then
+            if self.hermitcrab:IsAsleep() or self.hermitcrab:IsInLimbo() then
                 self:InitiatePearlTeleport()
             else
                 local bufferedaction = self.hermitcrab:GetBufferedAction()
@@ -328,6 +349,29 @@ function self:SetupTeleportingPearlToSetPieceData(setpiecedata, centerx, centerz
 end
 function self:SetupMovingPearlToMonkeyIsland()
     self:SetupTeleportingPearlToSetPieceData(self.PEARLSETPIECE_MONKEYISLAND, self.storedx_monkey, self.storedz_monkey)
+end
+
+function self:GetPearl()
+    return self.hermitcrab
+end
+
+function self:GetPearlsHouse()
+    for ent, _ in pairs(self.pearlsentities) do
+        if ent.prefab == "hermithouse2" or ent.prefab == "hermithouse" or ent.prefab == "hermithouse_construction3" or ent.prefab == "hermithouse_construction2" or ent.prefab == "hermithouse_construction1" then
+            return ent
+        end
+    end
+    return nil
+end
+
+function self:GetPearlsFishingMarkers()
+    local markers = {}
+    for ent, _ in pairs(self.pearlsentities) do
+        if ent.prefab == "hermitcrab_marker_fishing" then
+            table.insert(markers, ent)
+        end
+    end
+    return markers
 end
 
 function self:OnInit()
@@ -434,6 +478,12 @@ self.inst:ListenForEvent("ms_register_pearl_entity", function(inst, ent) self:Re
 
 self.inst:ListenForEvent("ms_register_monkeyisland_portal", function(inst, ent) self:RegisterMonkeyPortal(ent) end, _world)
 self.inst:ListenForEvent("ms_register_monkeyqueen", function(inst, ent) self:RegisterMonkeyQueen(ent) end, _world)
+
+self.inst:ListenForEvent("ms_hermitcrab_wants_to_teleport", function(inst, ent)
+    if not self:CanPearlMove() then -- Intentional inversion of logic this gate must be locked for this request.
+        self:InitiatePearlTeleport()
+    end
+end, _world)
 
 self.inst:DoTaskInTime(0, function() self:OnInit() end)
 

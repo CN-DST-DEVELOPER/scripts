@@ -12,6 +12,7 @@ local Unwrappable = Class(function(self, inst)
     self.canbeunwrapped = true
     self.onwrappedfn = nil
     self.onunwrappedfn = nil
+	self.unwrapdelayfn = nil
     self.origin = nil
 
     --V2C: Recommended to explicitly add tags to prefab pristine state
@@ -28,6 +29,10 @@ end
 
 function Unwrappable:SetOnUnwrappedFn(fn)
     self.onunwrappedfn = fn
+end
+
+function Unwrappable:SetUnwrapDelayFn(fn)
+	self.unwrapdelayfn = fn
 end
 
 function Unwrappable:SetPeekContainer(peekcontainer)
@@ -51,6 +56,8 @@ function Unwrappable:WrapItems(items, doer)
             local data = item:GetSaveRecord()
             table.insert(self.itemdata, data)
 
+			item:PushEvent("wrappeditem", { bundle = self.inst, doer = doer })
+
             if is_string then
                 item:Remove()
             end
@@ -66,7 +73,12 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
-function Unwrappable:Unwrap(doer)
+local function DoUnwrap(inst, self, doer)
+	self:Unwrap(doer and doer:IsValid() and doer or nil, true)
+end
+
+function Unwrappable:Unwrap(doer, nodelay)
+	local delay = not nodelay and self.unwrapdelayfn and self.unwrapdelayfn(self.inst, doer) or nil
     local pos = self.inst:GetPosition()
     pos.y = 0
     if self.itemdata ~= nil then
@@ -82,7 +94,7 @@ function Unwrappable:Unwrap(doer)
 						owner = doer
 					end
 				end
-				if owner == doer then
+				if owner == doer or delay then
 					local doerpos = doer:GetPosition()
 					local offset = FindWalkableOffset(doerpos, doer.Transform:GetRotation() * DEGREES, 1, 8, false, true, NoHoles)
 					if offset ~= nil then
@@ -91,9 +103,16 @@ function Unwrappable:Unwrap(doer)
 					else
 						pos.x, pos.z = doerpos.x, doerpos.z
 					end
+					if delay then
+						doer.components.inventory:DropItem(self.inst, true, false, pos)
+					end
 				end
 			end
         end
+		if delay then
+			self.inst:DoTaskInTime(delay, DoUnwrap, self, doer)
+			return
+		end
         local creator = self.origin ~= nil and TheWorld.meta.session_identifier ~= self.origin and { sessionid = self.origin } or nil
         for i, v in ipairs(self.itemdata) do
             local item = SpawnPrefab(v.prefab, v.skinname, v.skin_id, creator)
@@ -107,10 +126,12 @@ function Unwrappable:Unwrap(doer)
                 if item.components.inventoryitem ~= nil then
                     item.components.inventoryitem:OnDropped(true, .5)
                 end
+				item:PushEvent("unwrappeditem", { bundle = self.inst, doer = doer })
             end
         end
         self.itemdata = nil
     end
+    self.inst:PushEvent("unwrapped", { doer = doer })
     if self.onunwrappedfn ~= nil then
         self.onunwrappedfn(self.inst, pos, doer)
     end

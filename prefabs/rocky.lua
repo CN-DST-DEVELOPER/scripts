@@ -10,6 +10,7 @@ local prefabs =
     "rocks",
     "meat",
     "flint",
+    "rockycorpse",
 }
 
 local brain = require "brains/rockybrain"

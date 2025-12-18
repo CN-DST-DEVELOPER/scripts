@@ -7,7 +7,7 @@ local prefabs_basic =
     "houndstooth",
     "wargcorpse",
     "koalefantcorpse_prop",
-    "koalefant_carcass",
+    "koalefantcorpse",
     "meat",
     "trunk_summer",
     "trunk_winter",
@@ -345,7 +345,7 @@ end
 local function PropCreationFn_Normal(inst)
     local ent = SpawnPrefab("koalefantcorpse_prop")
     if TheWorld.state.iswinter then
-		ent:SetAltBuild("winter")
+        ent:SetAltBuild("koalefant_winter_build")
     end
     ent.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
@@ -353,11 +353,12 @@ local function PropCreationFn_Normal(inst)
 end
 
 local function CarcassCreationFn_Normal(inst, score)
-    local ent = SpawnPrefab("koalefant_carcass")
+    local ent = SpawnPrefab("koalefantcorpse")
     if TheWorld.state.iswinter then
-        ent:MakeWinter()
+        ent:SetAltBuild("koalefant_winter_build")
     end
     ent.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    ent:StartFadeTimer(TUNING.KOALEFANT_CARCASS_DECAY_TIME)
 
 	if ent.SetMeatPct ~= nil then
 		score = math.clamp(1 - score, 0, 1)
@@ -936,9 +937,12 @@ local function MakeWarg(data)
 		else
 			inst.components.health:SetMaxHealth(TUNING.WARG_HEALTH)
 		end
-		if not is_clay then
+		if not is_clay and not is_mutated then
 			inst.components.health.nofadeout = true
 		end
+
+        inst:AddComponent("sanityaura")
+        inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
 
         inst:AddComponent("lootdropper")
         if is_mutated then
@@ -1036,7 +1040,7 @@ local function MakeWarg(data)
 		if is_clay and is_gingerbread then
 			inst.sg.mem.noelectrocute = true
 		end
-        if is_clay then
+        if is_clay or is_mutated then
             inst.sg.mem.nolunarmutate = true
             inst.sg.mem.nocorpse = true
         else

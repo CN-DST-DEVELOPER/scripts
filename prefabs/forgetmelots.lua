@@ -1,10 +1,13 @@
 local assets =
 {
     Asset("ANIM", "anim/forgetmelots.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
 }
 
 local prefabs =
 {
+    "forgetmelots_dried",
+    "spoiled_food",
 }
 
 local function fn()
@@ -49,6 +52,12 @@ local function fn()
     inst.components.perishable:SetPerishTime(TUNING.PERISH_SUPERFAST)
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
+
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("forgetmelots_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
 
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)

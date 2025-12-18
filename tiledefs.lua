@@ -476,7 +476,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_pebblebeach",
+        noise_texture="mini_shellbeach_noise",
     },
     {
         name = "shellbeach",
@@ -1158,7 +1158,7 @@ TileManager.AddTile(
     },
     {
         name="map_edge",
-        noise_texture="mini_marsh_noise",
+        noise_texture="mini_dock_noise",
     }
 )
 

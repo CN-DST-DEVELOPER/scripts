@@ -37,11 +37,12 @@ SetSharedLootTable("ocean_shadow_creature",
     { "nightmarefuel",  0.5 },
 })
 
+local BrainCommon = require("brains/braincommon")
 local function update(inst)
     local current_boat = inst._current_boat
 
     if current_boat == nil then
-        if not inst.sg:HasStateTag("teleporting") then
+        if not inst.sg:HasStateTag("teleporting") and not BrainCommon.ShouldTriggerPanicShadowCreature(inst) then
             local x, y, z = inst.Transform:GetWorldPosition()
             local boats = TheSim:FindEntities(x, y, z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS + ATTACH_OFFSET_PADDING, findboattags)
             if boats ~= nil then

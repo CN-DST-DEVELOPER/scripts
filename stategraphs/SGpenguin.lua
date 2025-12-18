@@ -87,12 +87,6 @@ local events=
 
 local states=
 {
-    State{  name = "init",
-		    onenter = function(inst)
-		    	inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		    end,
-	},
-
     State{  name = "idle",
             tags = {"idle", "canrotate"},
             onenter = function(inst, playanim)
@@ -365,8 +359,7 @@ local states=
                 inst.Physics:Stop()
                 inst.AnimState:PlayAnimation("death")
                 inst.components.locomotor:StopMoving()
-                inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
-                inst:SetDeathLootLevel(1)
+                inst:DropDeathLoot()
 
                 RemovePhysicsColliders(inst)
             end,
@@ -599,5 +592,7 @@ nil,
     mutated_spawn_timing = 97 * FRAMES,
     post_mutate_state = "taunt",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("penguin", states, events, "init", actionhandlers)

@@ -9,6 +9,7 @@ local prefabs =
     "guano",
     "batwing",
     "teamleader",
+    "batcorpse",
 }
 
 local brain = require "brains/batbrain"

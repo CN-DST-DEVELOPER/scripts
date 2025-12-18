@@ -141,11 +141,14 @@ TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_blue_frost", "bedro
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_green_hunters", "bedroll_furry_quilt_green_hunters", false )
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_grey", "bedroll_furry_quilt_grey", false )
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_orange_honey", "bedroll_furry_quilt_orange_honey", false )
+TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_red_polkadot", "bedroll_furry_quilt_red_polkadot", false )
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_red_redbird", "bedroll_furry_quilt_red_redbird", false )
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_quilt_white_ivory", "bedroll_furry_quilt_white_ivory", false )
 TheInventory:AddRestrictedBuildFromLua( "bedroll_furry_spider", "bedroll_furry_spider", false )
 TheInventory:AddRestrictedBuildFromLua( "beebox_crystal", "beebox_crystal", false )
 TheInventory:AddRestrictedBuildFromLua( "beebox_garden", "beebox_garden", false )
+TheInventory:AddRestrictedBuildFromLua( "beebox_hermit_shiny", "beebox_hermit_shiny", false )
+TheInventory:AddRestrictedBuildFromLua( "beebox_hermit_yule", "beebox_hermit_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "beebox_house", "beebox_house", false )
 TheInventory:AddRestrictedBuildFromLua( "beebox_victorian", "beebox_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "beefalo_body_beast", "beefalo_body_beast", false )
@@ -295,6 +298,7 @@ TheInventory:AddRestrictedBuildFromLua( "body_pj_blue_agean", "body_pj_blue_agea
 TheInventory:AddRestrictedBuildFromLua( "body_pj_green_hunters", "body_pj_green_hunters", false )
 TheInventory:AddRestrictedBuildFromLua( "body_pj_grey", "body_pj_grey", false )
 TheInventory:AddRestrictedBuildFromLua( "body_pj_orange_honey", "body_pj_orange_honey", false )
+TheInventory:AddRestrictedBuildFromLua( "body_pj_polkadot", "body_pj_polkadot", false )
 TheInventory:AddRestrictedBuildFromLua( "body_pj_purple_mauve", "body_pj_purple_mauve", false )
 TheInventory:AddRestrictedBuildFromLua( "body_pj_red_redbird", "body_pj_red_redbird", false )
 TheInventory:AddRestrictedBuildFromLua( "body_pj_silk_teal_jade", "body_pj_silk_teal_jade", false )
@@ -806,6 +810,7 @@ TheInventory:AddRestrictedBuildFromLua( "cookpot_cauldron", "cookpot_cauldron", 
 TheInventory:AddRestrictedBuildFromLua( "cookpot_cauldron", "cookpot_cauldronp", false )
 TheInventory:AddRestrictedBuildFromLua( "cookpot_clay", "cookpot_clay", false )
 TheInventory:AddRestrictedBuildFromLua( "cookpot_kitchen", "cookpot_kitchen", false )
+TheInventory:AddRestrictedBuildFromLua( "cookpot_planet", "cookpot_planet", false )
 TheInventory:AddRestrictedBuildFromLua( "cookpot_survival", "cookpot_survival", false )
 TheInventory:AddRestrictedBuildFromLua( "cookpot_tureen", "cookpot_tureen", false )
 TheInventory:AddRestrictedBuildFromLua( "cowbell_round", "cowbell_round", false )
@@ -1160,6 +1165,7 @@ TheInventory:AddRestrictedBuildFromLua( "fence_gate_gothic", "fence_gate_gothic"
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_picketbrown", "fence_gate_picketbrown", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_pickettan", "fence_gate_pickettan", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_picketwhite", "fence_gate_picketwhite", false )
+TheInventory:AddRestrictedBuildFromLua( "fence_gate_shell", "fence_gate_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianblack", "fence_gate_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianbrass", "fence_gate_victorianbrass", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianbronze", "fence_gate_victorianbronze", false )
@@ -1173,6 +1179,8 @@ TheInventory:AddRestrictedBuildFromLua( "fence_pickettan", "fence_pickettan", fa
 TheInventory:AddRestrictedBuildFromLua( "fence_pickettan", "fence_pickettan_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_picketwhite", "fence_picketwhite", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_picketwhite", "fence_picketwhite_item", false )
+TheInventory:AddRestrictedBuildFromLua( "fence_shell", "fence_shell", false )
+TheInventory:AddRestrictedBuildFromLua( "fence_shell", "fence_shell_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_victorianblack", "fence_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_victorianblack", "fence_victorianblack_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_victorianbrass", "fence_victorianbrass", false )
@@ -1185,6 +1193,7 @@ TheInventory:AddRestrictedBuildFromLua( "fence_gate_gothic", "fencegate_gothic_i
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_picketbrown", "fencegate_picketbrown_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_pickettan", "fencegate_pickettan_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_picketwhite", "fencegate_picketwhite_item", false )
+TheInventory:AddRestrictedBuildFromLua( "fence_gate_shell", "fencegate_shell_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianblack", "fencegate_victorianblack_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianbrass", "fencegate_victorianbrass_item", false )
 TheInventory:AddRestrictedBuildFromLua( "fence_gate_victorianbronze", "fencegate_victorianbronze_item", false )
@@ -1210,6 +1219,9 @@ TheInventory:AddRestrictedBuildFromLua( "firesuppressor_circus", "firesuppressor
 TheInventory:AddRestrictedBuildFromLua( "firesuppressor_robot", "firesuppressor_robot", false )
 TheInventory:AddRestrictedBuildFromLua( "fishbox_nautical", "fishbox_nautical", false )
 TheInventory:AddRestrictedBuildFromLua( "fishbox_pirate", "fishbox_pirate", false )
+TheInventory:AddRestrictedBuildFromLua( "fishingrod_block", "fishingrod_block", false )
+TheInventory:AddRestrictedBuildFromLua( "fishingrod_curl", "fishingrod_curl", false )
+TheInventory:AddRestrictedBuildFromLua( "fishingrod_sword", "fishingrod_sword", false )
 TheInventory:AddRestrictedBuildFromLua( "flotationcushion_cawnival", "flotationcushion_cawnival", false )
 TheInventory:AddRestrictedBuildFromLua( "flowerhat_crown", "flowerhat_crown", false )
 TheInventory:AddRestrictedBuildFromLua( "flowerhat_healing", "flowerhat_healing", false )
@@ -1459,11 +1471,36 @@ TheInventory:AddRestrictedBuildFromLua( "hat_glommer_costume", "hat_glommer_cost
 TheInventory:AddRestrictedBuildFromLua( "hat_glommer_costume", "hat_glommer_costumep", false )
 TheInventory:AddRestrictedBuildFromLua( "hat_hutch_costume", "hat_hutch_costume", false )
 TheInventory:AddRestrictedBuildFromLua( "hat_hutch_costume", "hat_hutch_costumep", false )
+TheInventory:AddRestrictedBuildFromLua( "hat_ice_shark", "hat_ice_shark", false )
 TheInventory:AddRestrictedBuildFromLua( "hat_puppy_cap", "hat_puppy_cap", false )
 TheInventory:AddRestrictedBuildFromLua( "hat_woodcarved_swamp", "hat_woodcarved_swamp", false )
 TheInventory:AddRestrictedBuildFromLua( "heatrock_fantasy", "heatrock_fantasy", false )
 TheInventory:AddRestrictedBuildFromLua( "heatrock_fire", "heatrock_fire", false )
 TheInventory:AddRestrictedBuildFromLua( "heatrock_planet", "heatrock_planet", false )
+TheInventory:AddRestrictedBuildFromLua( "hermit_chair_rocking_yule", "hermit_chair_rocking_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_coral", "hermitcrab_coral", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_hairy", "hermitcrab_hairy", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_lightpost_yule", "hermitcrab_lightpost_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_peacock", "hermitcrab_peacock", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_pointy", "hermitcrab_pointy", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_teashop_yule", "hermitcrab_teashop_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithotspring_yule", "hermithotspring_constr_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithotspring_yule", "hermithotspring_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_home_yule", "hermithouse2_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_home_yule", "hermithouse_construction1_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_home_yule", "hermithouse_construction2_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_home_yule", "hermithouse_construction3_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_bow", "hermithouse_ornament_bow", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_coral", "hermithouse_ornament_coral", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_driftwood", "hermithouse_ornament_driftwood", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_mushroom", "hermithouse_ornament_mushroom", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_saltcrystal", "hermithouse_ornament_saltcrystal", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_sanddollar", "hermithouse_ornament_sanddollar", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_snowflake", "hermithouse_ornament_snowflake", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_stocking", "hermithouse_ornament_stocking", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_wood", "hermithouse_ornament_wood", false )
+TheInventory:AddRestrictedBuildFromLua( "hermithouse_ornament_wreath", "hermithouse_ornament_wreath", false )
+TheInventory:AddRestrictedBuildFromLua( "hermitcrab_home_yule", "hermithouse_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "hivehat_an", "hivehat_an", false )
 TheInventory:AddRestrictedBuildFromLua( "hivehat_cawnival", "hivehat_cawnival", false )
 TheInventory:AddRestrictedBuildFromLua( "hivehat_joker", "hivehat_joker", false )
@@ -1537,6 +1574,7 @@ TheInventory:AddRestrictedBuildFromLua( "legs_pj_blue_agean", "legs_pj_blue_agea
 TheInventory:AddRestrictedBuildFromLua( "legs_pj_green_hunters", "legs_pj_green_hunters", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_pj_grey", "legs_pj_grey", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_pj_orange_honey", "legs_pj_orange_honey", false )
+TheInventory:AddRestrictedBuildFromLua( "legs_pj_polkadot", "legs_pj_polkadot", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_pj_purple_mauve", "legs_pj_purple_mauve", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_pj_red_redbird", "legs_pj_red_redbird", false )
 TheInventory:AddRestrictedBuildFromLua( "legs_shorts_black_scribble", "legs_shorts_black_scribble", false )
@@ -1805,6 +1843,9 @@ TheInventory:AddRestrictedBuildFromLua( "loading_wendy_victorian", "loading_wend
 TheInventory:AddRestrictedBuildFromLua( "loading_werepig1", "loading_werepig1", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_werepig2", "loading_werepig2", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_werepig3", "loading_werepig3", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_werepig4", "loading_werepig4", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_werepig5", "loading_werepig5", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_werepig6", "loading_werepig6", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wes1", "loading_wes1", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wes_trailer", "loading_wes_trailer", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wes_trailer2", "loading_wes_trailer2", true )
@@ -1827,6 +1868,9 @@ TheInventory:AddRestrictedBuildFromLua( "loading_wilson_wagstaff", "loading_wils
 TheInventory:AddRestrictedBuildFromLua( "loading_winona2_trailer", "loading_winona2_trailer", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_winona_trailer", "loading_winona_trailer", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_winona_victorian", "loading_winona_victorian", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_wobot1", "loading_wobot1", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_wobot2", "loading_wobot2", true )
+TheInventory:AddRestrictedBuildFromLua( "loading_wobot3", "loading_wobot3", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wolfgang", "loading_wolfgang", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wolfgang1", "loading_wolfgang1", true )
 TheInventory:AddRestrictedBuildFromLua( "loading_wolfgang2", "loading_wolfgang2", true )
@@ -1877,6 +1921,10 @@ TheInventory:AddRestrictedBuildFromLua( "mastupgradelamp_nautical", "mastupgrade
 TheInventory:AddRestrictedBuildFromLua( "meatrack_ancient", "meatrack_ancient", false )
 TheInventory:AddRestrictedBuildFromLua( "meatrack_butcher", "meatrack_butcher", false )
 TheInventory:AddRestrictedBuildFromLua( "meatrack_circus", "meatrack_circus", false )
+TheInventory:AddRestrictedBuildFromLua( "meatrack_hermit_coral", "meatrack_hermit_coral", false )
+TheInventory:AddRestrictedBuildFromLua( "meatrack_hermit_multi_coral", "meatrack_hermit_multi_coral", false )
+TheInventory:AddRestrictedBuildFromLua( "meatrack_hermit_multi_yule", "meatrack_hermit_multi_yule", false )
+TheInventory:AddRestrictedBuildFromLua( "meatrack_hermit_yule", "meatrack_hermit_yule", false )
 TheInventory:AddRestrictedBuildFromLua( "meatrack_victorian", "meatrack_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "mermhat_clown", "mermhat_clown", false )
 TheInventory:AddRestrictedBuildFromLua( "mermhouse_crafted_fantasy", "mermhouse_crafted_fantasy", false )
@@ -2076,6 +2124,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_handmedown_items", "pack_handmedow
 TheInventory:AddRestrictedBuildFromLua( "pack_harlequin_items", "pack_harlequin_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_haunteddoll_items", "pack_haunteddoll_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_heart_you", "pack_heart_you", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_hermitcrab_1", "pack_hermitcrab_1", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_hl_gift", "pack_hl_gift", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_hockey_items", "pack_hockey_items", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_ice_all", "pack_ice_all", false )
@@ -2207,6 +2256,7 @@ TheInventory:AddRestrictedBuildFromLua( "pack_starter_2021", "pack_starter_2021"
 TheInventory:AddRestrictedBuildFromLua( "pack_starter_2023", "pack_starter_2023", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_starter_2024", "pack_starter_2024", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_starter_2025", "pack_starter_2025", false )
+TheInventory:AddRestrictedBuildFromLua( "pack_starter_2026", "pack_starter_2026", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_survivor", "pack_survivor", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_survivor_complete", "pack_survivor_complete", false )
 TheInventory:AddRestrictedBuildFromLua( "pack_survivorpirate", "pack_survivorpirate", false )
@@ -2495,6 +2545,7 @@ TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_car", "playerportrait
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_cardinals", "playerportrait_bg_cardinals", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_coldfirepitan", "playerportrait_bg_coldfirepitan", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_coldfirepitteeth", "playerportrait_bg_coldfirepitteeth", true )
+TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_cookpotplanet", "playerportrait_bg_cookpotplanet", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_cottontree", "playerportrait_bg_cottontree", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_deciduousforest", "playerportrait_bg_deciduousforest", true )
 TheInventory:AddRestrictedBuildFromLua( "playerportrait_bg_dragonflychestkraken", "playerportrait_bg_dragonflychestkraken", true )
@@ -2666,6 +2717,7 @@ TheInventory:AddRestrictedBuildFromLua( "profileflair_clayhound", "profileflair_
 TheInventory:AddRestrictedBuildFromLua( "profileflair_claywarg", "profileflair_claywarg", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_coldfirepit_an", "profileflair_coldfirepit_an", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_coldfirepit_teeth", "profileflair_coldfirepit_teeth", true )
+TheInventory:AddRestrictedBuildFromLua( "profileflair_cookpotplanet", "profileflair_cookpotplanet", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_corvus", "profileflair_corvus", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_crow", "profileflair_crow", true )
 TheInventory:AddRestrictedBuildFromLua( "profileflair_crowkid", "profileflair_crowkid", true )
@@ -3069,15 +3121,19 @@ TheInventory:AddRestrictedBuildFromLua( "steeringwheel_nautical", "steeringwheel
 TheInventory:AddRestrictedBuildFromLua( "steeringwheel_nautical", "steeringwheel_nautical_item", false )
 TheInventory:AddRestrictedBuildFromLua( "steeringwheel_wagstaff", "steeringwheel_wagstaff", false )
 TheInventory:AddRestrictedBuildFromLua( "steeringwheel_wagstaff", "steeringwheel_wagstaff_item", false )
+TheInventory:AddRestrictedBuildFromLua( "stone_chair_shell", "stone_chair_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "stone_chair_victorianblack", "stone_chair_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "stone_chair_victorianbrass", "stone_chair_victorianbrass", false )
 TheInventory:AddRestrictedBuildFromLua( "stone_chair_victorianbronze", "stone_chair_victorianbronze", false )
+TheInventory:AddRestrictedBuildFromLua( "stonechair_stool_shell", "stonechair_stool_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "stonechair_stool_victorianblack", "stonechair_stool_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "stonechair_stool_victorianbrass", "stonechair_stool_victorianbrass", false )
 TheInventory:AddRestrictedBuildFromLua( "stonechair_stool_victorianbronze", "stonechair_stool_victorianbronze", false )
+TheInventory:AddRestrictedBuildFromLua( "stonetable_round_shell", "stonetable_round_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_round_victorianblack", "stonetable_round_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_round_victorianbrass", "stonetable_round_victorianbrass", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_round_victorianbronze", "stonetable_round_victorianbronze", false )
+TheInventory:AddRestrictedBuildFromLua( "stonetable_square_shell", "stonetable_square_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_square_victorianblack", "stonetable_square_victorianblack", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_square_victorianbrass", "stonetable_square_victorianbrass", false )
 TheInventory:AddRestrictedBuildFromLua( "stonetable_square_victorianbronze", "stonetable_square_victorianbronze", false )
@@ -3087,7 +3143,10 @@ TheInventory:AddRestrictedBuildFromLua( "strawhat_floppy", "strawhat_floppy", fa
 TheInventory:AddRestrictedBuildFromLua( "strawhat_western", "strawhat_western", false )
 TheInventory:AddRestrictedBuildFromLua( "succulent_potted_bearclaw", "succulent_potted_bearclaw", false )
 TheInventory:AddRestrictedBuildFromLua( "supertacklecontainer_shell", "supertacklecontainer_shell", false )
+TheInventory:AddRestrictedBuildFromLua( "supertacklecontainer_shiny", "supertacklecontainer_shiny", false )
+TheInventory:AddRestrictedBuildFromLua( "tackle_station_shell", "tackle_station_shell", false )
 TheInventory:AddRestrictedBuildFromLua( "tacklecontainer_shell", "tacklecontainer_shell", false )
+TheInventory:AddRestrictedBuildFromLua( "tacklecontainer_shiny", "tacklecontainer_shiny", false )
 TheInventory:AddRestrictedBuildFromLua( "telebase_crystal", "telebase_crystal", false )
 TheInventory:AddRestrictedBuildFromLua( "telebase_hallowpylon", "telebase_hallowpylon", false )
 TheInventory:AddRestrictedBuildFromLua( "telebase_mystical", "telebase_mystical", false )
@@ -3230,6 +3289,8 @@ TheInventory:AddRestrictedBuildFromLua( "wall_stone_ancient", "wall_stone_ancien
 TheInventory:AddRestrictedBuildFromLua( "wall_stone_an", "wall_stone_anitem", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_stone_gothic", "wall_stone_gothic", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_stone_gothic", "wall_stone_gothicitem", false )
+TheInventory:AddRestrictedBuildFromLua( "wall_stone_shell", "wall_stone_shell", false )
+TheInventory:AddRestrictedBuildFromLua( "wall_stone_shell", "wall_stone_shellitem", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_stone_victorian", "wall_stone_victorian", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_stone_victorian", "wall_stone_victorianitem", false )
 TheInventory:AddRestrictedBuildFromLua( "wall_wood_ornate", "wall_wood_ornate", false )
@@ -4219,6 +4280,9 @@ TheInventory:AddSkinSetInput( "emote_yawn", 1, "bedroll_furry_quilt_green_hunter
 TheInventory:AddSkinSetInput( "emote_yawn", 2, "body_pj_orange_honey" )
 TheInventory:AddSkinSetInput( "emote_yawn", 2, "legs_pj_orange_honey" )
 TheInventory:AddSkinSetInput( "emote_yawn", 2, "bedroll_furry_quilt_orange_honey" )
+TheInventory:AddSkinSetInput( "emote_yawn", 3, "body_pj_polkadot" )
+TheInventory:AddSkinSetInput( "emote_yawn", 3, "legs_pj_polkadot" )
+TheInventory:AddSkinSetInput( "emote_yawn", 3, "bedroll_furry_quilt_red_polkadot" )
 
 TheInventory:AddSkinLinkInput( "abigail_flower_ancient", "abigail_ancient" )
 TheInventory:AddSkinLinkInput( "abigail_flower_creepy", "abigail_creepy" )
@@ -4317,6 +4381,7 @@ TheInventory:AddSkinLinkInput( "fence_gothic_item", "fence_gothic" )
 TheInventory:AddSkinLinkInput( "fence_picketbrown_item", "fence_picketbrown" )
 TheInventory:AddSkinLinkInput( "fence_pickettan_item", "fence_pickettan" )
 TheInventory:AddSkinLinkInput( "fence_picketwhite_item", "fence_picketwhite" )
+TheInventory:AddSkinLinkInput( "fence_shell_item", "fence_shell" )
 TheInventory:AddSkinLinkInput( "fence_victorianblack_item", "fence_victorianblack" )
 TheInventory:AddSkinLinkInput( "fence_victorianbrass_item", "fence_victorianbrass" )
 TheInventory:AddSkinLinkInput( "fence_victorianbronze_item", "fence_victorianbronze" )
@@ -4326,6 +4391,7 @@ TheInventory:AddSkinLinkInput( "fencegate_gothic_item", "fence_gate_gothic" )
 TheInventory:AddSkinLinkInput( "fencegate_picketbrown_item", "fence_gate_picketbrown" )
 TheInventory:AddSkinLinkInput( "fencegate_pickettan_item", "fence_gate_pickettan" )
 TheInventory:AddSkinLinkInput( "fencegate_picketwhite_item", "fence_gate_picketwhite" )
+TheInventory:AddSkinLinkInput( "fencegate_shell_item", "fence_gate_shell" )
 TheInventory:AddSkinLinkInput( "fencegate_victorianblack_item", "fence_gate_victorianblack" )
 TheInventory:AddSkinLinkInput( "fencegate_victorianbrass_item", "fence_gate_victorianbrass" )
 TheInventory:AddSkinLinkInput( "fencegate_victorianbronze_item", "fence_gate_victorianbronze" )
@@ -4343,6 +4409,11 @@ TheInventory:AddSkinLinkInput( "glomling_puft_builder", "glomling_puft" )
 TheInventory:AddSkinLinkInput( "glomling_winter_builder", "glomling_winter" )
 TheInventory:AddSkinLinkInput( "glommerflower_fantasy", "glommer_fantasy" )
 TheInventory:AddSkinLinkInput( "goggleshat_fedora", "deserthat_fedora" )
+TheInventory:AddSkinLinkInput( "hermithotspring_constr_yule", "hermithotspring_yule" )
+TheInventory:AddSkinLinkInput( "hermithouse2_yule", "hermithouse_yule" )
+TheInventory:AddSkinLinkInput( "hermithouse_construction1_yule", "hermithouse_yule" )
+TheInventory:AddSkinLinkInput( "hermithouse_construction2_yule", "hermithouse_yule" )
+TheInventory:AddSkinLinkInput( "hermithouse_construction3_yule", "hermithouse_yule" )
 TheInventory:AddSkinLinkInput( "hutch_fishbowl_fantasy", "hutch_fantasy" )
 TheInventory:AddSkinLinkInput( "hutch_fishbowl_swamp", "hutch_swamp" )
 TheInventory:AddSkinLinkInput( "icestaff_bee", "spear_bee" )
@@ -4514,6 +4585,7 @@ TheInventory:AddSkinLinkInput( "wall_stone_ancient_alt_item", "wall_stone_ancien
 TheInventory:AddSkinLinkInput( "wall_stone_ancientitem", "wall_stone_ancient" )
 TheInventory:AddSkinLinkInput( "wall_stone_anitem", "wall_stone_an" )
 TheInventory:AddSkinLinkInput( "wall_stone_gothicitem", "wall_stone_gothic" )
+TheInventory:AddSkinLinkInput( "wall_stone_shellitem", "wall_stone_shell" )
 TheInventory:AddSkinLinkInput( "wall_stone_victorianitem", "wall_stone_victorian" )
 TheInventory:AddSkinLinkInput( "wall_wood_ornateitem", "wall_wood_ornate" )
 TheInventory:AddSkinLinkInput( "wathgrithr_improvedhat_flower", "wathgrithrhat_flower" )
@@ -4629,6 +4701,7 @@ TheInventory:AddSkinDLCInput( "pack_starter_2021", 1710240, 2001708 )
 TheInventory:AddSkinDLCInput( "pack_starter_2023", 2241030, 2001898 )
 TheInventory:AddSkinDLCInput( "pack_starter_2024", 2711510, 2002099 )
 TheInventory:AddSkinDLCInput( "pack_starter_2025", 3373370, 2002349 )
+TheInventory:AddSkinDLCInput( "pack_starter_2026", 4211520, 2002668 )
 TheInventory:AddSkinDLCInput( "pack_sw_gift", 393010, 2000041 )
 TheInventory:AddSkinDLCInput( "pack_victorian_all", 840760, 0 )
 TheInventory:AddSkinDLCInput( "pack_victorian_all2", 1558300, 0 )
@@ -4801,7 +4874,7 @@ TheInventory:AddGenericKVKey( "wathgrithr_horn_played" )
 TheInventory:AddGenericKVKey( "dlcs_seen" )
 
 if TheInventory.AddScrapbook0Key == nil then
-    TheInventory:ValidateWithSignature( "68daeddc9abdb7a3c9c5b3b91d0c6abfaf74b90a3aa4a8731ad0ee5fe3bc4d11a822bbe5306ba37263e4bbb1c8bf1e4138b6d5a3efa69feded02f9e2d3e0ddb9196d148a7a48cc2485550d938a3bfc76e9bcfab215bf18e949d378f1308ff56adebfd9ad9be2f0ad87238eff4a4c57d330d5e104cab5bcb6aeed25af31f9a266ced7f04f43bdabbc2ed33abb73928583f40d46834408dac541d0a422d014ab237dffe0d43b5d4aef047cc9ceb7d15ec8284dee95a751cdb7ae54355a285b3e50c6cccd5c5554bdd93ebb9bc0ee6c785a3fcc725e8846cafcdee50d57ebac19f609716627aeaea90cc77e99039f04968c96e804945cef403f62ea6f9cc8dfa1cfc2cdf1e0d1ed99926720f0de40c89d2f1b1a79898347d820c565d161d3af3e520ff016b33b1127b5cf047ca03a6d493e8849cd3e12f9af7ec0785fcf8f12ce6711b584336e784f36e7986ff764adf683dbec6e13809bf82e1f37f301411487c9f93fef486d65b20ebeaae673f84edff60ad1eb0aa068b20b139cc102c2c4c213a5a1568f836ca99ed0ed603b103f3ead060adab8699c5e9235935b9e95647febc6bbff52452e3cd24867342dc27a831a22cff87f075facf1d561be091479037e5b804551e0c9d6527e6d43919fef0bc7fe5b899d8b64536b7d80dcd61ff387902cf762779479e6c03a85e4a8193527b9b15f51f68294ae97ccb84a12093222ae" )
+    TheInventory:ValidateWithSignature( "6f15721a73f367e09af1f1de5467ff5c5b194195d6475b18280e0eeb319b1e022451a41db1ef1fa880737d044be598e5be3c68e27c6ce935ec24d1b974c871dcdea50aa22b6da22298890d7904824587f0d6122024af1953690c25cb83282cce22520491a88c718e09324f1792ccd5b710cb15caaf50bd61e96971b5a25a61e9caaf7a227901b62e9478ea99f39223fa3ea9bdb75a1fa00b96eae9fe5c7d642de2a99af66a4ec5f2cd4abc253ac09f8cf14774bce4f1598a5c284f5dbf38991b3a3977225f3997bf1eae48d9d3499678ed0807c7af278cb4a5ec37b75f7a1ba8c339dac823e8501a338873f8065bd3bdb22dabde75406045e45ab1ff3dc86db1307c3bc97e6923397d0d4e52760e9307cc4533e71795e6adc6e038f8863c0d7afdbdbee7e34c45e03384f5f6f598bf6b664c60986ebc6a11f6fd8de4a9c66012e7475006d6f59de718dd4a277192c8472021ab26b209f74065ed1a2fc9b162c62b70d528be8c41535d5aaa649b6ab4ef737b1fb5a76655d42d10976e9cfb54d1929c93de41b5d137f0442f7adcf98ef9facd486e94aa804243b02a18f60360896e0b219849ee1e1abf9d7fb7089f9a1ed92a4cb9b9493186718b3d52206203b969148aed1b911e278c3999da5bd7c95495c6e10d3f8b58b1f7c4a22dcdf934f77e06cbf03c21f2ba2eec682b6e38d6d8dc47ecd43d69eda759bab79d5bdaff4a" )
 else -- Temporary protection guard for platforms missing the engine change 1.
 
 TheInventory:AddScrapbook5Key( "679F8765" ) -- abigail
@@ -5187,6 +5260,8 @@ TheInventory:AddScrapbook12Key( "7FF8D18C" ) -- deerclops_eyeball
 TheInventory:AddScrapbook5Key( "F98AFEC5" ) -- deerclopseyeball_sentryward
 TheInventory:AddScrapbook12Key( "73D325DC" ) -- deerclopseyeball_sentryward_kit
 TheInventory:AddScrapbook6Key( "48C52446" ) -- deserthat
+TheInventory:AddScrapbook0Key( "8C43D230" ) -- desiccant
+TheInventory:AddScrapbook2Key( "3D5B9072" ) -- desiccantboosted
 TheInventory:AddScrapbook9Key( "C07F6679" ) -- dirtpile
 TheInventory:AddScrapbook10Key( "FF9D356A" ) -- dock_kit
 TheInventory:AddScrapbook10Key( "A456043A" ) -- dock_woodposts
@@ -5298,6 +5373,7 @@ TheInventory:AddScrapbook2Key( "4E2A3B42" ) -- firecrackers
 TheInventory:AddScrapbook11Key( "24B8F3B" ) -- fireflies
 TheInventory:AddScrapbook14Key( "1BAA7BAE" ) -- firehound
 TheInventory:AddScrapbook13Key( "CCA36A0D" ) -- firenettles
+TheInventory:AddScrapbook8Key( "FE022388" ) -- firenettles_dried
 TheInventory:AddScrapbook3Key( "3F4D75C3" ) -- firepen
 TheInventory:AddScrapbook5Key( "3F5176C5" ) -- firepit
 TheInventory:AddScrapbook10Key( "E5936C6A" ) -- firestaff
@@ -5306,8 +5382,10 @@ TheInventory:AddScrapbook4Key( "D3576EC4" ) -- fish_box
 TheInventory:AddScrapbook13Key( "B918C5FD" ) -- fishingrod
 TheInventory:AddScrapbook3Key( "60230443" ) -- fishmeat
 TheInventory:AddScrapbook3Key( "C3A4E6A3" ) -- fishmeat_cooked
+TheInventory:AddScrapbook14Key( "63890CBE" ) -- fishmeat_dried
 TheInventory:AddScrapbook11Key( "71D70FCB" ) -- fishmeat_small
 TheInventory:AddScrapbook11Key( "D0FA891B" ) -- fishmeat_small_cooked
+TheInventory:AddScrapbook6Key( "464B4C46" ) -- fishmeat_small_dried
 TheInventory:AddScrapbook11Key( "8405847B" ) -- fishsticks
 TheInventory:AddScrapbook2Key( "CF3380C2" ) -- fishtacos
 TheInventory:AddScrapbook9Key( "E5306269" ) -- flint
@@ -5321,8 +5399,10 @@ TheInventory:AddScrapbook6Key( "EA9CF236" ) -- flower_withered
 TheInventory:AddScrapbook0Key( "CAD92460" ) -- flowerhat
 TheInventory:AddScrapbook6Key( "BF65A5A6" ) -- flowersalad
 TheInventory:AddScrapbook9Key( "DF87DE19" ) -- foliage
+TheInventory:AddScrapbook4Key( "F8FBC594" ) -- foliage_dried
 TheInventory:AddScrapbook14Key( "111DB7AE" ) -- footballhat
 TheInventory:AddScrapbook7Key( "13CE8207" ) -- forgetmelots
+TheInventory:AddScrapbook2Key( "D607A482" ) -- forgetmelots_dried
 TheInventory:AddScrapbook11Key( "A972315B" ) -- fossil_piece
 TheInventory:AddScrapbook9Key( "6B077E19" ) -- fossil_stalker
 TheInventory:AddScrapbook14Key( "707DD50E" ) -- freshfruitcrepes
@@ -5452,11 +5532,27 @@ TheInventory:AddScrapbook5Key( "DB20FA95" ) -- heatrock
 TheInventory:AddScrapbook15Key( "F09EEEFF" ) -- hedgehound
 TheInventory:AddScrapbook8Key( "ABE2CCE8" ) -- hedgehound_bush
 TheInventory:AddScrapbook14Key( "204761DE" ) -- hermit_bundle
+TheInventory:AddScrapbook7Key( "B42CA587" ) -- hermit_chair_rocking
 TheInventory:AddScrapbook4Key( "5ABA2084" ) -- hermit_cracked_pearl
 TheInventory:AddScrapbook10Key( "1313104A" ) -- hermit_pearl
 TheInventory:AddScrapbook3Key( "38853CD3" ) -- hermitcrab
+TheInventory:AddScrapbook10Key( "A2F06FAA" ) -- hermitcrab_lightpost
 TheInventory:AddScrapbook11Key( "7384D84B" ) -- hermitcrab_relocation_kit
+TheInventory:AddScrapbook4Key( "8CE19AA4" ) -- hermitcrab_shell
+TheInventory:AddScrapbook10Key( "1A916A5A" ) -- hermitcrab_teashop
+TheInventory:AddScrapbook11Key( "2461190B" ) -- hermitcrabtea_firenettles
+TheInventory:AddScrapbook7Key( "1DAB4B17" ) -- hermitcrabtea_foliage
+TheInventory:AddScrapbook9Key( "5A7A9289" ) -- hermitcrabtea_forgetmelots
+TheInventory:AddScrapbook14Key( "2CC7F19E" ) -- hermitcrabtea_moon_tree_blossom
+TheInventory:AddScrapbook11Key( "92E0BEB" ) -- hermitcrabtea_petals
+TheInventory:AddScrapbook8Key( "BDA8D648" ) -- hermitcrabtea_petals_evil
+TheInventory:AddScrapbook15Key( "5DDAE56F" ) -- hermitcrabtea_succulent_picked
+TheInventory:AddScrapbook4Key( "48938AE4" ) -- hermitcrabtea_tillweed
+TheInventory:AddScrapbook7Key( "331CB157" ) -- hermithotspring
 TheInventory:AddScrapbook13Key( "F7909B5D" ) -- hermithouse
+TheInventory:AddScrapbook11Key( "DE7C11B" ) -- hermithouse_laundry_shorts
+TheInventory:AddScrapbook11Key( "FC958ECB" ) -- hermithouse_laundry_socks
+TheInventory:AddScrapbook6Key( "B01B62B6" ) -- hermithouse_ornament
 TheInventory:AddScrapbook11Key( "F76051CB" ) -- hivehat
 TheInventory:AddScrapbook12Key( "739FBE3C" ) -- homesign
 TheInventory:AddScrapbook11Key( "FB0ADDFB" ) -- honey
@@ -5613,6 +5709,7 @@ TheInventory:AddScrapbook6Key( "4F30B406" ) -- meat_dried
 TheInventory:AddScrapbook9Key( "417D9269" ) -- meatballs
 TheInventory:AddScrapbook2Key( "3949A42" ) -- meatrack
 TheInventory:AddScrapbook0Key( "E53EE160" ) -- meatrack_hermit
+TheInventory:AddScrapbook10Key( "D35369DA" ) -- meatrack_hermit_multi
 TheInventory:AddScrapbook3Key( "750E7653" ) -- meatysalad
 TheInventory:AddScrapbook12Key( "AB4BBCDC" ) -- megaflare
 TheInventory:AddScrapbook3Key( "1951BB3" ) -- merm
@@ -5687,6 +5784,7 @@ TheInventory:AddScrapbook4Key( "C3332254" ) -- moon_device
 TheInventory:AddScrapbook7Key( "3F59F9C7" ) -- moon_fissure
 TheInventory:AddScrapbook5Key( "FD2EF5E5" ) -- moon_mushroomhat
 TheInventory:AddScrapbook0Key( "93D69FA0" ) -- moon_tree_blossom
+TheInventory:AddScrapbook11Key( "A6BCCC9B" ) -- moon_tree_blossom_dried
 TheInventory:AddScrapbook0Key( "15E21F0" ) -- moon_tree_tall
 TheInventory:AddScrapbook2Key( "17C7FAB2" ) -- moonbase
 TheInventory:AddScrapbook2Key( "99E360D2" ) -- moonbutterfly
@@ -5760,6 +5858,8 @@ TheInventory:AddScrapbook13Key( "20022C8D" ) -- nightmarepie
 TheInventory:AddScrapbook8Key( "3EDE96F8" ) -- nightstick
 TheInventory:AddScrapbook5Key( "CD7669E5" ) -- nightsword
 TheInventory:AddScrapbook12Key( "7E6D93AC" ) -- nitre
+TheInventory:AddScrapbook3Key( "ACD1443" ) -- nonslipgrit
+TheInventory:AddScrapbook15Key( "8B5FF9F" ) -- nonslipgritboosted
 TheInventory:AddScrapbook5Key( "E2ECBC75" ) -- nutrientsgoggleshat
 TheInventory:AddScrapbook0Key( "3709D140" ) -- oar
 TheInventory:AddScrapbook7Key( "85CCA1F7" ) -- oar_driftwood
@@ -5846,7 +5946,9 @@ TheInventory:AddScrapbook14Key( "9619AB8E" ) -- pepperpopper
 TheInventory:AddScrapbook7Key( "8D298DE7" ) -- perd
 TheInventory:AddScrapbook2Key( "1645CE02" ) -- perogies
 TheInventory:AddScrapbook9Key( "C4F29869" ) -- petals
+TheInventory:AddScrapbook4Key( "3E1A07E4" ) -- petals_dried
 TheInventory:AddScrapbook10Key( "65EB274A" ) -- petals_evil
+TheInventory:AddScrapbook5Key( "F7193545" ) -- petals_evil_dried
 TheInventory:AddScrapbook7Key( "1E746C37" ) -- phlegm
 TheInventory:AddScrapbook6Key( "ED1E0DD6" ) -- phonograph
 TheInventory:AddScrapbook13Key( "B1FA364D" ) -- pickaxe
@@ -6017,6 +6119,8 @@ TheInventory:AddScrapbook11Key( "5E02CFFB" ) -- saltlick
 TheInventory:AddScrapbook0Key( "7057F6F0" ) -- saltlick_improved
 TheInventory:AddScrapbook11Key( "7820117B" ) -- saltrock
 TheInventory:AddScrapbook2Key( "CCE99F72" ) -- saltstack
+TheInventory:AddScrapbook0Key( "94EAEB40" ) -- salty_dog
+TheInventory:AddScrapbook11Key( "D180E97B" ) -- salty_doghat
 TheInventory:AddScrapbook9Key( "26756C89" ) -- sandblock
 TheInventory:AddScrapbook2Key( "6056A382" ) -- sandspike
 TheInventory:AddScrapbook3Key( "A5DA3273" ) -- sanityrock
@@ -6071,6 +6175,7 @@ TheInventory:AddScrapbook5Key( "9A297765" ) -- shark
 TheInventory:AddScrapbook7Key( "8B812F77" ) -- sharkboi
 TheInventory:AddScrapbook3Key( "50F25763" ) -- sharkboi_icespike
 TheInventory:AddScrapbook11Key( "6A175D4B" ) -- shell_cluster
+TheInventory:AddScrapbook0Key( "8716D2C0" ) -- shellweaver
 TheInventory:AddScrapbook4Key( "7ADBAA54" ) -- shieldofterror
 TheInventory:AddScrapbook3Key( "F4EB0943" ) -- shovel
 TheInventory:AddScrapbook1Key( "25E4D451" ) -- shovel_lunarplant
@@ -6202,6 +6307,7 @@ TheInventory:AddScrapbook4Key( "BCFCA634" ) -- strawhat
 TheInventory:AddScrapbook9Key( "22B6BFB9" ) -- stuffedeggplant
 TheInventory:AddScrapbook14Key( "3CB6DAEE" ) -- stuffing
 TheInventory:AddScrapbook13Key( "FF3696ED" ) -- succulent_picked
+TheInventory:AddScrapbook8Key( "EAA40068" ) -- succulent_picked_dried
 TheInventory:AddScrapbook14Key( "A6298B3E" ) -- succulent_plant
 TheInventory:AddScrapbook11Key( "B223392B" ) -- succulent_potted
 TheInventory:AddScrapbook9Key( "641EAE99" ) -- sunkenchest
@@ -6245,6 +6351,7 @@ TheInventory:AddScrapbook3Key( "C6739A73" ) -- thulecite_pieces
 TheInventory:AddScrapbook10Key( "9E8BCF5A" ) -- thulecitebugnet
 TheInventory:AddScrapbook3Key( "8CF9D7E3" ) -- thurible
 TheInventory:AddScrapbook2Key( "90DDB862" ) -- tillweed
+TheInventory:AddScrapbook13Key( "FC28A25D" ) -- tillweed_dried
 TheInventory:AddScrapbook11Key( "202DEFCB" ) -- tillweedsalve
 TheInventory:AddScrapbook13Key( "FB4D9E6D" ) -- toadstool
 TheInventory:AddScrapbook0Key( "D1BC9F80" ) -- toadstool_cap
@@ -9037,9 +9144,38 @@ TheInventory:AddScrapbook12Key( "4374C56C" ) -- yellowstaff
 --TheInventory:AddItemIDPairing(2522, "tent_spider")
 --TheInventory:AddItemIDPairing(2523, "cookpot_candy")
 --TheInventory:AddItemIDPairing(2524, "saddle_basic_western")
+--TheInventory:AddItemIDPairing(2525, "bedroll_furry_quilt_red_polkadot")
+--TheInventory:AddItemIDPairing(2526, "beebox_hermit_shiny")
+--TheInventory:AddItemIDPairing(2527, "body_pj_polkadot")
+--TheInventory:AddItemIDPairing(2528, "cookpot_planet")
+--TheInventory:AddItemIDPairing(2529, "fence_gate_shell")
+--TheInventory:AddItemIDPairing(2530, "fence_shell")
+--TheInventory:AddItemIDPairing(2531, "fishingrod_block")
+--TheInventory:AddItemIDPairing(2532, "fishingrod_curl")
+--TheInventory:AddItemIDPairing(2533, "fishingrod_sword")
+--TheInventory:AddItemIDPairing(2534, "hat_ice_shark")
+--TheInventory:AddItemIDPairing(2535, "legs_pj_polkadot")
+--TheInventory:AddItemIDPairing(2536, "loading_werepig4")
+--TheInventory:AddItemIDPairing(2537, "loading_werepig5")
+--TheInventory:AddItemIDPairing(2538, "loading_werepig6")
+--TheInventory:AddItemIDPairing(2539, "loading_wobot1")
+--TheInventory:AddItemIDPairing(2540, "loading_wobot2")
+--TheInventory:AddItemIDPairing(2541, "loading_wobot3")
+--TheInventory:AddItemIDPairing(2542, "meatrack_hermit_coral")
+--TheInventory:AddItemIDPairing(2543, "meatrack_hermit_multi_coral")
+--TheInventory:AddItemIDPairing(2544, "playerportrait_bg_cookpotplanet")
+--TheInventory:AddItemIDPairing(2545, "profileflair_cookpotplanet")
+--TheInventory:AddItemIDPairing(2546, "stone_chair_shell")
+--TheInventory:AddItemIDPairing(2547, "stonechair_stool_shell")
+--TheInventory:AddItemIDPairing(2548, "stonetable_round_shell")
+--TheInventory:AddItemIDPairing(2549, "stonetable_square_shell")
+--TheInventory:AddItemIDPairing(2550, "supertacklecontainer_shiny")
+--TheInventory:AddItemIDPairing(2551, "tackle_station_shell")
+--TheInventory:AddItemIDPairing(2552, "tacklecontainer_shiny")
+--TheInventory:AddItemIDPairing(2553, "wall_stone_shell")
 
 if TheInventory.AddFreeItemForEveryone == nil then
-    TheInventory:ValidateWithSignature( "1b1d8e021873020950bfc399273b7977297047ea653e7177aa8f5bb2cff5b966eb12e4c1adfcb069a9851f36a11205d2633bc71bf562c4c52fb67dce4edec9e3bb65eaafb9b393efbdb698fc2b0637cd0dc2bd78ef76f65cc5bbf2a0a76a4f205ed072997bb5dcf620461a9af8b169dbb1b16e024dcd84ba939363fa6708fdf49c17c9b0f9d8cdb241686af5e09fd18db0ee332ce3fa9763abff58b92d29ca7c73baf96ba43e92e47568f51a452cafd6c70d7319015c1f8df2370ff10a17cecdfd63518f480dbd9cc5616b0da4a3918f38d7d674442463150bd986b79baacf9465f56cf13865134095c41f8f22220947e1920d2d1b0b0cdf77337f0420ee1c2744a8ac3636e23e5f87a25e0615154f6108d5b3e68fb50736b1b2972ad1b6e4f232b915871cf6863c90a170bed41854cbc6fc6659aade16d1ebbf7ff3ab10ab073384320716f6622a0e16f75b558389b950c8272d3bf4bfe0aad8a814e542e3a12b14313b1486c1babb2304bf3d0d4145b625ce5fa66d717ef67f60f9acea72ad4bbc8623e5d0c9354280baa1df1d710d9d6345232d83980a5cc683db644739d89218b5d0bb018c6ffe5847acfe8c9b831944bbb3d8426ad9faee3d6bf2ab3627ab3366f33bd53d4715bfc48f4ca330433a0da320e3f5da10cfe178d0226a252379d5280b24277e67eda9e5e8c15008c321c6df94adacc6de26577fccc7ba7003" )
+    TheInventory:ValidateWithSignature( "aefb778686be62751cefddba191b7028c9560ed06ee0562543309568fce67cf0e43e95cc3e7d0978ddab469ee6df637f0fbdd40d9b07b37a758ae260c8db4094315e06c5b7d075a743db83992ae46c7234e3455a73dfc52cc7bebf7b6d8091ddb76c95e0dee77dc0a3c4c624a2ec757c9ee3aa8e352b95744221c376aaf36890ca41389e02cbb883561bd885368473286f740a8fd39b1668e7cc7bd823a307d292dffc197c4a3df90f8bc025a2bf5cc7ccc83b1683fcc9385a2e9a5802456e714360a2ed245f4dcd20a51d0a799b839a25521b60f54af408947f0269144c4b99e58151844f96baa44cbb34871ea993cd2288ea020b6da4840ef96c8117a8bee93e6409c833eca72d74167a72f6b5443ef24683191146566db19c9dd8b9f4a4b733820e505c24328060dffe7e9c4eb14a360d9fabe500b7fad9eeee8bfe7f8e40b88a105c6e49460169722e80b52c817b53340ac55a1f55ef8df49f30b69a451b3df51d694d0e26d30a9b9ad564b0ed9444775a81a039132b07209870cd6e2d7a359c8108ef0def8a90453062c76b8678f10b8eaddc92a7d9e9b9097d8d72e093491479f13d98be9f80c6bf9d6a059611384c68f651848491348e43f444c4d70f6e79b9f8a5a387b778733f2f10a1ba1287182a9f20ce18f7548ae2a16b88a4e990ec3f03ba9268bbc2723a2a1d62bbfaaebd94e9e023f418d43105035e0cbbd6" )
 else -- Temporary protection guard for platforms missing the engine change 2.
 
 -- These are free items for everyone and are not networked.
@@ -9095,8 +9231,31 @@ TheInventory:AddFreeItemForEveryone("record_drstyle") -- 148
 TheInventory:AddFreeItemForEveryone("record_efs") -- 148
 TheInventory:AddFreeItemForEveryone("pumpkinhat_2") -- 173
 TheInventory:AddFreeItemForEveryone("pumpkinhat_3") -- 173
+TheInventory:AddFreeItemForEveryone("hermitcrab_none") -- 175
+TheInventory:AddFreeItemForEveryone("hermitcrab_hairy") -- 175
+TheInventory:AddFreeItemForEveryone("hermitcrab_coral") -- 175
+TheInventory:AddFreeItemForEveryone("hermitcrab_peacock") -- 175
+TheInventory:AddFreeItemForEveryone("hermitcrab_pointy") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_driftwood") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_saltcrystal") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_wood") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_mushroom") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_sanddollar") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_coral") -- 175
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_bow") -- 176
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_snowflake") -- 176
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_wreath") -- 176
+TheInventory:AddFreeItemForEveryone("hermithouse_ornament_stocking") -- 176
+TheInventory:AddFreeItemForEveryone("hermithotspring_yule") -- 176
+TheInventory:AddFreeItemForEveryone("hermithouse_yule") -- 176
+TheInventory:AddFreeItemForEveryone("beebox_hermit_yule") -- 176
+TheInventory:AddFreeItemForEveryone("hermitcrab_lightpost_yule") -- 176
+TheInventory:AddFreeItemForEveryone("hermitcrab_teashop_yule") -- 176
+TheInventory:AddFreeItemForEveryone("meatrack_hermit_multi_yule") -- 176
+TheInventory:AddFreeItemForEveryone("meatrack_hermit_yule") -- 176
+TheInventory:AddFreeItemForEveryone("hermit_chair_rocking_yule") -- 176
 
-TheInventory:ValidateWithSignature( "35e4fceee9bae8918dc169747bdda3f46c4a6a43390e7bffa0d847d6b3d23569e32720d80480525f9e0b68fb261975e818a9c01a4b379816ba48be0a265492a983b772715e509a6b0fd525475eeb8186e0b722ae5ed638898d5b00b56bd5e6e31cb203942c46020fd5ec655a5627dc1b44283ae9e2b4579c6417eb20944be87daae12b626b27a71ad95ff2360faef0571cb7e9bc38d727ea42d2fee3d469b9f27df7007dcdcbf6814e9c087477fc844c10c361941a1138c6aa15aa87cdd70a5f538fdfc8d3b696bc949db1597e968c083f13fd0965bcbcd3a1b534abde639ef495af7f4ccf621fe4afa9db99e09631c34d40273024a41c7821203e4211ba3b0dac8f10fa17afa9da466b47e50a8ffa0d89310eb540125d6a8cf19de41d1bc83c66918a1bf4d97cd31eca0b0f3b3e37c16c28fcf42960f6688e8dffabfd5f81a0d3bacb78d2c9ea91bd93dd7c2e2f52e9340ae8869d3e3eb11e8df45c97522e8243d004a7319a094b68e846442a52d3ef9b01d1a618896c89d9b77606aae7a9b6401b7ab77a22d19bfbf9edc04d00c11b850b1ee5ddb042e9310e773c37ff606896e9677cb8ee486d0edbbb5254ca41c8f2aa5785fd708e104a4da83b2d8a51c8edf58fbf5f1a03064f3ad43b023682109425882ecf02445a78096d42bb20509ad47d2e6eef1653c6dc83ce3d993b1b1734ced167ac3bf5821579c66a1d162880" )
+TheInventory:ValidateWithSignature( "b0427331ee749d5d6d0c0fab3aaae9d71e58a2357e72b75490e6d758917b76d3a97e99dd2bd61b0fbabb9fc84d839097a27eb7a10354000d8b48dcb834c4710dd303870500650731836dc12b58b372460b1d47d2cdcdd7bc778309c1a47b6e2ef90a3089aeee7fa44491672f7e51ccc75ce05c4655293c364f36d9f0d97303e7470519143e0eb40c138c74587e33a1cb37246d6e6b364d081692de77b7155e5700662e5035a31ff6f74daf33b583072a61cc2ea28817647448bafaf6179ed441c6cfffd48128d60b02b0e8e3c0258e62fef23d2dd5f61fec1a50b1d3bb11ab09556b0e61e29172ba643650d24f0e105e1dba13a12263373deb37b1bd843c3f9217e3cd1ab239408bb5489fc1d8e3d871c024cd79c390ec54c11806103161f7f50f1f7fbeb17c57be7fe5516ce108bd525b7e1603460b14cfca7b15f2a614489ca2dd134e793c13dfaad6c3ffaf7f76e880598da2167f2b181bad5b106a3b3f2bc697c58fc0b5a1facfdfd902b98218e88a00803b4555a570d643ac7a95c00621d1e5a2319bfeda4cd017bf0dcc3ffb541c335c2e66e16b05d8bc167aaf8ee14b1cabb347901c81b96878566fa5022e6469a0b9cdb3f4d4ecb1a9495e04470ada7066537d37281c0beded99ae998d806acdd3ba0a5131c34b5b80ffde0c1f06faeed54dce966090d660f40863803ccd3d89828e726d51b3f0274e4da56ca68b29" )
 
 end -- Temporary protection guard for platforms missing the engine change 2.
 

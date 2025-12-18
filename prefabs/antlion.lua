@@ -16,6 +16,8 @@ local prefabs =
     "sandspike",
     "sandblock",
     "antlionhat",
+    "antlionhat_blueprint",
+    "antlioncorpse",
 
     --loot
     "meat",

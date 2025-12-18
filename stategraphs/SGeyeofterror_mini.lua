@@ -17,6 +17,9 @@ local events =
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function return_to_idle(inst)
@@ -94,14 +97,18 @@ local states =
         name = "death",
         tags = {"busy"},
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
-
+            inst:DropDeathLoot()
             inst.SoundEmitter:PlaySound(inst.sounds.death)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -258,4 +265,7 @@ local appear_timeline =
 }
 CommonStates.AddSimpleState(states, "appear", "appear", appear_tags, "idle", appear_timeline)
 
-return StateGraph("eyeofterror_mini", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("eyeofterror_mini", states, events, "init", actionhandlers)

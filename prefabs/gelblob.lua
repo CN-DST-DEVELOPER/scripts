@@ -154,6 +154,11 @@ local function OnUpdateProximity(inst, fast)
 					fx = SpawnPrefab("gelblob_attach_fx")
 					fx:SetupBlob(inst, v)
 					contacted = true
+					inst:ListenForEvent("onremove", function(fx)
+						if inst._targets[v] == fx then
+							inst._targets[v] = nil
+						end
+					end, fx)
 				end
 				inst._targets[v] = fx
 			end

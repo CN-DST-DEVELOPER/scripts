@@ -137,6 +137,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.no_deconstruction = more_data.no_deconstruction -- function or bool
     self.decon_ignores_finiteuses = more_data.decon_ignores_finiteuses -- function or bool
     self.require_special_event = more_data.require_special_event
+	self.always_allow_buffered_placer = more_data.always_allow_buffered_placer or nil -- skip KnowsRecipe check if buffered; useful for placing buildings out of crafting stations
 
 	self.dropitem      = more_data.dropitem
 

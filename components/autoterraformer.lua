@@ -21,6 +21,39 @@ function AutoTerraformer:FinishTerraforming(x, y, z)
     end
 end
 
+local function HandleRemovingItem(self, item)
+    local turfitem = self.container:RemoveItem(item, false)
+    if turfitem then
+        local prefabname = turfitem.prefab
+        local prefabskinname = turfitem.skinname
+        turfitem:Remove()
+
+        if not item:IsValid() then
+            local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem:GetGrandOwner() or nil
+            if owner and owner.components.inventory and self.container:IsOpenedBy(owner) then
+                local replacement = owner.components.inventory:FindItem(function(v)
+                    return v.prefab == prefabname and v.skinname == prefabskinname
+                end)
+                if replacement then
+                    self.container.currentuser = owner
+                    local targetslot = 1
+                    if self.container:CanTakeItemInSlot(replacement, targetslot) then
+                        replacement = owner.components.inventory:RemoveItem(replacement, true)
+                        if replacement then
+                            if not self.container:GiveItem(replacement, targetslot, nil, false) then
+                                owner.components.inventory.ignoresound = true
+                                owner.components.inventory:GiveItem(replacement, replacement.prevslot)
+                                owner.components.inventory.ignoresound = false
+                            end
+                        end
+                    end
+                    self.container.currentuser = nil
+                end
+            end
+        end
+    end
+end
+
 function AutoTerraformer:DoTerraform(px, py, pz, x, y)
     local map = TheWorld.Map
 
@@ -37,7 +70,7 @@ function AutoTerraformer:DoTerraform(px, py, pz, x, y)
 
     --place our turf if we can do that
     if item_tile ~= nil and map:CanPlaceTurfAtPoint(px, py, pz) then
-        self.container:RemoveItem(item, false):Remove()
+        HandleRemovingItem(self, item)
         map:SetTile(x, y, item_tile)
         self:FinishTerraforming(px, py, pz)
         return
@@ -52,7 +85,7 @@ function AutoTerraformer:DoTerraform(px, py, pz, x, y)
         map:SetTile(x, y, underneath_tile)
     else
         if item_tile then
-            self.container:RemoveItem(item, false):Remove()
+            HandleRemovingItem(self, item)
         end
         map:SetTile(x, y, item_tile or WORLD_TILES.DIRT)
     end

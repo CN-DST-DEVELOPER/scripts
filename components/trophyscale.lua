@@ -19,17 +19,11 @@ local TrophyScale = Class(function(self, inst)
 	--self.takeitemtestfn = nil
 
 	self.accepts_items = true
-
-	self.inst:AddTag("trophyscale")
 end,
 nil,
 {
 	type = ontype
 })
-
-function TrophyScale:OnRemoveFromEntity()
-    self.inst:RemoveTag("trophyscale")
-end
 
 function TrophyScale:GetDebugString()
     return self.item_data ~= nil and string.format("weight: %.5f,   prefab: %s,   owner: %s,	override owner: %s",

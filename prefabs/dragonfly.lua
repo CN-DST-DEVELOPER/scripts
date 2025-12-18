@@ -18,6 +18,7 @@ local prefabs =
     "attackfire_fx",
     "vomitfire_fx",
     "firering_fx",
+    "dragonflycorpse",
 
     --loot:
     "dragon_scales",

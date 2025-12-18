@@ -113,7 +113,7 @@ local SkinSelector = Class(Widget, function(self, recipe, owner, skin_name)
 		end
 	end)
 
-    if #self.skins_options == 1 then
+    if #self.skins_options == 1 or not self.spinner_has_named_skins then
 		self.spinner.fgimage:SetPosition(0, 0)
 		self.spinner.fgimage:SetScale(1.2)
 		self.spinner.text:Hide()
@@ -178,7 +178,7 @@ function SkinSelector:GetSkinsList()
     local skins_list = {}
     if self.recipe and PREFAB_SKINS[self.recipe.product] then
         for _,item_type in pairs(PREFAB_SKINS[self.recipe.product]) do
-            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] then
+            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] and (SKINS_EVENTLOCK[item_type] == nil or IsSpecialEventActive(SKINS_EVENTLOCK[item_type])) then
                 local has_item, modified_time = TheInventory:CheckOwnershipGetLatest(item_type)
                 if has_item then
                     local data  = {}
@@ -201,6 +201,7 @@ end
 function SkinSelector:GetSkinOptions()
     local skin_options = {}
 
+    local has_named_skins = false
 	local non_skin_image = self.recipe.imagefn ~= nil and self.recipe.imagefn() or self.recipe.image or (self.recipe.product..".tex")
     table.insert(skin_options,
     {
@@ -216,22 +217,30 @@ function SkinSelector:GetSkinOptions()
     if self.skins_list ~= nil and self.recipe.chooseskin == nil and (TheInventory:HasSupportForOfflineSkins() or TheNet:IsOnlineMode()) then
         for which = 1, #self.skins_list do
             local item = self.skins_list[which].item
+            if SKINS_EVENTLOCK[item] == nil or IsSpecialEventActive(SKINS_EVENTLOCK[item]) then
+                local colour = GetColorForItem(item)
+                local text_name
+                if not HIDE_SKIN_DECORATIONS[item] then
+                    text_name = GetSkinName(item)
+                    has_named_skins = true
+                else
+                    text_name = STRINGS.UI.CRAFTING.DEFAULT
+                end
+                local image_name = GetSkinInvIconName(item)..".tex"
+                local new_indicator = not self.skins_list[which].timestamp or (self.skins_list[which].timestamp > recipe_timestamp)
 
-            local colour = GetColorForItem(item)
-            local text_name = GetSkinName(item)
-            local image_name = GetSkinInvIconName(item)..".tex"
-            local new_indicator = not self.skins_list[which].timestamp or (self.skins_list[which].timestamp > recipe_timestamp)
-
-            table.insert(skin_options,
-            {
-                text = text_name,
-                data = nil,
-                colour = colour,
-                --new_indicator = new_indicator, -- disabling the new indicator, for now, because it never really quite worked right...
-                image = {GetInventoryItemAtlas(image_name), image_name or "default.tex", "default.tex"},
-            })
+                table.insert(skin_options,
+                {
+                    text = text_name,
+                    data = nil,
+                    colour = colour,
+                    --new_indicator = new_indicator, -- disabling the new indicator, for now, because it never really quite worked right...
+                    image = {GetInventoryItemAtlas(image_name), image_name or "default.tex", "default.tex"},
+                })
+            end
         end
     end
+    self.spinner_has_named_skins = has_named_skins
 
     return skin_options
 end

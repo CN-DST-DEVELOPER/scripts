@@ -301,6 +301,10 @@ local ornament =
     MakeOrnament("boss_daywalker2",       "winter_ornamentboss", nil, "winter_ornaments2024", 0.8),
     MakeOrnament("boss_sharkboi",         "winter_ornamentboss", nil, "winter_ornaments2024", 1.1),
     MakeOrnament("boss_wormboss",         "winter_ornamentboss", nil, "winter_ornaments2024", 1.2),
+
+    MakeOrnament("boss_celestialrevenant","winter_ornamentboss", nil, "winter_ornaments2025", .55),
+    MakeOrnament("boss_warbot",           "winter_ornamentboss", nil, "winter_ornaments2025", .75),
+    MakeOrnament("boss_celestialscion",   "winter_ornamentboss", nil, "winter_ornaments2025", 1.2),
 }
 
 for i = 1, NUM_BASIC_ORNAMENT do

@@ -164,7 +164,7 @@ local function text_filter(recipe, search_str)
         return true
     end
 
-	local name_upper = string.upper(recipe.name)
+	local name_upper = string.upper(recipe.nameoverride or recipe.name)
 
 	local product = recipe.product
 	local product_upper = string.upper(product)

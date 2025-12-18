@@ -96,6 +96,18 @@ function Drownable:GetFallingReason()
     end
 end
 
+function Drownable:CheckDrownable()
+    local fallingreason = self:GetFallingReason()
+    if fallingreason == FALLINGREASON.OCEAN then
+        self.inst:PushEvent("onsink")
+        return true
+    elseif fallingreason == FALLINGREASON.VOID then
+        self.inst:PushEvent("onfallinvoid")
+        return true
+    end
+    return false
+end
+
 local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end

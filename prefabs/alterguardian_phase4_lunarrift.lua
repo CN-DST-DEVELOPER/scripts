@@ -40,6 +40,7 @@ local prefabs =
 	"gears",
 	"temp_beta_msg", --#TEMP_BETA
     "chesspiece_wagboss_lunar_sketch",
+	"winter_ornament_boss_celestialscion",
 }
 
 SetSharedLootTable("alterguardian_phase4_lunarrift",

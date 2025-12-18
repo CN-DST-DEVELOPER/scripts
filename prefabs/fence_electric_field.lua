@@ -201,7 +201,6 @@ local function AddPlane(triangles, x0, y0, z0, x1, y1, z1)
     table.insert(triangles, z1)
 end
 
-local HALFPI = PI/2
 local function BuildFenceMesh(halflen, rot)
     local triangles = {}
 

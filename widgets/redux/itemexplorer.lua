@@ -22,10 +22,14 @@ require("skinsutils")
 local COMMERCE_WIDTH = 130
 local COMMERCE_HEIGHT = 45
 
-local ItemExplorer = Class(Widget, function(self, title_text, primary_item_type, item_table_getter, list_options, yotb_filter)
+local ItemExplorer = Class(Widget, function(self, title_text, primary_item_type, item_table_getter, list_options, filter_options)
     Widget._ctor(self, "ItemExplorer")
 
-    self.yotb_filter = yotb_filter
+    if filter_options then
+        self.filter_options = filter_options
+        self.yotb_filter = filter_options.yotb_filter
+        self.npccharacter = filter_options.npccharacter
+    end
 
     assert(primary_item_type and primary_item_type ~= "")
     self.primary_item_type = primary_item_type
@@ -885,7 +889,7 @@ function ItemExplorer:_CreateWidgetDataListForItems(item_table, item_type, activ
         if GetTypeForItem(item_key) == item_type and ShouldDisplayItemInCollection(item_key) then
             local is_owned = item_latest[item_key] ~= nil
             local timestamp = item_latest[item_key]
-            if IsDefaultSkinOwned(item_key) then
+            if IsDefaultSkinOwned(item_key) or TheInventory:CheckOwnership(item_key) then
                 is_owned = true
                 timestamp = 0
             end

@@ -21,6 +21,7 @@ local prefabs =
     "gnarwail_attack_horn",
     "gnarwail_water_shadow",
     "fishmeat",
+    "gnarwailcorpse",
 }
 
 local gnar_brain = require "brains/gnarwailbrain"

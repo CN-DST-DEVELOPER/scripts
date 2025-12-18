@@ -117,9 +117,6 @@ SetSharedLootTable('hound_fire',
 {
     {'monstermeat', 1.0},
     {'houndstooth', 1.0},
-    {'houndfire',   1.0},
-    {'houndfire',   1.0},
-    {'houndfire',   1.0},
     {'redgem',      0.2},
 })
 
@@ -448,6 +445,11 @@ local function SaveCorpseData(inst, corpse)
         corpse.components.entitytracker:TrackEntity("warg", inst.wargleader)
 	    inst.wargleader:RememberFollowerCorpse(corpse)
     end
+
+    local home = inst.components.homeseeker and inst.components.homeseeker:GetHome()
+    if home ~= nil then
+        corpse.components.entitytracker:TrackEntity("hound_home", home)
+    end
 end
 
 local function fncommon(bank, build, morphlist, custombrain, tag, data)
@@ -621,8 +623,17 @@ local function fndefault()
     return inst
 end
 
-local function PlayFireExplosionSound(inst)
+local NUM_HOUND_FIRE = 3
+local function DoFireExplosion(inst, data)
+    local loading = data ~= nil and data.cause == "file_load"
+    if loading then
+        return
+    end
+
     inst.SoundEmitter:PlaySound("dontstarve/creatures/hound/firehound_explo")
+    for i = 1, NUM_HOUND_FIRE do
+        inst.components.lootdropper:SpawnLootPrefab("houndfire")
+    end
 end
 
 local function fnfire()
@@ -643,12 +654,17 @@ local function fnfire()
     inst.components.health:SetMaxHealth(TUNING.FIREHOUND_HEALTH)
     inst.components.lootdropper:SetChanceLootTable('hound_fire')
 
-    inst:ListenForEvent("death", PlayFireExplosionSound)
+    inst:ListenForEvent("death", DoFireExplosion)
 
     return inst
 end
 
-local function DoIceExplosion(inst)
+local function DoIceExplosion(inst, data)
+    local loading = data ~= nil and data.cause == "file_load"
+    if loading then
+        return
+    end
+
     if inst.components.freezable == nil then
         MakeMediumFreezableCharacter(inst, "hound_body")
     end
@@ -775,6 +791,12 @@ local function LoadCorpseData(inst, corpse)
 		warg:ForgetFollowerCorpse(corpse)
 		corpse.components.entitytracker:ForgetEntity("warg")
 	end
+
+    local home = corpse.components.entitytracker:GetEntity("hound_home")
+    if home ~= nil then
+        home.components.childspawner:TakeOwnership(inst)
+		corpse.components.entitytracker:ForgetEntity("hound_home")
+    end
 end
 
 local function fnmutated()
@@ -785,6 +807,8 @@ local function fnmutated()
     end
 
 	inst.sounds = sounds_mutated
+    inst.sg.mem.nocorpse = true
+    inst.save_in_foreign_childspawner = true
 
     inst.LoadCorpseData = LoadCorpseData
 

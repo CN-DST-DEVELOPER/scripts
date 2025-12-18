@@ -59,7 +59,7 @@ local function fn()
     inst.AnimState:SetBuild("succulent_potted")
     inst.AnimState:PlayAnimation("idle")
 
-    inst:AddTag("cavedweller")
+    inst:AddTag("pottedplant")
 
     inst.entity:SetPristine()
 

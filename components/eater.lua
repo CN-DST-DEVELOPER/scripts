@@ -216,7 +216,7 @@ function Eater:Eat(food, feeder)
     -- wigfrid) can TRY to eat all foods (they get the actions for it) but upon actually put it in
     -- their mouth, they bail and "spit it out" so to speak.
     if self:PrefersToEat(food) then
-        local stack_mult = self.eatwholestack and food.components.stackable ~= nil and food.components.stackable:StackSize() or 1
+        local stack_mult = self.eatwholestack and food.components.edible:GetStackMultiplier() or 1
         local base_mult = self.inst.components.foodmemory ~= nil and self.inst.components.foodmemory:GetFoodMultiplier(food.prefab) or 1
 
 		local health_delta = 0
@@ -287,17 +287,8 @@ function Eater:Eat(food, feeder)
             self.oneatfn(self.inst, food, feeder)
         end
 
-        if food.components.edible ~= nil then
-            food.components.edible:OnEaten(self.inst)
-        end
-
-        if food:IsValid() then --might get removed in OnEaten...
-            if not self.eatwholestack and food.components.stackable ~= nil then
-                food.components.stackable:Get():Remove()
-            else
-                food:Remove()
-            end
-        end
+        food.components.edible:OnEaten(self.inst)
+        food.components.edible:HandleEatRemove(self.eatwholestack)
 
         self.lasteattime = GetTime()
 

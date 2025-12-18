@@ -33,13 +33,6 @@ local events =
 local states =
 {
     State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
-    State{
         name = "idle",
         tags = { "idle", "canrotate" },
 
@@ -125,8 +118,7 @@ local states =
 
         events =
         {
-            -- TODO NOTE(Omar): HALLOWED_NIGHTS_2025_CORPSES
-            --CommonHandlers.OnCorpseDeathAnimOver(),
+            CommonHandlers.OnCorpseDeathAnimOver(),
         },
     },
 
@@ -270,19 +262,17 @@ local BUILD_VARIATIONS =
     ["3"] = { "pig_arm", "pig_ear", "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
     ["4"] = { "pig_head", "pig_skirt", "pig_torso", "spin_bod" },
 }
--- TODO NOTE(Omar): HALLOWED_NIGHTS_2025_CORPSES
---[[
+
+CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states, nil,
 {
     corpseoncreate = function(inst, corpse)
         corpse.AnimState:Hide("HAT")
-        corpse:SetAltBuild("pigelite")
 
         for i, v in ipairs(BUILD_VARIATIONS[inst.sg.mem.variation]) do
-            corpse.AnimState:OverrideSymbol(v, "pig_elite_build", v.."_"..variation)
+            corpse.AnimState:OverrideSymbol(v, "pig_elite_build", v.."_"..inst.sg.mem.variation)
         end
     end,
 }, "pigcorpse")
-]]
 
 return StateGraph("pigelitefighter", states, events, "init")

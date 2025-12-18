@@ -52,11 +52,12 @@ end
 local lastsoundtime = nil
 -- return values: "keep_crafting_menu_open", "error message"
 function DoRecipeClick(owner, recipe, skin)
-    if recipe ~= nil and owner ~= nil and owner.replica.builder ~= nil then
+	local builder = owner and owner.replica.builder
+	if builder and recipe then
         if skin == recipe.name then
             skin = nil
         end
-        if owner:HasTag("busy") or owner.replica.builder:IsBusy() then
+		if owner:HasTag("busy") or builder:IsBusy() then
             return true
         end
         if owner.components.playercontroller ~= nil then
@@ -68,14 +69,14 @@ function DoRecipeClick(owner, recipe, skin)
             end
         end
 
-        local buffered = owner.replica.builder:IsBuildBuffered(recipe.name)
-        local knows = buffered or owner.replica.builder:KnowsRecipe(recipe)
-        local has_ingredients = buffered or owner.replica.builder:HasIngredients(recipe)
+		local buffered = builder:IsBuildBuffered(recipe.name)
+		local knows = buffered or builder:KnowsRecipe(recipe)
+		local has_ingredients = buffered or builder:HasIngredients(recipe)
 
         if not has_ingredients and TheWorld.ismastersim then
             owner:PushEvent("cantbuild", { owner = owner, recipe = recipe })
             --You might have the materials now. Check again.
-            has_ingredients = owner.replica.builder:HasIngredients(recipe)
+			has_ingredients = builder:HasIngredients(recipe)
         end
 
 		if buffered then
@@ -83,7 +84,7 @@ function DoRecipeClick(owner, recipe, skin)
 			Profile:SetLastUsedSkinForItem(recipe.name, skin)
 
             if recipe.placer == nil then
-                owner.replica.builder:MakeRecipeFromMenu(recipe, skin)
+				builder:MakeRecipeFromMenu(recipe, skin)
             elseif owner.components.playercontroller ~= nil then
                 owner.components.playercontroller:StartBuildPlacementMode(recipe, skin)
             end
@@ -95,22 +96,22 @@ function DoRecipeClick(owner, recipe, skin)
 				Profile:SetLastUsedSkinForItem(recipe.name, skin)
 
                 if recipe.placer == nil then
-                    owner.replica.builder:MakeRecipeFromMenu(recipe, skin)
+					builder:MakeRecipeFromMenu(recipe, skin)
                     return true
                 elseif owner.components.playercontroller ~= nil then
                     --owner.HUD.controls.craftingmenu.tabs:DeselectAll()
-                    owner.replica.builder:BufferBuild(recipe.name)
-                    if not owner.replica.builder:IsBuildBuffered(recipe.name) then
+					builder:BufferBuild(recipe.name)
+					if not builder:IsBuildBuffered(recipe.name) then
                         return true
                     end
                     owner.components.playercontroller:StartBuildPlacementMode(recipe, skin)
                 end
 			else
 				-- check if we can craft sub ingredients
-				local tech_level = owner.replica.builder:GetTechTrees()
+				local tech_level = builder:GetTechTrees()
 				for i, ing in ipairs(recipe.ingredients) do
 					if CanCraftIngredient(owner, ing, tech_level) then
-						owner.replica.builder:MakeRecipeFromMenu(recipe, skin) -- tell the server to build the current recipe, not the ingredient
+						builder:MakeRecipeFromMenu(recipe, skin) -- tell the server to build the current recipe, not the ingredient
 						return true
 					end
 				end
@@ -118,20 +119,20 @@ function DoRecipeClick(owner, recipe, skin)
 				return true, "NO_INGREDIENTS"
 			end
 		else
-            local tech_level = owner.replica.builder:GetTechTrees()
+			local tech_level = builder:GetTechTrees()
             if CanPrototypeRecipe(recipe.level, tech_level) then
 				if has_ingredients then
 					SetCraftingAutopaused(false)
 					Profile:SetLastUsedSkinForItem(recipe.name, skin)
 
 					if recipe.placer == nil then
-						owner.replica.builder:MakeRecipeFromMenu(recipe, skin)
+						builder:MakeRecipeFromMenu(recipe, skin)
 						if recipe.nounlock then
 							return true
 						end
 					elseif owner.components.playercontroller ~= nil then
-						owner.replica.builder:BufferBuild(recipe.name)
-						if not owner.replica.builder:IsBuildBuffered(recipe.name) then
+						builder:BufferBuild(recipe.name)
+						if not builder:IsBuildBuffered(recipe.name) then
 							return true
 						end
 						owner.components.playercontroller:StartBuildPlacementMode(recipe, skin)
@@ -152,7 +153,7 @@ function DoRecipeClick(owner, recipe, skin)
 					-- check if we can craft sub ingredients
 					for i, ing in ipairs(recipe.ingredients) do
 						if CanCraftIngredient(owner, ing, tech_level) then
-							owner.replica.builder:MakeRecipeFromMenu(recipe, skin) -- tell the server to build the current recipe, not the ingredient
+							builder:MakeRecipeFromMenu(recipe, skin) -- tell the server to build the current recipe, not the ingredient
 							return true
 						end
 					end

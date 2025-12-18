@@ -105,7 +105,7 @@ end
 
 local function onburnt(inst)
     inst.burnt = true
-    inst.components.unwrappable:Unwrap()
+	inst.components.unwrappable:Unwrap(nil, true)
 end
 
 local function onignite(inst)
@@ -114,6 +114,76 @@ end
 
 local function onextinguish(inst)
     inst.components.unwrappable.canbeunwrapped = true
+end
+
+local function DoJiggle(inst, looped)
+	local delay
+	local suffix = inst.variation and (inst.suffix..tostring(inst.variation)) or inst.suffix
+	inst.AnimState:PlayAnimation("jiggle"..suffix)
+	if not looped and math.random() < 0.5 then
+		delay = (0.4 + math.random() * 0.2) * inst.AnimState:GetCurrentAnimationLength()
+	else
+		inst.AnimState:PushAnimation("idle"..suffix, false)
+	end
+	inst.jiggletask = inst:DoTaskInTime(delay or math.random() * 5, DoJiggle, delay ~= nil)
+end
+
+local function TryRestartJiggle(inst)
+	if inst.jiggletask == nil and not (inst.components.inventoryitem:IsHeld() or inst:IsAsleep() or inst.pendingunwrap) then
+		inst.jiggletask = inst:DoTaskInTime(math.random() * 5, DoJiggle)
+	end
+end
+
+local function StopJiggle(inst)
+	if inst.jiggletask then
+		inst.jiggletask:Cancel()
+		inst.jiggletask = nil
+	end
+	if not inst.pendingunwrap then
+		local anim = "idle"..inst.suffix
+		if inst.variation then
+			anim = anim..tostring(inst.variation)
+		end
+		if not inst.AnimState:IsCurrentAnimation(anim) then
+			inst.AnimState:PlayAnimation(anim)
+		end
+	end
+end
+
+local function UnwrapDelay(inst, doer)
+	if inst.variation and inst.suffix == "_large" then
+		if inst.jiggletask then
+			inst.jiggletask:Cancel()
+			inst.jiggletask = nil
+		end
+		inst.components.inventoryitem.canbepickedup = false
+		inst.components.unwrappable.canbeunwrapped = false
+		inst.pendingunwrap = true
+
+		local jiggletime = 0.5
+		local suffix = inst.suffix..tostring(inst.variation)
+		if inst.components.inventoryitem:IsHeld() then
+			local idleanim = "idle"..suffix
+			inst.AnimState:PlayAnimation(idleanim)
+			local len = inst.AnimState:GetCurrentAnimationLength()
+			local droptime = 0.5
+			local loops = math.floor(droptime / len)
+			for i = 2, loops do
+				inst.AnimState:PushAnimation(idleanim)
+			end
+			inst.AnimState:PushAnimation("jiggle_unwrap"..suffix)
+			return len * loops + jiggletime
+		end
+		inst.AnimState:PlayAnimation("jiggle_unwrap"..suffix, true)
+		return jiggletime
+	end
+end
+
+--Hook this up in master_postinit to any bundle types that have animation support for jiggles.
+--Jiggles will be triggered when giftsurprise creatures are wrapped.
+local function MakeJiggle(inst)
+	inst.jiggle = true
+	inst.components.unwrappable:SetUnwrapDelayFn(UnwrapDelay)
 end
 
 local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, bank, build, inventoryimage)
@@ -164,7 +234,6 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         end
     end
 
-
     local function OnWrapped(inst, num, doer)
         local suffix =
             (onesize and "_onesize") or
@@ -185,6 +254,15 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         if doer ~= nil and doer.SoundEmitter ~= nil then
             doer.SoundEmitter:PlaySound(inst.skin_wrap_sound or "dontstarve/common/together/packaged")
         end
+
+		--jiggle anims only available for large size (NOTE: "local suffix" already has variation appended)
+		if inst.jiggle and inst.suffix == "_large" then
+			inst.OnEntitySleep = StopJiggle
+			inst.OnEntityWake = TryRestartJiggle
+			inst.components.inventoryitem:SetOnDroppedFn(TryRestartJiggle)
+			inst.components.inventoryitem:SetOnPutInInventoryFn(StopJiggle)
+			TryRestartJiggle(inst)
+		end
     end
 
     local function OnUnwrapped(inst, pos, doer)
@@ -209,6 +287,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
                                 item.components.inventoryitem:OnDropped(true, .5)
                             end
                         end
+						item:PushEvent("unwrappeditem", { bundle = inst, doer = doer })
                     end
                 end
             end
@@ -222,11 +301,15 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
 
     local OnSave = variations ~= nil and function(inst, data)
         data.variation = inst.variation
+		data.jiggle = inst.jiggle
     end or nil
 
     local OnPreLoad = variations ~= nil and function(inst, data)
         if data ~= nil then
             inst.variation = data.variation
+			if data.jiggle and inst.MakeJiggle then
+				inst:MakeJiggle()
+			end
         end
     end or nil
 
@@ -328,6 +411,9 @@ local gift =
 {
 	common_postinit = function(inst, setupdata)
 		inst.SCANNABLE_RECIPENAME = "giftwrap"
+	end,
+	master_postinit = function(inst, setupdata)
+		inst.MakeJiggle = MakeJiggle
 	end,
     --peekcontainer = nonononono, -- NOTES(JBK): No peeking gifts naughty one.
 }

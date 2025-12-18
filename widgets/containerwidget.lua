@@ -43,6 +43,10 @@ function ContainerWidget:Open(container, doer)
         self.bganim:GetAnimState():SetBuild(animbuild)
     end
 
+    if widget.bganim_visualfn ~= nil then
+        widget.bganim_visualfn(self.bganim, container, doer)
+    end
+
     if widget.pos ~= nil then
         self:SetPosition(widget.pos)
     end

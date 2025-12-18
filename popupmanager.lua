@@ -46,6 +46,7 @@ POPUPS = {
     GIFTITEM = PopupManagerWidget(),
     WARDROBE = PopupManagerWidget(),
     GROOMER = PopupManagerWidget(),
+    HERMITCRABWARDROBE = PopupManagerWidget(),
     COOKBOOK = PopupManagerWidget(),
     PLANTREGISTRY = PopupManagerWidget(),
     SKILLTREE = PopupManagerWidget(),
@@ -128,6 +129,22 @@ POPUPS.GROOMER.fn = function(inst, show, target, filter)
         end
     end
 end
+
+
+POPUPS.HERMITCRABWARDROBE.validaterpcfn = function(base_skin, cancel)
+    return optstring(base_skin) and optbool(cancel)
+end
+
+POPUPS.HERMITCRABWARDROBE.fn = function(inst, show, target, filter)
+    if inst.HUD then
+        if not show then
+            inst.HUD:CloseHermitCrabWardrobeScreen()
+        elseif not inst.HUD:OpenHermitCrabWardrobeScreen(target, filter) then
+            POPUPS.HERMITCRABWARDROBE:Close(inst)
+        end
+    end
+end
+
 
 POPUPS.COOKBOOK.fn = function(inst, show)
     if inst.HUD then

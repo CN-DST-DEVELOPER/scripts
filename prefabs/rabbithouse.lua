@@ -31,15 +31,17 @@ local function onvacate(inst, child)
     --inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
     --inst.SoundEmitter:KillSound("pigsound")
 
-    if not inst:HasTag("burnt") and child ~= nil then
-        local child_platform = TheWorld.Map:GetPlatformAtPoint(child.Transform:GetWorldPosition())
-        if (child_platform == nil and not child:IsOnValidGround()) then
-            local fx = SpawnPrefab("splash_sink")
-            fx.Transform:SetPosition(child.Transform:GetWorldPosition())
+    if not inst:HasTag("burnt") then
+        if child then
+            if child.components.health ~= nil then
+                child.components.health:SetPercent(1)
+            end
+            child:PushEvent("onvacatehome")
 
-            child:Remove()
-        elseif child.components.health ~= nil then
-            child.components.health:SetPercent(1)
+            local drownable = child.components.drownable
+            if drownable then
+                drownable:CheckDrownable()
+            end
         end
     end
 end

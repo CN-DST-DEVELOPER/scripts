@@ -59,6 +59,9 @@ local events =
                 inst:Remove()
             end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -551,15 +554,23 @@ CommonStates.AddCombatStates(states,
             inst.SoundEmitter:PlaySound("monkeyisland/powdermonkey/death")
         end),
     },
-},nil,{
+},
+nil,
+{
     attackanimfn = function(inst) 
         return (inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS) and "atk")
             or "unequipped_atk"
     end
+},
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
-return StateGraph("powdermonkey", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states, nil, nil, "powder_monkeycorpse")
+
+return StateGraph("powdermonkey", states, events, "init", actionhandlers)

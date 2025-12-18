@@ -115,8 +115,8 @@ return {
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Why am I not shocked? It's dead!",
+            CHARGE_FULL = "Power-full!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -498,6 +498,12 @@ return {
         {
             MISSED = "Drat, I missed.",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Displace is not possible.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1197,6 +1203,10 @@ return {
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzz off! We're not dead yet! Wait a minute, these ones are mutated.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Why am I still here?",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I feel sea sick!",
 
 	BATTLECRY =
 	{
@@ -5907,6 +5917,77 @@ return {
             BURNING = "No coming back from that.",
             REVIVING = "Many unhappy returns.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "The perfect formula for relaxing.",
+            GENERIC = "If only I could soak my weary bones.",
+            EMPTY = "Where's the water?",
+        },
+		HERMITHOTSPRING_CONSTR = "It's under construction.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Jerky time!",
+            DRYING = "Drying takes time.",
+            DRYINGINRAIN = "Drying takes even longer in rain.",
+            GENERIC =  "These really are drying times.",
+            BURNT = "The rack got dried.",
+            DONE_NOTMEAT = "In laboratory terms, we would call that \"dry\".",
+            DRYING_NOTMEAT = "Drying things is not an exact science.",
+            DRYINGINRAIN_NOTMEAT = "Rain, rain, go away. Be wet again another day.",
+            DONE_SALT = "Sodium salty.",
+			ABANDONED = "It dried its best.",
+        },
+		HERMITHOUSE_ORNAMENT = "How chiming.",
+		HERMITHOUSE_LAUNDRY = "Should I say something, or is it unmentionable?",
+
+        PETALS_DRIED = "Nice dry.",
+        PETALS_EVIL_DRIED = "Nice dry.",
+        FOLIAGE_DRIED = "Nice dry.",
+        SUCCULENT_PICKED_DRIED = "Nice dry.",
+        FIRENETTLES_DRIED = "Nice dry.",
+        TILLWEED_DRIED = "Nice dry.",
+        MOON_TREE_BLOSSOM_DRIED = "Nice dry.",
+        FORGETMELOTS_DRIED = "Nice dry.",
+
+        HERMITCRABTEA_PETALS = "Mmmm, sweet sereni-tea.",
+        HERMITCRABTEA_PETALS_EVIL = "Insani-tea!",
+        HERMITCRABTEA_FOLIAGE = "Don't worry, I won't go crazy with it.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "I should save it for desert.",
+        HERMITCRABTEA_FIRENETTLES = "It should come with a warming label.",
+        HERMITCRABTEA_TILLWEED = "Let's raise a little health!",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "I don't mean to wane, but it's kind of waxy.",
+        HERMITCRABTEA_FORGETMELOTS = "It really melts away my madness.",
+        SHELLWEAVER = "I salt to make something useful.",
+        ICESTAFF2 = "It comes with a freeze upgrade!",
+        ICESTAFF3 = "Even more powerful, icy.",
+        NONSLIPGRIT = "It's quite gripping!",
+        NONSLIPGRITBOOSTED = "Now we're really gaining some traction!",
+        DESICCANT = "Just dry and dry again!",
+        DESICCANTBOOSTED = "It leaves me high and dry!",
+        HERMITCRAB_SHELL = "Shell we go to Pearl's?",
+        SALTY_DOGHAT = "It only comes with a friend-ship.",
+        SALTY_DOG = "Who's a proud little seal pup?",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "The shop is emp-tea.", -- Inactive state, no Pearl inside.
+            ACTIVE = "Tea time!", -- Active, Pearl is inside, can buy from her
+            BREWING = "I paid a steep price.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Her shop is toast.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "That fish is a real jerk.",
+        FISHMEAT_SMALL_DRIED = "That fish is a real jerk.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "They really lighten the mood.",
+            ABANDONED = "It's so sad, I can't stand it.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Let's string together some ambiance.",
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

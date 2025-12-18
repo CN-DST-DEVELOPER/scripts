@@ -19,6 +19,7 @@ local prefabs =
 	"wagpunk_bits",
 
     "chesspiece_wagboss_robot_sketch",
+	"winter_ornament_boss_warbot",
 }
 
 SetSharedLootTable("wagboss_robot",
@@ -27,7 +28,7 @@ SetSharedLootTable("wagboss_robot",
 	{ "transistor",			0.5 },
 	{ "wagpunk_bits",		1.0 },
 	{ "wagpunk_bits",		0.5 },
-	{"chesspiece_wagboss_robot_sketch", 1.0},
+	{ "chesspiece_wagboss_robot_sketch", 1.0},
 })
 
 local brain = require("brains/wagboss_robotbrain")

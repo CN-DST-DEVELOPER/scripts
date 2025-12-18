@@ -45,30 +45,28 @@ local function PlayBannerSound(inst, self, sound)
     end
 end
 
-local function MakeWaterloggedBanner(self, banner_root, anim)
-    local anim_bg = banner_root:AddChild(UIAnim())
-    anim_bg:GetAnimState():SetBuild("dst_menu_waterlogged")
-    anim_bg:GetAnimState():SetBank("dst_menu_waterlogged")
-    anim_bg:SetScale(0.667)
-    anim_bg:GetAnimState():PlayAnimation("loop", true)
-    anim_bg:MoveToBack()
+local function _MakeGenericBanner(uianim, build, bank, anim, scale)
+	uianim:GetAnimState():SetBuild(build)
+	uianim:GetAnimState():SetBank(bank or build)
+	uianim:SetScale(scale or 0.667)
+	uianim:GetAnimState():PlayAnimation(anim or "loop", true)
+	return uianim
 end
 
-local function MakeMoonstormBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_moonstorm_background")
-    anim:GetAnimState():SetBank ("dst_menu_moonstorm_background")
-    anim:GetAnimState():PlayAnimation("loop_w1", true)
-    anim:SetScale(.667)
-    anim.inst:ListenForEvent("animover", function()
-        anim:GetAnimState():PlayAnimation("loop_w"..math.random(3))
-    end)
+--------------------------------------------------------------------------
+--Old banners
+--[[
+local function MakeWaterloggedBanner(self, banner_root, uianim)
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_waterlogged"):MoveToBack()
+end
 
+local function MakeMoonstormBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_moonstorm_background", nil, "loop_w1")
+	uianim.inst:ListenForEvent("animover", function()
+		uianim:GetAnimState():PlayAnimation("loop_w"..math.random(3))
+	end)
 
-    local anim_wrench = banner_root:AddChild(UIAnim())
-    anim_wrench:GetAnimState():SetBuild("dst_menu_moonstorm_wrench")
-    anim_wrench:GetAnimState():SetBank ("dst_menu_moonstorm_wrench")
-    anim_wrench:GetAnimState():PlayAnimation("loop_w1", false)
-    anim_wrench:SetScale(.667)
+	local anim_wrench = _MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_moonstorm_wrench", nil, "loop_w1")
     anim_wrench:GetAnimState():SetErosionParams(0.06, 0, -1.0)
     anim_wrench.inst.holo_time = 0
     anim_wrench.inst:DoPeriodicTask(FRAMES, function()
@@ -82,12 +80,7 @@ local function MakeMoonstormBanner(self, banner_root, anim)
         anim_wrench:GetAnimState():PlayAnimation("loop_w1")
     end)
 
-
-    local anim_wagstaff = banner_root:AddChild(UIAnim())
-    anim_wagstaff:GetAnimState():SetBuild("dst_menu_moonstorm_wagstaff")
-    anim_wagstaff:GetAnimState():SetBank ("dst_menu_moonstorm_wagstaff")
-    anim_wagstaff:GetAnimState():PlayAnimation("loop_w2", true)
-    anim_wagstaff:SetScale(.667)
+	local anim_wagstaff = _MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_moonstorm_wagstaff", nil, "loop_w2")
     anim_wagstaff:GetAnimState():SetErosionParams(1, 0, -1.0)
     anim_wagstaff:GetAnimState():SetMultColour(1, 1, 1, 0.9)
 
@@ -137,390 +130,230 @@ local function MakeMoonstormBanner(self, banner_root, anim)
     anim_wagstaff.inst:DoTaskInTime(1.5 + wagstaff_invisible_time_min * math.random() + wagstaff_invisible_time_variance * math.random(), holo_fade_in)
 
 
-    local anim_foreground = banner_root:AddChild(UIAnim())
-    anim_foreground:GetAnimState():SetBuild("dst_menu_moonstorm_foreground")
-    anim_foreground:GetAnimState():SetBank ("dst_menu_moonstorm_foreground")
-    anim_foreground:GetAnimState():PlayAnimation("loop_w"..math.random(3), true)
-    anim_foreground:SetScale(.667)
+	local anim_foreground = _MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_moonstorm_foreground", nil, "loop_w"..math.random(3))
     anim_foreground.inst:ListenForEvent("animover", function()
         anim_foreground:GetAnimState():PlayAnimation("loop_w"..math.random(3))
     end)
 end
 
-local function MakeYOTCBanner(self, banner_root, anim)
-    local anim_bg = banner_root:AddChild(UIAnim())
-    anim_bg:GetAnimState():SetBuild("dst_menu_carrat_bg")
-    anim_bg:GetAnimState():SetBank("dst_carrat_bg")
-    anim_bg:SetScale(0.7)
-    anim_bg:GetAnimState():PlayAnimation("loop", true)
-    anim_bg:MoveToBack()
-
-    anim:GetAnimState():SetBuild("dst_menu_carrat")
-    anim:GetAnimState():SetBank("dst_carrat")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(0.6)
-
-    local colors ={
-        "blue",
-        "brown",
-        "pink",
-        "purple",
-        "yellow",
-        "green",
-        "white",
-        nil, -- normal?
-        }
-
-    local color = colors[math.random(1,#colors)]
-
-    if color then
-        anim:GetAnimState():OverrideSymbol("ear1", "dst_menu_carrat_swaps", color.."_ear1")
-        anim:GetAnimState():OverrideSymbol("ear2", "dst_menu_carrat_swaps", color.."_ear2")
-        anim:GetAnimState():OverrideSymbol("tail", "dst_menu_carrat_swaps", color.."_tail")
-    end
+local function MakeWebberCawnivalBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_webber_carnival", "dst_menu_webber")
 end
 
-local function MakeYOTDBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_yotd")
-    anim:GetAnimState():SetBank ("dst_menu_yotd")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeWesV1Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wes")
 end
 
-
-local function MakeYOTSBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_yots")
-    anim:GetAnimState():SetBank ("dst_menu_yots")
-    anim:SetScale(.667/2)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeWesV2Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wes2")
 end
 
-local function MakeYOTCatcoonBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_yot_catcoon")
-    anim:GetAnimState():SetBank ("dst_menu_yot_catcoon")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeWendyBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wendy")
 end
 
-local function MakeYOTRBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_yotr")
-    anim:GetAnimState():SetBank ("dst_menu_yotr")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeWebberBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_webber")
 end
 
-local function MakeHallowedNightsBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_halloween2")
-    anim:GetAnimState():SetBank ("dst_menu_halloween2")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeWandaBanner(self, banner_root, uianim)
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_wanda", nil, "loop_"..math.random(3)):MoveToBack()
 end
 
-local function MakeCawnivalBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_carnival")
-    anim:GetAnimState():SetBank ("dst_menu_carnival")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
+local function MakeTerrariaBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_terraria")
 end
 
-local function MakeWebberCawnivalBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_webber_carnival")
-    anim:GetAnimState():SetBank ("dst_menu_webber")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
-end
+local function MakeWolfgangBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wolfgang")
 
-local function MakeWesV1Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wes")
-    anim:GetAnimState():SetBank("dst_menu_wes")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local function MakeWesV2Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wes2")
-    anim:GetAnimState():SetBank ("dst_menu_wes2")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
-end
-
-local function MakeWendyBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wendy")
-    anim:GetAnimState():SetBank("dst_menu_wendy")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local function MakeWebberBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_webber")
-    anim:GetAnimState():SetBank ("dst_menu_webber")
-    anim:SetScale(.667)
-    anim:GetAnimState():PlayAnimation("loop", true)
-end
-
-local function MakeWandaBanner(self, banner_root, anim)
-    local anim_bg = banner_root:AddChild(UIAnim())
-    anim_bg:GetAnimState():SetBuild("dst_menu_wanda")
-    anim_bg:GetAnimState():SetBank("dst_menu_wanda")
-    anim_bg:SetScale(0.667)
-    anim_bg:GetAnimState():PlayAnimation("loop_"..math.random(3), true)
-    anim_bg:MoveToBack()
-end
-
-local function MakeTerrariaBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_terraria")
-    anim:GetAnimState():SetBank("dst_menu_terraria")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local WOLFGANG_STATES = {"wimpy", "mid", "mighty"}
-local function MakeWolfgangBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wolfgang")
-    anim:GetAnimState():SetBank("dst_menu_wolfgang")
-    anim:GetAnimState():PlayAnimation("loop", true)
-
-    local wolfgang_state_index = math.random(3)
-    for i, state in ipairs(WOLFGANG_STATES) do
-        if i == wolfgang_state_index then
-            anim:GetAnimState():Show(WOLFGANG_STATES[i])
-        else
-            anim:GetAnimState():Hide(WOLFGANG_STATES[i])
-        end
-    end
-    anim:SetScale(.667)
-end
-
-local function MakeWX78Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wx")
-    anim:GetAnimState():SetBank("dst_menu_wx")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local function MakeWickerbottomBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wickerbottom")
-    anim:GetAnimState():SetBank ("dst_menu_wickerbottom")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local function MakePiratesBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_pirates")
-    anim:GetAnimState():SetBank("dst_menu_pirates")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-end
-
-local function MakeDramaBanner(self, banner_root, anim)
-    local anim_bg = banner_root:AddChild(UIAnim())
-    anim_bg:GetAnimState():SetBuild("dst_menu_charlie2")
-    anim_bg:GetAnimState():SetBank("dst_menu_charlie2")
-    anim_bg:GetAnimState():PlayAnimation("loop_bg", true)
-    anim_bg:SetScale(0.667)
-    anim_bg:MoveToBack()
-
-	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-		anim:GetAnimState():SetBuild("dst_menu_charlie_halloween")
-		anim:GetAnimState():SetBank ("dst_menu_charlie_halloween")
-	else
-		anim:GetAnimState():SetBuild("dst_menu_charlie")
-		anim:GetAnimState():SetBank ("dst_menu_charlie")
+	local states = { "wimpy", "mid", "mighty" }
+	table.remove(states, math.random(3))
+	for _, v in ipairs(states) do
+		uianim:GetAnimState():Hide(v)
 	end
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(0.667)
 end
 
-local function MakeWaxwellBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_waxwell")
-    anim:GetAnimState():SetBank("dst_menu_waxwell")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeWX78Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wx")
 end
 
-local function MakeWilsonBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wilson")
-    anim:GetAnimState():SetBank("dst_menu_wilson")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeWickerbottomBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wickerbottom")
 end
 
-local function MakeLunarRiftBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_lunarrifts")
-    anim:GetAnimState():SetBank("dst_menu_lunarrifts")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakePiratesBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_pirates")
 end
 
-local function MakeShadowRiftBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_rift2")
-    anim:GetAnimState():SetBank("dst_menu_rift2")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeDramaBanner(self, banner_root, uianim)
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_charlie2", nil, "loop_bg"):MoveToBack()
+	_MakeGenericBanner(uianim, IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and "dst_menu_charlie_halloween" or "dst_menu_charlie")
 end
 
-local function MakeMeta2Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_meta2_cotl")
-    anim:GetAnimState():SetBank("dst_menu_meta2")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeWaxwellBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_waxwell")
 end
 
-local function MakeLunarMutantsBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_rift3_BG")
-    anim:GetAnimState():SetBank("dst_menu_rift3_BG")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-    anim:GetAnimState():Hide("HOLLOW")
-
-    local anim_front = banner_root:AddChild(UIAnim())
-    anim_front:GetAnimState():SetBuild("dst_menu_rift3")
-    anim_front:GetAnimState():SetBank ("dst_menu_rift3")
-    anim_front:GetAnimState():PlayAnimation("loop", true)
-    anim_front:SetScale(.667)
-    anim_front:GetAnimState():Hide("HOLLOW")
+local function MakeWilsonBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wilson")
 end
 
-local function MakeMeta3Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_meta3")
-    anim:GetAnimState():SetBank("dst_menu_meta3")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeLunarRiftBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_lunarrifts")
 end
 
-local function MakeRiftsMetaQoLBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_riftsqol")
-    anim:GetAnimState():SetBank("banner")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeShadowRiftBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift2")
 end
 
-local function MakeLunarMutantsBanner_hallowednights(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_rift3_BG")
-    anim:GetAnimState():SetBank("dst_menu_rift3_BG")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-
-    local anim_front = banner_root:AddChild(UIAnim())
-    anim_front:GetAnimState():SetBuild("dst_menu_rift3")
-    anim_front:GetAnimState():SetBank ("dst_menu_rift3")
-    anim_front:GetAnimState():PlayAnimation("loop", true)
-    anim_front:SetScale(.667)
+local function MakeMeta2Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_meta2_cotl", "dst_menu_meta2")
 end
 
-local function MakeWurtWinonaQOLBanner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_winona_wurt")
-    anim:GetAnimState():SetBank("dst_menu_winona_wurt")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-
-    local anim_front = banner_root:AddChild(UIAnim())
-    anim_front:GetAnimState():SetBuild("dst_menu_winona_wurt_carnival_foreground")
-    anim_front:GetAnimState():SetBank ("dst_menu_winona_wurt")
-    anim_front:GetAnimState():PlayAnimation("loop_foreground", true)
-    anim_front:SetScale(.667)  
+local function MakeLunarMutantsBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift3_BG"):GetAnimState():Hide("HOLLOW")
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_rift3"):GetAnimState():Hide("HOLLOW")
 end
 
-local function MakeRift4Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_rift4")
-    anim:GetAnimState():SetBank("dst_menu_rift4")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeMeta3Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_meta3")
 end
 
-local function MakeHallowedNights2024Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_halloween3")
-    anim:GetAnimState():SetBank("dst_menu_halloween3")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeRiftsMetaQoLBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_riftsqol", "banner")
 end
 
-local function MakeWintersFeast2024Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_winter2024")
-    anim:GetAnimState():SetBank("dst_menu_winter2024")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
+local function MakeLunarMutantsBanner_hallowednights(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift3_BG")
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_rift3")
 end
 
-local function MakeMeta5Banner(self, banner_root, anim)
-    anim:GetAnimState():SetBuild("dst_menu_meta5")
-    anim:GetAnimState():SetBank("dst_menu_meta5")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-    anim:SetPosition(75, 50)
-
-    if not IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
-        anim:GetAnimState():Hide("winter")
-    end
+local function MakeWurtWinonaQOLBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_winona_wurt")
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_winona_wurt_carnival_foreground", "dst_menu_winona_wurt", "loop_foreground")
 end
 
-local function MakeRift5Banner(self, banner_root, anim)
-	anim:GetAnimState():SetBuild("dst_menu_rift5")
-	anim:GetAnimState():SetBank("dst_menu_rift5")
-	anim:GetAnimState():PlayAnimation("loop", true)
-	anim:SetScale(.667)
+local function MakeRift4Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift4")
 end
 
-local function MakeRift6Banner(self, banner_root, anim)
-	anim:GetAnimState():SetBuild("dst_menu_rift6")
-	anim:GetAnimState():SetBank("dst_menu_rift6")
-	anim:GetAnimState():PlayAnimation("loop", true)
-	anim:SetScale(.667)
+local function MakeMeta5Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_meta5"):SetPosition(75, 50)
+
+	if not IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
+		uianim:GetAnimState():Hide("winter")
+	end
 end
 
-local function MakeHallowedNights2025Banner(self, banner_root, anim)
-	anim:GetAnimState():SetBuild("dst_menu_halloween4")
-	anim:GetAnimState():SetBank("dst_menu_halloween4")
-	anim:GetAnimState():PlayAnimation("loop", true)
-	anim:SetScale(0.667)
+local function MakeRift5Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift5")
+end
+]]
+
+local function MakeRift6Banner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_rift6")
 end
 
-local function MakeDefaultBanner(self, banner_root, anim)
+--------------------------------------------------------------------------
+--YOT_ banners
+
+local function MakeYOTCBanner(self, banner_root, uianim)
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_carrat_bg", "dst_carrat_bg", nil, 0.7):MoveToBack()
+	_MakeGenericBanner(uianim, "dst_menu_carrat", "dst_carrat", nil, 0.6)
+
+	local colors =
+	{
+		"blue",
+		"brown",
+		"pink",
+		"purple",
+		"yellow",
+		"green",
+		"white",
+	}
+
+	local color = colors[math.random(0, #colors)]
+	if color then
+		uianim:GetAnimState():OverrideSymbol("ear1", "dst_menu_carrat_swaps", color.."_ear1")
+		uianim:GetAnimState():OverrideSymbol("ear2", "dst_menu_carrat_swaps", color.."_ear2")
+		uianim:GetAnimState():OverrideSymbol("tail", "dst_menu_carrat_swaps", color.."_tail")
+	end
+end
+
+local function MakeYOTDBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_yotd")
+end
+
+local function MakeYOTSBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_yots", nil, nil, 0.667 / 2)
+end
+
+local function MakeYOTCatcoonBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_yot_catcoon")
+end
+
+local function MakeYOTRBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_yotr")
+end
+
+--------------------------------------------------------------------------
+--Event banners
+
+local function MakeCawnivalBanner(self, banner_root, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_carnival")
+end
+
+local function MakeHallowedNightsBanner(self, banner_root, uianim)
+	--_MakeGenericBanner(uianim, "dst_menu_halloween2")
+
+	--2024
+	--_MakeGenericBanner(uianim, "dst_menu_halloween3")
+
+	--2025
+	_MakeGenericBanner(uianim, "dst_menu_halloween4")
+end
+
+local function MakeWintersFeastBanner(self, banner_root, uianim)
+	--2024
+	--_MakeGenericBanner(uianim, "dst_menu_winter2024")
+
+	--2025
+	_MakeGenericBanner(uianim, "dst_menu_winter2025")
+end
+
+--------------------------------------------------------------------------
+
+local function MakeDefaultBanner(self, banner_root, uianim)
 	local banner_height = 350
-	banner_root:SetPosition(0, RESOLUTION_Y / 2 - banner_height / 2 + 1 ) -- positioning for when we had the top banner art
+	banner_root:SetPosition(0, RESOLUTION_Y / 2 - banner_height / 2 + 1) -- positioning for when we had the top banner art
 
-    local anim_bg = banner_root:AddChild(UIAnim())
-    anim_bg:GetAnimState():SetBuild("dst_menu_v2_bg")
-    anim_bg:GetAnimState():SetBank("dst_menu_v2_bg")
-    anim:SetScale(.667)
-    anim_bg:GetAnimState():PlayAnimation("loop", true)
-    anim_bg:MoveToBack()
+	_MakeGenericBanner(banner_root:AddChild(UIAnim()), "dst_menu_v2_bg"):MoveToBack()
+	_MakeGenericBanner(uianim, "dst_menu_v2")
 
-    anim:GetAnimState():SetBuild("dst_menu_v2")
-    anim:GetAnimState():SetBank("dst_menu_v2")
-    anim:GetAnimState():PlayAnimation("loop", true)
-    anim:SetScale(.667)
-
-    local creatures =
-    {
-        "creature_cookie",
-        "creature_squid",
-        "creature_gnarwail",
-        "creature_puffin",
-        "creature_hound",
-        "creature_malbatross",
-    }
-
-    for _,v in pairs(creatures) do
-        anim:GetAnimState():Hide(v)
-    end
-
-    local c1 = creatures[math.random(1,#creatures)]
-    local c2 = creatures[math.random(1,#creatures)]
-    local c3 = creatures[math.random(1,#creatures)]
-
-    --could end up with dupes picked, that's okay, then we'll have only 1 or 2 chosen
-    anim:GetAnimState():Show(c1)
-    anim:GetAnimState():Show(c2)
-    anim:GetAnimState():Show(c3)
+	local creatures =
+	{
+		"creature_cookie",
+		"creature_squid",
+		"creature_gnarwail",
+		"creature_puffin",
+		"creature_hound",
+		"creature_malbatross",
+	}
+	--pick between 1-3 (remove from list, hide remaining)
+	for i = 1, math.random(3) do
+		table.remove(creatures, math.random(#creatures))
+	end
+	for _, v in ipairs(creatures) do
+		uianim:GetAnimState():Hide(v)
+	end
 end
 
 function MakeBanner(self)
 	local title_str = nil
 
 	local banner_root = Widget("banner_root")
-	banner_root:SetPosition(0, 0)
-	local anim = banner_root:AddChild(UIAnim())
+	local uianim = banner_root:AddChild(UIAnim())
 
 	if IS_BETA then
 		title_str = STRINGS.UI.MAINSCREEN.MAINBANNER_BETA_TITLE
@@ -530,42 +363,41 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-		MakeRift6Banner(self, banner_root, anim)
-        
-    elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
-        MakeYOTSBanner(self, banner_root, anim)        
-    elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTD) then
-        MakeYOTDBanner(self, banner_root, anim)
-    elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
-        MakeYOTRBanner(self, banner_root, anim)
+		MakeHallowedNightsBanner(self, banner_root, uianim)
+	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
+		MakeYOTSBanner(self, banner_root, uianim)
+	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTD) then
+		MakeYOTDBanner(self, banner_root, uianim)
+	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTR) then
+		MakeYOTRBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTC) then
-        MakeYOTCBanner(self, banner_root, anim)
+		MakeYOTCBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
-        MakeYOTCatcoonBanner(self, banner_root, anim)
+		MakeYOTCatcoonBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
-        MakeWintersFeast2024Banner(self, banner_root, anim)
+		MakeWintersFeastBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-		MakeHallowedNights2025Banner(self, banner_root, anim)
+		MakeHallowedNightsBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
-		MakeCawnivalBanner(self, banner_root, anim)
+		MakeCawnivalBanner(self, banner_root, uianim)
 	else
 		--*** !!! ***
 		--REMINDER: Check MakeBannerFront as well!
 		--
-		MakeRift6Banner(self, banner_root, anim)
-        --MakeWurtWinonaQOLBanner(self, banner_root, anim)
-        --MakeRiftsMetaQoLBanner(self, banner_root, anim)
-		--MakeMeta2Banner(self, banner_root, anim)
-        --MakeDramaBanner(self, banner_root, anim)
-        --MakeDefaultBanner(self, banner_root, anim)
-        --MakePiratesBanner(self, banner_root, anim)
-        --MakeWX78Banner(self, banner_root, anim)
+		MakeRift6Banner(self, banner_root, uianim)
+		--MakeWurtWinonaQOLBanner(self, banner_root, uianim)
+		--MakeRiftsMetaQoLBanner(self, banner_root, uianim)
+		--MakeMeta2Banner(self, banner_root, uianim)
+		--MakeDramaBanner(self, banner_root, uianim)
+		--MakeDefaultBanner(self, banner_root, uianim)
+		--MakePiratesBanner(self, banner_root, uianim)
+		--MakeWX78Banner(self, banner_root, uianim)
         --[[
 		local cur_time = os.time()
 		if cur_time <= 1585810740 and (not IsConsole() or cur_time >= 1585759200) then -- 9:40am to 11:59pm PDT
-            MakeWesV1Banner(self, banner_root, anim)
+			MakeWesV1Banner(self, banner_root, uianim)
 		else
-            MakeWendyBanner(self, banner_root, anim)
+			MakeWendyBanner(self, banner_root, uianim)
         end
         ]]
 	end
@@ -592,32 +424,19 @@ end
 
 --------------------------------------------------------------------------------
 
-local function MakeWX78BannerFront(self, banner_front, anim)
-    anim:GetAnimState():SetBuild("dst_menu_wx")
-    anim:GetAnimState():SetBank("dst_menu_wx")
-    anim:GetAnimState():PlayAnimation("loop_top", true)
-    anim:SetScale(0.667)
+--[[
+local function MakeWX78BannerFront(self, banner_front, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_wx", nil, "loop_top")
 end
 
-local function MakeDramaBannerFront(self, banner_front, anim)
-	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-		anim:GetAnimState():SetBuild("dst_menu_charlie_halloween")
-		anim:GetAnimState():SetBank ("dst_menu_charlie_halloween")
-	else
-		anim:GetAnimState():SetBuild("dst_menu_charlie")
-		anim:GetAnimState():SetBank ("dst_menu_charlie")
-	end
-    anim:GetAnimState():PlayAnimation("overlay", true)
-    anim:SetScale(0.667)
+local function MakeDramaBannerFront(self, banner_front, uianim)
+	_MakeGenericBanner(uianim, IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and "dst_menu_charlie_halloween" or "dst_menu_charlie", nil, "overlay")
 end
 
-local function MakeWinonaWurtCarnivalBannerFront(self, banner_front, anim)
-    anim:GetAnimState():SetBuild("dst_menu_winona_wurt_carnival_foreground")
-    anim:GetAnimState():SetBank ("dst_menu_winona_wurt")
-
-    anim:GetAnimState():PlayAnimation("loop_foreground", true)
-    anim:SetScale(0.667)
+local function MakeWinonaWurtCarnivalBannerFront(self, banner_front, uianim)
+	_MakeGenericBanner(uianim, "dst_menu_winona_wurt_carnival_foreground", "dst_menu_winona_wurt", "loop_foreground")
 end
+]]
 
 -- For drawing things in front of the MOTD panels
 local function MakeBannerFront(self)
@@ -626,25 +445,11 @@ local function MakeBannerFront(self)
 		--REMINDER: Banner changes in beta need to go in the default "else" block below too!
 		--
 
-        --[[local banner_front = Widget("banner_front")
-        banner_front:SetPosition(0, 0)
-        banner_front:SetClickable(false)
-        local anim = banner_front:AddChild(UIAnim())
-
-        MakeDramaBannerFront(self, banner_front, anim)
-
-        return banner_front]]
-
-		--[[ 
-        local banner_front = Widget("banner_front")
-        banner_front:SetPosition(0, 0)
-        banner_front:SetClickable(false)
-        local anim = banner_front:AddChild(UIAnim())
-
-        MakeWinonaWurtCarnivalBannerFront(self, banner_front, anim)
-        
-        return banner_front
-		]]
+		--[[local banner_front = Widget("banner_front")
+		banner_front:SetClickable(false)
+		--MakeDramaBannerFront(self, banner_front, banner_front:AddChild(UIAnim()))
+		MakeWinonaWurtCarnivalBannerFront(self, banner_front, banner_front:AddChild(UIAnim()))
+		return banner_front]]
         return nil
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTC) then
@@ -652,34 +457,22 @@ local function MakeBannerFront(self)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOT_CATCOON) then
         return nil
     elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-        --[[ local banner_front = Widget("banner_front")
-        banner_front:SetPosition(0, 0)
-        banner_front:SetClickable(false)
-        local anim = banner_front:AddChild(UIAnim())
-
-        MakeDramaBannerFront(self, banner_front, anim)
-
-        return banner_front ]]
+		--[[Local banner_front = Widget("banner_front")
+		banner_front:SetClickable(false)
+		MakeDramaBannerFront(self, banner_front, banner_front:AddChild(UIAnim()))
+		return banner_front]]
         return nil
 
     elseif IsSpecialEventActive(SPECIAL_EVENTS.CARNIVAL) then
-        --[[local banner_front = Widget("banner_front")
-        banner_front:SetPosition(0, 0)
-        banner_front:SetClickable(false)
-        local anim = banner_front:AddChild(UIAnim())
-
-        MakeWinonaWurtCarnivalBannerFront(self, banner_front, anim)
-        
-        return banner_front]]
+		--[[local banner_front = Widget("banner_front")
+		banner_front:SetClickable(false)
+		MakeWinonaWurtCarnivalBannerFront(self, banner_front, banner_front:AddChild(UIAnim()))
+		return banner_front]]
 		return nil
     else
-        --[[local banner_front = Widget("banner_front")
-        banner_front:SetPosition(0, 0)
-        local anim = banner_front:AddChild(UIAnim())
-
-        MakeWickerbottomBannerFront(self, banner_front, anim)
-        
-        return banner_front]]
+		--[[local banner_front = Widget("banner_front")
+		MakeWickerbottomBannerFront(self, banner_front, banner_front:AddChild(UIAnim()))
+		return banner_front]]
         return nil
     end
 end
@@ -1522,6 +1315,5 @@ function MultiplayerMainScreen:CheckEntitlements()
         self.entitlements_checked = true 
     end
 end
-
 
 return MultiplayerMainScreen

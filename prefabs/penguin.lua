@@ -389,6 +389,8 @@ local function mutated_fn()
     inst.components.locomotor.directdrive = false
 
     inst:SetStateGraph("SGpenguin")
+    inst.sg.mem.nocorpse = true
+    inst.sg.mem.nolunarmutate = true
 
     inst:SetBrain(brain)
 

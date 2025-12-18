@@ -55,7 +55,10 @@ local events=
 				inst.sg:GoToState("walk_start")
 			end
 		end
-	end)
+	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function ShouldStopSpin(inst)
@@ -451,6 +454,11 @@ CommonStates.AddCombatStates(states,
 	{
 		TimeEvent(FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/mossling/death") end)
 	},
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 CommonStates.AddSleepStates(states,
 {
@@ -468,4 +476,7 @@ CommonStates.AddSleepStates(states,
 	}
 })
 
-return StateGraph("mossling", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("mossling", states, events, "init", actionhandlers)

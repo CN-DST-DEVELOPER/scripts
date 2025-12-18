@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Alas! The charge doth fail!",
+            CHARGE_FULL = "Brimming with power like Mjolnir!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Curses!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Blast! That space is taken.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Twisted dead-eaters doth circle above!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Curses! I hath not moved an inch!",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Quicker than if I didst ride Hermod the Swift himself!",
 
 	BATTLECRY =
 	{
@@ -4105,8 +4115,8 @@ return{
 		},
 
         HERMITHOUSE = {
-            GENERIC = "The sea witch seems to be pleased with it.",
-            BUILTUP = "The old crone resides here?",
+            GENERIC = "The old crone resides here?",
+            BUILTUP = "The sea witch seems to be pleased with it.",
         },
 
         SHELL_CLUSTER = "Tis naught but a clump of shells.",
@@ -5897,6 +5907,77 @@ return{
             BURNING = "Blaze brightly, for all to see.",
             REVIVING = "Back for more, are we?",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "'Twill reinvigorate any weary warrior.'",
+            GENERIC = "Perhaps a fire giant slumbers beneath!",
+            EMPTY = "Odd, I do not see the fire giant...",
+        },
+		HERMITHOTSPRING_CONSTR = "Will this build ne'er be finished?",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "The moisture has been vanquished!",
+            DRYING = "It's being prepared just the way I like it.",
+            DRYINGINRAIN = "All this rain isn't helping.",
+            GENERIC =  "Quite a formidable drying rack!",
+            BURNT = "Such a shame.",
+            DONE_NOTMEAT = "'Tis as dry as an empty well!",
+            DRYING_NOTMEAT = "It's drying out nicely.",
+            DRYINGINRAIN_NOTMEAT = "All this rain isn't helping.",
+            DONE_SALT = "Salt! A gift from the gods to season my meats!",
+			ABANDONED = "It hath fallen.",
+        },
+		HERMITHOUSE_ORNAMENT = "By the wind's touch, it doth dance.",
+        HERMITHOUSE_LAUNDRY = "Linger not thy gaze upon the accursed rags of the sea witch!",
+
+        PETALS_DRIED = "T'would make a most worthy offering to the gods!",
+        PETALS_EVIL_DRIED = "T'would make a most worthy offering to the gods!",
+        FOLIAGE_DRIED = "T'would make a most worthy offering to the gods!",
+        SUCCULENT_PICKED_DRIED = "T'would make a most worthy offering to the gods!",
+        FIRENETTLES_DRIED = "T'would make a most worthy offering to the gods!",
+        TILLWEED_DRIED = "T'would make a most worthy offering to the gods!",
+        MOON_TREE_BLOSSOM_DRIED = "T'would make a most worthy offering to the gods!",
+        FORGETMELOTS_DRIED = "T'would make a most worthy offering to the gods!",
+
+        HERMITCRABTEA_PETALS = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_PETALS_EVIL = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_FOLIAGE = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_FIRENETTLES = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_TILLWEED = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Dost thou seek to poison me with this vile concoction?",
+        HERMITCRABTEA_FORGETMELOTS = "Dost thou seek to poison me with this vile concoction?",
+        SHELLWEAVER = "The sea witch hath shared her ways with us. A high honor, indeed.",
+        ICESTAFF2 = "Jotunn magics!",
+        ICESTAFF3 = "A staff worthy of Skadi herself.",
+        NONSLIPGRIT = "With this, my grip shan't falter!",
+        NONSLIPGRITBOOSTED = "Cast it upon the ground, and thine footing shall be true.",
+        DESICCANT = "I hath been warned by my allies not to taste it.",
+        DESICCANTBOOSTED = "My allies spoke true... sample not from the wicked salt bag!",
+        HERMITCRAB_SHELL = "For a swift journey to the sea witch.",
+        SALTY_DOGHAT = "The helm of one who holds command over the seas.",
+        SALTY_DOG = "To me, my briny ally!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "The sea witch hath abandoned her post!", -- Inactive state, no Pearl inside.
+            ACTIVE = "What concoction do I fancy?", -- Active, Pearl is inside, can buy from her
+            BREWING = "The sea witch is brewing her concoction.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Methinks Odin craved the witch's brew.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Provisions fit for a long journey at sea.",
+        FISHMEAT_SMALL_DRIED = "Provisions fit for a short journey at sea.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "It doth shine with the radiance of Baldur.",
+            ABANDONED = "It is no more.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "I shall see to it.",
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

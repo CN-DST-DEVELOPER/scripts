@@ -115,17 +115,22 @@ end
 
 --------------------------------------------------------------------------
 
-local CARCASS_TAGS = { "meat_carcass" }
-local CARCASS_NO_TAGS = { "fire" }
+local CARCASS_TAGS = { "creaturecorpse" }
+local CARCASS_NO_TAGS = { "NOCLICK", "fire" }
+local function IsCarcassValid(guy, inst)
+    return not guy:IsMutating()
+end
+
 function HoundBrain:SelectCarcass()
-	self.carcass = FindEntity(self.inst, SEE_DIST, nil, CARCASS_TAGS, CARCASS_NO_TAGS)
+	self.carcass = FindEntity(self.inst, SEE_DIST, IsCarcassValid, CARCASS_TAGS, CARCASS_NO_TAGS)
 	return self.carcass ~= nil
 end
 
 function HoundBrain:CheckCarcass()
 	return not (self.carcass.components.burnable ~= nil and self.carcass.components.burnable:IsBurning())
 		and self.carcass:IsValid()
-		and self.carcass:HasTag("meat_carcass")
+		and self.carcass:HasTag("creaturecorpse")
+        and not self.carcass:IsMutating()
 end
 
 function HoundBrain:GetCarcassPos()

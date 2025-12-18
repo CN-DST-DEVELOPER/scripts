@@ -9,6 +9,7 @@ local prefabs =
     "monstermeat",
     "tentaclespike",
     "tentaclespots",
+    "tentaclecorpse",
 }
 
 SetSharedLootTable( 'tentacle',

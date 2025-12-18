@@ -12,6 +12,7 @@ local assets =
 local prefabs =
 {
     "teenbird",
+    "smallbirdcorpse",
 }
 
 local teen_assets =

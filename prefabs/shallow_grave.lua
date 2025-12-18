@@ -17,37 +17,6 @@ SetSharedLootTable('shallow_grave_player',
 
 -----------------------------------------------------------------------------------------------
 
-local function Player_GetDescription(inst, viewer)
-    if inst.char ~= nil and not viewer:HasTag("playerghost") then
-        local mod = GetGenderStrings(inst.char)
-        local desc = GetDescription(viewer, inst, mod)
-        local name = inst.playername or STRINGS.NAMES[string.upper(inst.char)]
-
-        -- No translations for player killer's name.
-        if inst.pkname ~= nil then
-            return string.format(desc, name, inst.pkname)
-        end
-
-        -- Permanent translations for death cause.
-        if inst.cause == "unknown" then
-            inst.cause = "shenanigans"
-
-        elseif inst.cause == "moose" then
-            inst.cause = math.random() < .5 and "moose1" or "moose2"
-        end
-
-        -- Viewer based temp translations for death cause.
-        local cause =
-            inst.cause == "nil"
-            and (
-                (viewer == "waxwell" or viewer == "winona") and "charlie" or "darkness"
-            )
-            or inst.cause
-
-        return string.format(desc, name, STRINGS.NAMES[string.upper(cause)] or STRINGS.NAMES.SHENANIGANS)
-    end
-end
-
 local function Player_Decay(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     inst:Remove()
@@ -61,7 +30,7 @@ local function Player_SetSkeletonDescription(inst, char, playername, cause, pkna
     inst.userid = userid
     inst.pkname = pkname
     inst.cause = pkname == nil and cause:lower() or nil
-    inst.components.inspectable.getspecialdescription = Player_GetDescription
+    inst.components.inspectable.getspecialdescription = GetPlayerDeathDescription
 end
 
 local function Player_SetSkeletonAvatarData(inst, client_obj)
@@ -123,7 +92,7 @@ local function Player_OnLoad(inst, data)
     inst.cause = data.cause
 
     if inst.components.inspectable ~= nil then
-        inst.components.inspectable.getspecialdescription = Player_GetDescription
+        inst.components.inspectable.getspecialdescription = GetPlayerDeathDescription
     end
 
     if data.age ~= nil and data.age > 0 then

@@ -90,21 +90,52 @@ local function OnWorldPaused(inst)
     end
 end
 
-local function RemoveDeadPlayer(inst, spawnskeleton)
-    if spawnskeleton and TheSim:HasPlayerSkeletons() and inst.skeleton_prefab ~= nil then
-        local x, y, z = inst.Transform:GetWorldPosition()
+-- might be a corpse, skeleton, or grave
+local DEATH_PRODUCTS =
+{
+    SKELETON = 0,
+    SHALLOW_GRAVE = 1,
+    CORPSE = 2,
+}
+local function SpawnDeathProduct(inst)
+    -- sg.mem.nocorpse is set in player constructor when HasPlayerSkeletons is false
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local can_corpse = CanEntityBecomeCorpse(inst)
+    if can_corpse then
+        local corpse = SpawnPrefab("playercorpse")
+        corpse.Transform:SetPosition(x, y, z)
+        corpse.Transform:SetRotation(inst.Transform:GetRotation())
+        corpse.Transform:SetScale(inst.Transform:GetScale())
+        --corpse.AnimState:SetScale(inst.AnimState:GetScale())
+        corpse.AnimState:SetBank(inst.AnimState:GetBankHash())
+        corpse.AnimState:MakeFacingDirty()
 
-        -- Spawn a skeleton
-        local skel = SpawnPrefab(inst.skeleton_prefab)
+        corpse.skeleton_prefab = inst.skeleton_prefab
+        corpse.no_destroy_on_burn = (inst.components.health.fire_damage_scale == 0) -- For Willow!
+        corpse.components.skinner:CopySkinsFromPlayer(inst)
+
+        corpse:SetCorpseDescription(inst.prefab, inst:GetDisplayName(), inst.deathcause, inst.deathpkname, inst.userid)
+        corpse:SetCorpseAvatarData(inst.deathclientobj)
+
+        return DEATH_PRODUCTS.CORPSE
+    else
+        local has_skeletons = TheSim:HasPlayerSkeletons()
+        local skel = SpawnPrefab(has_skeletons and inst.skeleton_prefab or "shallow_grave_player")
         if skel ~= nil then
             skel.Transform:SetPosition(x, y, z)
             -- Set the description
             skel:SetSkeletonDescription(inst.prefab, inst:GetDisplayName(), inst.deathcause, inst.deathpkname, inst.userid)
             skel:SetSkeletonAvatarData(inst.deathclientobj)
         end
+        return has_skeletons and DEATH_PRODUCTS.SKELETON or DEATH_PRODUCTS.SHALLOW_GRAVE
+    end
+end
 
-        -- Death FX
-        SpawnPrefab("die_fx").Transform:SetPosition(x, y, z)
+local function RemoveDeadPlayer(inst, spawnskeleton)
+    if spawnskeleton and inst.skeleton_prefab ~= nil then
+        local x, y, z = inst.Transform:GetWorldPosition()
+        SpawnDeathProduct(inst)
+        SpawnPrefab("die_fx").Transform:SetPosition(x, y, z) -- Death FX
     end
 
     if not GetGhostEnabled() and not GetGameModeProperty("revivable_corpse") then
@@ -615,23 +646,11 @@ local function OnMakePlayerGhost(inst, data)
     end
 
     local x, y, z = inst.Transform:GetWorldPosition()
+    local death_product_type
 
     -- Spawn post death item
     if inst.skeleton_prefab ~= nil and data ~= nil and data.skeleton then
-        local skel = nil
-        if TheSim:HasPlayerSkeletons() then
-            -- a skeleton
-            skel = SpawnPrefab(inst.skeleton_prefab)
-        else
-            -- a shallow grave
-            skel = SpawnPrefab("shallow_grave_player")
-        end
-        if skel ~= nil then
-            skel.Transform:SetPosition(x, y, z)
-            -- Set the description
-            skel:SetSkeletonDescription(inst.prefab, inst:GetDisplayName(), inst.deathcause, inst.deathpkname, inst.userid)
-            skel:SetSkeletonAvatarData(inst.deathclientobj)
-        end
+        death_product_type = SpawnDeathProduct(inst)
     end
 
     if data ~= nil and data.loading then
@@ -645,7 +664,9 @@ local function OnMakePlayerGhost(inst, data)
         end
 
         -- Death FX
-        SpawnPrefab("die_fx").Transform:SetPosition(x, y, z)
+        if death_product_type ~= DEATH_PRODUCTS.CORPSE then
+            SpawnPrefab("die_fx").Transform:SetPosition(x, y, z)
+        end
     end
 
     inst.AnimState:SetBank("ghost")

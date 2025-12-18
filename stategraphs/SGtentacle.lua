@@ -3,7 +3,7 @@ require("stategraphs/commonstates")
 local events=
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("hit", "attack") then
@@ -20,6 +20,9 @@ local events=
             end
         end),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function OnEntitySleep(inst)
@@ -189,9 +192,14 @@ local states=
             inst.SoundEmitter:PlaySound("dontstarve/tentacle/tentacle_death_VO")
             inst.AnimState:PlayAnimation("death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
+        
         timeline=
         {
             TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/tentacle/tentacle_splat") end),
@@ -224,4 +232,7 @@ CommonStates.AddElectrocuteStates(states, nil, nil, {
 	end,
 })
 
-return StateGraph("tentacle", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("tentacle", states, events, "init")

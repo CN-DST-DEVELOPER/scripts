@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Aw, charge is too weak!",
+            CHARGE_FULL = "It is full of mighty charge!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Wolfgang miss on purpose.",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Wolfgang find another soaking spot.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1188,6 +1194,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Go away, weird buzzard! Wolfgang still alive!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Why Wolfgang still here?",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Wolfgang has arrive!",
 
 	BATTLECRY =
 	{
@@ -5898,6 +5908,77 @@ return{
             BURNING = "Wolfgang feel safer now.",
             REVIVING = "No! Is wrong!",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Oooh, is good for tired muscles!",
+            GENERIC = "Is hot puddle.",
+            EMPTY = "Is just dirt hole now.",
+        },
+		HERMITHOTSPRING_CONSTR = "But Wolfgang want now!",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Everything so dry.",
+            DRYING = "Dry things! Dry!",
+            DRYINGINRAIN = "Go away, rain! We are drying!",
+            GENERIC =  "Big and mighty dry rack!",
+            BURNT = "Cannot dry now.",
+            DONE_NOTMEAT = "Is very good and dry now!",
+            DRYING_NOTMEAT = "Wolfgang could punch water out, maybe?",
+            DRYINGINRAIN_NOTMEAT = "Sky tears is re-wetting the dry things!",
+            DONE_SALT = "Nice but Wolfgang trying low sodium diet.",
+			ABANDONED = "Once big and mighty dry rack, now garbage. Sad.",
+        },
+		HERMITHOUSE_ORNAMENT = "Is quite elegant.",
+        HERMITHOUSE_LAUNDRY = "Hmm, when last time Wolfgang change underwears?",
+
+        PETALS_DRIED = "Wolfgang appreciate delicate fragrance.",
+        PETALS_EVIL_DRIED = "Wolfgang appreciate delicate fragrance.",
+        FOLIAGE_DRIED = "Wolfgang appreciate delicate fragrance.",
+        SUCCULENT_PICKED_DRIED = "Wolfgang appreciate delicate fragrance.",
+        FIRENETTLES_DRIED = "Wolfgang appreciate delicate fragrance.",
+        TILLWEED_DRIED = "Wolfgang appreciate delicate fragrance.",
+        MOON_TREE_BLOSSOM_DRIED = "Wolfgang appreciate delicate fragrance.",
+        FORGETMELOTS_DRIED = "Wolfgang appreciate delicate fragrance.",
+
+        HERMITCRABTEA_PETALS = "It give Wolfgang little peace of mind.",
+        HERMITCRABTEA_PETALS_EVIL = "Make Wolfgang little bit loopy.",
+        HERMITCRABTEA_FOLIAGE = "Vitamin to make Wolfgang brainmeats more mighty!",
+        HERMITCRABTEA_SUCCULENT_PICKED = "To cool Wolfgang muscles on hot day.",
+        HERMITCRABTEA_FIRENETTLES = "Like warm hug for Wolfgang.",
+        HERMITCRABTEA_TILLWEED = "Yes! Is good for Wolfgang health!",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Wolfgang not afraid moon guys. Fine, little sip not hurt.",
+        HERMITCRABTEA_FORGETMELOTS = "Must drink when Wolfgang mind broken.",
+        SHELLWEAVER = "Careful with prickly lid!",
+        ICESTAFF2 = "Little Wolfgang loved icy pops.",
+        ICESTAFF3 = "Wow, is giant icy pop.",
+        NONSLIPGRIT = "Wolfgang never slip! But just in case.",
+        NONSLIPGRITBOOSTED = "Wolfgang use for clumsy friends.",
+        DESICCANT = "Nice, Wolfgang hate being all wet.",
+        DESICCANTBOOSTED = "Is mightier dry powder!",
+        HERMITCRAB_SHELL = "See you soon, sweet crab lady!",
+        SALTY_DOGHAT = "Wolfgang make great captain!",
+        SALTY_DOG = "Wolfgang love salty little guy!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Where sweet crab lady?", -- Inactive state, no Pearl inside.
+            ACTIVE = "Wolfgang love tea!", -- Active, Pearl is inside, can buy from her
+            BREWING = "Wolfgang is getting thirsty!", -- A trade just happened and she's brewing the tea!|
+            BURNT = "This not good.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Is good source of fishy protein.",
+        FISHMEAT_SMALL_DRIED = "Is good source of fishy protein.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Pretty lights bring out Wolfgang eyes.",
+            ABANDONED = "This is too bad.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Wolfgang have mighty eye for decorating.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

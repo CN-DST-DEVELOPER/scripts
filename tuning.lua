@@ -1394,6 +1394,13 @@ function Tune(overrides)
                 HERMITCRABSHOP = 7,
             }),
 
+            SHELLWEAVER_L1 = TechTree.Create({
+                SHELLWEAVER = 1,
+            }),
+            SHELLWEAVER_L2 = TechTree.Create({
+                SHELLWEAVER = 3,
+            }),
+
             RABBITKINGSHOP = TechTree.Create({
                 RABBITKINGSHOP = 2,
             }),
@@ -1957,6 +1964,7 @@ function Tune(overrides)
                 1, --[36] Vampire Teeth
                 1, --[37] Wooden Stake
             },
+			HERMITHOUSE_ORNAMENT = 3,
         },
 
         RESEARCH_COST_CHEAP = 30,
@@ -1986,6 +1994,7 @@ function Tune(overrides)
         HEALING_TINY = 1,
         HEALING_SMALL = 3,
         HEALING_MEDSMALL = 8,
+        HEALING_MOREMEDSMALL = 15,
         HEALING_MED = 20,
         HEALING_MEDLARGE = 30,
         HEALING_LARGE = 40,
@@ -3578,6 +3587,10 @@ function Tune(overrides)
 
             DAYWALKER2        = {basic=1, special="winter_ornament_boss_daywalker2"},
             WORM_BOSS         = {basic=1, special="winter_ornament_boss_wormboss"},
+
+            ALTERGUARDIAN_PHASE1_LUNARRIFT  = {basic=1, special="winter_ornament_boss_celestialrevenant"},
+            WAGBOSS_ROBOT                   = {basic=2, special="winter_ornament_boss_warbot"},
+            ALTERGUARDIAN_PHASE4_LUNARRIFT  = {basic=2, special="winter_ornament_boss_celestialscion"},
         },
 
         WINTERS_FEAST_LOOT_EXCLUSION =
@@ -8862,7 +8875,7 @@ function Tune(overrides)
         BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = 27,
         BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = 5,
 
-        TALL_FLAMEWALL_BASE_TIME = 16,
+        TALL_FLAMEWALL_BASE_TIME = 12,
         TALL_FLAMEWALL_VAR_TIME = 3,
 
         SPAWN_MOON_PENGULLS = true,
@@ -8875,6 +8888,159 @@ function Tune(overrides)
         SPAWN_MUTATED_DEERCLOPS = true,
         SPAWN_MUTATED_BEARGER = true,
         SPAWN_MUTATED_WARG = true,
+
+        CREATURE_CARCASS_MEAT_PER_LEVEL = -- 3 levels
+        {
+            ["tiny"] = 2,
+            ["small"] = 6,
+            ["med"] = 14,
+            ["large"] = 33, -- pretend this goes up nicely to 100 with the 3 levels :)
+        },
+
+        BIRD_RIFT_POSSESSION_SPAWN_CHANCE = 1 / 20,
+
+        -- Winter 2025
+
+        HERMITCRABTEA_USES = 10,
+
+        HERMITCRABTEA_HOT_BONUS_TEMP = 40,
+        HERMITCRABTEA_COLD_BONUS_TEMP = -40,
+
+        HERMITCRABTEA_TEMP_TIME = seg_time * 4,
+
+        SHELLWEAVER_COOK_TIME = 6,
+
+        NONSLIPGRIT_TOTAL_USE_TIME = seg_time * 6,
+        NONSLIPGRITBOOSTED_NUMBER_OF_POOLS = 25,
+        NONSLIPGRITBOOSTED_POOL_TIME = seg_time * 2,
+
+        DESICCANT_DRY_RATE = 0.5,
+        DESICCANTBOOSTED_DRY_RATE = 0.75,
+        MOISTUREABSORBER_RAINED_ON_EFFICIENCY_MULT = 0.07,
+
+        SALTY_DOG_TIME_TO_SALT = seg_time * 2,
+        SALTY_DOG_MAX_SALT_COUNT = 2,
+
+        HERMTICRAB_SHELL_RANGE = 12,
+        HERMITCRAB_SHELL_USES = 10,
+        HERMITCRAB_SHELL_ADD_WETNESS = 15,
+
+        HERMITCRAB_PETALTEA_SANITY_DELTA = 1,
+		HERMITCRAB_PETALTEA_TICK_RATE = 1,
+		HERMITCRAB_PETALTEA_DURATION = seg_time * 1.5,
+
+        HERMITCRAB_EVILPETALTEA_SANITY_DELTA = -2,
+		HERMITCRAB_EVILPETALTEA_TICK_RATE = 1,
+		HERMITCRAB_EVILPETALTEA_DURATION = seg_time * 2,
+
+        HERMITCRAB_TILLWEEDTEA_HEALTH_DELTA = 1,
+		HERMITCRAB_TILLWEEDTEA_TICK_RATE = .5,
+		HERMITCRAB_TILLWEEDTEA_DURATION = seg_time * .5,
+
+		HERMITCRAB_FORGETMELOTTEA_SANITY_DELTA = 2,
+		HERMITCRAB_FORGETMELOTTEA_TICK_RATE = 1,
+		HERMITCRAB_FORGETMELOTTEA_DURATION = seg_time * 1.5,
+
+        HERMITCRAB_FOLIAGETEA_DURATION = seg_time * 6,
+        HERMITCRAB_FOLIAGETEA_SANITY_MOD = 0.1,
+
+        HERMITCRAB_MOONTREEBLOSSOMTEA_DURATION = seg_time * 6,
+        HERMITCRAB_MOONTREEBLOSSOMTEA_PANIC_SHADOWCREATURE_TIME = seg_time,
+
+        HERMITCRAB_DECOR_UPDATE_TIME = 10, -- recount score every 10 seconds.
+        HERMITCRAB_DECOR_MAX_SCORE = 100,
+        HERMITCRAB_DECOR_RADIUS = 32,
+
+        HERMITCRAB_DECOR_MAX_TILE_SPACE = 100,
+        HERMITCRAB_DECOR_TILE_SCORE = .15,
+        HERMITCRAB_DECOR_TILE_SCORE_LOW = .10,
+        HERMITCRAB_DECOR_TILE_SCORE_MAX = 100 * .15, -- max tile space * highest tile score
+
+        -- Get a big boost for having ONE of these structures at least
+        HERMITCRAB_DECOR_UNIQUE_BOOSTS =
+        {
+            ["hermitcrab_teashop"] = 10,
+            ["hermithotspring"] = 10,
+            ["tacklestation"] = 3,
+            ["shellweaver"] = 3,
+        },
+
+        HERMITCRAB_DECOR_SPAWNER_SCORE_GRAVE = -3, -- Scary and morbid! :(
+        HERMITCRAB_DECOR_SPAWNER_SCORE = -1,
+        HERMITCRAB_DECOR_SPAWNER_SCORE_MIN = -33,
+
+        HERMITCRAB_DECOR_TABLE_SCORE = 2,
+        HERMITCRAB_DECOR_TABLE_ITEM_SCORE = 5,
+        HERMITCRAB_DECOR_TABLE_SCORE_MAX = 15,
+
+        HERMITCRAB_DECOR_JUNK_SCORE = -.5,
+        HERMITCRAB_DECOR_JUNK_SCORE_MIN = -50, -- Junk can only subtract 50,
+
+        HERMITCRAB_DECOR_DOCKPOST_SCORE = .5,
+        HERMITCRAB_DECOR_DOCKPOST_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_POTTEDPLANT_SCORE = 1,
+        HERMITCRAB_DECOR_POTTEDPLANT_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_TROPHY_SCALE_FISH_SCORE = 0.012, -- per weight value,
+        HERMITCRAB_DECOR_ALL_FISH_SCORE = 20, -- Congrats! you got all the fish!
+
+        HERMITCRAB_DECOR_CHAIR_SCORE = 2,
+        HERMITCRAB_DECOR_CHAIR_SCORE_MAX = 8,
+
+        HERMITCRAB_DECOR_MEAT_RACK_SCORE = 1, -- this is per slot
+        HERMITCRAB_DECOR_MEAT_RACK_SCORE_MAX = 9,
+
+        HERMITCRAB_DECOR_PICKABLE_SCORE = .5,
+        HERMITCRAB_DECOR_PICKABLE_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_LIGHTPOST_SCORE = 1/3,
+        HERMITCRAB_DECOR_LIGHTPOST_ON_SCORE = 1,
+        HERMITCRAB_DECOR_LIGHTPOST_SCORE_MAX = 10,
+
+        HERMITCRAB_DECOR_BEEBOX_SCORE = 1,
+        HERMITCRAB_DECOR_BEEBOX_SCORE_MAX = 5,
+
+        HERMITCRAB_DECOR_FLOWER_SCORE = .5,
+        HERMITCRAB_DECOR_FLOWER_SCORE_MAX = 5,
+
+        HERMITCRAB_DECOR_CRITTER_PET_SCORE = 5,
+
+        HERMITCRAB_DECOR_WATER_TREE_SCORE = 15,
+        HERMITCRAB_DECOR_WATER_TREE_SCORE_MAX = 15,
+        HERMITCRAB_DECOR_WATER_TREE_TILE_COVERAGE_MIN = 10,
+
+		HERMITCRAB_DECOR_LVL5_HOUSE = 5,
+		HERMITCRAB_DECOR_ORNAMENT_SCORE = 2,
+		HERMITCRAB_DECOR_WINTER_ORNAMENT_SCORE = 4,
+		HERMITCRAB_DECOR_WAGSTAFF_ORNAMENT_SCORE = 8,
+
+		HERMITCRAB_DECOR_WINTER_BONUS_SCORE = 2,
+
+        HERMITCRAB_DECOR_HAPPY_SCORE = 90,
+
+        HERMITCRAB_DECOR_FISHING_BLOCKED_SCORE = -4, -- -4 points for each fishing marker covered. 16 markers x -4 = -64 decor points lost.
+        HERMITCRAB_DECOR_FISHING_BLOCKED_SCORE_MIN = -64, -- -4 * 16
+
+		HERMITHOTSPRING_BATHBOMB_DURATION = total_day_time,
+        HERMITHOTSPRING_TICK_PERIOD = 1,
+        HERMITHOTSPRING_SANITY_PER_SECOND = 2,
+        HERMITHOTSPRING_HEALTH_PER_SECOND = 2,
+
+        HOTSPRING_TICK_PERIOD = 1,
+        HOTSPRING_SANITY_PER_SECOND = 1,
+        HOTSPRING_HEALTH_PER_SECOND = 1,
+		HERMITCRAB_HOTSPRING_SOAK_TIME = 30,
+		HERMITCRAB_HOTSPRING_HAPPY_SOAK_TIME = 60,
+
+        MOONSTORM_SPARKCHARGE_DEFAULT = 0.1,
+        NIGHTSTICK_SPARKCHARGE = 0.25,
+        NIGHTSTICK_BATTERYCHARGE = 1.0,
+
+        WINTERSURPRISE_SPAWN_DELAY = total_day_time * 2,
+        WINTERSURPRISE_SPAWN_DELAY_VARIANCE = total_day_time * 1,
+        WINTERSURPRISE_MAX_SPAWNS = 3,
+        SPAWN_WINTERSURPRISE = true,
     }
 
     TUNING_MODIFIERS = {}

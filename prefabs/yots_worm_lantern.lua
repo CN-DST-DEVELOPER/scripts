@@ -56,7 +56,7 @@ local function on_remove_light(light)
 end
 
 local function on_lantern_ignited(inst, source, doer)
-    inst.components.inactive = false
+    inst.components.activatable.inactive = false
     inst:DoTaskInTime(2 + math.random(), on_activated, doer)
 end
 

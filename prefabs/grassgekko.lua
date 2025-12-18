@@ -11,6 +11,7 @@ local prefabs =
     "cutgrass",
     "plantmeat",
     "grassgekkoherd",
+    "grassgekkocorpse",
 }
 
 SetSharedLootTable('grassgekko',

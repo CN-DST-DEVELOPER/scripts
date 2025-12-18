@@ -23,6 +23,9 @@ local events =
             inst.sg:GoToState("summon_ally")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function return_to_idle(inst)
@@ -369,9 +372,16 @@ CommonStates.AddCombatStates(states,
 {
     attack = "attack",
     hit = "walk_pst",
+},
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("molebat", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("molebat", states, events, "init", actionhandlers)

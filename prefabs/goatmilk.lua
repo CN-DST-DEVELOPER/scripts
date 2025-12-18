@@ -22,6 +22,7 @@ local function fn()
     MakeInventoryPhysics(inst)
 
     inst:AddTag("catfood")
+    inst:AddTag("fooddrink")
 
     MakeInventoryFloatable(inst, "small", 0.15, 0.6)
 

@@ -1898,3 +1898,37 @@ function MakeCraftingMaterialRecycler(inst, data)
     inst.OnBuiltFn  = MaterialRecycler_OnBuilt
 end
 
+--------------------------------------------------------------------------
+
+function IsWithinHermitCrabArea(inst)
+	local hermitcrabmanager = TheWorld.components.hermitcrab_relocation_manager
+	local house = hermitcrabmanager and hermitcrabmanager:GetPearlsHouse()
+	return house ~= nil
+		and house.components.pearldecorationscore ~= nil
+		and house.components.pearldecorationscore:IsEntityWithin(inst)
+end
+
+function MakeHermitCrabAreaListener(inst, callbackfn)
+	if callbackfn == nil then
+		return
+	end
+
+	local updateonspawn
+    local function UpdateWithinStatus()
+		if updateonspawn then
+			inst:RemoveEventCallback("entitywake", UpdateWithinStatus)
+			inst:RemoveEventCallback("entitysleep", UpdateWithinStatus)
+			updateonspawn = nil
+		end
+		callbackfn(inst, IsWithinHermitCrabArea(inst))
+    end
+    inst:ListenForEvent("ms_updatepearldecorationscore_tiles", UpdateWithinStatus, TheWorld)
+    inst:ListenForEvent("pearldecorationscore_updatestatus", UpdateWithinStatus, TheWorld)
+	inst:ListenForEvent("onbuilt", UpdateWithinStatus)
+
+	if not POPULATING then
+		updateonspawn = true
+		inst:ListenForEvent("entitywake", UpdateWithinStatus)
+		inst:ListenForEvent("entitysleep", UpdateWithinStatus)
+	end
+end

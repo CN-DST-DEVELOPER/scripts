@@ -26,6 +26,9 @@ local events=
 			inst.sg:GoToState("stunned")
 		end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -90,12 +93,16 @@ local states=
 
             inst.AnimState:PlayAnimation("death")
             inst.SoundEmitter:PlaySound("monkeyisland/lightcrab/death")
-            inst.components.lootdropper:DropLoot()
+            inst:DropDeathLoot()
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
-     State{
+    State{
         name = "portal_spawn",
 		tags = { "busy", "stunned", "nointerrupt", "jumping", "nosleep", "noelectrocute" },
         onenter = function(inst)
@@ -253,4 +260,7 @@ CommonStates.AddSimpleState(states, "idle3", "idle3", {"canrotate"},nil,nil,{
     end,
 })
 
-return StateGraph("lightcrab", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("lightcrab", states, events, "init", actionhandlers)

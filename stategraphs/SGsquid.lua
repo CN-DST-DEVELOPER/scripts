@@ -21,7 +21,7 @@ local actionhandlers =
 local events =
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
@@ -48,6 +48,9 @@ local events =
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function dimLight(inst,dim,instant,zero,time)
@@ -708,9 +711,14 @@ local states =
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.SoundEmitter:PlaySound(inst.sounds.death)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
             inst.eyeglow.Light:Enable(false)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -1111,4 +1119,15 @@ CommonStates.AddWalkStates(states, nil, nil, nil, true)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("squid", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        local amphibiouscreature = inst.components.amphibiouscreature
+        if amphibiouscreature and amphibiouscreature.in_water then
+            return "dead_loop", true
+        end
+    end,
+})
+
+return StateGraph("squid", states, events, "init", actionhandlers)

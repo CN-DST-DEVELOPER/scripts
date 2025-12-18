@@ -16,7 +16,7 @@ local events =
         end
     end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt") then
@@ -31,6 +31,9 @@ local events =
             inst.sg.mem.wantstoflyaway = true
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function StartBuzz(inst)
@@ -250,9 +253,14 @@ local states =
             StopBuzz(inst)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
             inst.SoundEmitter:PlaySound(inst.sounds.death)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -346,4 +354,7 @@ CommonStates.AddFrozenStates(states,
     end)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("SGbeeguard", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("beeguard", states, events, "init")

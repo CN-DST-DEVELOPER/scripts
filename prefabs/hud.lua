@@ -63,6 +63,7 @@ local assets =
     Asset("ANIM", "anim/inventory_fx_shadow.zip"),
     Asset("ANIM", "anim/inventory_fx_acidsizzle.zip"),
     Asset("ANIM", "anim/inventory_fx_buff_panflute.zip"),
+    Asset("ANIM", "anim/inventory_fx_absorbwater.zip"),
     Asset("ANIM", "anim/compass_bg.zip"),
     Asset("ANIM", "anim/compass_needle.zip"),
     Asset("ANIM", "anim/compass_hud.zip"),
@@ -122,6 +123,11 @@ local assets =
 
 	Asset("DYNAMIC_ATLAS", "images/bg_redux_wardrobe_bg.xml"),
     Asset("PKGREF", "images/bg_redux_wardrobe_bg.tex"),
+
+    Asset("DYNAMIC_ATLAS", "images/bg_redux_pearl_clothesrack.xml"),
+    Asset("PKGREF", "images/bg_redux_pearl_clothesrack.tex"),
+    Asset("DYNAMIC_ATLAS", "images/bg_redux_pearl_mirror.xml"),
+    Asset("PKGREF", "images/bg_redux_pearl_mirror.tex"),
 
     Asset("ANIM", "anim/ink_over.zip"),
 

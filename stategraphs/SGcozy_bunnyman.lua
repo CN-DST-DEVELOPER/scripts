@@ -337,6 +337,11 @@ local states =
             inst.causeofdeath = data ~= nil and data.afflicter or nil
             inst.components.lootdropper:DropLoot(inst:GetPosition())
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -994,4 +999,6 @@ CommonStates.AddSimpleState(states, "attack_object_pre", "atk_object_pre", { "bu
     end,
 })
 
-return StateGraph("cozy_bunnyman", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+
+return StateGraph("cozy_bunnyman", states, events, "init", actionhandlers)

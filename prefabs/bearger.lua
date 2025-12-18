@@ -469,7 +469,6 @@ local function commonfn(build, commonfn)
     ------------------
 
     inst:AddComponent("health")
-	inst.components.health.nofadeout = true
 
     ------------------
 
@@ -804,6 +803,8 @@ local function mutatedfn()
 	inst.canbutt = true
 	inst.canrunningbutt = false
 	inst.swipefx = "mutatedbearger_swipe_fx"
+
+    inst.sg.mem.nocorpse = true
 
     inst.components.health:SetMaxHealth(TUNING.MUTATED_BEARGER_HEALTH)
 

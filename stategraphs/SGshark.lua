@@ -22,7 +22,7 @@ local events =
 		end
 	end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("attack", "jumping", "electrocute") then
@@ -49,6 +49,9 @@ local events =
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local AOE_CANT_TAGS = {"FX", "NOCLICK", "DECOR", "INLIMBO", "notarget"}
@@ -403,8 +406,13 @@ local states =
             inst.AnimState:PushAnimation("dead_loop",false)
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -661,4 +669,12 @@ CommonStates.AddElectrocuteStates(states,
 	end,
 })
 
-return StateGraph("shark", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        return "dead_loop", true
+    end,
+})
+
+return StateGraph("shark", states, events, "init")

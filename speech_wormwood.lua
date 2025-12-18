@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "No zaps",
+            CHARGE_FULL = "Many zaps",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Stay, friend!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Friend there",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1191,6 +1197,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Hmmm... meat tweeter look different", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "No?",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Here!",
 
 	BATTLECRY =
 	{
@@ -5901,6 +5911,77 @@ return{
             BURNING = "Bye bye",
             REVIVING = "Back?",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Warm! Nice!",
+            GENERIC = "Pool party!",
+            EMPTY = "Muddy",
+        },
+		HERMITHOTSPRING_CONSTR = "Still growing",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Done",
+            DRYING = "Getting unwet",
+            DRYINGINRAIN = "Rain can't help",
+            GENERIC =  "Big unwet",
+            BURNT = "Oh",
+            DONE_NOTMEAT = "Done?",
+            DRYING_NOTMEAT = "Getting unwet",
+            DRYINGINRAIN_NOTMEAT = "Rain not helping",
+            DONE_SALT = "Some salty",
+			ABANDONED = "Broken",
+        },
+		HERMITHOUSE_ORNAMENT = "Pretty stuff for crabby friend house",
+        HERMITHOUSE_LAUNDRY = "Crabby friend things.",
+
+        PETALS_DRIED = "Dry stuff",
+        PETALS_EVIL_DRIED = "Dry stuff",
+        FOLIAGE_DRIED = "Dry stuff",
+        SUCCULENT_PICKED_DRIED = "Dry stuff",
+        FIRENETTLES_DRIED = "Dry stuff",
+        TILLWEED_DRIED = "Dry stuff",
+        MOON_TREE_BLOSSOM_DRIED = "Dry stuff",
+        FORGETMELOTS_DRIED = "Dry stuff",
+
+        HERMITCRABTEA_PETALS = "For small head hurt",
+        HERMITCRABTEA_PETALS_EVIL = "Why want small head hurt?",
+        HERMITCRABTEA_FOLIAGE = "Purple friend tea",
+        HERMITCRABTEA_SUCCULENT_PICKED = "To cool friend",
+        HERMITCRABTEA_FIRENETTLES = "To warm friend",
+        HERMITCRABTEA_TILLWEED = "Make friend better",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Mmmmmm",
+        HERMITCRABTEA_FORGETMELOTS = "For big head hurt",
+        SHELLWEAVER = "Make salty things",
+        ICESTAFF2 = "Chilly-chilly stick!",
+        ICESTAFF3 = "Chilly-chilly-chilly stick!",
+        NONSLIPGRIT = "No whoops",
+        NONSLIPGRITBOOSTED = "More no whoops",
+        DESICCANT = "Make unwet!",
+        DESICCANTBOOSTED = "No wet?",
+        HERMITCRAB_SHELL = "To crabby friend!",
+        SALTY_DOGHAT = "Salty head thing!",
+        SALTY_DOG = "Sea Woofer!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Where crabby friend?", -- Inactive state, no Pearl inside.
+            ACTIVE = "Like crabby friend tea!", -- Active, Pearl is inside, can buy from her
+            BREWING = "Thirsty time", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Bad fire!", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Dry Glub Glub",
+        FISHMEAT_SMALL_DRIED = "Dry Glub Glub",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Pretty bright",
+            ABANDONED = "Oh no",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Where put pretty bright?",
     },
 
     DESCRIBE_GENERIC = "Friend?",

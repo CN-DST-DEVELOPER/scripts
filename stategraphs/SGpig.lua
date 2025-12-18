@@ -60,13 +60,6 @@ end
 local states =
 {
     State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
-    State{
         name = "funnyidle",
         tags = { "idle" },
 
@@ -107,8 +100,7 @@ local states =
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-                inst:SetDeathLootLevel(1)
+                inst:DropDeathLoot()
             end
         end,
 
@@ -118,8 +110,7 @@ local states =
                 if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
                     TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
                 elseif inst.AnimState:AnimDone() then
-                    -- TODO NOTE(Omar): HALLOWED_NIGHTS_2025_CORPSES
-                    --inst.sg:GoToState("corpse")
+                    inst.sg:GoToState("corpse")
                 end
             end),
         },
@@ -361,15 +352,7 @@ CommonStates.AddIpecacPoopState(states)
 CommonStates.AddParasiteReviveState(states)
 
 -- werepig uses a different stategraph
--- TODO NOTE(Omar): HALLOWED_NIGHTS_2025_CORPSES
---[[
-CommonStates.AddCorpseStates(states, nil,
-{
-    corpseoncreate = function(inst, corpse)
-        corpse.AnimState:Hide("HAT")
-        corpse:SetAltBuild(inst.build)
-    end,
-})
-]]
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
 
 return StateGraph("pig", states, events, "init", actionhandlers)

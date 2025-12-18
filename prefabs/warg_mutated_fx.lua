@@ -13,10 +13,35 @@ local prefabs =
 local AOE_RANGE = 0.9
 local AOE_RANGE_PADDING = 3
 local AOE_TARGET_TAGS = { "_combat" }
-local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "playerghost", "lunar_aligned" }
-local AOE_TARGET_CANT_TAGS_PVE = { "INLIMBO", "flight", "invisible", "player", "wall" }
-local AOE_TARGET_CANT_TAGS_PVP = { "INLIMBO", "flight", "invisible", "playerghost", "wall" }
+local REGISTERED_AOE_TARGET_CANT_TAGS, REGISTERED_AOE_TARGET_CANT_TAGS_PVP, REGISTERED_AOE_TARGET_CANT_TAGS_PVE
+local function GetRegisteredTargetFindTags(inst, notplayer)
+	if notplayer then
+		if REGISTERED_AOE_TARGET_CANT_TAGS == nil then
+			REGISTERED_AOE_TARGET_CANT_TAGS = TheSim:RegisterFindTags(AOE_TARGET_TAGS, { "INLIMBO", "flight", "invisible", "playerghost", "lunar_aligned" })
+		end
+
+		return REGISTERED_AOE_TARGET_CANT_TAGS
+	elseif TheNet:GetPVPEnabled() then
+		if REGISTERED_AOE_TARGET_CANT_TAGS_PVP == nil then
+			REGISTERED_AOE_TARGET_CANT_TAGS_PVP = TheSim:RegisterFindTags(AOE_TARGET_TAGS, { "INLIMBO", "flight", "invisible", "playerghost", "wall" })
+		end
+
+		return REGISTERED_AOE_TARGET_CANT_TAGS_PVP
+	else
+		if REGISTERED_AOE_TARGET_CANT_TAGS_PVE == nil then
+			REGISTERED_AOE_TARGET_CANT_TAGS_PVE = TheSim:RegisterFindTags(AOE_TARGET_TAGS, { "INLIMBO", "flight", "invisible", "player", "wall" })
+		end
+
+		return REGISTERED_AOE_TARGET_CANT_TAGS_PVE
+	end
+end
+
 local MULTIHIT_FRAMES = 10
+local MULTIHIT_TALLFLAME_FRAMES = 15
+local function GetMultiHitFrames(inst)
+	return inst.tallflame and MULTIHIT_TALLFLAME_FRAMES
+		or MULTIHIT_FRAMES
+end
 
 local function OnUpdateHitbox(inst)
 	local combat = inst.attacker and inst.attacker:IsValid() and inst.attacker.components.combat or inst.components.combat
@@ -32,18 +57,14 @@ local function OnUpdateHitbox(inst)
 
 	local notplayer = inst.attacker == nil or not inst.attacker.isplayer
 
-	local cant_tags =
-		(notplayer and AOE_TARGET_CANT_TAGS) or
-		(TheNet:GetPVPEnabled() and AOE_TARGET_CANT_TAGS_PVP) or
-		AOE_TARGET_CANT_TAGS_PVE
-
 	combat.ignorehitrange = true
 	combat.ignoredamagereflect = true
 
+	local hit_frames = GetMultiHitFrames(inst)
 	local tick = GetTick()
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local radius = AOE_RANGE * inst.scale
-	local ents = TheSim:FindEntities(x, 0, z, radius + AOE_RANGE_PADDING, AOE_TARGET_TAGS, cant_tags)
+	local ents = TheSim:FindEntities_Registered(x, 0, z, radius + AOE_RANGE_PADDING, GetRegisteredTargetFindTags(inst, notplayer))
 	for i, v in ipairs(ents) do
 		if v ~= inst.attacker and v:IsValid() and not v:IsInLimbo() and not (v.components.health and v.components.health:IsDead()) then
 			if notplayer or not combat:IsAlly(v) then
@@ -65,7 +86,7 @@ local function OnUpdateHitbox(inst)
 							end
 						end
 						--Hit
-						if (target_data.hit_tick == nil or target_data.hit_tick + MULTIHIT_FRAMES < tick) and combat:CanTarget(v) then
+						if (target_data.hit_tick == nil or target_data.hit_tick + hit_frames < tick) and combat:CanTarget(v) then
 							target_data.hit_tick = tick
 							combat:DoAttack(v, weapon)
 						end

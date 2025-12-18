@@ -3,6 +3,13 @@ local assets =
     Asset("ANIM", "anim/dustmoth.zip"),
 }
 
+local prefabs =
+{
+    "smallmeat",
+    "thulecitebugnet",
+    "dustmothcorpse",
+}
+
 SetSharedLootTable('dustmoth',
 {
     {'smallmeat',  1.0},
@@ -282,4 +289,4 @@ local function fn()
     return inst
 end
 
-return Prefab("dustmoth", fn, assets)
+return Prefab("dustmoth", fn, assets, prefabs)

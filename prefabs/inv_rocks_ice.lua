@@ -68,6 +68,7 @@ local function fn()
     inst.AnimState:SetBuild("ice")
 
     inst:AddTag("frozen")
+    inst:AddTag("molebait")
     -- From watersource component
     inst:AddTag("watersource")
 
@@ -113,7 +114,7 @@ local function fn()
 
     inst:AddComponent("repairer")
     inst.components.repairer.repairmaterial = MATERIALS.ICE
-    inst.components.repairer.perishrepairpercent = .05
+    inst.components.repairer.perishrepairpercent = .25
 
     inst:AddComponent("watersource")
     inst.components.watersource.onusefn = onuseaswatersource
@@ -122,7 +123,6 @@ local function fn()
 	inst:AddComponent("snowmandecor")
 
     inst:AddComponent("bait")
-    inst:AddTag("molebait")
 
     inst.OnSave = onsave
     inst.OnLoad = onload

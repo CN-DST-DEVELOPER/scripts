@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Aw there's not enough charge!",
+            CHARGE_FULL = "Yay! Fully charged!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Aww, we missed!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "We can't! There's someone there!",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzards! Hey, they look strange.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Aw! Why didn't it work?",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Wheeeeee!",
 
 	BATTLECRY =
 	{
@@ -5897,6 +5907,77 @@ return{
             BURNING = "We really hope it wasn't just sleeping.",
             REVIVING = "We thought it was dead.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "We promise not to splash! Maybe.",
+            GENERIC = "Splish splash.",
+            EMPTY = "Aw, it's all dried up.",
+        },
+		HERMITHOTSPRING_CONSTR = "It's taking forever!",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Ma'am! It's dry!",
+            DRYING = "Is it done yet?",
+            DRYINGINRAIN = "It's hard to dry when it's raining.",
+            GENERIC =  "We can dry so many things!",
+            BURNT = "It burned away.",
+            DONE_NOTMEAT = "Ma'am! It's dry!",
+            DRYING_NOTMEAT = "Is it done yet?",
+            DRYINGINRAIN_NOTMEAT = "It's hard to dry when it's raining.",
+            DONE_SALT = "We got salt!",
+			ABANDONED = "Aw, it's broken!",
+        },
+		HERMITHOUSE_ORNAMENT = "Will there still be room for webs?",
+        HERMITHOUSE_LAUNDRY = "Where should we hide them?",
+
+        PETALS_DRIED = "Did we pick these?",
+        PETALS_EVIL_DRIED = "Did we pick these?",
+        FOLIAGE_DRIED = "Did we pick these?",
+        SUCCULENT_PICKED_DRIED = "Did we pick these?",
+        FIRENETTLES_DRIED = "Did we pick these?",
+        TILLWEED_DRIED = "Did we pick these?",
+        MOON_TREE_BLOSSOM_DRIED = "Did we pick these?",
+        FORGETMELOTS_DRIED = "Did we pick these?",
+
+        HERMITCRABTEA_PETALS = "For when we feel a little funny.",
+        HERMITCRABTEA_PETALS_EVIL = "It makes us feel funny!",
+        HERMITCRABTEA_FOLIAGE = "It'll make us brave?",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Tastes like a cool breeze!",
+        HERMITCRABTEA_FIRENETTLES = "So warm!",
+        HERMITCRABTEA_TILLWEED = "Do we have to?",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Tastes like the moon?",
+        HERMITCRABTEA_FORGETMELOTS = "For when we feel really funny.",
+        SHELLWEAVER = "Ms. Pearl taught us to make lots of things with salt!",
+        ICESTAFF2 = "Ms. Wickerbottom says we should be careful with magic.",
+        ICESTAFF3 = "It makes our teeth chatter!",
+        NONSLIPGRIT = "It makes our spider fingers extra grippy!",
+        NONSLIPGRITBOOSTED = "We're gonna sprinkle it all over, so nobody slips!",
+        DESICCANT = "It keeps our fur from getting too wet.",
+        DESICCANTBOOSTED = "You can't get us, water!",
+        HERMITCRAB_SHELL = "We can see Ms. Pearl anytime we want!",
+        SALTY_DOGHAT = "Wendy said it's her turn to play the captain.",
+        SALTY_DOG = "You're a weird dog, but we like you!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Oh, Ms. Peeeaarl! Where are you?", -- Inactive state, no Pearl inside.
+            ACTIVE = "We love Ms. Pearl's tea!", -- Active, Pearl is inside, can buy from her
+            BREWING = "We want our tea! We want our tea!", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Poor Ms. Pearl!", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "All the juice has been sucked out of it.",
+        FISHMEAT_SMALL_DRIED = "It's really chewy, but we don't mind!",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Bright and cheery!",
+            ABANDONED = "Awww...",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "We're gonna make the island so pretty!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

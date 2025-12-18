@@ -75,9 +75,8 @@ local function Retarget(inst)
         return nil
     end
 
-    -- If our potential target has a gestalt item, don't target them.
-    local target_inventory = inst.tracking_target.components.inventory
-    if target_inventory ~= nil and target_inventory:EquipHasTag("gestaltprotection") then
+    -- If our potential target is protected from gestalts, don't target them.
+    if IsEntityGestaltProtected(inst.tracking_target) then
         return nil
     end
 

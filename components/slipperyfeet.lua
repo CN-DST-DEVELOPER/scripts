@@ -202,6 +202,7 @@ function SlipperyFeet:DoDecay(dt)
 	self:DoDelta(-speed * dt)
 end
 
+local POOL_MUST_TAGS = {"nonslipgritpool"}
 function SlipperyFeet:OnUpdate(dt)
 	if self._updating["checkice"] then
 		--if we're on ocean tile but also visual ground, then assume it's ice overhang
@@ -228,7 +229,27 @@ function SlipperyFeet:OnUpdate(dt)
 	end
 
 	if self._updating["accumulate"] then
-		self:DoDelta(self:CalcAccumulatingSpeed() * dt * rate_ice_entity * (0.7 + 0.3 * math.random()))
+        local hasgritatposition = false
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, SLIPPERY_CHECK_RADIUS, POOL_MUST_TAGS)
+        for _, ent in ipairs(ents) do
+            local nonslipgritpool = ent.components.nonslipgritpool
+            if nonslipgritpool and nonslipgritpool:IsGritAtPosition(x, y, z) then
+                hasgritatposition = true
+                break
+            end
+        end
+        local nonslipgrituser = self.inst.components.nonslipgrituser
+        if nonslipgrituser or hasgritatposition then
+            if not hasgritatposition then
+                nonslipgrituser:DoDelta(dt)
+            end
+            if self.slippiness > 0 then
+                self:DoDecay(dt)
+            end
+        else
+            self:DoDelta(self:CalcAccumulatingSpeed() * dt * rate_ice_entity * (0.7 + 0.3 * math.random()))
+        end
 	elseif self.slippiness > 0 then
 		self:DoDecay(dt)
 	end

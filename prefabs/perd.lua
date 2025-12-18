@@ -9,6 +9,7 @@ local prefabs =
 {
     "drumstick",
     "redpouch",
+    "perdcorpse",
 }
 
 local brain = require "brains/perdbrain"

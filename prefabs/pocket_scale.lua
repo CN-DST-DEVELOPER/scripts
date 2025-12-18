@@ -25,6 +25,7 @@ local function fn()
 
     MakeInventoryFloatable(inst, "small", 0.0, 0.8)
 
+    --trophyscale_fish (from itemweigher component) added to pristine state for optimization
 	inst:AddTag("trophyscale_fish")
     inst:AddTag("donotautopick")
 

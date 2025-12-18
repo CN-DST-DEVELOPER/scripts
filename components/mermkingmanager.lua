@@ -213,12 +213,19 @@ function MermKingManager:ShouldTransform(merm)
 	end
 end
 
+-- This throne isn't valid if there's a bloody corpse on it!
+local function IsKingCorpse(guy, throne)
+    return guy.prefab == "mermkingcorpse"
+end
 
+local CORPSE_MUST_TAGS = { "creaturecorpse" }
+local CORPSE_NO_TAGS = { "NOCLICK" }
 function MermKingManager:IsThroneValid(throne)
     return throne ~= nil
         and throne:IsValid()
         and not (throne.components.burnable ~= nil and throne.components.burnable:IsBurning())
         and not throne:HasTag("burnt")
+        and (FindEntity(throne, 0.1, IsKingCorpse, CORPSE_MUST_TAGS, CORPSE_NO_TAGS) == nil)
 end
 
 function MermKingManager:GetKing()

@@ -58,6 +58,10 @@ local function IsAffectionate(inst)
             or false
 end
 
+local function IsHungry(inst)
+    return inst.components.perishable and inst.components.perishable:GetPercent() <= HUNGRY_PERISH_PERCENT
+end
+
 local function IsPlayful(inst)
 	return IsAffectionate(inst)
 end
@@ -192,6 +196,7 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
         inst.IsAffectionate = IsAffectionate
         inst.IsSuperCute = IsSuperCute
         inst.IsPlayful = IsPlayful
+        inst.IsHungry = IsHungry
 
 		inst.playmatetags = {"critter"}
 		if data ~= nil and data.playmatetags ~= nil then

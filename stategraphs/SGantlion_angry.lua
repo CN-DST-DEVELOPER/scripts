@@ -126,7 +126,7 @@ local events =
     end),
 	EventHandler("attacked", function(inst, data)
         inst.sg.mem.wantstoeat = nil
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
@@ -152,6 +152,9 @@ local events =
             inst.sg.mem.wantstostopfighting = true
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -239,6 +242,11 @@ local states =
             inst:AddTag("NOCLICK")
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
+
         timeline =
         {
             TimeEvent(0 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/together/antlion/death") end),
@@ -248,7 +256,7 @@ local states =
                 ShakeIfClose(inst)
                 if inst.persists then
                     inst.persists = false
-                    inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    inst:DropDeathLoot()
                 end
             end),
             TimeEvent(5, ErodeAway),
@@ -540,4 +548,7 @@ CommonStates.AddSleepExStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("antlion_angry", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states, nil, nil, "antlioncorpse")
+
+return StateGraph("antlion_angry", states, events, "init")

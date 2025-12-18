@@ -17,7 +17,11 @@ local ClothingExplorerPanel = Class(Widget, function(self, owner, user_profile, 
     self.activity_checker_fn = activity_checker_fn
     self.activity_writer_fn = activity_writer_fn
 
-    self.yotb_filter = filter_options and filter_options.yotb_filter or nil
+    if filter_options then
+        self.filter_options = filter_options
+        self.yotb_filter = filter_options.yotb_filter
+        self.npccharacter = filter_options.npccharacter
+    end
 
     self.picker = self:AddChild(self:_BuildItemExplorer())
     self.picker:SetPosition(310, 130)
@@ -86,10 +90,10 @@ function ClothingExplorerPanel:_BuildItemExplorer()
         item_table = BEEFALO_CLOTHING
     end
     if self.item_type == "base" then
-        item_table = GetCharacterSkinBases(self.owner.currentcharacter)
+        item_table = GetCharacterSkinBases(self.npccharacter or self.owner.currentcharacter)
     end
 
-    return ItemExplorer("", self.item_type, item_table, list_options, self.yotb_filter)
+    return ItemExplorer("", self.item_type, item_table, list_options, self.filter_options)
 end
 
 

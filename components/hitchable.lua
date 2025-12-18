@@ -32,7 +32,7 @@ function Hitchable:Unhitch()
 	self.inst.SoundEmitter:PlaySound("yotb_2021/common/hitching_post/unhitching")
 	self.inst:RemoveEventCallback("newcombattarget",onnewtarget)
 	self.canbehitched = true
-	if self.hitched and not self.hitched.components.canbehitched then
+	if self.hitched and not self.hitched.components.hitcher.canbehitched then
 		self.hitched.components.hitcher:Unhitch()
 	end
 	self.hitched = nil

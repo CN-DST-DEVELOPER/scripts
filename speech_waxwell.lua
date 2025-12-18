@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Who left it uncharged?",
+            CHARGE_FULL = "Full charge!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Quit moving!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "There's an inconsiderate wretch taking up that space.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "I hate buzzards, but these are... wrong.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Surprise, surprise.",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I can't believe it worked.",
 
 	BATTLECRY =
 	{
@@ -5897,6 +5907,77 @@ return{
             BURNING = "The pragmatic approach.",
             REVIVING = "It can't even die properly.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Hm. Quite nice, actually.",
+            GENERIC = "I miss a good long bath.",
+            EMPTY = "It's of no use to me like this.",
+        },
+		HERMITHOTSPRING_CONSTR = "Yes, yes, under construction. What else is new?",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Does she even have teeth?",
+            DRYING = "Still moist.",
+            DRYINGINRAIN = "Moist and staying that way.",
+            GENERIC =  "Hm. Why didn't we think of this sooner?",
+            BURNT = "It's too brittle to hang anything now.",
+            DONE_NOTMEAT = "Like the desert.",
+            DRYING_NOTMEAT = "Still moist.",
+            DRYINGINRAIN_NOTMEAT = "Moist and staying that way.",
+            DONE_SALT = "Salt? Finally some flavor.",
+			ABANDONED = "Not surprised. It was poorly made.",
+        },
+		HERMITHOUSE_ORNAMENT = "Cute.",
+        HERMITHOUSE_LAUNDRY = "We're getting really comfortable around here.",
+
+        PETALS_DRIED = "They're all shrivelled up.",
+        PETALS_EVIL_DRIED = "They're all shrivelled up.",
+        FOLIAGE_DRIED = "They're all shrivelled up.",
+        SUCCULENT_PICKED_DRIED = "They're all shrivelled up.",
+        FIRENETTLES_DRIED = "They're all shrivelled up.",
+        TILLWEED_DRIED = "They're all shrivelled up.",
+        MOON_TREE_BLOSSOM_DRIED = "They're all shrivelled up.",
+        FORGETMELOTS_DRIED = "They're all shrivelled up.",
+
+        HERMITCRABTEA_PETALS = "Might need a few of these.",
+        HERMITCRABTEA_PETALS_EVIL = "Interesting cocktail.",
+        HERMITCRABTEA_FOLIAGE = "Behold the frailty of our tender little minds.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Rather refreshing.",
+        HERMITCRABTEA_FIRENETTLES = "Charlie always complained about being cold. Sigh.",
+        HERMITCRABTEA_TILLWEED = "Why do healthy things always taste so... healthy.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Hmm, interesting.",
+        HERMITCRABTEA_FORGETMELOTS = "It certainly shakes out the cobwebs.",
+        SHELLWEAVER = "It may just manage to make something useful.",
+        ICESTAFF2 = "Want to see a cool trick? I just need a volunteer...",
+        ICESTAFF3 = "I'll show you a chilling display of magic.",
+        NONSLIPGRIT = "Hmph. And Winona said I have no grit!",
+        NONSLIPGRITBOOSTED = "All this salt on the ground is going to ruin my shoes.",
+        DESICCANT = "A rudimentary ward against dampness.",
+        DESICCANTBOOSTED = "A more robust ward against dampness.",
+        HERMITCRAB_SHELL = "I don't understand this magic, but I respect it.",
+        SALTY_DOGHAT = "It conveys an air of authority. I think it suits me.",
+        SALTY_DOG = "Don't you DARE shake seawater all over my suit!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Where is that Pearl?", -- Inactive state, no Pearl inside.
+            ACTIVE = "I can never decide what I want.", -- Active, Pearl is inside, can buy from her
+            BREWING = "Where's my tea?", -- A trade just happened and she's brewing the tea!|
+            BURNT = "I don't suppose she had insurance.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "My teeth are getting too old for this.",
+        FISHMEAT_SMALL_DRIED = "My teeth are getting too old for this.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Hmph. I hope she appreciates this.",
+            ABANDONED = "That's depressing.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Once again I find myself toiling away for that old crab.",
     },
 
     DESCRIBE_GENERIC = "You tell me.",

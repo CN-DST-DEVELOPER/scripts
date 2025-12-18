@@ -224,8 +224,8 @@ local ItemTile = Class(Widget, function(self, invitem)
                 end
             end, ThePlayer)
     self.inst:ListenForEvent("item_buff_changed",
-        function(player)
-            self:HandleBuffFX(invitem, true)
+        function(player, data)
+            self:HandleBuffFX(invitem, true, data)
         end,
     ThePlayer)
     self.inst:ListenForEvent("stacksizechange",
@@ -785,7 +785,7 @@ function ItemTile:HandleAcidSizzlingFX(isacidsizzling)
     end
 end
 
-function ItemTile:HandleBuffFX(invitem, fromchanged)
+function ItemTile:HandleBuffFX(invitem, fromchanged, data)
     local player_classified = ThePlayer and ThePlayer.player_classified or nil
     if not player_classified then
         return
@@ -823,6 +823,27 @@ function ItemTile:HandleBuffFX(invitem, fromchanged)
                 self.freecastpanflute = nil
                 ref:GetAnimState():PlayAnimation("notes_pst")
                 ref.inst:ListenForEvent("animover", function() ref:Kill() end)
+            end
+        end
+    elseif invitem.prefab == "desiccant" or invitem.prefab == "desiccantboosted" then
+        if data and data.effect == "playwaterfx" and data.inst == invitem then
+            if self.playwaterfx == nil then
+                self.playwaterfx = self.image:AddChild(UIAnim())
+                local ref = self.playwaterfx
+                ref:GetAnimState():SetBank("inventory_fx_absorbwater")
+                ref:GetAnimState():SetBuild("inventory_fx_absorbwater")
+                ref:GetAnimState():PlayAnimation("absorb", false)
+                ref:GetAnimState():AnimateWhilePaused(true) -- Based off of a sound that plays so it should also keep going.
+                ref:SetClickable(false)
+                ref.inst:ListenForEvent("animover", function()
+                    self.playwaterfx = nil
+                    ref:Kill()
+                end)
+                ref.inst:DoTaskInTime(8 * FRAMES, function()
+                    if TheFocalPoint then
+                        TheFocalPoint.SoundEmitter:PlaySound("winter2025/dessicant/use")
+                    end
+                end)
             end
         end
     end

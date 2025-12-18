@@ -304,6 +304,7 @@ local function fn()
     inst.components.childspawner:SetSpawnPeriod(TUNING.BUZZARD_SPAWN_PERIOD + math.random(-TUNING.BUZZARD_SPAWN_VARIANCE, TUNING.BUZZARD_SPAWN_VARIANCE))
     inst.components.childspawner:SetRegenPeriod(TUNING.BUZZARD_REGEN_PERIOD)
     inst.components.childspawner:StopRegen()
+    inst.components.childspawner.save_max_children = true
 
     inst.buzzardshadows = {}
     inst.foodtask = nil

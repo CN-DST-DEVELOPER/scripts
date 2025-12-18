@@ -9,6 +9,12 @@ local prefabs =
 {
     "splash_green",
     "splash_green_large",
+    "fishmeat",
+    "barnacle",
+    "flint",
+    "rocks",
+    "oceanfish_medium_2_inv",
+    "sharkcorpse",
 }
 
 local SHARE_TARGET_DIST = 30

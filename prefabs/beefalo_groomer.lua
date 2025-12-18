@@ -133,17 +133,61 @@ local function onremove(inst)
     end
 end
 
-local function onunlockskin(inst)
-    inst.AnimState:PlayAnimation("gift")
-    inst.AnimState:PushAnimation("idle",true)
-end
-
 local function changefn(inst)
     inst.SoundEmitter:PlaySound("yotb_2021/common/beefalo_groomer/use")
     inst.AnimState:PlayAnimation("use")
     inst.AnimState:PushAnimation("idle",true)
 end
 
+local function canbeginchanging(inst, occupant, doer)
+    if not occupant then
+        return false, "NOOCCUPANT"
+    elseif occupant.components.beard and occupant.components.beard.bits < TUNING.BEEFALO_BEARD_BITS then
+        return false, "NOTENOUGHHAIR"
+    end
+    return true
+end
+
+local function beginchanging(inst, occupant, doer)
+    if doer and doer.player_classified ~= nil then
+        doer.player_classified.hasyotbskin:set(false)
+    end
+end
+
+local function canactivatechanging(inst, occupant, doer, skins)
+    if occupant.components.skinner_beefalo == nil or not occupant.components.skinner_beefalo:IsClothingDifferent(skins) then
+        return false
+    end
+    return true
+end
+
+local function applytargetskins(inst, occupant, doer, skins)
+    if occupant.components.skinner_beefalo ~= nil then
+        occupant.AnimState:AssignItemSkins(doer.userid, skins.beef_body or "", skins.beef_horn or "", skins.beef_head or "", skins.beef_feet or "", skins.beef_tail or "")
+        occupant.components.skinner_beefalo:ClearAllClothing()
+        occupant.components.skinner_beefalo:SetClothing(skins.beef_body)
+        occupant.components.skinner_beefalo:SetClothing(skins.beef_horn)
+        occupant.components.skinner_beefalo:SetClothing(skins.beef_head)
+        occupant.components.skinner_beefalo:SetClothing(skins.beef_feet)
+        occupant.components.skinner_beefalo:SetClothing(skins.beef_tail)
+        occupant:PushEvent("dressedup", { wardrobe = inst, doer = doer, skins = skins })
+    end
+end
+
+local function onclosepopup(inst, doer, data)
+    if data.popup == POPUPS.GROOMER then
+        local skins = {
+            beef_body = data.args[1],
+            beef_horn = data.args[2],
+            beef_head = data.args[3],
+            beef_feet = data.args[4],
+            beef_tail = data.args[5],
+            cancel = data.args[6],
+        }
+        return skins
+    end
+    return nil
+end
 
 local function fn()
     local inst = CreateEntity()
@@ -158,7 +202,10 @@ local function fn()
     MakeObstaclePhysics(inst, 0.4)
 
     inst:AddTag("structure")
-    inst:AddTag("beefalo_groomer")
+    --groomer (from groomer component) added to pristine state for optimization
+    inst:AddTag("groomer")
+    --dressable (from groomer component) added to pristine state for optimization
+    inst:AddTag("dressable")
 
     inst.MiniMapEntity:SetIcon("yotb_beefalowardrobe.png")
 
@@ -191,9 +238,14 @@ local function fn()
 
     inst:AddComponent("groomer")
     inst.components.groomer:SetCanBeDressed(true)
+    inst.components.groomer.canbeginchangingfn = canbeginchanging
+    inst.components.groomer.beginchangingfn = beginchanging
+    inst.components.groomer.canactivatechangingfn = canactivatechanging
+    inst.components.groomer.applytargetskinsfn = applytargetskins
+    inst.components.groomer.onclosepopupfn = onclosepopup
     inst.components.groomer.ondressupfn = ondressup
-    inst.components.groomer.unlockfn = onunlockskin
     inst.components.groomer.changefn = changefn
+    inst.components.groomer.popuptype = POPUPS.GROOMER
 
     MakeMediumBurnable(inst, nil, nil, true)
     inst.components.burnable.onburnt = onburnt

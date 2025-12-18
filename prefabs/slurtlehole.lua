@@ -103,6 +103,7 @@ local function fn()
     inst:AddTag("cavedweller")
     inst:AddTag("hostile")
     inst:AddTag("explosive")
+    inst:AddTag("structure")
 
     inst.entity:SetPristine()
 

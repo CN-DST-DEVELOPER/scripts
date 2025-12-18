@@ -113,8 +113,8 @@ AddIngredientValues({"fish"}, {meat=1,fish=1}, true)
 
 AddIngredientValues({"pondeel"}, {meat=.5,fish=1}, true)
 AddIngredientValues({"pondfish"}, {meat=.5,fish=.5}, false)
-AddIngredientValues({"fishmeat_small"}, {meat=.5,fish=.5}, true)
-AddIngredientValues({"fishmeat"}, {meat=1,fish=1}, true)
+AddIngredientValues({"fishmeat_small"}, {meat=.5,fish=.5}, true, true)
+AddIngredientValues({"fishmeat"}, {meat=1,fish=1}, true, true)
 local oceanfishdefs = require("prefabs/oceanfishdef")
 for _, fish_def in pairs(oceanfishdefs.fish) do
 	if fish_def.cooker_ingredient_value ~= nil then
@@ -163,6 +163,12 @@ AddIngredientValues({"forgetmelots"}, {decoration=1})
 AddIngredientValues({"trunk_summer","trunk_winter","trunk_cooked"}, {meat=1})
 
 AddIngredientValues({"ancientfruit_nightvision"}, {fruit=1}, true)
+
+-- Dried tag isn't used, but it's added in AddIngredientValues automatically for things, so add it here in case
+-- First time we add ingredient values for dried prefabs explicitly, we don't want the originals to be ingredients!
+local driedleaves = {"petals_dried", "foliage_dried", "succulent_picked_dried", "firenettles_dried", "tillweed_dried", "moon_tree_blossom_dried", "forgetmelots_dried"}
+AddIngredientValues(driedleaves, {decoration = 1, dried = 1})
+AddIngredientValues({"petals_evil_dried"}, {decoration = 1, magic = .5, dried = 1})
 
 --our naming conventions aren't completely consistent, sadly
 local aliases =

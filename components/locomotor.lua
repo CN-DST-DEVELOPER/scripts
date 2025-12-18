@@ -991,7 +991,7 @@ function LocoMotor:GoToEntity(target, bufferedaction, run)
 
         local extra_arrive_dist = (bufferedaction ~= nil and bufferedaction.action ~= nil and bufferedaction.action.extra_arrive_dist) or nil
         if extra_arrive_dist ~= nil then
-            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest)
+            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest, bufferedaction)
         end
 
         if bufferedaction ~= nil and bufferedaction.action.mindistance ~= nil and bufferedaction.action.mindistance > arrive_dist then
@@ -1409,17 +1409,10 @@ function LocoMotor:StartHopping(x,z,target_platform)
     self.time_before_next_hop_is_allowed = 0.2
 end
 
-function LocoMotor:CheckDrownable()
+function LocoMotor:CheckDrownable() -- Wrapper function for drownable check.
     local drownable = self.inst.components.drownable
     if drownable then
-        local fallingreason = drownable:GetFallingReason()
-        if fallingreason == FALLINGREASON.OCEAN then
-            self.inst:PushEvent("onsink")
-            return true
-        elseif fallingreason == FALLINGREASON.VOID then
-            self.inst:PushEvent("onfallinvoid")
-            return true
-        end
+        return drownable:CheckDrownable()
     end
     return false
 end
@@ -1711,7 +1704,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 
                     self:StartHopping(hop_x, hop_z, target_platform)
                 elseif self.inst.components.amphibiouscreature ~= nil and other_platform == nil and not self.inst.sg:HasStateTag("jumping") then
-                    local dist = self.inst:GetPhysicsRadius(0) + 2.5
+                    local dist = self.inst:GetPhysicsRadius(0) + self.inst.components.amphibiouscreature:GetTransitionDistance()
                     local _x, _z = forward_x * dist + mypos_x, forward_z * dist + mypos_z
                     if my_platform ~= nil then
                         local _

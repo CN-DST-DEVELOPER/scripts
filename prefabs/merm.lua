@@ -934,6 +934,7 @@ local function OnChangedLeader(inst, new_leader, prev_leader)
 end
 
 local function SaveCorpseData(inst, corpse)
+    local data = { name = inst.components.named.name }
     local leader = inst._last_leader
     if leader ~= nil and leader:IsValid() then
         corpse.components.entitytracker:TrackEntity("remember_leader", leader)
@@ -942,9 +943,13 @@ local function SaveCorpseData(inst, corpse)
     local home = inst.components.homeseeker ~= nil and inst.components.homeseeker:GetHome() or nil
     if home ~= nil and home.components.childspawner ~= nil then
         corpse.components.entitytracker:TrackEntity("remember_home", home)
+
+        if home.components.childspawner.emergencychildrenoutside[inst] then
+            data.isemergencychild = true
+        end
     end
 
-    return { name = inst.components.named.name }
+    return data
 end
 
 local function LoadCorpseData(inst, corpse)
@@ -965,7 +970,11 @@ local function LoadCorpseData(inst, corpse)
 
     local home = corpse.components.entitytracker:GetEntity("remember_home")
 	if home ~= nil and home.components.childspawner then
-        home.components.childspawner:TakeOwnership(inst)
+        if data and data.isemergencychild then
+            home.components.childspawner:TakeEmergencyOwnership(inst)
+        else
+            home.components.childspawner:TakeOwnership(inst)
+        end
         corpse.components.entitytracker:ForgetEntity("remember_home")
     end
 end
@@ -1592,6 +1601,10 @@ local function lunar_merm_master(inst)
 
     inst.components.follower.neverexpire = true
     inst.components.follower.OnChangedLeader = OnChangedLeaderLunar
+
+    inst.sg.mem.nocorpse = true
+    inst.sg.mem.nolunarmutate = true
+    inst.save_in_foreign_childspawner = true
 end
 
 local function lunar_mermguard_common(inst)
@@ -1631,6 +1644,10 @@ local function lunar_mermguard_master(inst)
 
     inst.components.follower.neverexpire = true
     inst.components.follower.OnChangedLeader = OnChangedLeaderLunar
+
+    inst.sg.mem.nocorpse = true
+    inst.sg.mem.nolunarmutate = true
+    inst.save_in_foreign_childspawner = true
 end
 
 return MakeMerm("merm", assets, prefabs, common_common, common_master),

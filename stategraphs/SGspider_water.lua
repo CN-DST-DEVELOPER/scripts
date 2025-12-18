@@ -106,13 +106,6 @@ end
 
 local states =
 {
-    State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
     State {
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -147,8 +140,7 @@ local states =
             inst.AnimState:PushAnimation("death_idle", true)
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
-            inst:SetDeathLootLevel(1)
+            inst:DropDeathLoot()
         end,
 
         events =
@@ -617,4 +609,5 @@ CommonStates.AddLunarPreRiftMutationStates(states,
     post_mutate_state = "taunt",
 })
 
+CommonStates.AddInitState(states, "idle")
 return StateGraph("spider_water", states, events, "init", actionhandlers)

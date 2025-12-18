@@ -71,6 +71,9 @@ local events =
             end
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function return_to_idle(inst)
@@ -203,8 +206,13 @@ local states =
             inst.SoundEmitter:PlaySound("hookline/creatures/gnarwail/death")
 
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline=
         {
@@ -870,4 +878,12 @@ CommonStates.AddSleepExStates(states,
     },
 })
 
-return StateGraph("gnarwail", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        return "dead_loop", true
+    end,
+})
+
+return StateGraph("gnarwail", states, events, "init", actionhandlers)

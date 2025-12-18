@@ -9,7 +9,7 @@ local actionhandlers =
 local events=
 {
 	EventHandler("attacked", function(inst, data)
-		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("nointerrupt")) then
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("nointerrupt")) then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (inst.sg:HasStateTag("attack") or CommonHandlers.HitRecoveryDelay(inst)) then
@@ -28,6 +28,9 @@ local events=
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -133,15 +136,20 @@ local states=
         name = "death",
         tags = {"busy"},
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/death")
             inst.AnimState:PlayAnimation("death")
 
             inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot()
+            inst:DropDeathLoot()
 
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
 
@@ -238,4 +246,7 @@ CommonStates.AddRunStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("krampus", states, events, "taunt", actionhandlers)
+CommonStates.AddInitState(states, "taunt")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("krampus", states, events, "init", actionhandlers)

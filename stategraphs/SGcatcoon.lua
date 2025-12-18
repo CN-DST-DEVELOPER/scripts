@@ -22,7 +22,7 @@ local events=
 	CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
     EventHandler("doattack", function(inst, data)
-        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
+        if inst.components.health and not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
             if data.target:HasTag("cattoyairborne") then
                 if data.target.sg and (data.target.sg:HasStateTag("landing") or data.target.sg:HasStateTag("landed")) then
                     inst.components.combat:SetTarget(nil)
@@ -36,6 +36,9 @@ local events=
             end
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -543,6 +546,11 @@ CommonStates.AddCombatStates(states,
 	{
         TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/catcoon/death") end),
 	},
+},
+nil,
+nil,
+{
+    has_corpse_handler = true
 })
 
 CommonStates.AddSleepStates(states,
@@ -568,4 +576,7 @@ CommonStates.AddHopStates(states, true, {pre = "walK_pre", loop = "jump_atk", ps
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("catcoon", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("catcoon", states, events, "init", actionhandlers)

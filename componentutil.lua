@@ -922,6 +922,7 @@ function GetCombatFxSize(ent)
 		ht = (ent.components.amphibiouscreature and ent.components.amphibiouscreature.in_water and "low") or
 			(ent:HasTag("flying") and "high") or
 			(not (ent.sg and ent.sg:HasState("electrocute")) and "low") or --ground plants with no electrocute state
+            (ent:HasTag("creaturecorpse") and "low") or
 			nil
 	elseif string.len(ht) == 0 then
 		ht = nil
@@ -1144,6 +1145,10 @@ function GetLunarPreRiftMutationChance(inst)
     ) * TheWorld.Map:GetLunacyAreaModifier(inst.Transform:GetWorldPosition())
 end
 
+function GetLunarRiftMutationChance(inst)
+    return inst.gestalt_possession_chance or 1
+end
+
 function CanLunarPreRiftMutateFromCorpse(inst)
     if not CanEntityBeNonGestaltMutated(inst) then
         return false
@@ -1155,9 +1160,12 @@ function CanLunarPreRiftMutateFromCorpse(inst)
         return true
     elseif inst.components.burnable and inst.components.burnable:IsBurning() then
         return false
-    elseif math.random() <= GetLunarPreRiftMutationChance(inst) then -- mutation chance returns 0 if we're not in a lunacy area
-        return true
+    elseif inst._cached_prerift_mutation_result ~= nil then -- We might run this function multiple times.
+        return inst._cached_prerift_mutation_result
     end
+
+    inst._cached_prerift_mutation_result = math.random() <= GetLunarPreRiftMutationChance(inst) -- mutation chance returns 0 if we're not in a lunacy area
+    return inst._cached_prerift_mutation_result
 end
 
 function CanLunarRiftMutateFromCorpse(inst)
@@ -1172,9 +1180,12 @@ function CanLunarRiftMutateFromCorpse(inst)
         return false
     elseif inst.components.burnable and inst.components.burnable:IsBurning() then
         return false
+    elseif inst._cached_rift_mutation_result ~= nil then -- We might run this function multiple times.
+        return inst._cached_rift_mutation_result
     end
 
-    return true
+    inst._cached_rift_mutation_result = math.random() <= GetLunarRiftMutationChance(inst)
+    return inst._cached_rift_mutation_result
 end
 
 function CanEntityBecomeCorpse(inst)
@@ -1183,17 +1194,21 @@ function CanEntityBecomeCorpse(inst)
         return false
     elseif inst.forcecorpse then
         return true
+    elseif inst.components.burnable and inst.components.burnable:IsBurning() then
+        return false
     elseif corpsepersistmanager ~= nil and corpsepersistmanager:ShouldRetainCreatureAsCorpse(inst) then
+        return true
+    elseif CanLunarPreRiftMutateFromCorpse(inst) then
+        return true
+    elseif CanLunarRiftMutateFromCorpse(inst) then
         return true
     end
 end
 
 function TryEntityToCorpse(inst, corpseprefab)
     local can_corpse = CanEntityBecomeCorpse(inst)
-    local can_rift_mutate = CanLunarRiftMutateFromCorpse(inst)
-    local can_prerift_mutate = CanLunarPreRiftMutateFromCorpse(inst)
 
-    if can_corpse or can_rift_mutate or can_prerift_mutate then
+    if can_corpse then
         local x, y, z = inst.Transform:GetWorldPosition()
         local rot = inst.Transform:GetRotation()
         local sx, sy, sz = inst.Transform:GetScale()
@@ -1203,6 +1218,10 @@ function TryEntityToCorpse(inst, corpseprefab)
         corpse.Transform:SetRotation(rot)
         corpse.Transform:SetScale(sx, sy, sz) -- Corpses will copy scale from the original mob. Mutated will NOT.
         corpse.AnimState:MakeFacingDirty()
+        corpse.AnimState:SetBuild(inst.AnimState:GetBuild())
+        corpse.AnimState:SetBank(inst.AnimState:GetBankHash())
+
+        corpse.corpse_loot = inst:GetDeathLoot()
 
         local corpsedata = inst.SaveCorpseData ~= nil and inst:SaveCorpseData(corpse) or nil
 
@@ -1211,10 +1230,14 @@ function TryEntityToCorpse(inst, corpseprefab)
         end
 
         corpse.sg.mem.nolunarmutate = inst.sg.mem.nolunarmutate -- This is saved.
+        if not inst.components.burnable and corpse.components.burnable then
+            corpse:RemoveComponent("burnable")
+            corpse.noburn = true
+        end
 
-        if can_rift_mutate then
+        if CanLunarRiftMutateFromCorpse(inst) then
             corpse:SetGestaltCorpse()
-        elseif can_prerift_mutate then
+        elseif CanLunarPreRiftMutateFromCorpse(inst) then
             corpse:SetNonGestaltCorpse()
         end
 
@@ -1333,7 +1356,9 @@ end
 
 -- Useful for splitting a topology id into task, layout, index, and room id's for us to look at.
 function ConvertTopologyIdToData(idname)
-    if idname == "START" then -- Special case for the id that the portal spawns in.
+    if idname == nil then
+        return {}
+    elseif idname == "START" then -- Special case for the id that the portal spawns in.
         return { task_id = "START" } -- Consider START as a task, for now?
     else
         local split_ids = SplitTopologyId(idname)
@@ -1346,3 +1371,270 @@ function ConvertTopologyIdToData(idname)
 end
 
 --------------------------------------------------------------------------
+
+-- For corpses, graves and skeletons.
+-- Set as inspectable.getspecialdescription
+function GetPlayerDeathDescription(inst, viewer)
+    if inst.char ~= nil and not viewer:HasTag("playerghost") then
+        local mod = GetGenderStrings(inst.char)
+        local desc = GetDescription(viewer, inst, mod)
+        local name = inst.playername or STRINGS.NAMES[string.upper(inst.char)]
+
+        -- No translations for player killer's name.
+        if inst.pkname ~= nil then
+            return string.format(desc, name, inst.pkname)
+        end
+
+        -- Permanent translations for death cause.
+        if inst.cause == "unknown" then
+            inst.cause = "shenanigans"
+
+        elseif inst.cause == "moose" then
+            inst.cause = math.random() < .5 and "moose1" or "moose2"
+        end
+
+        -- Viewer based temp translations for death cause.
+        local cause =
+            inst.cause == "nil"
+            and (
+                (viewer == "waxwell" or viewer == "winona") and "charlie" or "darkness"
+            )
+            or inst.cause
+
+        return string.format(desc, name, STRINGS.NAMES[string.upper(cause)] or STRINGS.NAMES.SHENANIGANS)
+    end
+end
+
+--------------------------------------------------------------------------
+
+function GetTopologyDataAtPoint(x, y, z)
+    if y == nil and z == nil then -- Support Vector3
+        x, y, z = x:Get()
+    elseif z == nil then -- Support (x, z)
+        y, z = 0, y
+    end
+
+    local id, _ = TheWorld.Map:GetTopologyIDAtPoint(x, y, z)
+    return ConvertTopologyIdToData(id)
+end
+
+function GetTopologyDataAtInst(inst)
+    return GetTopologyDataAtPoint(inst.Transform:GetWorldPosition())
+end
+
+--------------------------------------------------------------------------
+function MakeComponentAnInventoryItemSource(cmp)
+    local self = cmp
+
+    local function removeowner()
+        if self.itemsource_owner then
+            if self.OnItemSourceRemoved then
+                self:OnItemSourceRemoved(self.itemsource_owner)
+            end
+            self.itemsource_owner = nil
+        end
+    end
+    local function storeincontainer(inst, container)
+        if container ~= nil and container.components.container ~= nil then
+            inst:ListenForEvent("onputininventory", self.itemsource_oncontainerownerchanged, container)
+            inst:ListenForEvent("ondropped", self.itemsource_oncontainerownerchanged, container)
+            inst:ListenForEvent("onremove", self.itemsource_oncontainerremoved, container)
+            self.itemsource_container = container
+        end
+        removeowner()
+    end
+    local function unstore(inst)
+        if self.itemsource_container ~= nil then
+            inst:RemoveEventCallback("onputininventory", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:RemoveEventCallback("ondropped", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:RemoveEventCallback("onremove", self.itemsource_oncontainerremoved, self.itemsource_container)
+            self.itemsource_container = nil
+        end
+    end
+    self.itemsource_topocket = function(inst, owner)
+        if self.itemsource_container ~= owner then
+            unstore(inst)
+            storeincontainer(inst, owner)
+        end
+        local newowner = owner.components.inventoryitem ~= nil and owner.components.inventoryitem:GetGrandOwner() or owner
+        if self.itemsource_owner ~= newowner then
+            removeowner()
+            self.itemsource_owner = newowner
+            if self.itemsource_owner and self.OnItemSourceNewOwner then
+                self:OnItemSourceNewOwner(self.itemsource_owner)
+            end
+        end
+    end
+    self.itemsource_toground = function(inst)
+        unstore(inst)
+        removeowner()
+    end
+
+    self.itemsource_oncontainerownerchanged = function(container)
+        self.itemsource_topocket(self.inst, container)
+    end
+    self.itemsource_oncontainerremoved = function()
+        unstore(self.inst)
+    end
+    self.inst:ListenForEvent("onputininventory", self.itemsource_topocket)
+    self.inst:ListenForEvent("ondropped", self.itemsource_toground)
+    self.inst:ListenForEvent("onremove", function()
+        removeowner()
+    end)
+end
+
+function RemoveComponentInventoryItemSource(cmp)
+    local self = cmp
+    self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket)
+    self.inst:RemoveEventCallback("ondropped", self.itemsource_toground)
+    self.itemsource_toground(self.inst)
+    self.itemsource_topocket = nil
+    self.itemsource_toground = nil
+    self.itemsource_oncontainerownerchanged = nil
+    self.itemsource_oncontainerremoved = nil
+end
+
+--------------------------------------------------------------------------
+
+-- The occupation space pearl takes up to take into account decoration score post-eviction
+-- This is an expensive function, consider caching or saving the return value.
+-- This is a client and server function. Careful about the logic you implement here.
+
+local function GetAngleTowardsLand(x, y)
+    local xs, zs = 0, 0
+    --
+    for off_x = -1, 1  do
+        for off_y = -1, 1 do
+            local tx, ty = x + off_x, y + off_y
+            if TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(tx, ty)) then
+                local angle = math.atan2(ty - y, x - tx)
+                xs, zs = xs - math.cos(angle), zs - math.sin(angle)
+            end
+        end
+    end
+    --
+    return math.atan2(zs, xs)
+end
+local MAX_TILES = TUNING.HERMITCRAB_DECOR_MAX_TILE_SPACE
+local MAX_SHORELINE_TILES = 12
+function GetHermitCrabOccupiedGrid(x, z)
+    local w, h = TheWorld.Map:GetSize()
+    local occupied_grid = DataGrid(w, h)
+    --
+    local searched_shoreline_tiles = DataGrid(w, h)
+    local shoreline_tiles = { { x = x, z = z }}
+    local i = 1
+    while i <= #shoreline_tiles do
+        if i > MAX_SHORELINE_TILES then -- enough shoreline tiles
+            break
+        end
+
+        local data = shoreline_tiles[i]
+        local tx, tz = data.x, data.z
+
+        searched_shoreline_tiles:SetDataAtPoint(tx, tz, true)
+
+        local function AddShorelineToQueue(offx, offz)
+            local px, pz = tx + offx, tz + offz
+            local x, y, z = TheWorld.Map:GetTileCenterPoint(px, pz)
+            if TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(px, pz))
+                and not searched_shoreline_tiles:GetDataAtPoint(px, pz)
+                and not TheWorld.Map:IsSurroundedByLandNoDocks(x, y, z, 2)
+            then
+                table.insert(shoreline_tiles, { x = px, z = pz, angle = GetAngleTowardsLand(px, pz) })
+            end
+        end
+
+        for offx = -1, 1 do
+            if offx ~= 0 then
+                AddShorelineToQueue(offx, 0)
+            end
+        end
+
+        for offz = -1, 1 do
+            if offz ~= 0 then
+                AddShorelineToQueue(0, offz)
+            end
+        end
+
+        i = i + 1
+    end
+    --
+    local tiles = { }
+    for k, v in pairs(shoreline_tiles) do
+        table.insert(tiles, { x = v.x, z = v.z, preferred_angle = v.angle })
+    end
+
+    -- If setting any data grid points to nil/false, adjust count logic accordingly.
+    i = 1
+    local grid_count = 0
+    while i <= #tiles do
+        if grid_count >= MAX_TILES then
+            break
+        end
+
+        local data = tiles[i]
+        local tx, tz = data.x, data.z
+        local index = occupied_grid:GetIndex(tx, tz)
+        if not occupied_grid:GetDataAtIndex(index) then
+            occupied_grid:SetDataAtIndex(index, true)
+            grid_count = grid_count + 1
+
+            local function AddTileToQueue(offx, offz)
+                local px, pz = tx + offx, tz + offz
+                if not occupied_grid:GetDataAtPoint(px, pz) and TheWorld.Map:IsTileLandNoDocks(TheWorld.Map:GetTile(px, pz)) then
+                    table.insert(tiles, { x = px, z = pz })
+                end
+            end
+
+            for offx = -1, 1 do
+                if offx ~= 0 then
+                    AddTileToQueue(offx, 0)
+                end
+            end
+
+            for offz = -1, 1 do
+                if offz ~= 0 then
+                    AddTileToQueue(0, offz)
+                end
+            end
+        end
+
+        i = i + 1
+    end
+    --
+    return occupied_grid
+end
+
+local HERMIT_ISLAND_LAYOUT_ID = "HermitcrabIsland"
+local MONKEY_ISLAND_LAYOUT_ID = "MonkeyIsland"
+local MOON_ISLAND_TASK_ID = "MoonIsland"
+
+function IsInValidHermitCrabDecorArea(inst)
+    local topology_data = GetTopologyDataAtInst(inst)
+
+    -- We haven't moved yet.
+    if topology_data.layout_id == HERMIT_ISLAND_LAYOUT_ID then
+        return false
+    end
+
+    -- Monkey island bad
+    if topology_data.layout_id == MONKEY_ISLAND_LAYOUT_ID then
+        return false
+    end
+
+    -- Moon Island bad, reeks of lunar energy.
+    if topology_data.task_id and topology_data.task_id:find(MOON_ISLAND_TASK_ID) then
+        return false
+    end
+
+    return true
+end
+
+--------------------------------------------------------------------------
+
+function IsEntityGestaltProtected(inst)
+    local inventory = inst.components.inventory
+    return (inventory and inventory:EquipHasTag("gestaltprotection"))
+        or inst:HasDebuff("hermitcrabtea_moon_tree_blossom_buff")
+end

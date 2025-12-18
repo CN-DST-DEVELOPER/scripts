@@ -10,6 +10,7 @@ local prefabs =
     "charcoal",
     "monstermeat",
     "krampus_sack",
+    "krampuscorpse",
 }
 
 local brain = require "brains/krampusbrain"

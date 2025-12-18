@@ -49,6 +49,7 @@ local function fn()
     inst.scrapbook_anim = "f1"
 
     inst:AddTag("cavedweller")
+    inst:AddTag("pottedplant")
 
     inst.entity:SetPristine()
 

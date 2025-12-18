@@ -4371,3 +4371,38 @@ function d_mutatedbuzzardcircler()
     buzzard.components.mutatedbuzzardcircler:Start()
     return buzzard
 end
+
+local grid
+function d_placegridgroupoutline()
+    local x, y, z = TheInput:GetWorldPosition():Get()
+    grid = grid or SpawnPrefab("gridplacer_group_outline")
+    grid:PlaceGridAtPoint(x, y, z)
+end
+
+function d_removegridgroupoutline()
+    local x, y, z = TheInput:GetWorldPosition():Get()
+    grid = grid or SpawnPrefab("gridplacer_group_outline")
+    grid:RemoveGridAtPoint(x, y, z)
+end
+
+function d_tiles()
+    local GroundTiles = require("worldtiledefs")
+    local x, y, z = TheInput:GetWorldPosition():Get()
+    local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, y, z)
+
+    for offx = tx - 1, tx + 11 do
+        for offy = ty - 1, ty + GetTableSize(GroundTiles.turf) / 3 do
+            TheWorld.Map:SetTile(offx, offy, WORLD_TILES.IMPASSABLE)
+        end
+    end
+    --
+    local offx, offy = 0, 0
+    for k in pairs(GroundTiles.turf) do
+        TheWorld.Map:SetTile(tx + offx, ty + offy, k)
+        offx = offx + 2
+        if offx > 10 then
+            offx = 0
+            offy = offy + 2
+        end
+    end
+end

@@ -13,6 +13,7 @@ local prefabs =
     "lightninggoathorn",
     "goatmilk",
     "lightninggoatherd",
+    "lightninggoatcorpse",
 }
 
 local brain = require("brains/lightninggoatbrain")

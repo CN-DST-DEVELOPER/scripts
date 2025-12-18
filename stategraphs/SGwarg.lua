@@ -267,13 +267,6 @@ end
 
 local states =
 {
-	State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
     State{
         name = "idle",
         tags = { "idle" },
@@ -381,8 +374,7 @@ local states =
 		onenter = function(inst)
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("death")
-			inst.components.lootdropper:DropLoot(inst:GetPosition())
-			inst:SetDeathLootLevel(1)
+			inst:DropDeathLoot()
 
 			if inst:HasTag("clay") then
 				inst.sg.statemem.clay = true
@@ -1293,12 +1285,6 @@ local states =
 
 CommonStates.AddCorpseStates(states, nil,
 {
-    corpseoncreate = function(inst, corpse)
-        if inst:HasTag("gingerbread") then
-            corpse:SetAltBuild("gingerbread")
-        end
-    end,
-
     corpseonerode = function(inst)
         if inst.components.burnable and inst.components.burnable:IsBurning() then
             inst.components.burnable.fastextinguish = true
@@ -1430,5 +1416,7 @@ CommonStates.AddLunarRiftMutationStates(states,
     twitch_lp = "rifts3/mutated_deerclops/twitching_LP",
     keep_twitch_lp = true,
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("warg", states, events, "init", actionhandlers)

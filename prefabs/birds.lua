@@ -298,6 +298,7 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         end
 
         inst.lunar_mutation_chance = TUNING.BIRD_PRERIFT_MUTATION_SPAWN_CHANCE
+        inst.gestalt_possession_chance = TUNING.BIRD_RIFT_POSSESSION_SPAWN_CHANCE
 
         inst.sounds = BIRD_SOUNDS
 
@@ -310,6 +311,10 @@ local function makebird(name, soundname, no_feather, bank, custom_loot_setup, wa
         inst.components.locomotor:EnableGroundSpeedMultiplier(false)
         inst.components.locomotor:SetTriggersCreep(false)
         inst:SetStateGraph("SGbird")
+        if name == "puffin" then
+            -- TODO (OMAR) remove when puffin gets mutation animations
+            inst.sg.mem.nolunarmutate = true
+        end
 
         inst:AddComponent("lootdropper")
 		if custom_loot_setup ~= nil then

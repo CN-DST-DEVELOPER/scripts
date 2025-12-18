@@ -1,11 +1,34 @@
+local prefabs =
+{
+	"collapse_small",
+}
+
+local function _PlayAnimation(inst, anim, loop)
+	inst.AnimState:PlayAnimation(anim, loop)
+	if inst.back then
+		inst.back.AnimState:PlayAnimation(anim, loop)
+	end
+end
+
+local function _PushAnimation(inst, anim, loop)
+	inst.AnimState:PushAnimation(anim, loop)
+	if inst.back then
+		inst.back.AnimState:PushAnimation(anim, loop)
+	end
+end
+
+local function _AnimSetTime(inst, t)
+	inst.AnimState:SetTime(t)
+	if inst.back then
+		inst.back.AnimState:SetTime(t)
+	end
+end
+
 local function OnHit(inst, worker, workleft, numworks)
 	if not inst:HasTag("burnt") then
-		inst.AnimState:PlayAnimation("hit")
-		inst.AnimState:PushAnimation("idle", false)
-		if inst.back ~= nil then
-			inst.back.AnimState:PlayAnimation("hit")
-			inst.back.AnimState:PushAnimation("idle", false)
-		end
+		_PlayAnimation(inst, "hit")
+		_PushAnimation(inst, "idle", false)
+		inst.components.sittable:EjectOccupier()
 	end
 end
 
@@ -20,17 +43,73 @@ local function OnHammered(inst, worker)
 end
 
 local function OnBuilt(inst, data)
-	inst.AnimState:PlayAnimation("place")
-	inst.AnimState:PushAnimation("idle", false)
-	if inst.back ~= nil then
-		inst.back.AnimState:PlayAnimation("place")
-		inst.back.AnimState:PushAnimation("idle", false)
-	end
+	_PlayAnimation(inst, "place")
+	_PushAnimation(inst, "idle", false)
 
 	inst.SoundEmitter:PlaySound("dontstarve/common/repair_stonefurniture")
 
 	local builder = (data and data.builder) or nil
 	TheWorld:PushEvent("CHEVO_makechair", {target = inst, doer = builder})
+end
+
+local function CancelSitterAnimOver(inst)
+	if inst._onsitteranimover then
+		inst:RemoveEventCallback("animover", inst._onsitteranimover, inst._onsitteranimover_sitter)
+		inst._onsitteranimover = nil
+		inst._onsitteranimover_sitter = nil
+	end
+end
+
+local function OnSyncChairRocking(inst, sitter)
+	if inst.components.sittable:IsOccupiedBy(sitter) then
+		if sitter.AnimState:IsCurrentAnimation("rocking_pre") then
+			_PlayAnimation(inst, "rocking_pre")
+			local t = sitter.AnimState:GetCurrentAnimationTime()
+			local len = inst.AnimState:GetCurrentAnimationLength()
+			if t < len then
+				_AnimSetTime(inst, t)
+				_PushAnimation(inst, "rocking_loop")
+			else
+				_PlayAnimation(inst, "rocking_loop", true)
+				_AnimSetTime(inst, t - len)
+			end
+			CancelSitterAnimOver(inst)
+		elseif sitter.AnimState:IsCurrentAnimation("rocking_loop") then
+			_PlayAnimation(inst, "rocking_loop", true)
+			_AnimSetTime(inst, sitter.AnimState:GetCurrentAnimationTime())
+			CancelSitterAnimOver(inst)
+		elseif sitter.AnimState:IsCurrentAnimation("sit_off") then
+			CancelSitterAnimOver(inst)
+		elseif sitter.AnimState:IsCurrentAnimation("sit_jump_off") then
+			_PlayAnimation(inst, "rocking_pst")
+			_PushAnimation(inst, "idle", false)
+			CancelSitterAnimOver(inst)
+		else
+			if sitter.AnimState:IsCurrentAnimation("sit_loop_pre") then
+				_PlayAnimation(inst, "rocking_pst")
+				_PushAnimation(inst, "idle", false)
+			elseif inst.AnimState:IsCurrentAnimation("rocking_loop") or inst.AnimState:IsCurrentAnimation("rocking_pre") then
+				_PlayAnimation(inst, "idle")
+			end
+			if sitter ~= inst._onsitteranimover_sitter then
+				CancelSitterAnimOver(inst)
+				inst._onsitteranimover = function(sitter) OnSyncChairRocking(inst, sitter) end
+				inst._onsitteranimover_sitter = sitter
+				inst:ListenForEvent("animover", inst._onsitteranimover, sitter)
+			end
+		end
+	end
+end
+
+local function OnBecomeSittable(inst)
+	--reset rocking chair anim
+	if inst.AnimState:IsCurrentAnimation("rocking_loop") then
+		_PlayAnimation(inst, "rocking_pst")
+		_PushAnimation(inst, "idle", false)
+	elseif inst.AnimState:IsCurrentAnimation("rocking_pre") then
+		_PlayAnimation(inst, "idle")
+	end
+	CancelSitterAnimOver(inst)
 end
 
 local function OnChairBurnt(inst)
@@ -40,6 +119,7 @@ local function OnChairBurnt(inst)
 		inst.back.AnimState:PlayAnimation("burnt")
 	end
 
+	CancelSitterAnimOver(inst)
 	inst:RemoveComponent("sittable")
 end
 
@@ -73,10 +153,9 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		table.insert(assets, Asset("ANIM", "anim/"..bank..".zip"))
 	end
 
-	local prefabs =
-	{
-		"collapse_small",
-	}
+	local _prefabs = prefabs
+
+	local isrocking = string.sub(name, -8) == "_rocking"
 
 	if hasback then
 		local function OnBackReplicated(inst)
@@ -123,7 +202,9 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		end
 
 		table.insert(ret, Prefab(name.."_back", backfn, assets))
-		table.insert(prefabs, name.."_back")
+
+		_prefabs = shallowcopy(prefabs)
+		table.insert(_prefabs, name.."_back")
 	end
 
 	local function fn()
@@ -147,8 +228,13 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		end
 
 		inst:AddTag("structure")
-		inst:AddTag("faced_chair")
-		inst:AddTag("rotatableobject")
+		if isrocking then
+			inst:AddTag("limited_chair")
+			inst:AddTag("rocking_chair")
+		else
+			inst:AddTag("faced_chair")
+			inst:AddTag("rotatableobject")
+		end
 
 		inst.AnimState:SetBank(bank)
 		inst.AnimState:SetBuild(build)
@@ -191,6 +277,11 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 
 		inst:ListenForEvent("onbuilt", OnBuilt)
 
+		if isrocking then
+			inst:ListenForEvent("ms_sync_chair_rocking", OnSyncChairRocking)
+			inst:ListenForEvent("becomesittable", OnBecomeSittable)
+		end
+
 		MakeHauntableWork(inst)
 
 		if burnable then
@@ -205,16 +296,21 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		return inst
 	end
 
-	table.insert(ret, Prefab(name, fn, assets, prefabs))
+	table.insert(ret, Prefab(name, fn, assets, _prefabs))
 	table.insert(ret, MakePlacer(name.."_placer", bank, build, "idle", nil, nil, nil, nil, 15, "four"))
 end
 
 local ret = {}
 
---       ret,     name,          bank,          build,         hasback, deploy_smart_radius, burnable
-AddChair(ret, "wood_chair",  "wood_chair", "wood_chair_chair",  4, true,  0.875, true,  "WOOD_CHAIR" )
-AddChair(ret, "wood_stool",  "wood_stool", "wood_stool",		0, false, 0.875, true,  "WOOD_CHAIR" )
-AddChair(ret, "stone_chair", "wood_chair", "stone_chair",       4, true,  0.875, false, "STONE_CHAIR")
-AddChair(ret, "stone_stool", "wood_stool", "stone_chair_stool", 4, false, 0.875, false, "STONE_CHAIR")
+--NOTE: -"back" is the back of the chair, not a layer.
+--      -in up-facing it would be layered in front.
+--      -for rocking chairs, this is used for the front layer arm of the chair.
+--
+--       ret,	name,					bank,					build,			  facings,	back,	dep_r,	burn,	inspection_override
+AddChair(ret,	"wood_chair",			"wood_chair",			"wood_chair_chair",		4,	true,	0.875,	true,	"WOOD_CHAIR"	)
+AddChair(ret,	"wood_stool",			"wood_stool",			"wood_stool",			0,	false,	0.875,	true,	"WOOD_CHAIR"	)
+AddChair(ret,	"stone_chair",			"wood_chair",			"stone_chair",			4,	true,	0.875,	false,	"STONE_CHAIR"	)
+AddChair(ret,	"stone_stool",			"wood_stool",			"stone_chair_stool",	4,	false,	0.875,	false,	"STONE_CHAIR"	)
+AddChair(ret,	"hermit_chair_rocking",	"hermit_chair_rocking",	"hermit_chair_rocking",	0,	true,	1,		true,	"WOOD_CHAIR"	)
 
 return unpack(ret)

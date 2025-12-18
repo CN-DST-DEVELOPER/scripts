@@ -370,6 +370,11 @@ return
 			"legs_pj_orange_honey",
 			"bedroll_furry_quilt_orange_honey",
 		},
+		{
+			"body_pj_polkadot",
+			"legs_pj_polkadot",
+			"bedroll_furry_quilt_red_polkadot",
+		},
 	},
 }
 

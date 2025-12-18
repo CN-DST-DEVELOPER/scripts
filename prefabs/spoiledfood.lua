@@ -150,6 +150,9 @@ end
 
 local function food_init(inst)
 	inst:AddTag("oceanfishing_lure")
+
+	inst:AddComponent("driedsalticon")
+	inst.components.driedsalticon:SetCollectsOnDried(false)
 end
 
 --------------------------------------------------------------------------------------------------------------------------------

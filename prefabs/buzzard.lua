@@ -59,6 +59,8 @@ local sounds =
     flyout = "dontstarve_DLC001/creatures/buzzard/flyout",
     hop = "dontstarve_DLC001/creatures/buzzard/hurt", -- Yes, this is the hop sound.
     death = "dontstarve_DLC001/creatures/buzzard/death",
+    --eat = "lunarhail_event/creatures/lunar_buzzard/eating_LP",
+    --spit = "lunarhail_event/creatures/lunar_buzzard/spit",
     distant = "dontstarve_DLC001/creatures/buzzard/distant",
 }
 
@@ -425,6 +427,7 @@ local function mutated_fn()
     inst:AddTag("gestaltmutant")
     inst:AddTag("hostile")
     inst:AddTag("mutantdominant") -- Dominant over lunar mutations like horror hounds, permafrost pengulls, etc
+    inst:AddTag("soulless")
 
     inst.entity:SetPristine()
 
@@ -494,6 +497,7 @@ local function mutated_fn()
 
     inst:SetStateGraph("SGbuzzard")
     inst:SetBrain(brain)
+    inst.sg.mem.nocorpse = true
 
     if TheWorld.components.mutatedbirdmanager ~= nil then
         TheWorld:PushEvent("ms_registermutatedbuzzard", inst)

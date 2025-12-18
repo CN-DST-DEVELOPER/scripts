@@ -28,6 +28,9 @@ local events =
     EventHandler("gotosleep", function(inst) inst.sg:GoToState("sleep") end),
     EventHandler("entershield", function(inst) inst.sg:GoToState("shield_start") end),
     EventHandler("exitshield", function(inst) inst.sg:GoToState("shield_end") end),
+
+    -- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -292,8 +295,8 @@ local states =
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-            end 
+                inst:DropDeathLoot()
+            end
         end,
 
         events =
@@ -301,6 +304,8 @@ local states =
             EventHandler("animover", function(inst)
                 if inst.shadowthrall_parasite_hosted_death and TheWorld.components.shadowparasitemanager then
                     TheWorld.components.shadowparasitemanager:ReviveHosted(inst)
+                elseif inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("corpse")
                 end
             end),
         },
@@ -348,11 +353,14 @@ CommonStates.AddSleepStates(states,
 })
 
 CommonStates.AddFrozenStates(states)
-CommonStates.AddIdle(states, "idle_tendril", nil ,
+CommonStates.AddIdle(states, "idle_tendril", nil,
 {
     TimeEvent(5*FRAMES, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/foley") end),
     TimeEvent(30*FRAMES, function(inst) PlayLobSound(inst,"dontstarve/creatures/rocklobster/foley") end),
 })
 CommonStates.AddParasiteReviveState(states)
+CommonStates.AddCorpseStates(states)
 
-return StateGraph("rocky", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+
+return StateGraph("rocky", states, events, "init", actionhandlers)

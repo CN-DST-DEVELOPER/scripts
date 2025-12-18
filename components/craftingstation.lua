@@ -17,6 +17,10 @@ function CraftingStation:KnowsItem(itemname)
     return table.contains(self.items, itemname)
 end
 
+function CraftingStation:KnowsRecipe(recipename)
+    return table.contains(self.recipes, recipename)
+end
+
 function CraftingStation:GetItems()
     return self.items
 end

@@ -2280,6 +2280,7 @@ local function MakeHat(name)
     local function moonstorm_custom_init(inst)
         inst:AddTag("waterproofer")
         inst:AddTag("goggles")
+        --moonsparkchargeable (from moonsparkchargeable component) added to pristine state for optimization
         inst:AddTag("moonsparkchargeable")
     end
 
@@ -2299,6 +2300,8 @@ local function MakeHat(name)
         inst.components.fueled.fueltype = FUELTYPE.USAGE
         inst.components.fueled:InitializeFuelLevel(TUNING.MOONSTORM_GOGGLES_PERISHTIME)
         inst.components.fueled:SetDepletedFn(--[[generic_perish]]inst.Remove)
+
+        inst:AddComponent("moonsparkchargeable")
 
         inst.components.equippable:SetOnEquip(moonstorm_equip)
         inst.components.equippable:SetOnUnequip(moonstorm_unequip)
@@ -2431,7 +2434,7 @@ local function MakeHat(name)
         inst:AddComponent("container")
         inst.components.container:WidgetSetup("antlionhat")
 
-        inst:AddComponent("autoterraformer")
+        inst:AddComponent("autoterraformer") -- Must be after container component.
         inst.components.autoterraformer.onfinishterraformingfn = antlion_onfinishterraforming
 
         inst:AddComponent("waterproofer")
@@ -2445,15 +2448,19 @@ local function MakeHat(name)
 
     --------------------- POLLY ROGERS
 
-
-    local function update_polly_hat_art(inst)
+    fns.update_polly_hat_art = function(inst)
         inst.AnimState:PlayAnimation(inst.defaultanim)
-        local deadpolly = not inst.components.spawner.child or inst.components.spawner.child.components.health:IsDead()
+        local deadpolly
+        if inst.components.spawner.child then
+            deadpolly = inst.components.spawner.child.components.health:IsDead()
+        else
+            deadpolly = inst.components.spawner:IsSpawnPending()
+        end
         if deadpolly then
-            inst.components.inventoryitem:ChangeImageName("polly_rogershat2")
+            inst.components.inventoryitem:ChangeImageName(inst.prefab .. "2")
             inst.AnimState:PlayAnimation("anim_dead")
         else
-            inst.components.inventoryitem:ChangeImageName("polly_rogershat")
+            inst.components.inventoryitem:ChangeImageName(inst.prefab)
             inst.AnimState:PlayAnimation("anim")
         end
         if inst.components.equippable:IsEquipped() then
@@ -2468,70 +2475,80 @@ local function MakeHat(name)
         end
     end
 
-    local function pollyremoved(inst)
-        inst:RemoveEventCallback("onremove", pollyremoved, inst.polly)
+    fns.pollyremoved = function(inst)
+        inst:RemoveEventCallback("onremove", fns.pollyremoved, inst.polly)
         inst.polly = nil
     end
 
-    local function polly_rogers_custom_init(inst)
+    fns.polly_rogers_custom_init = function(inst)
         --waterproofer (from waterproofer component) added to pristine state for optimization
         inst:AddTag("waterproofer")
     end
 
-    local function test_polly_spawn(inst)
+    fns.test_polly_spawn = function(inst)
         if not inst.polly and not inst.components.spawner:IsSpawnPending() then
             inst.components.spawner:ReleaseChild()
         end
     end
 
-    local function polly_rogers_go_away(inst)
+    fns.polly_rogers_go_away = function(inst)
         if inst.pollytask then
             inst.pollytask:Cancel()
             inst.pollytask = nil
         end
 
         if inst.polly then
-            inst.polly.flyaway = true
-            inst.polly:PushEvent("flyaway")
+            if inst.polly:HasTag("bird") then
+                inst.polly.flyaway = true
+                inst.polly:PushEvent("flyaway")
+            else
+                if inst.polly.sg then
+                    inst.polly.sg.statemem.queueresummon = nil
+                end
+                inst.polly:PushEvent("desummon")
+            end
         end
     end
 
-    local function polly_rogers_ondeplete(inst, data)
-        polly_rogers_go_away(inst)
+    fns.polly_rogers_ondeplete = function(inst, data)
+        fns.polly_rogers_go_away(inst)
         inst:Remove()
     end
 
-    local function polly_rogers_equip(inst,owner)
+    fns.polly_rogers_equip = function(inst, owner)
         _onequip(inst, owner)
-        inst.pollytask = inst:DoTaskInTime(0,function()
+        inst.pollytask = inst:DoTaskInTime(inst.pollyspawndelay or 0, function()
             inst.worn = true
-            test_polly_spawn(inst)
+            fns.test_polly_spawn(inst)
 
             inst.polly = inst.components.spawner.child
             if inst.polly then
                 inst.polly.components.follower:SetLeader(owner)
-                inst.polly.flyaway = nil
+                if inst.polly:HasTag("bird") then
+                    inst.polly.flyaway = nil
+                elseif inst.polly.sg then
+                    inst.polly.sg.statemem.queueresummon = true
+                end
             end
-            update_polly_hat_art(inst)
+            fns.update_polly_hat_art(inst)
         end)
     end
 
-    local function polly_rogers_unequip(inst,owner)
+    fns.polly_rogers_unequip = function(inst, owner)
         _onunequip(inst, owner)
         inst.worn = nil
 
-        polly_rogers_go_away(inst)
-        --update_polly_hat_art(inst)
+        fns.polly_rogers_go_away(inst)
     end
 
     fns.polly_rogers_onequiptomodel = function(inst, owner, from_ground)
         fns.simple_onequiptomodel(inst, owner, from_ground)
 
         inst.worn = nil
-        polly_rogers_go_away(inst)
+        fns.polly_rogers_go_away(inst)
     end
 
-    local function getpollyspawnlocation(inst)
+    fns.getpollyspawnlocation = function(inst)
         local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner or inst
         local pos = Vector3(owner.Transform:GetWorldPosition())
         local offset = nil
@@ -2545,17 +2562,17 @@ local function MakeHat(name)
             pos.x = pos.x + offset.x
             pos.z = pos.z + offset.z
         end
-        return pos.x, 15, pos.z
+        local y = inst.prefab == "polly_rogershat" and 15 or 0
+        return pos.x, y, pos.z
     end
 
 
-    local function polly_rogers_onoccupied(inst,child)
+    fns.polly_rogers_onoccupied = function(inst, child)
         inst.polly = nil
         child.components.follower:StopFollowing()
     end
 
-    local function polly_rogers_onvacate(inst, child)
-
+    fns.polly_rogers_onvacate = function(inst, child)
         if not inst.worn then
             inst.components.spawner:GoHome(child)
             return
@@ -2563,21 +2580,84 @@ local function MakeHat(name)
                
         local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner or nil
         if owner then
-            child.sg:GoToState("glide")
+            if child:HasTag("bird") then
+                child.sg:GoToState("glide")
+            else
+                child:PushEvent("summon")
+            end
             child.Transform:SetRotation(math.random() * 180)
             child.components.locomotor:StopMoving()
             child.hat = inst
-            inst:ListenForEvent("onremove", pollyremoved, inst.polly)
+            inst:ListenForEvent("onremove", fns.pollyremoved, inst.polly)
         end
     end
 
+    fns.polly_rogers_migration = function(inst)
+        local bird = inst.components.spawner.child
+        return bird and (bird.components.health == nil or not bird.components.health:IsDead()) and bird or nil
+    end
 
-    local function updatepolly(spawner,polly)
-        update_polly_hat_art(spawner)
+    fns.polly_rogers_onplayerdespawn = function(inst)
+        local bird = inst.components.spawner.child
+        if not bird then
+            return
+        end
+
+        if bird.components.health == nil or not bird.components.health:IsDead() then
+            if bird.components.health then
+                bird.components.health:SetInvincible(true)
+            end
+            bird:PushEvent("despawn")
+        end
     end
 
     fns.polly_rogers = function()
-        local inst = simple(polly_rogers_custom_init)
+        local inst = simple(fns.polly_rogers_custom_init)
+
+        inst.components.floater:SetSize("med")
+        inst.components.floater:SetScale(0.72)
+
+        inst.defaultanim = "anim"
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("fueled")
+        inst.components.fueled.fueltype = FUELTYPE.USAGE
+        inst.components.fueled:InitializeFuelLevel(TUNING.POLLY_ROGERS_HAT_PERISHTIME) -- Shared.
+        inst.components.fueled:SetDepletedFn(fns.polly_rogers_ondeplete) -- Shared.
+
+        inst.components.equippable:SetOnEquip(fns.polly_rogers_equip)
+        inst.components.equippable:SetOnUnequip(fns.polly_rogers_unequip)
+        inst.components.equippable:SetOnEquipToModel(fns.polly_rogers_onequiptomodel)
+
+        inst:AddComponent("spawner")
+        inst.components.spawner:Configure("polly_rogers", TUNING.POLLY_ROGERS_SPAWN_TIME)
+        inst.components.spawner.onvacate = fns.polly_rogers_onvacate
+        inst.components.spawner.onoccupied = fns.polly_rogers_onoccupied
+        inst.components.spawner.overridespawnlocation = fns.getpollyspawnlocation
+        inst.components.spawner.savenonpersistingchildasoccupied = true
+        inst.components.spawner:CancelSpawning()
+        inst.components.spawner.onkilledfn = fns.update_polly_hat_art
+        inst.components.spawner.onspawnedfn = fns.update_polly_hat_art
+
+        inst:AddComponent("migrationpetowner")
+        inst.components.migrationpetowner:SetPetFn(fns.polly_rogers_migration)
+        inst:ListenForEvent("player_despawn", fns.polly_rogers_onplayerdespawn)
+
+        inst:AddComponent("waterproofer")
+        inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALLMED)
+
+        inst:DoTaskInTime(0, function() fns.update_polly_hat_art(inst) end)
+
+        return inst
+    end
+
+    -- SALTY_DOG is a Polly Rogers upgrade with a lot of shared functionality for states, stats, and behaviour.
+
+    fns.salty_dog = function()
+        local inst = simple(fns.polly_rogers_custom_init)
 
         inst.components.floater:SetSize("med")
         inst.components.floater:SetScale(0.72)
@@ -2591,25 +2671,31 @@ local function MakeHat(name)
         inst:AddComponent("fueled")
         inst.components.fueled.fueltype = FUELTYPE.USAGE
         inst.components.fueled:InitializeFuelLevel(TUNING.POLLY_ROGERS_HAT_PERISHTIME)
-        inst.components.fueled:SetDepletedFn(polly_rogers_ondeplete)
+        inst.components.fueled:SetDepletedFn(fns.polly_rogers_ondeplete)
 
-        inst.components.equippable:SetOnEquip(polly_rogers_equip)
-        inst.components.equippable:SetOnUnequip(polly_rogers_unequip)
+        inst.pollyspawndelay = 0.7 -- NOTES(JBK): This is only to reduce vfx spam potential when switching between two of the same hat.
+        inst.components.equippable:SetOnEquip(fns.polly_rogers_equip)
+        inst.components.equippable:SetOnUnequip(fns.polly_rogers_unequip)
         inst.components.equippable:SetOnEquipToModel(fns.polly_rogers_onequiptomodel)
 
         inst:AddComponent("spawner")
-        inst.components.spawner:Configure("polly_rogers", TUNING.POLLY_ROGERS_SPAWN_TIME)
-        inst.components.spawner.onvacate = polly_rogers_onvacate
-        inst.components.spawner.onoccupied = polly_rogers_onoccupied
-        inst.components.spawner.overridespawnlocation = getpollyspawnlocation
+        inst.components.spawner:Configure("salty_dog", TUNING.POLLY_ROGERS_SPAWN_TIME)
+        inst.components.spawner.onvacate = fns.polly_rogers_onvacate
+        inst.components.spawner.onoccupied = fns.polly_rogers_onoccupied
+        inst.components.spawner.overridespawnlocation = fns.getpollyspawnlocation
+        inst.components.spawner.savenonpersistingchildasoccupied = true
         inst.components.spawner:CancelSpawning()
-        inst.components.spawner.onkilledfn = updatepolly
-        inst.components.spawner.onspawnedfn = updatepolly
+        inst.components.spawner.onkilledfn = fns.update_polly_hat_art
+        inst.components.spawner.onspawnedfn = fns.update_polly_hat_art
+
+        inst:AddComponent("migrationpetowner")
+        inst.components.migrationpetowner:SetPetFn(fns.polly_rogers_migration)
+        inst:ListenForEvent("player_despawn", fns.polly_rogers_onplayerdespawn)
 
         inst:AddComponent("waterproofer")
         inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALLMED)
 
-        inst:DoTaskInTime(0,function() update_polly_hat_art(inst) end)
+        inst:DoTaskInTime(0, function() fns.update_polly_hat_art(inst) end)
 
         return inst
     end
@@ -6211,6 +6297,10 @@ local function MakeHat(name)
         prefabs = {"polly_rogers",}
         table.insert(assets, Asset("INV_IMAGE", "polly_rogershat2"))
         fn = fns.polly_rogers
+    elseif name == "salty_dog" then
+        prefabs = {"salty_dog",}
+        table.insert(assets, Asset("INV_IMAGE", "salty_doghat2"))
+        fn = fns.salty_dog
 	elseif name == "eyemask" then
         fn = fns.eyemask
     elseif name == "antlion" then
@@ -6300,8 +6390,8 @@ local function MakeHat(name)
 			"pumpkinhat_fx",
 			"spoiled_food",
 		}
-		table.insert(assets, Asset("ATLAS", "images/pumpkinhat_face.xml"))
-		table.insert(assets, Asset("IMAGE", "images/pumpkinhat_face.tex"))
+		table.insert(assets, Asset("DYNAMIC_ATLAS", "images/pumpkinhat_face.xml"))
+		table.insert(assets, Asset("ASSET_PKGREF", "images/pumpkinhat_face.tex"))
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -7150,6 +7240,7 @@ return  MakeHat("straw"),
         MakeHat("monkey_medium"),
         MakeHat("monkey_small"),
         MakeHat("polly_rogers"),
+        MakeHat("salty_dog"),
         MakeHat("nightcap"),
         MakeHat("woodcarved"),
         MakeHat("dreadstone"),

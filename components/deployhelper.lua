@@ -7,7 +7,8 @@ function TriggerDeployHelpers(x, y, z, range, recipe, placerinst)
         if ((not helper.keyfilters and not helper.recipefilters)
                 or (helper.recipefilters and recipe and helper.recipefilters[recipe.name])
                 or (helper.keyfilters and placerinst.deployhelper_key and helper.keyfilters[placerinst.deployhelper_key]))
-                and helper.inst:GetDistanceSqToPoint(x, y, z) < range then
+                and helper.inst:GetDistanceSqToPoint(x, y, z) < range
+                and (helper.canenablehelper == nil or helper.canenablehelper(helper.inst)) then
             helper:StartHelper((recipe and recipe.name) or placerinst.deployhelper_key, placerinst)
         end
     end
@@ -20,6 +21,7 @@ local DeployHelper = Class(function(self, inst)
     --self.keyfilters = nil
     --self.delay = nil
     self.onenablehelper = nil
+    --self.canenablehelper = nil
 end)
 
 function DeployHelper:OnEntitySleep()

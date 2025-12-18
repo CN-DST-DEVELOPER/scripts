@@ -241,6 +241,7 @@ local TREE_DEFS =
         physics_rad = 1,
 
         common_postinit = function(inst)
+            inst:AddTag("slurtlepickable")
             inst.AnimState:SetLightOverride(0.1)
             inst.AnimState:SetSymbolLightOverride("fire_loop", 0.5)
             inst.AnimState:SetSymbolLightOverride("fire_glow", 0.5)

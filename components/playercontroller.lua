@@ -480,7 +480,10 @@ function PlayerController:IsEnabled()
     if self.classified == nil or not self.classified.iscontrollerenabled:value() then
         return false
     elseif self.inst.HUD ~= nil and self.inst.HUD:HasInputFocus() then
-        return false, self.inst.HUD:IsCraftingOpen() and TheFrontEnd.textProcessorWidget == nil or self.inst.HUD:IsSpellWheelOpen() or (self.command_wheel_allows_gameplay and self.inst.HUD:IsCommandWheelOpen())
+		return false,
+			(self.inst.HUD:IsCraftingOpen() and TheFrontEnd.textProcessorWidget == nil) or
+			self.inst.HUD:IsSpellWheelOpen() or
+			(self.command_wheel_allows_gameplay and self.inst.HUD:IsCommandWheelOpen())
     end
     return true
 end
@@ -1397,7 +1400,7 @@ function PlayerController:RotRight(speed)
 end
 
 function PlayerController:GetHoverTextOverride()
-    return self.placer_recipe ~= nil and (STRINGS.UI.HUD.BUILD.." "..(STRINGS.NAMES[string.upper(self.placer_recipe.name)] or STRINGS.UI.HUD.HERE)) or nil
+    return self.placer_recipe ~= nil and (STRINGS.UI.HUD.BUILD.." "..(STRINGS.NAMES[string.upper(self.placer_recipe.product or self.placer_recipe.name)] or STRINGS.UI.HUD.HERE)) or nil
 end
 
 function PlayerController:CancelPlacement(cache)
@@ -2871,7 +2874,8 @@ function PlayerController:OnUpdate(dt)
     self:DoPredictHopping(dt)
 
 	if not isenabled and not ishudblocking then
-		self:DoClientBusyOverrideLocomote()
+		--V2C: don't think this should call; delete after confirming no side effects.
+		--self:DoClientBusyOverrideLocomote()
 		return
 	end
 
@@ -3614,7 +3618,10 @@ end
 
 function PlayerController:OnRemotePredictOverrideLocomote(dir)
 	if self.ismastersim and self.handler == nil and self.inst.sg:HasStateTag("overridelocomote") then
-		if self:IsEnabled() and not self:IsBusy() or self.classified.busyremoteoverridelocomote:value() then
+		if self:IsEnabled() and not self:IsBusy() or
+			self.classified.busyremoteoverridelocomote:value() or
+			self.classified.busyremoteoverridelocomoteclick:value()
+		then
 			if self.inst.sg:HasStateTag("canrotate") then
 				self.locomotor:SetMoveDir(dir)
 			end
@@ -3725,8 +3732,8 @@ function PlayerController:RemotePredictWalking(x, z, isstart, overridemovetime, 
     end
 end
 
-function PlayerController:RemotePredictOverrideLocomote()
-	SendRPCToServer(RPC.PredictOverrideLocomote, self.inst.Transform:GetRotation())
+function PlayerController:RemotePredictOverrideLocomote(dir)
+	SendRPCToServer(RPC.PredictOverrideLocomote, dir or self.inst.Transform:GetRotation())
 end
 
 function PlayerController:RemoteStopWalking()
@@ -3764,10 +3771,24 @@ function PlayerController:DoClientBusyOverrideLocomote()
 	if not self.ismastersim and
 		self.handler ~= nil and
 		self.classified and
-		self.classified.busyremoteoverridelocomote:value() and
-		GetWorldControllerVector() ~= nil
+		self.classified.busyremoteoverridelocomote:value()
 	then
-		self:RemotePredictOverrideLocomote()
+		local dir = GetWorldControllerVector()
+		if dir then
+			self:RemotePredictOverrideLocomote(math.atan2(-dir.z, dir.x) * RADIANS)
+		end
+	end
+end
+
+function PlayerController:DoClientBusyOverrideLocomoteClick(pos)
+	--Left click version of the above.
+	--e.g. Getting out of hotspring.
+	if not self.ismastersim and
+		self.handler and
+		self.classified and
+		self.classified.busyremoteoverridelocomoteclick:value()
+	then
+		self:RemotePredictOverrideLocomote(self.inst:GetAngleToPoint(pos))
 	end
 end
 
@@ -4466,7 +4487,7 @@ function PlayerController:OnLeftClick(down)
 	local t = GetTime()
 	self.actionholdtime = t
 
-	local act, spellbook, spell_id, dblclickact, trypreventdirflicker
+	local act, spellbook, spell_id, dblclickact, trypreventdirflicker, position
     if self:IsAOETargeting() then
 		local canrepeatcast = self.reticule.inst.components.aoetargeting:CanRepeatCast()
 		if self:IsBusy() and not (canrepeatcast and self.inst:HasTag("canrepeatcast")) then
@@ -4489,10 +4510,11 @@ function PlayerController:OnLeftClick(down)
 	else
 		local scrnx, scrny = TheSim:GetPosition()
 		local x, y, z = TheSim:ProjectScreenPos(scrnx, scrny)
-		local position = x and y and z and Vector3(x, y, z) or nil --basically TheInput:GetWorldPosition()
 
 		--first see if we have double click actions
-		if position then
+		if x and y and z then
+			position = Vector3(x, y, z) --basically TheInput:GetWorldPosition()
+
 			local target = TheInput:GetWorldEntityUnderMouse()
 			if target and not CanEntitySeeTarget(self.inst, target) then
 				target = nil
@@ -4585,7 +4607,7 @@ function PlayerController:OnLeftClick(down)
 			pos_x = act.pos.local_pt.x
 			pos_z = act.pos.local_pt.z
         else
-            local position = TheInput:GetWorldPosition()
+			position = position or TheInput:GetWorldPosition()
 			platform, pos_x, pos_z = self:GetPlatformRelativePosition(position.x, position.z)
             mouseover = act.action ~= ACTIONS.DROP and TheInput:GetWorldEntityUnderMouse() or nil
         end
@@ -4609,6 +4631,14 @@ function PlayerController:OnLeftClick(down)
 
 	if trypreventdirflicker and act ~= dblclickact and self.locomotor and self.locomotor.bufferedaction == act then
 		self.locomotor:Clear()
+	end
+
+	if position then
+		if self.ismastersim then
+			self.inst.sg:HandleEvent("ms_overridelocomote_click", { dir = self.inst:GetAngleToPoint(position) })
+		else
+			self:DoClientBusyOverrideLocomoteClick(position)
+		end
 	end
 end
 

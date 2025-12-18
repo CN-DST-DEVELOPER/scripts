@@ -311,7 +311,7 @@ function DryingRack:OnLoseItem(item, slot)
 		end
 	end
 	if self.hideitemfn and slot then
-		self.hideitemfn(self.inst, slot)
+		self.hideitemfn(self.inst, slot, item.prefab)
 	end
 end
 
@@ -386,7 +386,7 @@ local function InstantDry(item, container)
 	end
 end
 
-function DryingRack:OnBurnt() --Called by DefaultStructureBurntFn
+function DryingRack:OnBurnt() --Called by DefaultBurntStructureFn
 	self.container:ForEachItem(InstantDry, self.container)
 end
 

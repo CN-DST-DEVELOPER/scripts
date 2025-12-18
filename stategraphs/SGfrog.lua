@@ -36,7 +36,7 @@ local events=
             end
         end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasAnyStateTag("busy", "attack") and not CommonHandlers.HitRecoveryDelay(inst) then
@@ -49,6 +49,9 @@ local events=
             inst.sg:GoToState("trapped")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local FROG_TAGS = {"frog"}
@@ -242,8 +245,13 @@ local states=
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        }
     },
 
     State{
@@ -275,4 +283,7 @@ CommonStates.AddHopStates(states, true, {loop = "jump"})--, { pre = "boat_jump_p
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("frog", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("frog", states, events, "init", actionhandlers)

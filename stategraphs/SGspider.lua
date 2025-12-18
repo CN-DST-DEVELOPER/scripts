@@ -122,13 +122,6 @@ end
 local states =
 {
     State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
-    State{
         name = "death",
         tags = { "busy" },
 
@@ -139,8 +132,7 @@ local states =
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-                inst:SetDeathLootLevel(1)
+                inst:DropDeathLoot()
             end
         end,
 
@@ -712,13 +704,7 @@ CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_ju
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-CommonStates.AddCorpseStates(states, nil,
-{
-    corpseoncreate = function(inst, corpse)
-        corpse:SetAltBuild(inst.prefab)
-        corpse:SetAltBank(inst.prefab)
-    end,
-}, "spidercorpse")
+CommonStates.AddCorpseStates(states, nil, nil, "spidercorpse")
 
 local function PlayHiderSound(inst, sound)
     if inst:HasTag("spider_hider") then
@@ -791,5 +777,7 @@ CommonStates.AddLunarPreRiftMutationStates(states,
     mutated_spawn_timing = 115 * FRAMES,
     post_mutate_state = "taunt",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("spider", states, events, "init", actionhandlers)

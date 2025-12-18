@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Out of sparks. Florp.",
+            CHARGE_FULL = "Full of sparks!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Florp! Missed!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Florpt! My turn already!",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzbirds! Glurph, look weird!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Florp! Still here!",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Again!",
 
 	BATTLECRY =
 	{
@@ -5897,6 +5907,77 @@ return{
             BURNING = "Bye-bye dead thing!",
             REVIVING = "Oh florp.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "My turn!",
+            GENERIC = "Swimming hole!",
+            EMPTY = "Nothing here!",
+        },
+		HERMITHOTSPRING_CONSTR = "When done?",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Crabby lady! Dry stuff ready now!",
+            DRYING = "Crabby lady! Dry stuff ready now!",
+            DRYINGINRAIN = "Not sure this thought through, flort.",
+            GENERIC =  "Dry many dry stuff.",
+            BURNT = "Oh well, flort.",
+            DONE_NOTMEAT = "Look even worse than usual, florp.",
+            DRYING_NOTMEAT = "That not look right.",
+            DRYINGINRAIN_NOTMEAT = "Thought you said this make things dry?",
+            DONE_SALT = "Salt? Glurph!",
+			ABANDONED = "Crabby lady need new one.",
+        },
+		HERMITHOUSE_ORNAMENT = "Just for crabby lady!",
+        HERMITHOUSE_LAUNDRY = "Play prank on crabby lady?",
+
+        PETALS_DRIED = "Dried bits not yummy.",
+        PETALS_EVIL_DRIED = "Dried bits not yummy.",
+        FOLIAGE_DRIED = "Dried bits not yummy.",
+        SUCCULENT_PICKED_DRIED = "Dried bits not yummy.",
+        FIRENETTLES_DRIED = "Dried bits not yummy.",
+        TILLWEED_DRIED = "Dried bits not yummy.",
+        MOON_TREE_BLOSSOM_DRIED = "Dried bits not yummy.",
+        FORGETMELOTS_DRIED = "Dried bits not yummy.",
+
+        HERMITCRABTEA_PETALS = "Nice flower tea.",
+        HERMITCRABTEA_PETALS_EVIL = "Naughty flower tea?",
+        HERMITCRABTEA_FOLIAGE = "Me already brave.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Mmm. Refresh me!",
+        HERMITCRABTEA_FIRENETTLES = "Make warm inside! Glurph!",
+        HERMITCRABTEA_TILLWEED = "Good stuff, bad taste. Florp.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "Make friends with Moonfolk?",
+        HERMITCRABTEA_FORGETMELOTS = "Glurph? Make dizzy go away?",
+        SHELLWEAVER = "Why everything so salty?",
+        ICESTAFF2 = "Can't lick magic icy stick? Florp.",
+        ICESTAFF3 = "But looks so yummy! Florp!",
+        NONSLIPGRIT = "Sticky dust!",
+        NONSLIPGRITBOOSTED = "Me put sticky dust everywhere!",
+        DESICCANT = "Make me dry!",
+        DESICCANTBOOSTED = "Stop me dry? Glurph!",
+        HERMITCRAB_SHELL = "Miss crabby lady.",
+        SALTY_DOGHAT = "Soft fur like sea doggie!",
+        SALTY_DOG = "Get salt, sea doggie!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Where crabby lady?", -- Inactive state, no Pearl inside.
+            ACTIVE = "Me thirsty!", -- Active, Pearl is inside, can buy from her
+            BREWING = "Hurry, crabby lady!", -- A trade just happened and she's brewing the tea!|
+            BURNT = "No! Florp.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Glurgh. Stinky.",
+        FISHMEAT_SMALL_DRIED = "Glurgh. Stinky.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Make crabby lady house pretty. Glurph!",
+            ABANDONED = "Too bad, glurgh.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Me put!",
     },
 
     DESCRIBE_GENERIC = "What that?",

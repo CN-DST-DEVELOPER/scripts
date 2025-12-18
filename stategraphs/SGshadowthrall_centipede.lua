@@ -139,11 +139,6 @@ local function SyncSegmentsToState(inst, randomdelay, excludeotherhead)
     end
 end
 
---[[
-TODO ANIMATIONS
-eat_neutral
-]]
-
 local states = {
 
     State{

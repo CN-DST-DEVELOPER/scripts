@@ -20,6 +20,8 @@ local prefabs =
     "nightmarefuel",
 	"shadow_despawn",
 	"statue_transition_2",
+
+    "rabbitcorpse",
 }
 
 local rabbitsounds =

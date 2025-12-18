@@ -174,7 +174,9 @@ function ValidateRecipeSkinRequest(user_id, prefab_name, skin)
     local validated_skin = nil
     if skin ~= nil and skin ~= "" and TheInventory:CheckClientOwnership(user_id, skin) then
         if table.contains( PREFAB_SKINS[prefab_name], skin ) then
-            validated_skin = skin
+            if SKINS_EVENTLOCK[skin] == nil or IsSpecialEventActive(SKINS_EVENTLOCK[skin]) then
+                validated_skin = skin
+            end
         end
     end
     return validated_skin

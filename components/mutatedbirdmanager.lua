@@ -352,7 +352,9 @@ function self:OnPostInit()
     if corpsepersistmanager ~= nil then
         corpsepersistmanager:AddPersistSourceFn(CORPSE_PERSIST_SOURCE, function(corpse)
             -- corpse can also be a creature as it died.
-            return self:GetPopulationForNodeAtInst("mutatedbuzzard_gestalt", corpse) > 0 or IsAnyBuzzardInRange(corpse:GetPosition())
+            return (self:GetPopulationForNodeAtInst("mutatedbuzzard_gestalt", corpse) > 0 or IsAnyBuzzardInRange(corpse:GetPosition()))
+                and not corpse:IsOnOcean(true)
+                and not (corpse:HasTag("insect") and corpse:HasAnyTag("smallcreature", "smallcreaturecorpse")) -- exclude really tiny insects like bees
         end)
     end
 end
@@ -559,7 +561,7 @@ end
 local CORPSE_MUST_TAGS = { "creaturecorpse" }
 local CORPSE_NO_TAGS = { "NOCLICK" }
 local function IsValidCorpse(corpse)
-    return not Buzzard_ShouldIgnoreCorpse(corpse) and not corpse:WillMutate() and not corpse:IsFading() and not corpse:HasGestaltArriving()
+    return not Buzzard_ShouldIgnoreCorpse(corpse) and not corpse:WillMutate() and not corpse:HasGestaltArriving()
 end
 
 local function FindCorpse(player)
@@ -589,15 +591,21 @@ end
 
 local function SendBuzzardToCorpse(buzzardshadow, corpse)
     local x, y, z = corpse.Transform:GetWorldPosition()
-    local buzzard = SpawnPrefab("mutatedbuzzard_gestalt")
-	buzzard.Transform:SetPosition(x + math.random() * 10 - 5, 30, z + math.random() * 10 - 5)
-	buzzard:FacePoint(x, y, z)
-    buzzard.sg:GoToState("glide")
+    local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * TWOPI, 1 + math.random() * 4, 12, true) or Vector3(0, 0, 0)
 
-    buzzard:DoTaskInTime(0, buzzard.SetOwnCorpse, corpse) -- One tick delay for brain to initialize
+    local sx, sz = x + offset.x, z + offset.z
 
-	buzzardshadow.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/flock_squawk")
-    self:RemoveBuzzardShadow(buzzardshadow)
+    if not TheWorld.Map:IsOceanAtPoint(sx, 0, sz) then
+        local buzzard = SpawnPrefab("mutatedbuzzard_gestalt")
+	    buzzard.Transform:SetPosition(sx, 30, sz)
+	    buzzard:FacePoint(x, y, z)
+        buzzard.sg:GoToState("glide")
+
+        buzzard:DoTaskInTime(0, buzzard.SetOwnCorpse, corpse) -- One tick delay for brain to initialize
+
+	    buzzardshadow.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/flock_squawk")
+        self:RemoveBuzzardShadow(buzzardshadow)
+    end
 end
 
 local function OnRemoveBuzzardShadow(shadow)

@@ -275,6 +275,7 @@ local function fncommon()
     inst.components.locomotor.runspeed = TUNING.HOUND_SPEED * (1/scale)
 
     inst:SetStateGraph("SGhound")
+    inst.sg.mem.nolunarmutate = true
 
 	inst:AddComponent("embarker")
 	inst.components.embarker.embark_speed = inst.components.locomotor.runspeed

@@ -99,6 +99,9 @@ local events =
     EventHandler("flyback", function(inst)
         inst.sg:GoToState("flyback")
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -962,7 +965,7 @@ local states =
             TimeEvent(36*FRAMES, function(inst)
 				if inst.persists then
 					inst.persists = false
-					inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    inst:DropDeathLoot()
 				end
                 ShakeAllCameras(CAMERASHAKE.VERTICAL, 0.5, 0.15, 0.1, inst, 40)
 				inst:PushEvent("forgetme")
@@ -975,6 +978,7 @@ local states =
             EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
 					inst:PushEvent("turnoff_terrarium")
+                    inst.sg:GoToState("corpse")
 				end
             end),
         },
@@ -1123,4 +1127,7 @@ CommonStates.AddSleepExStates(states,
     onexitwake = raise_flying_creature,
 })
 
-return StateGraph("eyeofterror", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("eyeofterror", states, events, "init")

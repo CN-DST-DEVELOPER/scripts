@@ -21,7 +21,7 @@ local events=
             end
         end
     end),
-    EventHandler("death", function(inst) inst.sg:GoToState("death") end),
+    CommonHandlers.OnDeath(),
     EventHandler("heardhorn", function(inst, data)
 		if data and data.musician and
 			not (	inst.components.health:IsDead() or
@@ -37,6 +37,9 @@ local events=
 			inst.sg:GoToState("shake")
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -238,8 +241,13 @@ local states=
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 }
 
@@ -266,6 +274,9 @@ CommonStates.AddSimpleState(states, "hit", "hit", nil, nil, nil, { onenter = Com
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
 CommonStates.AddSleepStates(states,
 {
     sleeptimeline =
@@ -274,4 +285,4 @@ CommonStates.AddSleepStates(states,
     },
 })
 
-return StateGraph("spat", states, events, "idle")
+return StateGraph("spat", states, events, "init")

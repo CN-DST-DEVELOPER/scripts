@@ -8,6 +8,7 @@ local assets =
 local prefabs =
 {
     "boatpatch_kelp",
+    "ottercorpse",
 }
 
 local brain = require("brains/otterbrain")

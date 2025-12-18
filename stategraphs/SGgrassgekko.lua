@@ -45,6 +45,9 @@ local events =
         end),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -277,6 +280,11 @@ CommonStates.AddCombatStates(states,
         TimeEvent(3*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/together/grass_gekko/death") end),
         TimeEvent(9*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/together/grass_gekko/body_fall") end),
     },
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddSleepStates(states,
@@ -315,5 +323,7 @@ CommonStates.AddElectrocuteStates(states,
 		end),
 	},
 })
+CommonStates.AddCorpseStates(states)
+CommonStates.AddInitState(states, "idle")
 
-return StateGraph("grassgekko", states, events, "idle", actionhandlers)
+return StateGraph("grassgekko", states, events, "init", actionhandlers)

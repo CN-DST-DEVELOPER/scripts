@@ -1,11 +1,13 @@
 local assets =
 {
     Asset("ANIM", "anim/firenettles.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
 }
 
 local prefabs =
 {
 	"firenettle_toxin",
+    "firenettles_dried",
 }
 
 local function oneaten(inst, eater)
@@ -29,7 +31,11 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", 0.0, 0.7)
 
+	--dryable (from dryable component) added to pristine state for optimization
+	inst:AddTag("dryable")
+
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -55,6 +61,12 @@ local function fn()
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
+
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("firenettles_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
 
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)

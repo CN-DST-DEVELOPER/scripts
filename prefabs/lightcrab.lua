@@ -8,6 +8,7 @@ local prefabs =
     "fishmeat_small",
     "lightbulb",
     "slurtle_shellpieces",
+    "lightcrabcorpse",
 }
 
 local brain = require("brains/lightcrabbrain")

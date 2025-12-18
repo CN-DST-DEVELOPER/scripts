@@ -10,6 +10,14 @@ local prefabs =
     {
         "ice_projectile",
     },
+    blue2 =
+    {
+        "ice_projectile",
+    },
+    blue3 =
+    {
+        "ice_projectile",
+    },
 
     red =
     {
@@ -176,7 +184,7 @@ local function onattack_blue(inst, attacker, target, skipsanity)
 
 	--V2C: valid check in case any of the previous callbacks or events removed the target
 	if target.components.freezable ~= nil and target:IsValid() then
-        target.components.freezable:AddColdness(1)
+        target.components.freezable:AddColdness(inst.icestaff_coldness or 1)
         target.components.freezable:SpawnShatterFX()
     end
 end
@@ -283,6 +291,7 @@ local function teleport_continue(teleportee, locpos, loctarget, staff)
     else
         teleportee.Transform:SetPosition(locpos.x, 0, locpos.z)
     end
+    teleportee:PushEvent("teleport_move")
 
     if teleportee:HasTag("player") then
         teleportee:SnapCamera()
@@ -709,7 +718,8 @@ local function onunequip_skinned(inst, owner)
     onunequip(inst, owner)
 end
 
-local function commonfn(colour, tags, hasskin, hasshadowlevel)
+local function commonfn(colour, suffix, tags, hasskin, hasshadowlevel)
+    local anim = colour.."staff"..suffix
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -721,8 +731,8 @@ local function commonfn(colour, tags, hasskin, hasshadowlevel)
 
     inst.AnimState:SetBank("staffs")
     inst.AnimState:SetBuild("staffs")
-    inst.AnimState:PlayAnimation(colour.."staff")
-    inst.scrapbook_anim = colour.."staff"
+    inst.AnimState:PlayAnimation(anim)
+    inst.scrapbook_anim = anim
 
     if tags ~= nil then
         for i, v in ipairs(tags) do
@@ -738,9 +748,9 @@ local function commonfn(colour, tags, hasskin, hasshadowlevel)
     local floater_swap_data =
     {
         sym_build = "swap_staffs",
-        sym_name = "swap_"..colour.."staff",
+        sym_name = "swap_"..anim,
         bank = "staffs",
-        anim = colour.."staff"
+        anim = anim,
     }
     MakeInventoryFloatable(inst, "med", 0.1, {0.9, 0.4, 0.9}, true, -13, floater_swap_data)
 
@@ -767,9 +777,9 @@ local function commonfn(colour, tags, hasskin, hasshadowlevel)
             local skin_build = inst:GetSkinBuild()
             if skin_build ~= nil then
                 owner:PushEvent("equipskinneditem", inst:GetSkinName())
-                owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_"..colour.."staff", inst.GUID, "swap_staffs")
+                owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_"..anim, inst.GUID, "swap_staffs")
             else
-                owner.AnimState:OverrideSymbol("swap_object", "swap_staffs", "swap_"..colour.."staff")
+                owner.AnimState:OverrideSymbol("swap_object", "swap_staffs", "swap_"..anim)
             end
             owner.AnimState:Show("ARM_carry")
             owner.AnimState:Hide("ARM_normal")
@@ -777,7 +787,7 @@ local function commonfn(colour, tags, hasskin, hasshadowlevel)
         inst.components.equippable:SetOnUnequip(onunequip_skinned)
     else
         inst.components.equippable:SetOnEquip(function(inst, owner)
-            owner.AnimState:OverrideSymbol("swap_object", "swap_staffs", "swap_"..colour.."staff")
+            owner.AnimState:OverrideSymbol("swap_object", "swap_staffs", "swap_"..anim)
             owner.AnimState:Show("ARM_carry")
             owner.AnimState:Hide("ARM_normal")
         end)
@@ -796,7 +806,7 @@ end
 
 local function red()
     --weapon (from weapon component) added to pristine state for optimization
-	local inst = commonfn("red", { "firestaff", "weapon", "rangedweapon", "rangedlighter" }, true, true)
+	local inst = commonfn("red", "", { "firestaff", "weapon", "rangedweapon", "rangedlighter" }, true, true)
 
     inst.projectiledelay = FRAMES
 
@@ -832,11 +842,13 @@ local function red()
     return inst
 end
 
-local function blue()
+local function blue_common(build, coldness)
     --weapon (from weapon component) added to pristine state for optimization
-	local inst = commonfn("blue", { "icestaff", "weapon", "rangedweapon", "extinguisher" }, true, true)
+    local suffix = (coldness > 1) and tostring(coldness) or ""
+	local inst = commonfn(build, suffix, { "icestaff", "weapon", "rangedweapon", "extinguisher" }, true, true)
 
     inst.projectiledelay = FRAMES
+    inst.icestaff_coldness = coldness or 1
 
     inst.scrapbook_specialinfo = "BLUESTAFF"
 
@@ -861,8 +873,18 @@ local function blue()
     return inst
 end
 
+local function blue()
+    return blue_common("blue", 1)
+end
+local function blue2()
+    return blue_common("blue", 2)
+end
+local function blue3()
+    return blue_common("blue", 3)
+end
+
 local function purple()
-	local inst = commonfn("purple", { "nopunch" }, true, true)
+	local inst = commonfn("purple", "", { "nopunch" }, true, true)
 
     inst.scrapbook_specialinfo = "PURPLESTAFF"
 
@@ -888,7 +910,7 @@ local function purple()
 end
 
 local function yellow()
-	local inst = commonfn("yellow", { "nopunch", "allow_action_on_impassable" }, true, true)
+	local inst = commonfn("yellow", "", { "nopunch", "allow_action_on_impassable" }, true, true)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
@@ -929,7 +951,7 @@ local function yellow()
 end
 
 local function green()
-	local inst = commonfn("green", { "nopunch" }, true, true)
+	local inst = commonfn("green", "", { "nopunch" }, true, true)
 
     if not TheWorld.ismastersim then
         return inst
@@ -952,7 +974,7 @@ end
 
 local function orange()
     --weapon (from weapon component) added to pristine state for optimization
-	local inst = commonfn("orange", { "weapon" }, true, true)
+	local inst = commonfn("orange", "", { "weapon" }, true, true)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = blinkstaff_reticuletargetfn
@@ -988,7 +1010,7 @@ local function orange()
 end
 
 local function opal()
-	local inst = commonfn("opal", { "nopunch", "allow_action_on_impassable" }, true, false)
+	local inst = commonfn("opal", "", { "nopunch", "allow_action_on_impassable" }, true, false)
 
     inst:AddComponent("reticule")
     inst.components.reticule.targetfn = light_reticuletargetfn
@@ -1031,6 +1053,8 @@ local function opal()
 end
 
 return Prefab("icestaff", blue, assets, prefabs.blue),
+    Prefab("icestaff2", blue2, assets, prefabs.blue2),
+    Prefab("icestaff3", blue3, assets, prefabs.blue3),
     Prefab("firestaff", red, assets, prefabs.red),
     Prefab("telestaff", purple, assets, prefabs.purple),
     Prefab("orangestaff", orange, assets, prefabs.orange),

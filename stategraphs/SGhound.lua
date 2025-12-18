@@ -199,13 +199,6 @@ end
 local states =
 {
     State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "taunt" or "corpse_idle")
-		end,
-	},
-
-    State{
         name = "idle",
         tags = { "idle", "canrotate" },
         onenter = function(inst, playanim)
@@ -711,8 +704,7 @@ local states =
                 inst.SoundEmitter:PlaySound("dontstarve/common/destroy_pot")
             end
             inst.SoundEmitter:PlaySound(inst.sounds.death)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
-            inst:SetDeathLootLevel(1)
+            inst:DropDeathLoot()
         end,
 
         timeline =
@@ -985,6 +977,32 @@ local states =
             end),
         },
     },
+
+	-- Winter 2025
+
+	State{
+		name = "surprise_spawn",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("surprise_hound_spawn")
+		end,
+
+		timeline =
+		{
+			FrameEvent(18, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.howl) end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("taunt")
+				end
+			end),
+		},
+	},
 }
 
 CommonStates.AddAmphibiousCreatureHopStates(states,
@@ -1065,11 +1083,6 @@ CommonStates.AddCorpseStates(states,
             return "death_idle", true
         end
     end,
-},
-{ -- fns
-    corpseoncreate = function(inst, corpse)
-        corpse:SetAltBuild(inst.prefab)
-    end,
 })
 
 CommonStates.AddLunarPreRiftMutationStates(states,
@@ -1103,5 +1116,6 @@ CommonStates.AddLunarPreRiftMutationStates(states,
     mutated_spawn_timing = 104 * FRAMES,
     post_mutate_state = "taunt",
 })
+CommonStates.AddInitState(states, "taunt")
 
 return StateGraph("hound", states, events, "init", actionhandlers)

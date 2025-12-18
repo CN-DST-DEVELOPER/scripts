@@ -255,6 +255,7 @@ local function rock_avocado_bush()
 
     inst:AddTag("plant")
     inst:AddTag("renewable")
+    inst:AddTag("slurtlepickable")
 
     inst.MiniMapEntity:SetIcon("rock_avocado.png")
 

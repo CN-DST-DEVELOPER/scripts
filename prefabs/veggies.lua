@@ -790,6 +790,11 @@ local function MakeVeggie(name, has_seeds)
 		inst.AnimState:PlayAnimation("dried_"..name)
         inst.scrapbook_anim = "dried_"..name
 
+		if name == "kelp" then
+			inst:AddComponent("driedsalticon")
+			inst.components.driedsalticon:SetCollectsOnDried(true)
+		end
+
 		MakeInventoryFloatable(inst)
 
 		inst.entity:SetPristine()

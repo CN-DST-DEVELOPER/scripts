@@ -1380,6 +1380,19 @@ t = {
                 FlagForRetrofitting_Cave(savedata, "retrofit_cave_mite_spawners")
             end,
         },
+
+        {
+            version = 5.19,
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_enable_pearl_score")
+            end,
+        },
+        {
+            version = 5.20, -- Pearl relocation recipe change.
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "hermitcrab_relocation_change")
+            end,
+        },
     },
 }
 

@@ -235,7 +235,9 @@ end
 --want it to use the default electrocute or hit states.
 local function try_goto_electrocute_state(inst, data, state, statedata, ongotostatefn)
 	if state == nil then
-		if inst.sg:HasState("electrocute") then
+        if inst:HasTag("creaturecorpse") and inst.sg:HasState("corpse_hit") then
+            state = "corpse_hit"
+		elseif inst.sg:HasState("electrocute") then
 			state = "electrocute"
 			statedata = data and (
 				data.stimuli == "electric" and {
@@ -421,15 +423,23 @@ CommonStates.AddIdle = function(states, funny_idle_state, anim_override, timelin
             elseif not inst.AnimState:IsCurrentAnimation(anim) then
                 inst.AnimState:PlayAnimation(anim, true)
             end
+
+			if not pushanim then
+				inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+			end
         end,
 
         timeline = timeline,
+
+		ontimeout = function(inst)
+			inst.sg:GoToState(funny_idle_state and math.random() < 0.1 and funny_idle_state or "idle")
+		end,
 
         events =
         {
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState(math.random() < .1 and funny_idle_state or "idle")
+					inst.sg:GoToState(funny_idle_state and math.random() < 0.1 and funny_idle_state or "idle")
                 end
             end),
         },
@@ -1363,7 +1373,7 @@ CommonStates.AddFrozenStates = function(states, onoverridesymbols, onclearsymbol
 end
 
 --------------------------------------------------------------------------
-CommonStates.AddCombatStates = function(states, timelines, anims, fns)
+CommonStates.AddCombatStates = function(states, timelines, anims, fns, data)
     table.insert(states, State{
         name = "hit",
         tags = { "hit", "busy" },
@@ -1390,7 +1400,7 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns)
 
         events =
         {
-            EventHandler("animover", idleonanimover),
+            EventHandler("animover", fns ~= nil and fns.onhitanimover or idleonanimover),
         },
     })
 
@@ -1428,18 +1438,23 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns)
         name = "death",
         tags = { "busy" },
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
-            inst.AnimState:PlayAnimation(anims ~= nil and anims.death or (fns and fns.deathanimfn and fns.deathanimfn(inst)) or "death")
+            inst.AnimState:PlayAnimation(anims ~= nil and anims.death or (fns and fns.deathanimfn and fns.deathanimfn(inst, data)) or "death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
 
             if fns ~= nil and fns.deathenter ~= nil then
                 fns.deathenter(inst)
             end
         end,
+
+        events = data ~= nil and data.has_corpse_handler and
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        } or nil,
 
         timeline = timelines ~= nil and timelines.deathtimeline or nil,
     })
@@ -1581,12 +1596,11 @@ CommonStates.AddDeathState = function(states, timeline, anim)
             end
             inst.AnimState:PlayAnimation(anim or "death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
         end,
 
         timeline = timeline,
     })
-
 end
 
 --------------------------------------------------------------------------
@@ -2472,10 +2486,15 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
 
             -- Assuming the death animation is one animation. Is there a case where it's split up?
             inst.sg.statemem.deathtimeelapsed = (inst.AnimState:GetCurrentAnimationNumFrames() + 1) * FRAMES
-			inst.components.locomotor:Stop()
+			
+            if inst.components.locomotor ~= nil then
+                inst.components.locomotor:Stop()
+            end
 
-            local anim, loop = FunctionOrValue(anims.corpse, inst)
-			inst.AnimState:PlayAnimation(anim or "corpse", loop)
+            if inst.components.health.is_corpsing then
+                local anim, loop = FunctionOrValue(anims.corpse, inst)
+			    inst.AnimState:PlayAnimation(anim or "corpse", loop)
+            end
 		end,
 
 		timeline =
@@ -2483,7 +2502,7 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
             --a 1 frame delay in case we are loading
             FrameEvent(1, function(inst)
                 local corpseprefab = overridecorpseprefab or inst.sg.sg.name.."corpse"
-                local corpse = not inst:HasTag("lunar_aligned") and TryEntityToCorpse(inst, corpseprefab) or nil
+                local corpse = TryEntityToCorpse(inst, corpseprefab) or nil
                 if corpse == nil then
 	        		inst:AddTag("NOCLICK")
 	        		inst.persists = false
@@ -2527,6 +2546,7 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
         tags = { "corpse", "hit" },
 
         onenter = function(inst, data)
+            data = data or {}
             local weapon_sound_modifier = "dull"
             if data.weapon_sound_modifier ~= nil then
                 weapon_sound_modifier = data.weapon_sound_modifier
@@ -2613,9 +2633,11 @@ CommonStates.AddLunarPreRiftMutationStates = function(states, timelines, anims, 
 
             inst:AddTag("NOCLICK")
             inst:AddTag("NOBLOCK")
+            inst:RemoveTag("creaturecorpse")
             inst:RemoveComponent("inspectable")
 	        inst:RemoveComponent("burnable")
 	        inst:RemoveComponent("propagator")
+            inst:DropCorpseLoot()
             inst.DynamicShadow:Enable(false)
 
             inst.sg:RemoveStateTag("prerift_mutating")
@@ -2732,6 +2754,7 @@ CommonStates.AddLunarRiftMutationStates = function(states, timelines, anims, fns
                         creature:LoadCorpseData(inst)
                     end
 
+                    inst:DropCorpseLoot()
                     inst:Remove()
 				end
 			end),
@@ -2801,6 +2824,7 @@ local function oncorpsedeathanimover(inst)
         inst.sg:GoToState("corpse")
     end
 end
+CommonHandlers.CorpseDeathAnimOver = oncorpsedeathanimover
 
 CommonHandlers.OnCorpseDeathAnimOver = function(cancorpsefn)
     local custom_handler = cancorpsefn and function(inst)
@@ -2822,6 +2846,16 @@ CommonHandlers.OnCorpseChomped = function()
     return EventHandler("chomped", oncorpsechomped)
 end
 
+CommonStates.AddInitState = function(states, default_state)
+    default_state = default_state or "idle"
+
+    table.insert(states, State{
+		name = "init",
+		onenter = function(inst)
+			inst.sg:GoToState(inst.is_corpse and "corpse_idle" or default_state)
+		end,
+	})
+end
 --------------------------------------------------------
 
 CommonStates.AddParasiteReviveState = function(states)

@@ -249,6 +249,9 @@ local MainSounds =
 
     "hallowednights2025.fev",
     "hallowednights2025.fsb",
+
+    "winter2025.fev",
+    "winter2025.fsb",
 }
 
 function PreloadSoundList(list)

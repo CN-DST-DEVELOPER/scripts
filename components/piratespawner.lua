@@ -579,7 +579,7 @@ local function generateloot(stash)
     if math.random() < 0.5 then
         for i=1,math.random(3,6) do
             if math.random() < 0.3 then
-                table.insert(lootlist,"meat_dried")
+                table.insert(lootlist, "fishmeat_dried")
             end
         end  
     end

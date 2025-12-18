@@ -326,7 +326,6 @@ local function fn()
     inst.components.talker.font = TALKINGFONT
     inst.components.talker.offset = Vector3(0, -400, 0)
     inst.components.talker:MakeChatter()
-    inst.components.talker.ontalk = ontalk    
 
     inst.speech_override_fn = speech_override_fn
 
@@ -335,6 +334,8 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+    inst.components.talker.ontalk = ontalk
 
     inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
     inst.scrapbook_overridedata = SCRAPBOOK_OVERRIDEDATA

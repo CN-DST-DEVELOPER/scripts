@@ -2,6 +2,13 @@
 
 return
 {
+	hermitcrab =
+	{
+		"hermitcrab_coral",
+		"hermitcrab_hairy",
+		"hermitcrab_peacock",
+		"hermitcrab_pointy",
+	},
 	walter =
 	{
 		"body_walter_ancient",

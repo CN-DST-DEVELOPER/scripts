@@ -455,13 +455,6 @@ local IDLE_FLAGS =
 local states =
 {
 	State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
-	State{
 		name = "bi",
 		tags = { "busy" },
 
@@ -1550,8 +1543,7 @@ local states =
 			FrameEvent(46, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/bearger/groundpound") end),
 			FrameEvent(48, function(inst)
 				ShakeIfClose(inst)
-				inst.components.lootdropper:DropLoot(inst:GetPosition())
-                inst:SetDeathLootLevel(1)
+				inst:DropDeathLoot()
 			end),
 		},
 
@@ -2215,14 +2207,7 @@ local states =
 	--------------------------------------------------------------------------
 }
 
-CommonStates.AddCorpseStates(states, nil,
-{
-    corpseoncreate = function(inst, corpse)
-        if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
-            corpse:SetAltBuild("yule")
-        end
-    end,
-})
+CommonStates.AddCorpseStates(states)
 CommonStates.AddFrozenStates(states, function(inst) inst:SetStandState("bi") end)
 
 CommonStates.AddElectrocuteStates(states,
@@ -2315,5 +2300,7 @@ nil,
     twitch_lp = "rifts3/mutated_deerclops/twitching_LP",
     post_mutate_state = "taunt",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("bearger", states, events, "init", actionhandlers)

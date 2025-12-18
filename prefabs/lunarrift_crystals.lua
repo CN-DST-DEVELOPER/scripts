@@ -149,8 +149,6 @@ local function basecrystal_fn(anim_prefix, physics_size)
 
     inst.scrapbook_specialinfo = "LUNARRIFTCRYSTAL"
 
-    MakeSnowCoveredPristine(inst)
-
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
         return inst
@@ -181,9 +179,6 @@ local function basecrystal_fn(anim_prefix, physics_size)
 
     -----------------------------------------
     MakeHauntableWork(inst)
-
-    -----------------------------------------
-    MakeSnowCovered(inst)
 
     -----------------------------------------
     inst._anim_prefix = anim_prefix

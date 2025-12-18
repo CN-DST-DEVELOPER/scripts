@@ -2,6 +2,9 @@ local easing = require("easing")
 
 local PROPAGATOR_DT = 0.5
 
+local TARGET_CANT_TAGS = { "INLIMBO" }
+local TARGET_MELT_ANY_TAGS = { "frozen", "firemelt" }
+
 local Propagator = Class(function(self, inst)
     self.inst = inst
     self.flashpoint = 100
@@ -38,6 +41,22 @@ function Propagator:OnRemoveFromEntity()
     if self.delay ~= nil then
         self.delay:Cancel()
         self.delay = nil
+    end
+end
+
+function Propagator:OnRemoveEntity()
+    if not (self.inst.components.heater ~= nil and self.inst.components.heater:IsEndothermic()) then
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        local prop_range = TheWorld.state.isspring and self.propagaterange * TUNING.SPRING_FIRE_RANGE_MOD or self.propagaterange
+        local ents = TheSim:FindEntities(x, y, z, prop_range, nil, nil, TARGET_MELT_ANY_TAGS)
+        -- OnRemoveEntity callback makes FindEntities return a nil in the first slot if the entity that was just removed is in the callback so ipairs cannot work here.
+        for i = 1, #ents do
+            local v = ents[i]
+            if v then
+                v:PushEvent("stopfiremelt")
+                v:RemoveTag("firemelt")
+            end
+        end
     end
 end
 
@@ -146,8 +165,6 @@ function Propagator:Flash()
     end
 end
 
-local TARGET_CANT_TAGS = { "INLIMBO" }
-local TARGET_MELT_MUST_TAGS = { "frozen", "firemelt" }
 function Propagator:OnUpdate(dt)
     self:CalculateHeatCap()
 
@@ -215,7 +232,7 @@ function Propagator:OnUpdate(dt)
         end
     else
         if not (self.inst.components.heater ~= nil and self.inst.components.heater:IsEndothermic()) then
-            local ents = TheSim:FindEntities(x, y, z, prop_range, TARGET_MELT_MUST_TAGS)
+            local ents = TheSim:FindEntities(x, y, z, prop_range, nil, nil, TARGET_MELT_ANY_TAGS)
             for i, v in ipairs(ents) do
                 v:PushEvent("stopfiremelt")
                 v:RemoveTag("firemelt")

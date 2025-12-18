@@ -112,8 +112,16 @@ function InventoryItemMoisture:OnEntityWake()
 end
 
 function InventoryItemMoisture:InheritMoisture(moisture, iswet)
+    local oldmoisture = self.moisture
 	self.moisture = math.clamp(moisture, 0, TUNING.MAX_WETNESS)
-    self.iswet = (iswet and moisture > TUNING.MOISTURE_DRY_THRESHOLD) or moisture >= TUNING.MOISTURE_WET_THRESHOLD
+    if self.onlywetwhensaturated then
+        self.iswet = self.moisture == TUNING.MAX_WETNESS
+    else
+        self.iswet = (iswet and moisture > TUNING.MOISTURE_DRY_THRESHOLD) or moisture >= TUNING.MOISTURE_WET_THRESHOLD
+    end
+    if self.onmoisturedeltacallback then
+        self.onmoisturedeltacallback(self.inst, oldmoisture, self.moisture)
+    end
 end
 
 function InventoryItemMoisture:DiluteMoisture(item, count)
@@ -124,8 +132,16 @@ function InventoryItemMoisture:DiluteMoisture(item, count)
 end
 
 function InventoryItemMoisture:MakeMoistureAtLeast(min)
+    local oldmoisture = self.moisture
 	self.moisture = math.max(self.moisture, min)
-	self.iswet = self.iswet or min > TUNING.MOISTURE_DRY_THRESHOLD
+    if self.onlywetwhensaturated then
+        self.iswet = self.moisture == TUNING.MAX_WETNESS
+    else
+	    self.iswet = self.iswet or min > TUNING.MOISTURE_DRY_THRESHOLD
+    end
+    if self.onmoisturedeltacallback then
+        self.onmoisturedeltacallback(self.inst, oldmoisture, self.moisture)
+    end
 end
 
 function InventoryItemMoisture:DoDelta(delta)
@@ -133,16 +149,38 @@ function InventoryItemMoisture:DoDelta(delta)
 end
 
 function InventoryItemMoisture:SetMoisture(moisture)
+    local oldmoisture = self.moisture
 	self.moisture = math.clamp(moisture, 0, TUNING.MAX_WETNESS)
-    if moisture >= TUNING.MOISTURE_WET_THRESHOLD then
+    if self.onlywetwhensaturated then
+        self.iswet = self.moisture == TUNING.MAX_WETNESS
+    elseif moisture >= TUNING.MOISTURE_WET_THRESHOLD then
         self.iswet = true
     elseif moisture <= TUNING.MOISTURE_DRY_THRESHOLD then
         self.iswet = false
     end
     --.iswet does not change if we're in betwen both thresholds
+    if self.onmoisturedeltacallback then
+        self.onmoisturedeltacallback(self.inst, oldmoisture, self.moisture)
+    end
+end
+
+function InventoryItemMoisture:SetExternallyControlled(externallycontrolled)
+    self.externallycontrolled = externallycontrolled
+end
+
+function InventoryItemMoisture:SetOnlyWetWhenSaturated(onlywetwhensaturated)
+    self.onlywetwhensaturated = onlywetwhensaturated
+end
+
+function InventoryItemMoisture:SetOnMoistureDeltaCallback(fn)
+    -- NOTES(JBK): Not firing an event because there are multiple thousands of these updating the memory spike is not worth it for the little amount of entities that need this information.
+    self.onmoisturedeltacallback = fn
 end
 
 function InventoryItemMoisture:GetTargetMoisture()
+    if self.externallycontrolled then
+        return self.moisture
+    end
 	--If floating in the ocean, use MAX_WETNESS (not OCEAN_WETNESS, that is initial wetness when entering ocean)
 	--If there is no owner, use world moisture (account for "rainimmunity")
     --If owner is player, use player moisture
@@ -174,10 +212,12 @@ function InventoryItemMoisture:GetTargetMoisture()
 			end
 		end
 	end
-	return (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.MAX_WETNESS)
+	local value = (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.MAX_WETNESS)
 		or (exposedroot and (TheWorld.state.israining and exposedroot.components.rainimmunity == nil and TheWorld.state.wetness or 0))
         or (owner.components.moisture ~= nil and owner.components.moisture:GetMoisture())
         or 0
+
+    return value
 end
 
 function InventoryItemMoisture:UpdateMoisture(dt)
@@ -206,6 +246,9 @@ function InventoryItemMoisture:OnLoad(data)
     if data ~= nil then
 		self.moisture = math.clamp(data.moisture or 0, 0, TUNING.MAX_WETNESS)
         self.iswet = (data.wet == true)
+        if self.onmoisturedeltacallback then
+            self.onmoisturedeltacallback(self.inst, 0, self.moisture)
+        end
     end
 end
 

@@ -23,6 +23,8 @@ Wander = Class(BehaviourNode, function(self, inst, homelocation, max_dist, times
 
 	self.should_run = data and data.should_run or nil
 
+    self.leashwhengoinghome = data and data.leashwhengoinghome or nil
+
     self.times =
     {
         minwalktime = times and times.minwalktime or 2,
@@ -186,7 +188,9 @@ function Wander:PickNewDirection()
         end
     end
 
-    self:Wait(self.times.minwalktime+math.random()*self.times.randwalktime)
+    if not self.leashwhengoinghome or self.leashwhengoinghome and not self.far_from_home then
+        self:Wait(self.times.minwalktime+math.random()*self.times.randwalktime)
+    end
 end
 
 function Wander:HoldPosition()

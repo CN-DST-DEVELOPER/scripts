@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "There is insufficient charge.",
+            CHARGE_FULL = "Energy is at full capacity.",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Oh dear, I've missed!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "There's clearly someone sitting there already.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1035,7 +1041,7 @@ return{
 	ANNOUNCE_TALK_TO_PLANTS =
 	{
         "Talking to my little garden always seemed to help it grow.",
-        "My, those leaves are coming in quite nicely dear!",
+        "My, those leaves are coming in quite nicely, dear!",
 		"All one needs to thrive is a bit of love and care, isn't that right?",
         "No need to rush dear, you just take your time.",
         "How are you doing today? Do you have enough water?",
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzards drawn by carrion, naturally. However, these exhibit signs of mutation.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "It's not responding for some reason.",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Ah yes. I have now arrived at Pearl's home.",
 
 	BATTLECRY =
 	{
@@ -5854,7 +5864,7 @@ return{
         CAVE_VENT_MITE =
 		{
 			DEAD = "This one is deceased.",
-			GENERIC = "This creature is a hybrid of insect and mineral, possessing the ability to store gas under considerable pressure.",
+			GENERIC = "This mineral hybrid creature possesses the ability to store gas under considerable pressure.",
 			SLEEPING = "It is dormant at the moment.",
             VENTING = "It is venting gas as a form of attack.", -- in the shield state and venting out gasses
         },
@@ -5897,6 +5907,77 @@ return{
             BURNING = "A necessary precaution.",
             REVIVING = "It is reviving, unfortunately.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "This will do nicely.",
+            GENERIC = "My old feet could use a good soak.",
+            EMPTY = "The spring has dried up.",
+        },
+		HERMITHOTSPRING_CONSTR = "It is a hot spring for soaking underneath that tarp.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "The process has completed.",
+            DRYING = "Dehydration is a slow process.",
+            DRYINGINRAIN = "The rain has temporarily halted the dehydration process.",
+            GENERIC =  "This drying rack has a larger capacity.",
+            BURNT = "It doesn't seem stable.",
+            DONE_NOTMEAT = "The process has completed.",
+            DRYING_NOTMEAT = "Dehydration is a slow process.",
+            DRYINGINRAIN_NOTMEAT = "The rain has temporarily halted the dehydration process.",
+            DONE_SALT = "The salt is a bi-product of the dehydration process for certain things obtained from the sea.",
+			ABANDONED = "What a shame.",
+        },
+		HERMITHOUSE_ORNAMENT = "An attractive ornament to be hung on Pearl's house.",
+        HERMITHOUSE_LAUNDRY = "Laundry.",
+
+        PETALS_DRIED = "The drying process enhances the aroma.",
+        PETALS_EVIL_DRIED = "The drying process enhances the aroma.",
+        FOLIAGE_DRIED = "The drying process enhances the aroma.",
+        SUCCULENT_PICKED_DRIED = "The drying process enhances the aroma.",
+        FIRENETTLES_DRIED = "The drying process enhances the aroma.",
+        TILLWEED_DRIED = "The drying process enhances the aroma.",
+        MOON_TREE_BLOSSOM_DRIED = "The drying process enhances the aroma.",
+        FORGETMELOTS_DRIED = "The drying process enhances the aroma.",
+
+        HERMITCRABTEA_PETALS = "A rather calming concoction.",
+        HERMITCRABTEA_PETALS_EVIL = "Sometimes a little madness is appropriate.",
+        HERMITCRABTEA_FOLIAGE = "It is a herbal remedy for madness prevention.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "The cooling refreshment is ideal for summer.",
+        HERMITCRABTEA_FIRENETTLES = "This beverage raises one's body temperature.",
+        HERMITCRABTEA_TILLWEED = "It is a revitalizing brew.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "This brew renders lunar entities indifferent to us.",
+        HERMITCRABTEA_FORGETMELOTS = "A stronger brew to cure a particularly severe bout of madness.",
+        SHELLWEAVER = "It utilizes salt in a wide variety of ways.",
+        ICESTAFF2 = "A magically-attuned chilling implement.",
+        ICESTAFF3 = "It gives off a powerful chill.",
+        NONSLIPGRIT = "It will enhance my grip, at the cost of my tool's longevity.",
+        NONSLIPGRITBOOSTED = "I won't have to fear slipping with this sprinkled on the ground.",
+        DESICCANT = "It will help me be rid of excess moisture.",
+        DESICCANTBOOSTED = "This should keep me comfortably dry.",
+        HERMITCRAB_SHELL = "This instrument will transport the holder instantly to Pearl's.",
+        SALTY_DOGHAT = "It gives one quite a commanding appearance.",
+        SALTY_DOG = "I'm more of a cat person.",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "I do hope she's in soon.", -- Inactive state, no Pearl inside.
+            ACTIVE = "There is nothing quite like a good cup of tea.", -- Active, Pearl is inside, can buy from her
+            BREWING = "I'm happy to support a small business.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "How awful.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Salty, yet satisfying.",
+        FISHMEAT_SMALL_DRIED = "Salty, yet satisfying.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "It illuminates the space nicely.",
+            ABANDONED = "The remnants of a lighting apparatus.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Pearl dear, where would you like this?",
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

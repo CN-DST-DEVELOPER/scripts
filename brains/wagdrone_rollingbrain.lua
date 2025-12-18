@@ -10,7 +10,6 @@ local RECOIL_DURATION = 0.7
 local RECOIL_DECEL_DURATION = RECOIL_DURATION * 0.7
 local RECOIL_ACCEL_DURATION = RECOIL_DECEL_DURATION
 local RECOIL_MAX_DECEL = -0.6
-local HALFPI = math.pi / 2
 
 local WagdroneRollingBrain = Class(Brain, function(self, inst)
 	Brain._ctor(self, inst)

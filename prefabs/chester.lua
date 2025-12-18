@@ -32,6 +32,8 @@ local prefabs =
     "globalmapiconunderfog",
 	"frostbreath",
 	"shadow_chester_swirl_fx",
+
+	"chestercorpse",
 }
 
 local brain = require "brains/chesterbrain"

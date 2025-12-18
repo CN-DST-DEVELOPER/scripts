@@ -1,6 +1,7 @@
 require "behaviours/wander"
 require "behaviours/chaseandattack"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW = 5
 local MED_FOLLOW = 15
@@ -83,6 +84,7 @@ function ShadowCreatureBrain:OnStart()
 
     local root = PriorityNode(
     {
+        BrainCommon.PanicTriggerShadowCreature(self.inst),
         IfNode(function() return targetatsea(self.inst) end, "target on land",
                     DoAction(self.inst, teleport)),
         WhileNode(function() return ShouldAttack(self) end, "Attack", ChaseAndAttack(self.inst, 100)),

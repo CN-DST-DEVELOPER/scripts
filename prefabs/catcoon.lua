@@ -65,6 +65,8 @@ local prefabs =
 	"pinecone",
 	"ice",
 	"redpouch_yot_catcoon",
+
+	"catcooncorpse",
 }
 
 SetSharedLootTable( 'catcoon',

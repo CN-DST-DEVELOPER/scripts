@@ -641,6 +641,7 @@ local function common_postinit(inst)
 end
 
 local function master_postinit(inst)
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
     inst.refusestobowtoroyalty = true
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
 

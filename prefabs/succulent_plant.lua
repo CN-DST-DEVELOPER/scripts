@@ -6,11 +6,18 @@ local assets =
 local assets_inv =
 {
     Asset("ANIM", "anim/succulent_picked.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
 }
 
 local prefabs =
 {
     "succulent_picked",
+}
+
+local prefabs_inv =
+{
+    "spoiled_food",
+    "succulent_picked_dried",
 }
 
 local function SetupPlant(inst, plantid)
@@ -88,6 +95,8 @@ local function invfn()
     inst.AnimState:PlayAnimation("idle")
 
     inst:AddTag("cattoy")
+	--dryable (from dryable component) added to pristine state for optimization
+	inst:AddTag("dryable")
 
     MakeInventoryFloatable(inst, "med", nil, 0.8)
 
@@ -122,10 +131,16 @@ local function invfn()
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
 
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("succulent_picked_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
+
     MakeHauntableLaunchAndIgnite(inst)
 
     return inst
 end
 
 return Prefab("succulent_plant", plantfn, assets, prefabs),
-    Prefab("succulent_picked", invfn, assets_inv)
+    Prefab("succulent_picked", invfn, assets_inv, prefabs_inv)

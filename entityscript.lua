@@ -1989,7 +1989,7 @@ end
 
 function EntityScript:GetAdjective()
 	if self.displayadjectivefn ~= nil then
-		return self:displayadjectivefn(self)
+		return self:displayadjectivefn()
 	elseif self:HasTag("critter") then
 		for k in pairs(TUNING.CRITTER_TRAITS) do
 			if self:HasTag("trait_"..k) then
@@ -2149,6 +2149,26 @@ function EntityScript:GetDeathLootLevel()
     local deathloothandler = self.components.deathloothandler
     return (deathloothandler and deathloothandler:GetLevel())
         or 0
+end
+
+-- To handle just dropping it like usual, OR store it in the corpse if we're corpsing.
+function EntityScript:DropDeathLoot()
+    self:SetDeathLootLevel(1)
+    --
+    local lootdropper = self.components.lootdropper
+    if lootdropper then
+        if self.components.health.is_corpsing then
+            self.components.deathloothandler:StoreLoot(lootdropper:GenerateLoot())
+        else
+            lootdropper:DropLoot(self:GetPosition())
+        end
+    end
+end
+
+function EntityScript:GetDeathLoot()
+    local deathloothandler = self.components.deathloothandler
+    return (deathloothandler and deathloothandler:GetLoot())
+        or nil
 end
 
 --

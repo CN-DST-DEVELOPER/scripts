@@ -53,6 +53,9 @@ local events=
 			inst.sg:GoToState("flyaway")
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function DisarmTarget(inst, target)
@@ -524,6 +527,11 @@ CommonStates.AddCombatStates(states,
 
 		TimeEvent(20*FRAMES, DeathCollapseShake),
 	},
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
@@ -540,4 +548,7 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("moose", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("moose", states, events, "init", actionhandlers)

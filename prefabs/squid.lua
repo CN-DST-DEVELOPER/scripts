@@ -18,6 +18,9 @@ local prefabs =
     "squideyelight",
     "inksplat",
     "squid_ink_player_fx",
+    "monstermeat",
+
+    "squidcorpse",
 }
 
 local brain = require("brains/squidbrain")

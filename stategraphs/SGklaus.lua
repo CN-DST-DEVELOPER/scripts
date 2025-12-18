@@ -148,7 +148,7 @@ local events =
         end
     end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and not CommonHandlers.HitRecoveryDelay(inst) then
@@ -181,6 +181,9 @@ local events =
             end
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -279,7 +282,7 @@ local states =
         name = "death",
         tags = { "busy" },
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
             if inst:IsUnchained() then
@@ -309,10 +312,12 @@ local states =
                 if inst:IsUnchained() and inst.persists then
                     inst.persists = false
                     inst.components.commander:DropAllSoldierTargets()
+                    -- Key can just drop, not stored in corpse. It's like an 'item' he holds anyways.
                     local key = SpawnPrefab("klaussackkey")
                     inst:PushEvent("dropkey", key)
                     inst.components.lootdropper:FlingItem(key)
-                    inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    --
+                    inst:DropDeathLoot()
                 end
             end),
             TimeEvent(3, function(inst)
@@ -331,8 +336,12 @@ local states =
         events =
         {
             EventHandler("animover", function(inst)
-                if not inst:IsUnchained() and inst.AnimState:AnimDone() then
-                    inst:PauseMusic(true)
+                if inst.AnimState:AnimDone() then
+                    if inst:IsUnchained() then
+                        inst.sg:GoToState("corpse")
+                    else
+                        inst:PauseMusic(true)
+                    end
                 end
             end),
         },
@@ -1111,4 +1120,7 @@ CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("SGklaus", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("klaus", states, events, "init")

@@ -138,7 +138,7 @@ local foods =
         perishtime = TUNING.PERISH_SLOW,
         cooktime = 0.5,
         potlevel = "low",
-        tags = { "masterfood" },
+        tags = { "masterfood", "fooddrink" },
         floater = {nil, 0.1, 0.7},
     },
 

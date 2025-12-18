@@ -40,8 +40,9 @@ local function OnDropped(inst)
 end
 
 local function OnLanded(inst)
-    if inst.components.drownable:ShouldDrown() then
-        inst:PushEvent("onsink")
+    local drownable = inst.components.drownable
+    if drownable then
+        drownable:CheckDrownable()
     end
 end
 

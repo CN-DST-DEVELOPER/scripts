@@ -230,7 +230,6 @@ for x = 0, 2 do
 	table.insert(params.meatrack.widget.slotpos, Vector3(75 * x - 75 * 2 + 75, 0, 0))
 	table.insert(params.meatrack.widget.slotbg, dryer_slotbg)
 end
-dryer_slotbg = nil
 
 function params.meatrack.itemtestfn(container, item, slot)
 	return item:HasTag("dryable")
@@ -243,6 +242,48 @@ function params.meatrack.itemtestfn(container, item, slot)
 				)
 			))
 end
+
+params.meatrack_hermit =
+{
+	widget =
+	{
+		slotpos = { Vector3(-2, 18, 0) },
+		slotbg = { dryer_slotbg },
+		animbank = "ui_hermitcrab_meatrack_1x1",
+		animbuild = "ui_hermitcrab_meatrack_1x1",
+		pos = Vector3(0, 160, 0),
+		side_align_tip = 100,
+	},
+	acceptsstacks = false,
+	type = "chest",
+	itemtestfn = params.meatrack.itemtestfn,
+}
+
+params.meatrack_hermit_multi =
+{
+	widget =
+	{
+		slotpos = {},
+		slotbg = {},
+		animbank = "ui_hermitcrab_3x3",
+		animbuild = "ui_hermitcrab_3x3",
+		pos = Vector3(0, 200, 0),
+		side_align_tip = 160,
+	},
+	acceptsstacks = false,
+	type = "chest",
+	itemtestfn = params.meatrack.itemtestfn,
+}
+
+dryer_slotbg = { image = "inv_slot_kelp.tex", atlas = "images/hud2.xml" }
+for y = 2, 0, -1 do
+	for x = 0, 2 do
+		table.insert(params.meatrack_hermit_multi.widget.slotpos, Vector3(80 * x - 80 * 2 + 80, 80 * y - 80 * 2 + 80, 0))
+		table.insert(params.meatrack_hermit_multi.widget.slotbg, dryer_slotbg)
+	end
+end
+
+dryer_slotbg = nil
 
 --------------------------------------------------------------------------
 --[[ sewingmachine ]]
@@ -644,6 +685,7 @@ end
 --[[ yots_lantern_post ]]
 --------------------------------------------------------------------------
 
+local LIGHT_TAGS = { "lightbattery", "spore", "lightcontainer" }
 params.yots_lantern_post = {
     widget =
     {
@@ -661,7 +703,56 @@ params.yots_lantern_post = {
 }
 
 function params.yots_lantern_post.itemtestfn(container, item, slot)
-    return (item:HasTag("lightbattery") or item:HasTag("spore") or item:HasTag("lightcontainer")) and not container.inst:HasTag("burnt")
+    return item:HasAnyTag(LIGHT_TAGS) and not container.inst:HasTag("burnt")
+end
+
+--------------------------------------------------------------------------
+--[[ hermitcrab_lightpost ]]
+--------------------------------------------------------------------------
+
+params.hermitcrab_lightpost = deepcopy(params.yots_lantern_post)
+params.hermitcrab_lightpost.widget.animbank = "ui_hermitcrab_1x1"
+params.hermitcrab_lightpost.widget.animbuild = "ui_hermitcrab_1x1"
+params.hermitcrab_lightpost.itemtestfn = params.yots_lantern_post.itemtestfn
+
+function params.hermitcrab_lightpost.widget.bganim_visualfn(bganim, container, doer)
+    local r, g, b, a = container.AnimState:GetSymbolMultColour("coral")
+    bganim:GetAnimState():SetSymbolMultColour("coral", r, g, b, a)
+end
+
+--------------------------------------------------------------------------
+--[[ hermithouse2 ]]
+--------------------------------------------------------------------------
+
+params.hermithouse2 =
+{
+	widget =
+	{
+		slotpos =
+		{
+			Vector3(-37.5, 32 + 4, 0),
+			Vector3(37.5, 32 + 4, 0),
+			Vector3(-37.5, -(32 + 4), 0),
+			Vector3(37.5, -(32 + 4), 0),
+		},
+		slotbg = {},
+		animbank = "ui_hermitcrab_2x2",
+		animbuild = "ui_hermitcrab_2x2",
+		pos = Vector3(200, 0, 0),
+		side_align_tip = 120,
+	},
+	acceptsstacks = false,
+	type = "cooker",
+}
+
+local hermithouse2_slotbg = { image = "inv_slot_hermithouse.tex", atlas = "images/hud2.xml" }
+for i = 1, 4 do
+	params.hermithouse2.widget.slotbg[i] = hermithouse2_slotbg
+end
+hermithouse2_slotbg = nil
+
+function params.hermithouse2.itemtestfn(container, item, slot)
+    return item:HasTag("hermithouse_ornament")
 end
 
 --------------------------------------------------------------------------
@@ -688,7 +779,7 @@ for y = 0, 3 do
 end
 
 function params.winter_tree.itemtestfn(container, item, slot)
-    return item:HasTag("winter_ornament") and not container.inst:HasTag("burnt")
+	return item:HasAnyTag("winter_ornament", "hermithouse_ornament") and not container.inst:HasTag("burnt")
 end
 
 params.winter_twiggytree = params.winter_tree

@@ -147,11 +147,82 @@ local states=
 
     },
 
+	State{
+		name = "spawn_from_wintertree",
+		tags = { "waking", "busy" },
+
+		onenter = function(inst)
+			inst.Physics:Stop()
+			inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("wintertree_transform_ent")
+			inst.AnimState:OverrideSymbol("planter", "wintertree_build", "planter")
+			inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/transform_VO")
+			inst.DynamicShadow:Enable(false)
+		end,
+
+		onupdate = function(inst)
+			local shadow = inst.sg.statemem.shadow
+			if shadow then
+				shadow = shadow + 1
+				local k = shadow / 10 * (inst._scale or 1)
+				inst.DynamicShadow:SetSize(4 * k, 1.5 * k)
+				inst.sg.statemem.shadow = shadow < 10 and shadow or nil
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/foley") end),
+			FrameEvent(14, function(inst)
+				inst.sg.statemem.shadow = 0
+				inst.DynamicShadow:Enable(true)
+			end),
+			FrameEvent(20, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/foley") end),
+			FrameEvent(35, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/foley") end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.not_interrupted = true
+					inst.sg:GoToState("idle_nofaced")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			local k = inst._scale or 1
+			inst.DynamicShadow:SetSize(4 * k, 1.5 * k)
+			inst.DynamicShadow:Enable(true)
+
+			if not inst.sg.statemem.not_interrupted then
+				inst.Transform:SetFourFaced()
+			end
+			inst.AnimState:ClearOverrideSymbol("planter")
+		end,
+	},
+
+	State{
+		name = "idle_nofaced",
+		tags = { "idle", "canrotate" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			--inst.Transform:SetNoFaced()
+			inst.AnimState:PlayAnimation("idle_loop_nofaced", true)
+		end,
+
+		onexit = function(inst)
+			inst.Transform:SetFourFaced()
+		end,
+	},
+
     State{
         name = "spawn",
         tags = {"waking", "busy"},
 
-        onenter = function(inst, start_anim)
+		onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("transform_ent")
             inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/transform_VO")
@@ -175,7 +246,7 @@ local states=
         name = "wake",
         tags = {"waking", "busy"},
 
-        onenter = function(inst, start_anim)
+		onenter = function(inst)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("transform_ent_mad")
             inst.SoundEmitter:PlaySound("dontstarve/creatures/leif/transform_VO")

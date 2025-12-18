@@ -159,18 +159,14 @@ local function onvacate(inst, child)
             if child.components.werebeast ~= nil then
                 child.components.werebeast:ResetTriggers()
             end
+            if child.components.health ~= nil then
+                child.components.health:SetPercent(1)
+            end
+            child:PushEvent("onvacatehome")
 
-            local child_platform = TheWorld.Map:GetPlatformAtPoint(child.Transform:GetWorldPosition())
-            if (child_platform == nil and not child:IsOnValidGround()) then
-                local fx = SpawnPrefab("splash_sink")
-                fx.Transform:SetPosition(child.Transform:GetWorldPosition())
-
-                child:Remove()
-            else
-                if child.components.health ~= nil then
-                    child.components.health:SetPercent(1)
-                end
-			    child:PushEvent("onvacatehome")
+            local drownable = child.components.drownable
+            if drownable then
+                drownable:CheckDrownable()
             end
         end
     end

@@ -102,6 +102,12 @@ local ChildSpawner = Class(function(self, inst)
     --self.spawntimerstart = nil
     --self.spawntimerstop = nil
     --self.spawntimerset = nil
+
+    --[[
+    For foreign children that inherit our home and enter it (like Shattered Spiders, or Mutated Merms)
+    ]]
+    --self.otherchildreninside = nil
+    --self.otheremergencychildreninside = nil
 end)
 
 function ChildSpawner:GetTimeToNextSpawn()
@@ -349,6 +355,19 @@ function ChildSpawner:OnSave()
     end
     data.emergencychildreninside = self.emergencychildreninside
 
+    if self.save_max_children then
+        data.maxchildren = self.maxchildren
+        data.maxemergencychildren = self.maxemergencychildren
+    end
+
+    if self.otherchildreninside ~= nil then
+        data.otherchildreninside = self.otherchildreninside
+    end
+
+    if self.otheremergencychildreninside ~= nil then
+        data.otheremergencychildreninside = self.otheremergencychildreninside
+    end
+
     data.spawning = self.spawning
     data.regening = self.regening
     data.queued_spawn = self.queued_spawn
@@ -394,6 +413,22 @@ function ChildSpawner:OnLoad(data)
     end
     if data.childid ~= nil then
         data.childrenoutside = { data.childid }
+    end
+
+    if data.maxchildren ~= nil then
+        self.maxchildren = data.maxchildren
+    end
+
+    if data.maxemergencychildren ~= nil then
+        self.maxemergencychildren = data.maxemergencychildren
+    end
+
+    if data.otherchildreninside ~= nil then
+        self.otherchildreninside = data.otherchildreninside
+    end
+
+    if data.otheremergencychildreninside ~= nil then
+        self.otheremergencychildreninside = data.otheremergencychildreninside
     end
 
     if data.childreninside ~= nil then
@@ -471,8 +506,30 @@ local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
+local function WeightedTotal(choices)
+    local total = 0
+    for choice, weight in pairs(choices) do
+        total = total + weight
+    end
+    return total
+end
+
+function ChildSpawner:GetChildPrefab(overridedefaultprefab, isemergency)
+    if self.rarechild ~= nil and math.random() < self.rarechildchance then
+        return self.rarechild
+    end
+
+    if self.otherchildreninside ~= nil and math.random() < WeightedTotal(self.otherchildreninside) / self.childreninside then
+        local childchoice = weighted_random_choice(self.otherchildreninside)
+        self.otherchildreninside[childchoice] = self.otherchildreninside[childchoice] - 1
+        return childchoice
+    end
+
+    return overridedefaultprefab or self.childname
+end
+
 -- This should only be called internally
-function ChildSpawner:DoSpawnChild(target, prefab, radius)
+function ChildSpawner:DoSpawnChild(target, prefab, radius, isemergency)
     local x, y, z = self.inst.Transform:GetWorldPosition()
 	local spawn_radius = radius
 	if spawn_radius == nil then
@@ -494,13 +551,7 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius)
         return
     end
 
-    prefab =
-        self.rarechild ~= nil and
-        math.random() < self.rarechildchance and
-        self.rarechild or
-        prefab or
-        self.childname
-    prefab = FunctionOrValue(prefab, self.inst)
+    prefab = FunctionOrValue(self:GetChildPrefab(prefab), self.inst, isemergency)
 
     if prefab and prefab ~= "" then
         local child = SpawnPrefab(prefab)
@@ -544,6 +595,23 @@ function ChildSpawner:DoQueuedSpawn()
     self:StartUpdate()
 end
 
+function ChildSpawner:ProcessOtherChildren(child, isemergency) -- Internal
+    local otherchildren = isemergency and self.otheremergencychildreninside or self.otherchildreninside
+    local childreninside = isemergency and self.emergencychildreninside or self.childreninside
+
+    if otherchildren then
+        if otherchildren[child.prefab] and otherchildren[child.prefab] > 0 then
+            otherchildren[child.prefab] = otherchildren[child.prefab] - 1
+        end
+
+        -- We have more otherchildren than childreninside (Probably because of a rarechild spawn or other spawn), flush them out.
+        while WeightedTotal(otherchildren) > childreninside do
+            local childchoice = weighted_random_choice(otherchildren)
+            otherchildren[childchoice] = otherchildren[childchoice] - 1
+        end
+    end
+end
+
 function ChildSpawner:SpawnChild(target, prefab, radius)
     if target and target.components.health and target.components.health:IsInvincible() then
         return nil
@@ -552,9 +620,10 @@ function ChildSpawner:SpawnChild(target, prefab, radius)
         return nil
     end
 
-    local child = self:DoSpawnChild(target, prefab or self.childname, radius)
+    local child = self:DoSpawnChild(target, prefab or self.childname, radius, false)
     if child ~= nil then
         self.childreninside = self.childreninside - 1
+        self:ProcessOtherChildren(child, false)
         self:TakeOwnership(child)
         if self.childreninside == 0 and self.onvacate ~= nil then
             self.onvacate(self.inst)
@@ -568,9 +637,10 @@ function ChildSpawner:SpawnEmergencyChild(target, prefab, radius)
         return
     end
 
-    local child = self:DoSpawnChild(target, prefab or self.emergencychildname, radius)
+    local child = self:DoSpawnChild(target, prefab or self.emergencychildname, radius, true)
     if child ~= nil then
         self.emergencychildreninside = self.emergencychildreninside - 1
+        self:ProcessOtherChildren(child, true)
         self:TakeEmergencyOwnership(child)
     end
     return child
@@ -594,6 +664,40 @@ function ChildSpawner:TrySpawnEmergencyChild()
     return self:SpawnEmergencyChild()
 end
 
+-- Should be called internally.
+function ChildSpawner:TakeInChild(child, isemergencychild)
+    self.inst:PushEvent("childgoinghome", { child = child })
+    child:PushEvent("goinghome", { home = self.inst })
+    if self.ongohome then
+        self.ongohome(self.inst, child)
+    end
+    if isemergencychild then
+        RemoveEmergencyChildOutside(self, child)
+    else
+        RemoveChildOutside(self, child)
+    end
+    child:Remove()
+    if isemergencychild then
+        self:AddEmergencyChildrenInside(1)
+    else
+        self:AddChildrenInside(1)
+    end
+
+    --[[
+    Let's not risk applying this to every childspawner ever this will be an opt in for the child. Theoretically it should be fine since
+    most childspawners do not expect another entity to enter their home but we will have the mutated creatures (or any other in the future) explicitly opt in to be saved in their home childspawner
+    ]]
+    if child.save_in_foreign_childspawner and self.childname ~= child.prefab and self.emergencychildname ~= child.prefab then
+        if isemergencychild then
+            self.otheremergencychildreninside = self.otheremergencychildreninside or {}
+            self.otheremergencychildreninside[child.prefab] = (self.otheremergencychildreninside[child.prefab] or 0) + 1
+        else
+            self.otherchildreninside = self.otherchildreninside or {}
+            self.otherchildreninside[child.prefab] = (self.otherchildreninside[child.prefab] or 0) + 1
+        end
+    end
+end
+
 function ChildSpawner:GoHome( child )
     if self.gohomevalidatefn then
         if not self.gohomevalidatefn(self.inst) then
@@ -601,25 +705,11 @@ function ChildSpawner:GoHome( child )
         end
     end
     if self.childrenoutside[child] then
-        self.inst:PushEvent("childgoinghome", {child = child})
-        child:PushEvent("goinghome", {home = self.inst})
-        if self.ongohome then
-            self.ongohome(self.inst, child)
-        end
-        RemoveChildOutside(self, child)
-        child:Remove()
-        self:AddChildrenInside(1)
+        self:TakeInChild(child, false)
         return true
     end
     if self.emergencychildrenoutside[child] then
-        self.inst:PushEvent("childgoinghome", { child = child })
-        child:PushEvent("goinghome", { home = self.inst })
-        if self.ongohome ~= nil then
-            self.ongohome(self.inst, child)
-        end
-        RemoveEmergencyChildOutside(self, child)
-        child:Remove()
-        self:AddEmergencyChildrenInside(1)
+        self:TakeInChild(child, true)
         return true
     end
 end

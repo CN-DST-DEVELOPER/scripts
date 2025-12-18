@@ -14,6 +14,9 @@ local events=
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(false,true),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function StartFlap(inst)
@@ -226,6 +229,15 @@ CommonStates.AddCombatStates(states,
         TimeEvent(10*FRAMES, LandFlyingCreature),
 		TimeEvent(18*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/glommer/die_ground") end)
 	},
+},
+nil,
+{
+    deathanimfn = function(inst, data)
+        return (data ~= nil and data.corpsing and "death2") or "death"
+    end,
+},
+{
+    has_corpse_handler = true,
 })
 CommonStates.AddWalkStates(states,
 {
@@ -250,4 +262,7 @@ CommonStates.AddSleepStates(states,
 })
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("glommer", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("glommer", states, events, "init", actionhandlers)

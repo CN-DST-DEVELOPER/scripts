@@ -134,8 +134,9 @@ local function makewormhole(uses)
         inst.AnimState:SetBank("teleporter_worm")
         inst.AnimState:SetBuild("teleporter_sickworm_build")
         inst.AnimState:PlayAnimation("idle_loop", true)
-        inst.AnimState:SetLayer(LAYER_BACKGROUND)
-        inst.AnimState:SetSortOrder(3)
+		--V2C: layering now changes when opening/closing in stategraph
+		--inst.AnimState:SetLayer(LAYER_BACKGROUND)
+		--inst.AnimState:SetSortOrder(3)
 
         --trader, alltrader (from trader component) added to pristine state for optimization
         inst:AddTag("trader")

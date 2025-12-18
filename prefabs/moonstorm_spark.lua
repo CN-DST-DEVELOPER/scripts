@@ -40,7 +40,9 @@ local function dospark1(inst, dospark)
 	end
 
 	for i, ent in ipairs(TheSim:FindEntities(x, y, z, 4, CHARGE_MUST_TAGS)) do
-		ent.components.fueled:SetPercent(math.min(1, ent.components.fueled:GetPercent() + 0.1))
+        if ent.components.moonsparkchargeable then
+            ent.components.moonsparkchargeable:DoSpark(inst)
+        end
 	end
 
 	inst:DoTaskInTime(0.5, dospark2)
@@ -162,6 +164,12 @@ local function OnSleep(inst)
     inst.SoundEmitter:KillSound("idle_LP")
 end
 
+local function DisplayAdjectiveFn(inst)
+	return inst:HasTag("stale") and STRINGS.UI.HUD.STALE_POWER
+        or inst:HasTag("spoiled") and STRINGS.UI.HUD.SPOILED_POWER
+        or nil
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -197,6 +205,8 @@ local function fn()
     inst.scrapbook_anim = "idle_flight_loop"
     inst.scrapbook_animoffsetx = 20
     inst.scrapbook_animoffsety = 35
+
+    inst.displayadjectivefn = DisplayAdjectiveFn
 
     inst.entity:SetPristine()
 

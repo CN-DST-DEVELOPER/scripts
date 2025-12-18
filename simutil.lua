@@ -666,9 +666,11 @@ function GetInventoryItemAtlas_Internal(imagename, no_fallback)
     local images1 = "images/inventoryimages1.xml"
     local images2 = "images/inventoryimages2.xml"
     local images3 = "images/inventoryimages3.xml"
+    local images4 = "images/inventoryimages4.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
-            or (not no_fallback or TheSim:AtlasContains(images3, imagename)) and images3
+            or TheSim:AtlasContains(images3, imagename) and images3
+            or (not no_fallback or TheSim:AtlasContains(images4, imagename)) and images4
             or nil
 end
 

@@ -23,6 +23,7 @@ local prefabs =
 {
     "stinger",
     "honey",
+    "beecorpse",
 }
 
 local workersounds =

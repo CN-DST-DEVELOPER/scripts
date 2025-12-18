@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "Argh! No charge!",
+            CHARGE_FULL = "Why so dour? We've got full power!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Miss! Boo and hiss!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Sit? I cannot! For it's a hot spot, just as I thought!",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1206,6 +1212,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Mutant munchers of murdered meat!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Still here, I fear!",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "No big deal, for real.",
 
 	BATTLECRY =
 	{
@@ -5917,6 +5927,77 @@ return{
             BURNING = "Cleansing fire, so the worst won't transpire.",
             REVIVING = "It's turning and returning.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "The effect of a good soak is no joke!",
+            GENERIC = "I don't want to get my fur wet.",
+            EMPTY = "Oh me, oh my, the spring's run dry.",
+        },
+		HERMITHOTSPRING_CONSTR = "You must build before it's filled.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "It's dried with no place to hide.",
+            DRYING = "It's drying.",
+            DRYINGINRAIN = "It's undrying day.",
+            GENERIC =  "Oh my, let's dry!",
+            BURNT = "A silly prank to be sure.",
+            DONE_NOTMEAT = "The food's ready.",
+            DRYING_NOTMEAT = "It's drying.",
+            DRYINGINRAIN_NOTMEAT = "It's undrying day.",
+            DONE_SALT = "Halt! There's salt!",
+			ABANDONED = "The rack got the sack.",
+        },
+		HERMITHOUSE_ORNAMENT = "Lifts the mood of her humble abood.",
+        HERMITHOUSE_LAUNDRY = "Crossing a boundary by stealing this laundry?",
+
+        PETALS_DRIED = "I'd eyed it'd dried.",
+        PETALS_EVIL_DRIED = "I'd eyed it'd dried.",
+        FOLIAGE_DRIED = "I'd eyed it'd dried.",
+        SUCCULENT_PICKED_DRIED = "I'd eyed it'd dried.",
+        FIRENETTLES_DRIED = "I'd eyed it'd dried.",
+        TILLWEED_DRIED = "I'd eyed it'd dried.",
+        MOON_TREE_BLOSSOM_DRIED = "I'd eyed it'd dried.",
+        FORGETMELOTS_DRIED = "I'd eyed it'd dried.",
+
+        HERMITCRABTEA_PETALS = "When I start losing my grip, I'll have a little sip!",
+        HERMITCRABTEA_PETALS_EVIL = "Choose it to lose it!",
+        HERMITCRABTEA_FOLIAGE = "The taste of fern is for what I yearn.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "It doesn't fool 'round when you need to cool down!",
+        HERMITCRABTEA_FIRENETTLES = "Feeling chilly? Drink up, silly!",
+        HERMITCRABTEA_TILLWEED = "More better, less deader!",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "The tea from this blossom is awesome!",
+        HERMITCRABTEA_FORGETMELOTS = "It'll help to find my poor lost mind!",
+        SHELLWEAVER = "Halt! Do we have enough salt?",
+        ICESTAFF2 = "I'll be the sub-zero hero!",
+        ICESTAFF3 = "Behold, I wield the cold!",
+        NONSLIPGRIT = "No slip when I skip!",
+        NONSLIPGRITBOOSTED = "Last time I slided, I nearly dieded. Hyuyu!",
+        DESICCANT = "Don't cry! It will dry!",
+        DESICCANTBOOSTED = "A real champ against the damp!",
+        HERMITCRAB_SHELL = "A fast pass to the hermit lass!",
+        SALTY_DOGHAT = "A hat needs fur, I do concur.",
+        SALTY_DOG = "I find no fault in your love for salt!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "Oh dear, she's not here!", -- Inactive state, no Pearl inside.
+            ACTIVE = "A tea to first quench my thirst!", -- Active, Pearl is inside, can buy from her
+            BREWING = "Nothing to do, but wait for the brew!", -- A trade just happened and she's brewing the tea!|
+            BURNT = "My head was turned and the shop was burned!", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "So delish, this dried fish!",
+        FISHMEAT_SMALL_DRIED = "So delish, this dried fish!",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "How can I feel low with such a pretty glow?",
+            ABANDONED = "A shame it all ends the same.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "These lights are sure to delight!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

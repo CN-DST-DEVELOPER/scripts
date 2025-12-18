@@ -430,7 +430,6 @@ local function commonfn(build, commonfn)
     ------------------
 
     inst:AddComponent("health")
-	inst.components.health.nofadeout = true
 
     ------------------
 
@@ -668,6 +667,8 @@ local function mutatedfn()
 	inst.hasfrenzy = true
 	inst.freezepower = 3
 	inst.ignorebase = true
+
+    inst.sg.mem.nocorpse = true
 
     inst:AddComponent("timer")
 

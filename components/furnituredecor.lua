@@ -6,6 +6,7 @@ local FurnitureDecor = Class(function(self, inst)
     self.inst = inst
 
     self.enabled = true
+    self.on_furniture = nil
     self.decor_animation = "idle"
 
     --self.onputonfurniture = nil
@@ -29,12 +30,14 @@ function FurnitureDecor:SetEnabled(enabled)
 end
 
 function FurnitureDecor:PutOnFurniture(furniture)
+    self.on_furniture = true
     if self.onputonfurniture then
         self.onputonfurniture(self.inst, furniture)
     end
 end
 
 function FurnitureDecor:TakeOffFurniture(furniture)
+    self.on_furniture = nil
 	if self.ontakeofffurniture then
 		self.ontakeofffurniture(self.inst, furniture)
 	end

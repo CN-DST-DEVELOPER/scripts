@@ -27,6 +27,9 @@ local events = {
     EventHandler("burrowarrive", function(inst, data)
         inst.sg:GoToState("burrowarrive", data)
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -210,6 +213,11 @@ local states =
             inst.causeofdeath = data ~= nil and data.afflicter or nil
             inst.components.lootdropper:DropLoot(inst:GetPosition())
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -302,4 +310,7 @@ CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("bunnyman", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states, nil, nil, "rabbitkingminion_bunnymancorpse")
+
+return StateGraph("rabbitking_bunnyman", states, events, "init")

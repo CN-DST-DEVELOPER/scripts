@@ -368,8 +368,9 @@ function LootDropper:SpawnLootPrefab( lootprefab, pt, linked_skinname, skin_id, 
 end
 
 local DONT_BURN_LOOT_TAGS = {"tree", "boulder"}
-function LootDropper:DropLoot(pt)
-    local prefabs = self:GenerateLoot()
+function LootDropper:DropLoot(pt, prefabs)
+    prefabs = prefabs or self:GenerateLoot()
+
     if self.inst:HasTag("burnt")
         or (self.inst.components.burnable ~= nil and
             self.inst.components.burnable:IsBurning() and

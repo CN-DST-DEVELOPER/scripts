@@ -61,14 +61,14 @@ local drumstickprefabs =
 local fishmeat_smallprefabs =
 {
     "fishmeat_small_cooked",
-    "meat_dried",
+    "fishmeat_small_dried",
     "spoiled_fish_small",
 }
 
 local fishmeat_prefabs =
 {
     "fishmeat_cooked",
-    "meat_dried",
+    "fishmeat_dried",
     "spoiled_fish",
 }
 
@@ -487,7 +487,7 @@ local function drumstick_cooked()
 end
 
 local function fishmeat_small()
-	local inst = common("fishmeat_small", "fishmeat_small", "raw", { "fishmeat", "catfood" }, { product = "smallmeat_dried", build = "meat_rack_food_tot", dried_build = "meat_rack_food", time = TUNING.DRY_FAST }, { product = "fishmeat_small_cooked" })
+	local inst = common("fishmeat_small", "fishmeat_small", "raw", { "fishmeat", "catfood" }, { product = "fishmeat_small_dried", build = "meat_rack_food_tot", dried_build = "meat_rack_food_tot", time = TUNING.DRY_VERYFAST }, { product = "fishmeat_small_cooked" })
 
     if not TheWorld.ismastersim then
         return inst
@@ -521,8 +521,25 @@ local function fishmeat_small_cooked()
     return inst
 end
 
+local function fishmeat_small_dried()
+    local inst = common("meat_rack_food_tot", "meat_rack_food_tot", "dried_fishmeat_small", nil, { isdried = true })
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = TUNING.HEALING_MOREMEDSMALL
+    inst.components.edible.hungervalue = TUNING.CALORIES_SMALL
+    inst.components.edible.sanityvalue = TUNING.SANITY_MEDLARGE
+
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_SLOW)
+    inst.components.perishable.onperishreplacement = "spoiled_fish_small"
+
+    return inst
+end
+
 local function fishmeat()
-	local inst = common("fishmeat", "fishmeat", "raw", { "fishmeat", "catfood", "rawmeat" }, { product = "meat_dried", build = "meat_rack_food_tot", dried_build = "meat_rack_food", time = TUNING.DRY_FAST }, { product = "fishmeat_cooked" })
+	local inst = common("fishmeat", "fishmeat", "raw", { "fishmeat", "catfood", "rawmeat" }, { product = "fishmeat_dried", build = "meat_rack_food_tot", dried_build = "meat_rack_food_tot", time = TUNING.DRY_FAST }, { product = "fishmeat_cooked" })
 
     if not TheWorld.ismastersim then
         return inst
@@ -549,6 +566,21 @@ local function fishmeat_cooked()
 
     inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
     inst.components.perishable.onperishreplacement = "spoiled_fish"
+
+    return inst
+end
+
+local function fishmeat_dried()
+    local inst = common("meat_rack_food_tot", "meat_rack_food_tot", "dried_fishmeat", nil, { isdried = true })
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = TUNING.HEALING_MEDLARGE
+    inst.components.edible.hungervalue = TUNING.CALORIES_MED
+    inst.components.edible.sanityvalue = TUNING.SANITY_MED
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_SLOW)
 
     return inst
 end
@@ -645,7 +677,7 @@ end
 
 local function barnacle()
     --selfstacker (from selfstacker component) added to pristine state for optimization
-    local inst = common("barnacle", "barnacle", "raw", {"barnacle", "rawmeat", "selfstacker"}, nil, { product = "barnacle_cooked" })
+    local inst = common("barnacle", "barnacle", "raw", {"barnacle", "rawmeat", "selfstacker", "quickeat"}, nil, { product = "barnacle_cooked" })
 
     if not TheWorld.ismastersim then
         return inst
@@ -669,7 +701,7 @@ end
 
 
 local function barnacle_cooked()
-    local inst = common("barnacle", "barnacle", "cooked", {"barnacle"})
+    local inst = common("barnacle", "barnacle", "cooked", {"barnacle", "quickeat"})
 
     if not TheWorld.ismastersim then
         return inst
@@ -748,8 +780,10 @@ return Prefab("meat", raw, assets, prefabs),
         Prefab("plantmeat_cooked", plantmeat_cooked, assets),
         Prefab("fishmeat_small", fishmeat_small, assets, fishmeat_smallprefabs),
         Prefab("fishmeat_small_cooked", fishmeat_small_cooked, assets),
+        Prefab("fishmeat_small_dried", fishmeat_small_dried, assets),
         Prefab("fishmeat", fishmeat, assets, fishmeat_prefabs),
         Prefab("fishmeat_cooked", fishmeat_cooked, assets),
+        Prefab("fishmeat_dried", fishmeat_dried, assets),
         Prefab("humanmeat", humanmeat, assets, humanprefabs),
         Prefab("humanmeat_cooked", humanmeat_cooked, assets),
         Prefab("humanmeat_dried", humanmeat_dried, assets),

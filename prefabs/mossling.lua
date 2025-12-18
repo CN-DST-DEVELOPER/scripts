@@ -14,6 +14,7 @@ local prefabs =
     "mossling_spin_fx",
     "goose_feather",
     "drumstick",
+    "mosslingcorpse",
 }
 
 local brain = require("brains/mosslingbrain")

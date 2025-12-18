@@ -91,14 +91,14 @@ end
 local function Retarget(inst)
 	local targets_level = 1
 	local function attacktargetcheck(target)
-        if target.components.inventory ~= nil and target.components.inventory:EquipHasTag("gestaltprotection") then
+        if IsEntityGestaltProtected(target) then
             return false
         end
 		targets_level = GetLevelForTarget(target)
 		return targets_level == 3
 	end
 	local function watchtargetcheck(target)
-        if target.components.inventory ~= nil and target.components.inventory:EquipHasTag("gestaltprotection") then
+        if IsEntityGestaltProtected(target) then
             return false
         end
 		targets_level = GetLevelForTarget(target)

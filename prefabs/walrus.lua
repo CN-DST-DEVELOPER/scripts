@@ -15,6 +15,7 @@ local prefabs =
     "blowdart_pipe", -- player loot
     "walrushat",
     "walrus_tusk",
+    "walruscorpse",
 }
 
 local brain = require "brains/walrusbrain"

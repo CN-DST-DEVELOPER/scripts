@@ -196,7 +196,7 @@ local function OnPlantHerdSpawned(source, plantherd)
     self.inst:ListenForEvent("onremove", herdremoved, plantherd)
 end
 
-local function OnLunarPortalRemoved(source,portal)
+local function OnLunarPortalRemoved(source, portal)
     local self = TheWorld.components.lunarthrall_plantspawner
     if portal == self.currentrift then
         if self._spawntask then
@@ -214,20 +214,27 @@ local function OnLunarPortalRemoved(source,portal)
     end
 end
 
-local function OnPlantInfested(source,plant)
+local function OnPlantInfested(source, plant)
     local self = TheWorld.components.lunarthrall_plantspawner
     if self.targetedplants[plant.GUID] then
         self.targetedplants[plant.GUID] = nil
     end
 end
 
-local function OnTimerDone(source,data)
+local function OnTimerDone(source, data)
     local self = TheWorld.components.lunarthrall_plantspawner
     if data and data.name then
         if data.name == "endrift" then
             self.currentrift:PushEvent("finish_rift")
             self.currentrift = nil
         end
+    end
+end
+
+local function OnGestaltPossession(source, data)
+    local self = TheWorld.components.lunarthrall_plantspawner
+    if data and data.corpse ~= nil and (data.corpse:HasTag("epiccorpse") or data.corpse.prefab == "wargcorpse") then
+        self:RemoveWave()
     end
 end
 
@@ -238,11 +245,13 @@ local Lunarthrall_plantspawner = Class(function(self, inst)
     self.spawntasks = {}
     self.targetedplants = {}
     self.currentrift = nil
+
     self.inst:ListenForEvent("ms_lunarrift_maxsize", OnLunarRiftReachedMaxSize)
     self.inst:ListenForEvent("plantherdspawned", OnPlantHerdSpawned)
     self.inst:ListenForEvent("ms_lunarportal_removed", OnLunarPortalRemoved)
     self.inst:ListenForEvent("lunarthrallplant_infested", OnPlantInfested)
     self.inst:ListenForEvent("timerdone", OnTimerDone)
+    self.inst:ListenForEvent("ms_gestalt_possession", OnGestaltPossession)
 end)
 
 function Lunarthrall_plantspawner:MoveGestaltToPlant(thrall)

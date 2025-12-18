@@ -9,12 +9,14 @@ local assets =
 
 local prefabs =
 {
+    "meat",
     "mooseegg",
     "moose_nesting_ground",
     "mossling",
     "goose_feather",
     "drumstick",
     "chesspiece_moosegoose_sketch",
+    "moosecorpse",
 }
 
 local brain = require("brains/moosebrain")

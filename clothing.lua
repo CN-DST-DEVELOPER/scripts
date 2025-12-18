@@ -514,6 +514,16 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		release_group = 123,
 	},
+	body_pj_polkadot =
+	{
+		type = "body",
+		skin_tags = { "CLOTHING_BODY", "CLOTHING", "RED", },
+		symbol_overrides = { "torso", "arm_upper", "arm_lower", "arm_lower_cuff", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
 	body_pj_purple_mauve =
 	{
 		type = "body",
@@ -9255,6 +9265,17 @@ CLOTHING =
 		rarity_modifier = "Woven",
 		legs_cuff_size = 2,
 		release_group = 123,
+	},
+	legs_pj_polkadot =
+	{
+		type = "legs",
+		skin_tags = { "CLOTHING_LEGS", "CLOTHING", "RED", },
+		symbol_overrides = { "torso_pelvis", "leg", },
+		symbol_hides = { "skirt", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		legs_cuff_size = 2,
+		release_group = 176,
 	},
 	legs_pj_purple_mauve =
 	{

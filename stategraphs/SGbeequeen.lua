@@ -88,7 +88,7 @@ local events =
         end
     end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif (not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt")) and
@@ -126,6 +126,9 @@ local events =
             inst.sg.mem.wantstoflyaway = true
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -367,13 +370,20 @@ local states =
         name = "death",
         tags = { "busy" },
 
-        onenter = function(inst)
+        onenter = function(inst, data)
+            inst.sg.mem.is_corpse = data.corpsing
+
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
             inst:AddTag("NOCLICK")
             inst.SoundEmitter:KillSound("flying")
             inst:StopHoney()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -386,7 +396,7 @@ local states =
                 ShakeIfClose(inst)
                 if inst.persists then
                     inst.persists = false
-                    inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    inst:DropDeathLoot()
                     if inst.hivebase ~= nil then
                         inst.hivebase.queenkilled = true
                     end
@@ -871,4 +881,7 @@ end
 CommonStates.AddFrozenStates(states, OnOverrideFrozenSymbols, OnClearFrozenSymbols)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("SGbeequeen", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("beequeen", states, events, "init")

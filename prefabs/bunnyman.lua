@@ -23,6 +23,8 @@ local prefabs =
     "carrot",
 	"shadow_despawn",
 	"statue_transition_2",
+
+    "bunnymancorpse",
 }
 
 local beardlordloot = { "beardhair", "beardhair", "monstermeat" }

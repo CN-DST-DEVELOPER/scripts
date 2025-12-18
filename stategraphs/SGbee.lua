@@ -11,7 +11,7 @@ local actionhandlers =
 local events =
 {
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -35,6 +35,9 @@ local events =
         end
     end),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function StartBuzz(inst)
@@ -57,10 +60,13 @@ local states =
             inst.AnimState:PlayAnimation("death")
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
-            if inst.components.lootdropper ~= nil then
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-            end
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
 
         timeline =
         {
@@ -367,4 +373,7 @@ CommonStates.AddFrozenStates(states,
 
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("bee", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("bee", states, events, "init", actionhandlers)

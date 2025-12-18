@@ -786,6 +786,8 @@ local function master_postinit(inst)
 
     inst.components.health.fire_damage_scale = TUNING.WORMWOOD_FIRE_DAMAGE
 
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
+
     inst.plantbonuses = {}
     inst.plantpenalties = {}
     inst.components.sanity.custom_rate_fn = SanityRateFn

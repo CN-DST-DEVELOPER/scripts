@@ -23,6 +23,7 @@ local prefabs =
     "mushroomsprout",
     "mushroombomb_projectile",
     "mushroom_light_blueprint",
+    "toadstoolcorpse",
 }
 
 local prefabs_dark =
@@ -30,6 +31,7 @@ local prefabs_dark =
     "mushroomsprout_dark",
     "mushroombomb_dark_projectile",
     "sleepbomb_blueprint",
+    "toadstoolcorpse",
 }
 
 for i, v in ipairs({

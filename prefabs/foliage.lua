@@ -1,11 +1,13 @@
 local assets =
 {
     Asset("ANIM", "anim/foliage.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
 }
 
 local prefabs =
 {
     "quagmire_foliage_cooked",
+    "foliage_dried",
 }
 
 local prefabs_cooked =
@@ -29,6 +31,8 @@ local function fn()
     inst.pickupsound = "vegetation_grassy"
 
     inst:AddTag("cattoy")
+	--dryable (from dryable component) added to pristine state for optimization
+	inst:AddTag("dryable")
 
     MakeInventoryFloatable(inst)
 
@@ -62,6 +66,12 @@ local function fn()
     inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
+
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("foliage_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
 
     if TheNet:GetServerGameMode() == "quagmire" then
         event_server_data("quagmire", "prefabs/foliage").master_postinit(inst)

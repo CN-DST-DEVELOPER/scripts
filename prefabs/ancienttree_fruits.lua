@@ -444,6 +444,7 @@ local function nightvision_fruit_fn()
     inst:AddComponent("tradable")
 
     inst:AddComponent("edible")
+    inst.components.edible.foodtype = FOODTYPE.VEGGIE
     inst.components.edible.hungervalue =  TUNING.CALORIES_SMALL
     inst.components.edible.healthvalue = -TUNING.HEALING_MEDSMALL
     inst.components.edible.sanityvalue = -TUNING.SANITY_MEDLARGE

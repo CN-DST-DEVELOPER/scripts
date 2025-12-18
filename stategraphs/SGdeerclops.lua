@@ -418,13 +418,6 @@ local events =
 
 local states =
 {
-	State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
     State{
         name = "idle",
         tags = { "idle", "canrotate" },
@@ -770,8 +763,7 @@ local states =
 			inst.components.locomotor:Stop()
 			inst.AnimState:PlayAnimation("death")
 			inst.SoundEmitter:PlaySound(inst.sounds.death)
-			inst.components.lootdropper:DropLoot(inst:GetPosition())
-			inst:SetDeathLootLevel(1)
+			inst:DropDeathLoot()
 			if inst.components.burnable.nocharring then
 				inst.components.burnable.fastextinguish = true
 				inst.components.burnable:SetBurnTime(0)
@@ -1908,12 +1900,6 @@ CommonStates.AddCorpseStates(states, nil,
 		end
     end,
 
-    corpseoncreate = function(inst, corpse)
-        if inst.yule then
-            corpse:SetAltBuild("yule")
-        end
-    end,
-
     corpseonerode = function(inst)
         if inst.components.burnable:IsBurning() then
             inst.components.burnable.fastextinguish = true
@@ -1975,5 +1961,7 @@ nil,
     twitch_lp = "rifts3/mutated_deerclops/twitching_LP",
     post_mutate_state = "taunt",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("deerclops", states, events, "init", actionhandlers)

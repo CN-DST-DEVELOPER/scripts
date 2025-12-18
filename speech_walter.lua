@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "There's not enough power.",
+            CHARGE_FULL = "We got a full charge, Woby!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Don't give up, Walter!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "Guess I'll just have to find another spot!",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1229,6 +1235,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Woby, look at those weird buzzards!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Aw, it didn't work!",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "We're here, Wobes!",
 
 	BATTLECRY =
 	{
@@ -5939,6 +5949,77 @@ return{
             BURNING = "We gotta make sure it doesn't rise from the dead!",
             REVIVING = "Woby! It's back from the dead!",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Nothing like a soak at the end of a long day!",
+            GENERIC = "This would make a great swimming hole! It's even heated!",
+            EMPTY = "It's just a hole in the ground now.",
+        },
+		HERMITHOTSPRING_CONSTR = "How exciting!",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "Your dried goods are ready, ma'am!",
+            DRYING = "It should be ready soon.",
+            DRYINGINRAIN = "Oh no, it's never going to dry in this rain!",
+            GENERIC =  "Oooh, we can dry so many things, Woby!",
+            BURNT = "It burned up!",
+            DONE_NOTMEAT = "Your dried goods are ready, ma'am!",
+            DRYING_NOTMEAT = "It should be ready soon.",
+            DRYINGINRAIN_NOTMEAT = "Oh no, it's never going to dry in this rain!",
+            DONE_SALT = "Look at all that salt, Woby!",
+			ABANDONED = "I don't know if we can fix this, Woby...",
+        },
+		HERMITHOUSE_ORNAMENT = "I remember making these at camp!",
+        HERMITHOUSE_LAUNDRY = "I love laundry day!",
+
+        PETALS_DRIED = "Dried perfectly!",
+        PETALS_EVIL_DRIED = "Dried perfectly!",
+        FOLIAGE_DRIED = "Dried perfectly!",
+        SUCCULENT_PICKED_DRIED = "Dried perfectly!",
+        FIRENETTLES_DRIED = "Dried perfectly!",
+        TILLWEED_DRIED = "Dried perfectly!",
+        MOON_TREE_BLOSSOM_DRIED = "Dried perfectly!",
+        FORGETMELOTS_DRIED = "Dried perfectly!",
+
+        HERMITCRABTEA_PETALS = "It even smells calming!",
+        HERMITCRABTEA_PETALS_EVIL = "We better be careful with this one, Woby!",
+        HERMITCRABTEA_FOLIAGE = "Let's save this for the others! Right, Woby girl?",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Perfect for a hot day!",
+        HERMITCRABTEA_FIRENETTLES = "A toasty blend!",
+        HERMITCRABTEA_TILLWEED = "This one is chock full of vitamins!",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "The tea from outer space!",
+        HERMITCRABTEA_FORGETMELOTS = "Remind me to take this when I'm feeling really funny. Okay, Woby?",
+        SHELLWEAVER = "You can make a lot of stuff out of salt!",
+        ICESTAFF2 = "Pretty cool, huh?",
+        ICESTAFF3 = "Have an ice day! Heh...",
+        NONSLIPGRIT = "Heh. My tools won't give me the slip with this!",
+        NONSLIPGRITBOOSTED = "No licking it off the ground, Woby!",
+        DESICCANT = "No more wet dog smell for you, Woby!",
+        DESICCANTBOOSTED = "It sure keeps me nice and dry.",
+        HERMITCRAB_SHELL = "Aw, we can visit Ms. Pearl instantly!",
+        SALTY_DOGHAT = "It looks so official!",
+        SALTY_DOG = "He's not technically a dog, but he's still a good boy!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "That's right, Woby. She's not in yet.", -- Inactive state, no Pearl inside.
+            ACTIVE = "Ms. Pearl makes the best tea!", -- Active, Pearl is inside, can buy from her
+            BREWING = "I can't wait for my tea!", -- A trade just happened and she's brewing the tea!|
+            BURNT = "I hope Ms. Pearl is okay.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "That's some good fish jerky!",
+        FISHMEAT_SMALL_DRIED = "A little jerky is better than none.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "I hope Ms. Pearl likes it!",
+            ABANDONED = "Aw, I don't think we can fix that.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "C'mon, Woby! Let's lighten this place up a bit!",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

@@ -1024,6 +1024,30 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 171,
 	},
+	loading_werepig4 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
+	loading_werepig5 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
+	loading_werepig6 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
 	loading_wes1 =
 	{
 		type = "loading",
@@ -1199,6 +1223,30 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 43,
+	},
+	loading_wobot1 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
+	loading_wobot2 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
+	},
+	loading_wobot3 =
+	{
+		type = "loading",
+		skin_tags = { "SHORTS", "LOADING", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 176,
 	},
 	loading_wolfgang =
 	{
@@ -1418,7 +1466,7 @@ MISC_ITEMS =
 		box_build = "box_mystery_ice",
 		rarity = "Classy",
 		rarity_modifier = "Woven",
-		release_group = 160,
+		release_group = 176,
 	},
 	mysterybox_invisible_5 =
 	{
@@ -2973,6 +3021,20 @@ MISC_ITEMS =
 		display_items = {  "amulet_red_heart", "firepit_firebird", "birdcage_romantic", "playerportrait_bg_heart1", "playerportrait_bg_heart2", },
 		output_items = {  "amulet_red_heart", "firepit_firebird", "birdcage_romantic", "playerportrait_bg_heart1", "playerportrait_bg_heart2", },
 		release_group = 57,
+	},
+	pack_hermitcrab_1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_hermitcrab_1.xml",
+		display_tex = "hermitcrab_1.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "beebox_hermit_shiny", "meatrack_hermit_coral", "meatrack_hermit_multi_coral", "stone_chair_shell", "stonechair_stool_shell", "stonetable_round_shell", "stonetable_square_shell", "tackle_station_shell", "wall_stone_shell", "fence_shell", "fence_gate_shell", "tacklecontainer_shiny", "supertacklecontainer_shiny", "fishingrod_block", "fishingrod_curl", "fishingrod_sword", },
+		output_items = {  "beebox_hermit_shiny", "meatrack_hermit_coral", "meatrack_hermit_multi_coral", "stone_chair_shell", "stonechair_stool_shell", "stonetable_round_shell", "stonetable_square_shell", "tackle_station_shell", "wall_stone_shell", "fence_shell", "fence_gate_shell", "tacklecontainer_shiny", "supertacklecontainer_shiny", "fishingrod_block", "fishingrod_curl", "fishingrod_sword", },
+		release_group = 176,
 	},
 	pack_hl_gift =
 	{
@@ -4743,6 +4805,22 @@ MISC_ITEMS =
 		display_items = {  "wanda_none", "wilson_pirate", "wilson_beard_pirate", "wendy_shadowp", "abigail_shadow", "winona_victorian", "waxwell_ice", "firepit_fangedp", "backpack_catcoonp", "body_pj_grey", "legs_pj_grey", "bedroll_furry_quilt_grey", },
 		output_items = {  "wanda_none", "wilson_pirate", "body_wilson_pirate", "legs_wilson_pirate", "wilson_beard_pirate", "wendy_shadowp", "body_wendy_shadowp", "abigail_shadow", "winona_victorian", "body_winona_victorian", "hand_winona_victorian", "legs_winona_victorian", "waxwell_ice", "body_waxwell_ice", "hand_waxwell_ice", "legs_waxwell_ice", "firepit_fangedp", "backpack_catcoonp", "body_pj_grey", "legs_pj_grey", "bedroll_furry_quilt_grey", },
 		release_group = 160,
+	},
+	pack_starter_2026 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		steam_dlc_id = 4211520,
+		rail_dlc_id = 2002668,
+		display_order = 0,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_starter_2026.xml",
+		display_tex = "starter_2026.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "wortox_none", "wilson_survivorp", "wilson_beard_survivor", "wendy_rosep", "abigail_rose", "webber_boy", "webber_beard_boy", "warly_ice", "birdcage_curly", "cookpot_clay", "body_pj_polkadot", "legs_pj_polkadot", "bedroll_furry_quilt_red_polkadot", },
+		output_items = {  "wortox_none", "wilson_survivorp", "body_wilson_survivorp", "wilson_beard_survivor", "wendy_rosep", "body_wendy_rosep", "abigail_rose", "webber_boy", "body_webber_boy", "legs_webber_boy", "webber_beard_boy", "warly_ice", "body_warly_ice", "feet_warly_ice", "legs_warly_ice", "birdcage_curly", "cookpot_clay", "body_pj_polkadot", "legs_pj_polkadot", "bedroll_furry_quilt_red_polkadot", },
+		release_group = 176,
 	},
 	pack_survivor =
 	{
@@ -8049,6 +8127,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 77,
 	},
+	playerportrait_bg_cookpotplanet =
+	{
+		type = "playerportrait",
+		skin_tags = { "PLANETS", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 176,
+	},
 	playerportrait_bg_cottontree =
 	{
 		type = "playerportrait",
@@ -9100,6 +9185,13 @@ MISC_ITEMS =
 		skin_tags = { "HALLOWED", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 77,
+	},
+	profileflair_cookpotplanet =
+	{
+		type = "profileflair",
+		skin_tags = { "PLANETS", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 176,
 	},
 	profileflair_corvus =
 	{

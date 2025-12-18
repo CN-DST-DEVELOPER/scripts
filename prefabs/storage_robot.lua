@@ -94,9 +94,8 @@ end
 ---------------------------------------------------------------------------------------------------
 
 local function DoOnDroppedLogic(inst)
-    if inst.components.drownable:ShouldDrown() then
-        inst:PushEvent("onsink")
-
+    local drownable = inst.components.drownable
+    if drownable and drownable:CheckDrownable() then
         return
     end
 

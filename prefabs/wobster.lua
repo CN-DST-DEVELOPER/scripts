@@ -275,8 +275,8 @@ local function on_ground_wobster_landed(inst)
 end
 
 local function on_dropped_as_loot(inst, data)
-    if data ~= nil and data.dropped ~= nil then
-        inst.components.wighable.prefab_override_owner = data.dropper.prefab
+    if data ~= nil and data.dropper ~= nil then
+        inst.components.weighable.prefab_override_owner = data.dropper.prefab
     end
 end
 

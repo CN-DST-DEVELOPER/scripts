@@ -100,7 +100,7 @@ local function ShouldAcceptItem(inst, item, giver)
 end
 
 local SPIDER_TAGS = { "spider" }
-local SPIDER_IGNORE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
+local SPIDER_IGNORE_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "creaturecorpse" }
 local function GetOtherSpiders(inst, radius, tags)
     tags = tags or SPIDER_TAGS
     local x, y, z = inst.Transform:GetWorldPosition()
@@ -573,10 +573,23 @@ local function SoundPath(inst, event)
     return "dontstarve/creatures/" .. creature .. "/" .. event
 end
 
+local function OnChangedLeader(inst, new_leader, prev_leader)
+    inst._last_leader = prev_leader -- We lose leader on death, so save it here.
+end
+
 local function SaveCorpseData(inst, corpse)
+    local leader = inst._last_leader
+    if leader ~= nil and leader:IsValid() then
+        corpse.components.entitytracker:TrackEntity("remember_leader", leader)
+    end
+
     local home = inst.components.homeseeker and inst.components.homeseeker:GetHome()
     if home ~= nil then
         corpse.components.entitytracker:TrackEntity("spider_home", home)
+
+        if home.components.childspawner and home.components.childspawner.emergencychildrenoutside[inst] then
+            return { isemergencychild = true }
+        end
     end
 end
 
@@ -669,6 +682,7 @@ local function create_common(bank, build, tag, common_init, extra_data)
     inst.components.combat:SetOnHit(SummonFriends)
 
     inst:AddComponent("follower")
+    inst.components.follower.OnChangedLeader = OnChangedLeader
     --inst.components.follower.maxfollowtime = TUNING.TOTAL_DAY_TIME
 
     ------------------
@@ -920,10 +934,20 @@ end
 
 local function LoadCorpseData(inst, corpse)
     local data = corpse.corpsedata
+
+    local leader = corpse.components.entitytracker:GetEntity("remember_leader")
+	if leader ~= nil and leader.components.leader then
+        leader.components.leader:AddFollower(inst)
+	    corpse.components.entitytracker:ForgetEntity("remember_leader")
+	end
+
     local home = corpse.components.entitytracker:GetEntity("spider_home")
     if home ~= nil then
-        -- Unfortunately it doesn't retain as the moon spider prefab when going home
-        --home.components.childspawner:TakeOwnership(inst)
+        if data and data.isemergencychild then
+            home.components.childspawner:TakeEmergencyOwnership(inst)
+        else
+            home.components.childspawner:TakeOwnership(inst)
+        end
 		corpse.components.entitytracker:ForgetEntity("spider_home")
     end
 end
@@ -951,6 +975,10 @@ local function create_moon()
     inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
 
     inst.recipe = "mutator_moon"
+
+    inst.sg.mem.nocorpse = true
+    inst.sg.mem.nolunarmutate = true
+    inst.save_in_foreign_childspawner = true -- To keep ourselves saved in regular spider dens when they don't usually spit out mutated spiders.
 
     return inst
 end

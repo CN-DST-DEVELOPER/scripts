@@ -6,8 +6,11 @@ local assets =
 local prefabs =
 {
     "batnose",
+    "guano",
     "molebathill",
     "monstermeat",
+
+    "molebatcorpse",
 }
 
 local brain = require "brains/molebatbrain"

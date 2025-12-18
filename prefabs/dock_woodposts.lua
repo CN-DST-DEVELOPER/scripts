@@ -6,6 +6,7 @@ local assets =
 local prefabs =
 {
     "collapse_small",
+    "log",
 }
 
 local loot =
@@ -67,6 +68,8 @@ local function fn()
     inst.AnimState:SetBank("dock_woodposts")
     inst.AnimState:SetBuild("dock_woodposts")
     inst.AnimState:PlayAnimation("idle1")
+
+    inst:AddTag("dock_woodpost")
 
     inst.scrapbook_inspectonseen = true
 

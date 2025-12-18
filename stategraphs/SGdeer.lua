@@ -82,6 +82,9 @@ local events =
             end
         end
     end),
+
+    -- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -645,6 +648,10 @@ CommonStates.AddCombatStates(states,
     hit = function(inst)
         return inst.gem ~= nil and "hit_2" or "hit"
     end,
+},
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
@@ -682,4 +689,7 @@ CommonStates.AddSleepExStates(states,
 })
 CommonStates.AddSinkAndWashAshoreStates(states)
 
-return StateGraph("deer", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("deer", states, events, "init")

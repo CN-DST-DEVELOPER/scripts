@@ -25,6 +25,7 @@ local prefabs =
     "eyeofterror_sinkhole",
     "milkywhites",
     "slide_puff",
+    "eyeofterrorcorpse",
 }
 
 local twinprefabs =
@@ -600,6 +601,7 @@ local function twin1fn()
     ------------------------------------------
     inst.components.sleeper:SetResistance(2*TUNING.EYEOFTERROR_SLEEPRESIST)
     inst.sg.mem.noelectrocute = true
+    inst.sg.mem.nocorpse = true
 
     return inst
 end
@@ -672,6 +674,7 @@ local function twin2fn()
     ------------------------------------------
     inst.components.sleeper:SetResistance(2*TUNING.EYEOFTERROR_SLEEPRESIST)
     inst.sg.mem.noelectrocute = true
+    inst.sg.mem.nocorpse = true
 
     return inst
 end

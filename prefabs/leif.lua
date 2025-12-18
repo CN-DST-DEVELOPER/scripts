@@ -52,11 +52,18 @@ local function onloadfn(inst, data)
         if data.sleeping then
             inst.components.sleeper:GoToSleep()
         end
+        if data.houndfriend then
+            inst:AddTag("houndfriend")
+        end
     end
 end
 
 local function onsavefn(inst, data)
     data.leifscale = inst._scale
+
+    if inst:HasTag("houndfriend") then -- for surprise
+        data.houndfriend = true
+    end
 
     if inst.components.sleeper:IsAsleep() then
         data.sleeping = true

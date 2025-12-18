@@ -15,7 +15,7 @@ local events=
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
@@ -29,6 +29,9 @@ local events=
 			inst.sg:GoToState("attack")
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function Gobble(inst)
@@ -66,9 +69,14 @@ local states =
             inst.SoundEmitter:PlaySound("dontstarve/creatures/perd/death")
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
+            inst:DropDeathLoot()
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        }
     },
 
     State{
@@ -240,4 +248,7 @@ CommonStates.AddSimpleActionState(states, "pick", "take", 9 * FRAMES, { "busy" }
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("perd", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("perd", states, events, "init", actionhandlers)

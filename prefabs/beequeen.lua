@@ -18,6 +18,7 @@ local prefabs =
     "hivehat",
     "bundlewrap_blueprint",
 	"chesspiece_beequeen_sketch",
+    "beequeencorpse",
 }
 
 SetSharedLootTable('beequeen',

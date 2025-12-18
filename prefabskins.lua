@@ -204,6 +204,7 @@ PREFAB_SKINS = {
 		"bedroll_furry_quilt_green_hunters",
 		"bedroll_furry_quilt_grey",
 		"bedroll_furry_quilt_orange_honey",
+		"bedroll_furry_quilt_red_polkadot",
 		"bedroll_furry_quilt_red_redbird",
 		"bedroll_furry_quilt_white_ivory",
 		"bedroll_furry_spider",
@@ -214,6 +215,11 @@ PREFAB_SKINS = {
 		"beebox_garden",
 		"beebox_house",
 		"beebox_victorian",
+	},
+	beebox_hermit =
+	{
+		"beebox_hermit_shiny",
+		"beebox_hermit_yule",
 	},
 	beef_bell =
 	{
@@ -441,6 +447,7 @@ PREFAB_SKINS = {
 		"cookpot_cauldronp",
 		"cookpot_clay",
 		"cookpot_kitchen",
+		"cookpot_planet",
 		"cookpot_survival",
 		"cookpot_tureen",
 	},
@@ -699,6 +706,7 @@ PREFAB_SKINS = {
 		"fence_picketbrown",
 		"fence_pickettan",
 		"fence_picketwhite",
+		"fence_shell",
 		"fence_victorianblack",
 		"fence_victorianbrass",
 		"fence_victorianbronze",
@@ -711,6 +719,7 @@ PREFAB_SKINS = {
 		"fence_gate_picketbrown",
 		"fence_gate_pickettan",
 		"fence_gate_picketwhite",
+		"fence_gate_shell",
 		"fence_gate_victorianblack",
 		"fence_gate_victorianbrass",
 		"fence_gate_victorianbronze",
@@ -723,6 +732,7 @@ PREFAB_SKINS = {
 		"fencegate_picketbrown_item",
 		"fencegate_pickettan_item",
 		"fencegate_picketwhite_item",
+		"fencegate_shell_item",
 		"fencegate_victorianblack_item",
 		"fencegate_victorianbrass_item",
 		"fencegate_victorianbronze_item",
@@ -737,6 +747,7 @@ PREFAB_SKINS = {
 		"fence_picketbrown_item",
 		"fence_pickettan_item",
 		"fence_picketwhite_item",
+		"fence_shell_item",
 		"fence_victorianblack_item",
 		"fence_victorianbrass_item",
 		"fence_victorianbronze_item",
@@ -774,6 +785,12 @@ PREFAB_SKINS = {
 	{
 		"fishbox_nautical",
 		"fishbox_pirate",
+	},
+	fishingrod =
+	{
+		"fishingrod_block",
+		"fishingrod_curl",
+		"fishingrod_sword",
 	},
 	flotationcushion =
 	{
@@ -895,6 +912,67 @@ PREFAB_SKINS = {
 		"heatrock_fire",
 		"heatrock_planet",
 	},
+	hermit_chair_rocking =
+	{
+		"hermit_chair_rocking_yule",
+	},
+	hermitcrab =
+	{
+		"hermitcrab_coral",
+		"hermitcrab_hairy",
+		"hermitcrab_none",
+		"hermitcrab_peacock",
+		"hermitcrab_pointy",
+	},
+	hermitcrab_lightpost =
+	{
+		"hermitcrab_lightpost_yule",
+	},
+	hermitcrab_teashop =
+	{
+		"hermitcrab_teashop_yule",
+	},
+	hermithotspring =
+	{
+		"hermithotspring_yule",
+	},
+	hermithotspring_constr =
+	{
+		"hermithotspring_constr_yule",
+	},
+	hermithouse =
+	{
+		"hermithouse_yule",
+	},
+	hermithouse2 =
+	{
+		"hermithouse2_yule",
+	},
+	hermithouse_construction1 =
+	{
+		"hermithouse_construction1_yule",
+	},
+	hermithouse_construction2 =
+	{
+		"hermithouse_construction2_yule",
+	},
+	hermithouse_construction3 =
+	{
+		"hermithouse_construction3_yule",
+	},
+	hermithouse_ornament =
+	{
+		"hermithouse_ornament_bow",
+		"hermithouse_ornament_coral",
+		"hermithouse_ornament_driftwood",
+		"hermithouse_ornament_mushroom",
+		"hermithouse_ornament_saltcrystal",
+		"hermithouse_ornament_sanddollar",
+		"hermithouse_ornament_snowflake",
+		"hermithouse_ornament_stocking",
+		"hermithouse_ornament_wood",
+		"hermithouse_ornament_wreath",
+	},
 	hivehat =
 	{
 		"hivehat_an",
@@ -918,6 +996,10 @@ PREFAB_SKINS = {
 		"icebox_kitchen",
 		"icebox_porcelain",
 		"icebox_victorian",
+	},
+	icehat =
+	{
+		"hat_ice_shark",
 	},
 	icepack =
 	{
@@ -1051,6 +1133,16 @@ PREFAB_SKINS = {
 		"meatrack_butcher",
 		"meatrack_circus",
 		"meatrack_victorian",
+	},
+	meatrack_hermit =
+	{
+		"meatrack_hermit_coral",
+		"meatrack_hermit_yule",
+	},
+	meatrack_hermit_multi =
+	{
+		"meatrack_hermit_multi_coral",
+		"meatrack_hermit_multi_yule",
 	},
 	mermhat =
 	{
@@ -1601,24 +1693,28 @@ PREFAB_SKINS = {
 	},
 	stone_chair =
 	{
+		"stone_chair_shell",
 		"stone_chair_victorianblack",
 		"stone_chair_victorianbrass",
 		"stone_chair_victorianbronze",
 	},
 	stone_stool =
 	{
+		"stonechair_stool_shell",
 		"stonechair_stool_victorianblack",
 		"stonechair_stool_victorianbrass",
 		"stonechair_stool_victorianbronze",
 	},
 	stone_table_round =
 	{
+		"stonetable_round_shell",
 		"stonetable_round_victorianblack",
 		"stonetable_round_victorianbrass",
 		"stonetable_round_victorianbronze",
 	},
 	stone_table_square =
 	{
+		"stonetable_square_shell",
 		"stonetable_square_victorianblack",
 		"stonetable_square_victorianbrass",
 		"stonetable_square_victorianbronze",
@@ -1637,10 +1733,16 @@ PREFAB_SKINS = {
 	supertacklecontainer =
 	{
 		"supertacklecontainer_shell",
+		"supertacklecontainer_shiny",
 	},
 	tacklecontainer =
 	{
 		"tacklecontainer_shell",
+		"tacklecontainer_shiny",
+	},
+	tacklestation =
+	{
+		"tackle_station_shell",
 	},
 	telebase =
 	{
@@ -1848,6 +1950,7 @@ PREFAB_SKINS = {
 		"wall_stone_ancient",
 		"wall_stone_ancient_alt",
 		"wall_stone_gothic",
+		"wall_stone_shell",
 		"wall_stone_victorian",
 	},
 	wall_stone_item =
@@ -1856,6 +1959,7 @@ PREFAB_SKINS = {
 		"wall_stone_ancientitem",
 		"wall_stone_anitem",
 		"wall_stone_gothicitem",
+		"wall_stone_shellitem",
 		"wall_stone_victorianitem",
 	},
 	wall_wood =

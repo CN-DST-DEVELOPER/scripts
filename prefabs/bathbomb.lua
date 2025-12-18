@@ -4,14 +4,14 @@ local assets =
     Asset("INV_IMAGE", "bathbomb"),
 }
 
-local prefabs =
+--[[local prefabs =
 {
     "spoiled_food",
-}
+}]]
 
-local function OnPutInInventory(inst)
+--[[local function OnPutInInventory(inst)
     inst.components.perishable:StartPerishing()
-end
+end]]
 
 local function bathbomb()
     local inst = CreateEntity()
@@ -42,7 +42,7 @@ local function bathbomb()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
-    inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
+	--inst.components.inventoryitem:SetOnPutInInventoryFn(OnPutInInventory)
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_MEDITEM
@@ -53,10 +53,11 @@ local function bathbomb()
     inst.components.fuel.fuelvalue = TUNING.MED_FUEL
 
     -- Since bath bombs are made of petals, they perish like petals as well.
-    inst:AddComponent("perishable")
+	-- @V2C 12/25/2025: removed perishable
+	--[[inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
     inst.components.perishable:StartPerishing()
-    inst.components.perishable.onperishreplacement = "spoiled_food"
+	inst.components.perishable.onperishreplacement = "spoiled_food"]]
 
     inst:AddComponent("bathbomb")
 
@@ -65,4 +66,4 @@ local function bathbomb()
     return inst
 end
 
-return Prefab("bathbomb", bathbomb, assets, prefabs)
+return Prefab("bathbomb", bathbomb, assets)--, prefabs)

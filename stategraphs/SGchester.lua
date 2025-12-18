@@ -101,6 +101,9 @@ local events=
         end
     end),
     CommonHandlers.OnDeath(),
+
+    -- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -152,6 +155,11 @@ local states=
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -738,4 +746,7 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 	end,
 })
 
-return StateGraph("chester", states, events, "idle")
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("chester", states, events, "init")

@@ -101,7 +101,7 @@ local function SeasonalSpawnChanges(inst, season)
         if season == SEASONS.SPRING then
             inst.components.childspawner:SetRegenPeriod(TUNING.BEEHIVE_REGEN_TIME / TUNING.SPRING_COMBAT_MOD)
             inst.components.childspawner:SetSpawnPeriod(TUNING.BEEHIVE_RELEASE_TIME / TUNING.SPRING_COMBAT_MOD)
-            inst.components.childspawner:SetMaxChildren(TUNING.BEEHIVE_BEES * TUNING.SPRING_COMBAT_MOD)
+            inst.components.childspawner:SetMaxChildren(math.ceil(TUNING.BEEHIVE_BEES * TUNING.SPRING_COMBAT_MOD))
         else
             inst.components.childspawner:SetRegenPeriod(TUNING.BEEHIVE_REGEN_TIME)
             inst.components.childspawner:SetSpawnPeriod(TUNING.BEEHIVE_RELEASE_TIME)

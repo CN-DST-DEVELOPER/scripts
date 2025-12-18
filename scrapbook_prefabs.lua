@@ -1987,6 +1987,48 @@ local PREFABS =
     ["mutatedbuzzard_gestalt"] = true,
     ["pumpkinhat"] = true,
 
+    -- Winter's Feast 2025
+
+    ["hermitcrab_teashop"] = true,
+    ["hermitcrab_lightpost"] = true,
+
+    ["hermitcrabtea_petals"] = true,
+    ["hermitcrabtea_petals_evil"] = true,
+    ["hermitcrabtea_foliage"] = true,
+    ["hermitcrabtea_succulent_picked"] = true,
+    ["hermitcrabtea_firenettles"] = true,
+    ["hermitcrabtea_tillweed"] = true,
+    ["hermitcrabtea_moon_tree_blossom"] = true,
+    ["hermitcrabtea_forgetmelots"] = true,
+
+    ["petals_dried"] = true,
+    ["petals_evil_dried"] = true,
+    ["foliage_dried"] = true,
+    ["succulent_picked_dried"] = true,
+    ["firenettles_dried"] = true,
+    ["tillweed_dried"] = true,
+    ["moon_tree_blossom_dried"] = true,
+    ["forgetmelots_dried"] = true,
+
+    ["fishmeat_dried"] = true,
+    ["fishmeat_small_dried"] = true,
+
+    ["shellweaver"] = true,
+    ["nonslipgrit"] = true,
+    ["nonslipgritboosted"] = true,
+    ["desiccant"] = true,
+    ["desiccantboosted"] = true,
+    ["salty_doghat"] = true,
+    ["salty_dog"] = true,
+    ["hermitcrab_shell"] = true,
+
+    ["hermithotspring"] = true,
+    ["meatrack_hermit_multi"] = true,
+    ["hermithouse_ornament"] = true,
+    ["hermithouse_laundry_socks"] = true,
+    ["hermithouse_laundry_shorts"] = true,
+    ["hermit_chair_rocking"] = true,
+
     -----------------------------------------------
 
     --["archive_switch"] = true, proxy for archive_switch_base

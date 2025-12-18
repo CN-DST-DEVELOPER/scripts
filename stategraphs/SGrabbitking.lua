@@ -28,6 +28,8 @@ local events = {
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
+    CommonHandlers.OnDeath(),
+
 	EventHandler("attacked", function(inst, data)
 		if not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
@@ -42,9 +44,6 @@ local events = {
 				inst.sg:GoToState("hit")
 			end
         end
-    end),
-    EventHandler("death", function(inst, data)
-        inst.sg:GoToState("death", data)
     end),
     EventHandler("trapped", function(inst)
         inst.sg:GoToState("trapped")
@@ -107,6 +106,9 @@ local events = {
             inst.sg:GoToState("ability_dropkick", data)
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states = {
@@ -651,6 +653,7 @@ local states = {
     State{
         name = "death",
         tags = {"busy"},
+
         onenter = function(inst, data)
             if inst.sounds and inst.sounds.scream then
                 inst.SoundEmitter:PlaySound(inst.sounds.scream)
@@ -665,8 +668,13 @@ local states = {
             inst.Physics:Stop()
             RemovePhysicsColliders(inst)
             inst.causeofdeath = data and data.afflicter or nil
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()), data and data.afflicter or nil)
+            inst:DropDeathLoot()
         end,
+
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
     State{
         name = "fall",
@@ -819,4 +827,7 @@ nil, --timeline
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
-return StateGraph("rabbitking", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("rabbitking", states, events, "init", actionhandlers)

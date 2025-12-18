@@ -90,6 +90,10 @@ local function ShouldForceMapReveal(inst)
 		return false -- The Pearl doesn't exist yet.
 	end
 
+    if hermit.gotcrackedpearl then
+        return true -- The Cracked Pearl has been given to Hermit.
+    end
+
 	if TheSim:FindFirstEntityWithTag("hermitpearl") then
 		return false -- The Pearl or Cracked Pearl exist.
 	end
@@ -97,10 +101,13 @@ local function ShouldForceMapReveal(inst)
 	local crabking = TheSim:FindFirstEntityWithTag("crabking")
 
 	if crabking ~= nil and crabking.gemcount ~= nil then
-		return crabking.gemcount.pearl <= 0 -- Checking if crabking has the Pearl.
+		if crabking.gemcount.pearl > 0 then -- Checking if crabking has the Pearl.
+            return false
+        end
 	end
 
-	return true -- The Cracked Pearl has been given to Hermit.
+    hermit.gotcrackedpearl = true -- The Cracked Pearl has been given to Hermit and the flag is in a bad state so let us fix it up.
+	return true
 end
 
 local function prereveal(inst, doer)

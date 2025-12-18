@@ -1,12 +1,14 @@
 local assets =
 {
     Asset("ANIM", "anim/flower_petals.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
 }
 
 local prefabs =
 {
     "small_puff",
     "petals_evil",
+    "petals_dried",
 }
 
 local function OnHaunt(inst, haunter)
@@ -70,6 +72,8 @@ local function fn()
 
     inst:AddTag("cattoy")
     inst:AddTag("vasedecoration")
+	--dryable (from dryable component) added to pristine state for optimization
+	inst:AddTag("dryable")
 
     MakeInventoryFloatable(inst)
 
@@ -118,6 +122,12 @@ local function fn()
     MakeSmallPropagator(inst)
 
 	inst:AddComponent("snowmandecor")
+
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("petals_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
 
     MakeHauntableLaunchAndPerish(inst)
     AddHauntableCustomReaction(inst, OnHaunt, false, true, false)

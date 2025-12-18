@@ -173,6 +173,10 @@ local COMPONENT_ACTIONS =
             end
         end,
 
+		bathingpool = function(inst, doer, actions)
+			table.insert(actions, ACTIONS.SOAKIN)
+		end,
+
         battery = function(inst, doer, actions)
             if inst:HasTag("battery") and doer:HasTag("batteryuser") then
                 table.insert(actions, ACTIONS.CHARGE_FROM)
@@ -314,10 +318,14 @@ local COMPONENT_ACTIONS =
                 	--Removed for wobysmall -> moved into her command wheel
                     --[[if inst.replica.container then -- Added for wobysmall
                         table.insert(actions, ACTIONS.PET)
-                    else]]if doer.replica.builder ~= nil
-                       and doer.replica.builder:GetTechTrees().ORPHANAGE > 0
-                       and not inst:HasTag("noabandon") then
-                        table.insert(actions, ACTIONS.ABANDON)
+                    else]]
+                    local techtrees = doer.replica.builder ~= nil and doer.replica.builder:GetTechTrees()
+                    if techtrees and not inst:HasTag("noabandon") then
+                        if techtrees.HERMITCRABSHOP >= 7 and IsInValidHermitCrabDecorArea(doer) then
+                            table.insert(actions, ACTIONS.TRANSFER_CRITTER)
+                        elseif techtrees.ORPHANAGE > 0 then
+                            table.insert(actions, ACTIONS.ABANDON)
+                        end
                     end
                 elseif inst.replica.container == nil then
                     table.insert(actions, ACTIONS.PET)
@@ -1007,6 +1015,12 @@ local COMPONENT_ACTIONS =
         bathbomb = function(inst, doer, target, actions)
             if inst:HasTag("bathbomb") and target:HasTag("bathbombable") then
                 table.insert(actions, ACTIONS.BATHBOMB)
+            end
+        end,
+
+        batteryuser = function(inst, doer, target, actions, right)
+            if right and inst:HasTag("batteryuser") and target:HasTag("battery") then
+                table.insert(actions, ACTIONS.CHARGE_FROM)
             end
         end,
 
@@ -2122,6 +2136,12 @@ local COMPONENT_ACTIONS =
 
     EQUIPPED = --args: inst, doer, target, actions, right
     {
+        batteryuser = function(inst, doer, target, actions, right)
+            if right and inst:HasTag("batteryuser") and target:HasTag("battery") then
+                table.insert(actions, ACTIONS.CHARGE_FROM)
+            end
+        end,
+
         brush = function(inst, doer, target, actions, right)
             if not right and target:HasTag("brushable") then
                 table.insert(actions, ACTIONS.BRUSH)

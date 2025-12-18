@@ -17,6 +17,8 @@ local prefabs =
     "boneshard",
     "deer_antler",
     "deer_growantler_fx",
+
+    "deercorpse",
 }
 
 local redprefabs =
@@ -26,6 +28,8 @@ local redprefabs =
     "deer_fire_circle",
     "deer_fire_charge",
     "deer_unshackle_fx",
+
+    "deercorpse",
 }
 
 local blueprefabs =
@@ -35,6 +39,8 @@ local blueprefabs =
     "deer_ice_circle",
     "deer_ice_charge",
     "deer_unshackle_fx",
+
+    "deercorpse",
 }
 
 local brain = require("brains/deerbrain")

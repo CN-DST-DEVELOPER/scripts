@@ -3,6 +3,17 @@ local easing = require("easing")
 
 local TIMEOUT = 2
 
+local function GetIceStaffProjectileSound(inst, equip)
+    if equip.icestaff_coldness then
+        if equip.icestaff_coldness > 2 then
+            return "dontstarve/wilson/attack_deepfreezestaff_lvl2"
+        elseif equip.icestaff_coldness > 1 then
+            return "dontstarve/wilson/attack_deepfreezestaff"
+        end
+    end
+    return "dontstarve/wilson/attack_icestaff"
+end
+
 local function DoEquipmentFoleySounds(inst)
     local inventory = inst.replica.inventory
     if inventory ~= nil then
@@ -449,7 +460,7 @@ local actionhandlers =
 			local state =
 				(obj:HasTag("quickeat") and "quickeat") or
 				(obj:HasTag("sloweat") and "eat") or
-				(obj:HasTag("edible_"..FOODTYPE.MEAT) and "eat") or
+				((obj:HasTag("edible_"..FOODTYPE.MEAT) and not obj:HasTag("fooddrink")) and "eat") or  -- #EGGNOG_HACK, eggnog is the one meat drink, we don't have a long drink, so exclude from eat state
 				"quickeat"
 
 			local inventory = inst.replica.inventory
@@ -801,7 +812,9 @@ local actionhandlers =
 
     ActionHandler(ACTIONS.APPLYMODULE, "applyupgrademodule"),
     ActionHandler(ACTIONS.REMOVEMODULES, "removeupgrademodules"),
-    ActionHandler(ACTIONS.CHARGE_FROM, "doshortaction"),
+    ActionHandler(ACTIONS.CHARGE_FROM, function(inst, action)
+        return action.invobject and "catchonfire" or "doshortaction"
+    end),
 
     ActionHandler(ACTIONS.ROTATE_FENCE, "doswipeaction"),
 
@@ -871,6 +884,10 @@ local actionhandlers =
 
     -- rifts5.1
     ActionHandler(ACTIONS.DIVEGRAB, "divegrab_pre"),
+
+	-- Winter 2025
+	ActionHandler(ACTIONS.SOAKIN, "soakin_pre"),
+	ActionHandler(ACTIONS.TRANSFER_CRITTER, "dolongaction"),
 }
 
 local events =
@@ -2554,9 +2571,13 @@ local states =
 		server_states = { "quickeat" },
 
         onenter = function(inst)
+            local buffaction = inst:GetBufferedAction()
+			local feed = buffaction ~= nil and buffaction.invobject or nil
+            local isdrink = feed and feed:HasTag("fooddrink")
+
             inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("quick_eat_pre")
-            inst.AnimState:PushAnimation("quick_eat_lag", false)
+            inst.AnimState:PlayAnimation(isdrink and "quick_drink_pre" or "quick_eat_pre")
+            inst.AnimState:PushAnimation(isdrink and "quick_drink_lag" or "quick_eat_lag", false)
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -4407,7 +4428,7 @@ local states =
                         inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                         if inst.sg.statemem.projectiledelay > FRAMES then
                             inst.sg.statemem.projectilesound =
-                                (equip:HasTag("icestaff") and "dontstarve/wilson/attack_icestaff") or
+                                (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                                 (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                                 (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
                                 "dontstarve/wilson/attack_weapon"
@@ -4417,7 +4438,7 @@ local states =
                     end
                     if inst.sg.statemem.projectilesound == nil then
                         inst.SoundEmitter:PlaySound(
-                            (equip:HasTag("icestaff") and "dontstarve/wilson/attack_icestaff") or
+                            (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
                             "dontstarve/wilson/attack_weapon",
@@ -4495,7 +4516,7 @@ local states =
                     inst.sg.statemem.projectiledelay = 8 * FRAMES - equip.projectiledelay
                     if inst.sg.statemem.projectiledelay > FRAMES then
                         inst.sg.statemem.projectilesound =
-                            (equip:HasTag("icestaff") and "dontstarve/wilson/attack_icestaff") or
+                            (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                             (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                             (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
                             "dontstarve/wilson/attack_weapon"
@@ -4505,7 +4526,7 @@ local states =
                 end
                 if inst.sg.statemem.projectilesound == nil then
                     inst.SoundEmitter:PlaySound(
-                        (equip:HasTag("icestaff") and "dontstarve/wilson/attack_icestaff") or
+                        (equip:HasTag("icestaff") and GetIceStaffProjectileSound(inst, equip)) or
                         (equip:HasTag("shadow") and "dontstarve/wilson/attack_nightsword") or
                         (equip:HasTag("firestaff") and "dontstarve/wilson/attack_firestaff") or
                         (equip:HasTag("firepen") and "wickerbottom_rework/firepen/launch") or
@@ -6388,7 +6409,21 @@ local states =
 		ontimeout = function(inst)
 			inst.components.locomotor:Clear()
 			if inst:HasTag("sitting_on_chair") then
-				inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+				local rockingchair = FindEntity(inst, 0.01, nil, { "rocking_chair" }, { "cansit", "burnt" })
+				if rockingchair then
+					if rockingchair.AnimState:IsCurrentAnimation("rocking_pre") then
+						inst.AnimState:PlayAnimation("rocking_pre")
+						inst.AnimState:SetTime(rockingchair.AnimState:GetCurrentAnimationTime())
+						inst.AnimState:PushAnimation("rocking_loop")
+					elseif rockingchair.AnimState:IsCurrentAnimation("rocking_loop") then
+						inst.AnimState:PlayAnimation("rocking_loop", true)
+						inst.AnimState:SetTime(rockingchair.AnimState:GetCurrentAnimationTime())
+					else
+						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+					end
+				else
+					inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
+				end
 				inst.sg:GoToState("sitting")
 			else
 				inst.AnimState:PlayAnimation("sit_off_pst")
@@ -7136,9 +7171,13 @@ local states =
 		server_states = { "quickeat", "float" },
 
 		onenter = function(inst)
+            local buffaction = inst:GetBufferedAction()
+			local feed = buffaction ~= nil and buffaction.invobject or nil
+            local isdrink = feed and feed:HasTag("fooddrink")
+
 			inst.components.locomotor:Stop()
-			inst.AnimState:PlayAnimation("float_quick_eat_pre")
-			inst.AnimState:PushAnimation("float_quick_eat_lag", false)
+			inst.AnimState:PlayAnimation(isdrink and "float_quick_drink_pre" or "float_quick_eat_pre")
+			inst.AnimState:PushAnimation(isdrink and "float_quick_drink_lag" or "float_quick_eat_lag", false)
 
 			inst:PerformPreviewBufferedAction()
 			inst.sg:SetTimeout(TIMEOUT)
@@ -7201,6 +7240,38 @@ local states =
             inst.sg:GoToState("idle")
         end,
     },
+
+	-- Winter 2025
+
+	State{
+		name = "soakin_pre",
+		tags = { "busy", "canrotate" },
+		server_states = { "soakin_pre", "soakin_jump", "soakin" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("jump_pre")
+			inst.AnimState:PushAnimation("jump_lag", false)
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.sg:GoToState("idle")
+		end,
+	},
 }
 
 local hop_timelines =

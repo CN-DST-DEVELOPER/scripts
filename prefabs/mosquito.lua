@@ -5,7 +5,9 @@ local assets =
 
 local prefabs =
 {
-    "mosquitosack"
+    "mosquitosack",
+
+    "mosquitocorpse",
 }
 
 local brain = require("brains/mosquitobrain")

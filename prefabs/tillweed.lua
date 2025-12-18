@@ -1,6 +1,13 @@
 local assets =
 {
     Asset("ANIM", "anim/tillweed.zip"),
+    Asset("ANIM", "anim/meat_rack_food_petals.zip"),
+}
+
+local prefabs =
+{
+    "spoiled_food",
+    "tillweed_dried",
 }
 
 local function fn()
@@ -17,6 +24,8 @@ local function fn()
     inst.AnimState:PlayAnimation("idle")
 
     inst:AddTag("cattoy")
+	--dryable (from dryable component) added to pristine state for optimization
+	inst:AddTag("dryable")
 
     MakeInventoryFloatable(inst, "med", 0.05, 0.68)
 
@@ -47,6 +56,12 @@ local function fn()
     inst.components.perishable:StartPerishing()
     inst.components.perishable.onperishreplacement = "spoiled_food"
 
+    inst:AddComponent("dryable")
+    inst.components.dryable:SetProduct("tillweed_dried")
+    inst.components.dryable:SetDryTime(TUNING.DRY_FAST)
+	inst.components.dryable:SetBuildFile("meat_rack_food_petals")
+    inst.components.dryable:SetDriedBuildFile("meat_rack_food_petals")
+
     MakeSmallBurnable(inst)
     MakeSmallPropagator(inst)
 
@@ -55,4 +70,4 @@ local function fn()
     return inst
 end
 
-return Prefab("tillweed", fn, assets)
+return Prefab("tillweed", fn, assets, prefabs)

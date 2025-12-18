@@ -956,6 +956,7 @@ local states =
 			inst.AnimState:PlayAnimation("collapse_empty_hit")
 			inst.AnimState:PushAnimation("collapse_empty", false)
 			inst.sg:SetTimeout(0.25)
+            inst.components.lootdropper:DropLoot()
 		end,
 
 		ontimeout = ErodeAway,

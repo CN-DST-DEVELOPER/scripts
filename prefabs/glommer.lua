@@ -9,6 +9,8 @@ local prefabs =
     "glommerfuel",
     "glommerwings",
     "monstermeat",
+    
+    "glommercorpse",
 }
 
 local brain = require("brains/glommerbrain")

@@ -20,7 +20,7 @@ local events=
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
     EventHandler("doattack", function(inst, data)
-        if not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
+        if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("busy")) then
             --If you're not in melee range throw instead.
             --Maybe do some randomness to throw or not?
             --V2C: gdi. because sg events are queued, ALL data can possibly go invalid >_ <""
@@ -33,6 +33,9 @@ local events=
             )
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -226,9 +229,17 @@ CommonStates.AddCombatStates(states,
             inst.SoundEmitter:PlaySound("dontstarve/creatures/monkey"..inst.soundtype.."/death")
         end),
     },
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("monkey", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("monkey", states, events, "init", actionhandlers)

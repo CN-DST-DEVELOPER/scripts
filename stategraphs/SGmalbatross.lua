@@ -75,6 +75,10 @@ local function SpawnMalbatrossAttackWaves(inst)
     end
 end
 
+local function ShouldUseLandState(inst)
+    return TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) or inst:GetCurrentPlatform() or not inst:IsOnOcean()
+end
+
 local events =
 {
     CommonHandlers.OnLocomote(false, true),
@@ -105,10 +109,11 @@ local events =
         end
     end),
     EventHandler("death", function(inst, data)
-        if TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition()) or inst:GetCurrentPlatform() or not inst:IsOnOcean() then
-            inst.sg:GoToState("death", data)
+        local use_corpse_state = CommonHandlers.ShouldUseCorpseStateOnLoad(inst, data.cause)
+        if use_corpse_state then
+            inst.sg:GoToState("corpse", true)
         else
-            inst.sg:GoToState("death_ocean", data)
+            inst.sg:GoToState(ShouldUseLandState(inst) and "death" or "death_ocean", data)
         end
     end),
 
@@ -119,6 +124,9 @@ local events =
             inst.sg:GoToState("attack")
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function go_to_idle(inst)
@@ -462,6 +470,11 @@ local states =
             RemovePhysicsColliders(inst)
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
+
         timeline =
         {
 
@@ -489,7 +502,7 @@ local states =
             TimeEvent(42 * FRAMES, function(inst)
                 spawnsplash(inst)
                 spawnwave(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
+                inst:DropDeathLoot()
                 inst.SoundEmitter:PlaySound("turnoftides/common/together/water/splash/boss")
             end),
 
@@ -821,6 +834,11 @@ CommonStates.AddCombatStates(states,
         TimeEvent(44 * FRAMES, function(inst) ShakeAllCameras(CAMERASHAKE.FULL, .7, .02, 2, inst, SHAKE_DIST) end),
 		TimeEvent(44 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/bearger/groundpound") end),
     },
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 local function land_without_floater(creature)
@@ -882,4 +900,19 @@ CommonStates.AddSleepExStates(states,
 CommonStates.AddFrozenStates(states, LandFlyingCreature, RaiseFlyingCreature)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("malbatross", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states,
+{ -- anims
+    corpse = function(inst)
+        if not ShouldUseLandState(inst) then
+            return "death_ocean_idle", true
+        end
+    end,
+},
+{
+    corpseoncreate = function(inst, corpse)
+        corpse.sg:GoToState("corpse_idle") -- HACK, replay state after setting position for proper idle
+    end,
+})
+
+return StateGraph("malbatross", states, events, "init", actionhandlers)

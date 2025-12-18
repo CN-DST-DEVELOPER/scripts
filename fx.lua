@@ -2820,7 +2820,7 @@ local fx =
         bank = "fx_dock_crackleandpop",
         build = "fx_dock_crackleandpop",
         anim = "pop",
-        sound = "monkeyisland/dock/break2",
+        sound = "monkeyisland/dock/break",
     },
 
     {

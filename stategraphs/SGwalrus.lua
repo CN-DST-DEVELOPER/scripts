@@ -25,7 +25,7 @@ local events=
 		end
 	end),
 	EventHandler("attacked", function(inst, data)
-		if not inst.components.health:IsDead() then
+		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (inst.sg:HasAnyStateTag("attack", "electrocute") or CommonHandlers.HitRecoveryDelay(inst, nil, TUNING.WALRUS_MAX_STUN_LOCKS)) then
@@ -47,6 +47,9 @@ local events=
         end
     end),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -59,11 +62,14 @@ local states=
             PlayCreatureSound(inst, "death")
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
-
+            inst:DropDeathLoot()
             RemovePhysicsColliders(inst)
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -255,5 +261,8 @@ CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 
-return StateGraph("walrus", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("walrus", states, events, "init", actionhandlers)
 

@@ -215,7 +215,7 @@ local function commonfn()
 		COLLISION.SMALLOBSTACLES
 	)
     inst.Physics:SetMass(1)
-    inst.Physics:SetSphere(1)
+    inst.Physics:SetSphere(0.25)
 
 	inst:AddTag("soulless") -- no wortox souls
     inst:AddTag("bird")
@@ -286,14 +286,14 @@ local function commonfn()
     --inst:AddComponent("teamattacker")
     --inst.components.teamattacker.team_type = "mutatedbird"
 
-    inst:AddComponent("formationfollower")
-    inst.components.formationfollower.searchradius = FORMATION_SEARCH_RADIUS
-    inst.components.formationfollower.formation_type = "mutatedbird"
-    inst.components.formationfollower.onupdatefn = FollowerOnUpdate
-    inst.components.formationfollower.onleaveformationfn = OnLeaveFormation
-    inst.components.formationfollower.onenterformationfn = OnEnterFormation
+    -- inst:AddComponent("formationfollower")
+    -- inst.components.formationfollower.searchradius = FORMATION_SEARCH_RADIUS
+    -- inst.components.formationfollower.formation_type = "mutatedbird"
+    -- inst.components.formationfollower.onupdatefn = FollowerOnUpdate
+    -- inst.components.formationfollower.onleaveformationfn = OnLeaveFormation
+    -- inst.components.formationfollower.onenterformationfn = OnEnterFormation
 
-    inst.Debug_FindTeam = Debug_FindTeam
+    -- inst.Debug_FindTeam = Debug_FindTeam
 
     inst:ListenForEvent("ontrapped", OnTrapped)
     inst.settrapdata = SetBirdTrapData
@@ -320,6 +320,7 @@ local function commonfn()
 
     inst:SetStateGraph("SGbird")
     inst:SetBrain(brain)
+    inst.sg.mem.nocorpse = true
 
     inst.PutOnBrillianceCooldown = PutOnBrillianceCooldown
     inst.UpdateBrillianceVisual = UpdateBrillianceVisual

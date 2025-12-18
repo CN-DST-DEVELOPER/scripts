@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "It is low on charge.",
+            CHARGE_FULL = "A full charge!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Oh non! I missed.",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "That portion of the broth is claimed.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1187,6 +1193,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Those strange and terrible birds have come to feast!", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Oh no! It failed!",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I have arrived at Madame Pearl's!",
 
 	BATTLECRY =
 	{
@@ -5897,6 +5907,77 @@ return{
             BURNING = "Flame-seared.",
             REVIVING = "It is unnatural.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Perfection!",
+            GENERIC = "Ah, if only I had time for a nice soak.",
+            EMPTY = "An empty basin.",
+        },
+		HERMITHOTSPRING_CONSTR = "It is still in progress.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "The drying is complete!",
+            DRYING = "Not quite dry enough.",
+            DRYINGINRAIN = "Now it is more like a rehydrating rack...",
+            GENERIC =  "Industrial size!",
+            BURNT = "Too dry! Too dry!",
+            DONE_NOTMEAT = "Et voilà! It is done!",
+            DRYING_NOTMEAT = "Not quite ready yet.",
+            DRYINGINRAIN_NOTMEAT = "Now we're just watering it.",
+            DONE_SALT = "Salt! Precious salt!",
+			ABANDONED = "Ah, c'est dommage.",
+        },
+		HERMITHOUSE_ORNAMENT = "How quaint!",
+        HERMITHOUSE_LAUNDRY = "Oh dear!",
+
+        PETALS_DRIED = "A fine ingredient!",
+        PETALS_EVIL_DRIED = "A fine ingredient!",
+        FOLIAGE_DRIED = "A fine ingredient!",
+        SUCCULENT_PICKED_DRIED = "A fine ingredient!",
+        FIRENETTLES_DRIED = "A fine ingredient!",
+        TILLWEED_DRIED = "A fine ingredient!",
+        MOON_TREE_BLOSSOM_DRIED = "A fine ingredient!",
+        FORGETMELOTS_DRIED = "A fine ingredient!",
+
+        HERMITCRABTEA_PETALS = "Perfect for soothing un petit madness.",
+        HERMITCRABTEA_PETALS_EVIL = "Nice but no substitute for a strong brandy.",
+        HERMITCRABTEA_FOLIAGE = "It is a fortifying brew.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "A refreshing summer drink!",
+        HERMITCRABTEA_FIRENETTLES = "A tasty and toasty brew!",
+        HERMITCRABTEA_TILLWEED = "I do not mind the taste of this wholesome tonic.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "I wonder what region of the moon this comes from.",
+        HERMITCRABTEA_FORGETMELOTS = "This mixture will be good for a splitting headache.",
+        SHELLWEAVER = "These recipes all call for a pinch of salt.",
+        ICESTAFF2 = "Prepare for a frosting!",
+        ICESTAFF3 = "A portable freezer!",
+        NONSLIPGRIT = "A salty coating for my various utensils.",
+        NONSLIPGRITBOOSTED = "Perhaps the ground could use a dusting of salt, for texture.",
+        DESICCANT = "It whisks the moisture away.",
+        DESICCANTBOOSTED = "It keeps me drier than hardtack.",
+        HERMITCRAB_SHELL = "A shortcut to Madame Pearl's!",
+        SALTY_DOGHAT = "It makes me look quite distinguished, non?",
+        SALTY_DOG = "Merci beacoup for the salt, mon ami!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "The shop is empty.", -- Inactive state, no Pearl inside.
+            ACTIVE = "Madame Pearl makes a delightful cup of tea.", -- Active, Pearl is inside, can buy from her
+            BREWING = "Madame Pearl's tea is just what I need.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Oh non! Madame's tea shop!", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "A well-cured fish filet.",
+        FISHMEAT_SMALL_DRIED = "A well-cured fish filet.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Ah. Lovely!",
+            ABANDONED = "How sad!",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Madame Pearl could use a dash more light around here.",
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

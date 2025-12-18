@@ -17,6 +17,7 @@ local function fn()
     inst.components.childspawner:SetSpawnPeriod(math.random(TUNING.MIN_TUMBLEWEED_SPAWN_PERIOD, TUNING.MAX_TUMBLEWEED_SPAWN_PERIOD))
     inst.components.childspawner:SetRegenPeriod(TUNING.TUMBLEWEED_REGEN_PERIOD)
     inst.components.childspawner.spawnoffscreen = true
+    inst.components.childspawner.save_max_children = true
     inst:DoTaskInTime(0, function(inst)
         inst.components.childspawner:ReleaseAllChildren()
         inst.components.childspawner:StartSpawning()

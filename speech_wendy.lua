@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "It's dead.",
+            CHARGE_FULL = "Full charge.",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Failure.",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "That space is taken.",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1191,6 +1197,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Buzzards. Something off about them.", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "I'm still here...",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Here we are.",
 
 	BATTLECRY =
 	{
@@ -5901,6 +5911,77 @@ return{
             BURNING = "May you find peace.",
             REVIVING = "Awakened from its eternal slumber.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Perhaps it will soothe my soul, if only for a moment.",
+            GENERIC = "When I gaze upon my reflection, a ghost stares back at me.",
+            EMPTY = "Nothing left for me here...",
+        },
+		HERMITHOTSPRING_CONSTR = "I don't mind waiting.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "The drying is over.",
+            DRYING = "It sways in the drying wind.",
+            DRYINGINRAIN = "The rain is keeping it from drying.",
+            GENERIC =  "One can dry much on there. How optimistic.",
+            BURNT = "It's done drying. Forever.",
+            DONE_NOTMEAT = "The drying is over.",
+            DRYING_NOTMEAT = "It sways in the drying wind.",
+            DRYINGINRAIN_NOTMEAT = "The rain is keeping it from drying.",
+            DONE_SALT = "Food without salt is like life without...",
+			ABANDONED = "Broken and abandoned.",
+        },
+		HERMITHOUSE_ORNAMENT = "It's pleasant.",
+        HERMITHOUSE_LAUNDRY = "Chores keep the mind occupied.",
+
+        PETALS_DRIED = "I like how they smell.",
+        PETALS_EVIL_DRIED = "I like how they smell.",
+        FOLIAGE_DRIED = "I like how they smell.",
+        SUCCULENT_PICKED_DRIED = "I like how they smell.",
+        FIRENETTLES_DRIED = "I like how they smell.",
+        TILLWEED_DRIED = "I like how they smell.",
+        MOON_TREE_BLOSSOM_DRIED = "I like how they smell.",
+        FORGETMELOTS_DRIED = "I like how they smell.",
+
+        HERMITCRABTEA_PETALS = "It quiets the mind.",
+        HERMITCRABTEA_PETALS_EVIL = "This takes me to a dark place.",
+        HERMITCRABTEA_FOLIAGE = "My mind is not what needs protecting.",
+        HERMITCRABTEA_SUCCULENT_PICKED = "For when I miss the cold.",
+        HERMITCRABTEA_FIRENETTLES = "It warms all but my soul.",
+        HERMITCRABTEA_TILLWEED = "This tea will make me live longer. Sigh.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "They will merely tolerate my presence.",
+        HERMITCRABTEA_FORGETMELOTS = "To keep the demons at bay.",
+        SHELLWEAVER = "What should I make, Abigail?",
+        ICESTAFF2 = "Cold and misery.",
+        ICESTAFF3 = "My heart is already cold as ice.",
+        NONSLIPGRIT = "At least one thing won't slip away from me...",
+        NONSLIPGRITBOOSTED = "I will salt the earth.",
+        DESICCANT = "It can't dry away all my tears.",
+        DESICCANTBOOSTED = "I can't remember the last time my eyes were dry.",
+        HERMITCRAB_SHELL = "If only it would take me to Abigail.",
+        SALTY_DOGHAT = "It is my turn to play the captain.",
+        SALTY_DOG = "You are no hound... but I'll overlook it.",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "She's not in.", -- Inactive state, no Pearl inside.
+            ACTIVE = "It's been a while since my last tea party.", -- Active, Pearl is inside, can buy from her
+            BREWING = "One of my few joys in this life.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "It makes me extra sad.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "The dessicated remains of a fish.",
+        FISHMEAT_SMALL_DRIED = "Withered away to almost nothing.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "A bit of light in the darkness.",
+            ABANDONED = "The light could not last.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "Where should you go?",
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

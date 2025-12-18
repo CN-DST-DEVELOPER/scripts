@@ -1,7 +1,7 @@
 require("stategraphs/commonstates")
 
 local function onattackedfn(inst, data)
-	if not inst.components.health:IsDead() then
+	if inst.components.health and not inst.components.health:IsDead() then
 		if CommonHandlers.TryElectrocuteOnAttacked(inst, data, nil, nil,
 			function(inst)
 				if inst.sg:HasStateTag("grounded") then
@@ -109,6 +109,9 @@ local events =
     EventHandler("transform", transform),
     --Because this comes from an event players can prevent it by having dragonfly
     --in sleep/ freeze/ knockdown states when this is triggered.
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states =
@@ -845,6 +848,11 @@ local states =
             inst:AddTag("NOCLICK")
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
+
         timeline =
         {
             TimeEvent(12*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/dragonfly/blink") end),
@@ -857,7 +865,7 @@ local states =
                 ShakeIfClose(inst)
                 if inst.persists then
                     inst.persists = false
-                    inst.components.lootdropper:DropLoot(inst:GetPosition())
+                    inst:DropDeathLoot()
                 end
             end),
             TimeEvent(5, ErodeAway),
@@ -978,4 +986,7 @@ nil, --timeline
 	end,
 })
 
-return StateGraph("dragonfly", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("dragonfly", states, events, "init", actionhandlers)

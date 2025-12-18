@@ -730,6 +730,10 @@ function self:GetWorldEscalationLevel()
 	end
 end
 
+function self:GetSpawnPrefab(upgrade)
+	return GetSpawnPrefab(upgrade)
+end
+
 --------------------------------------------------------------------------
 --[[ Public member functions ]]
 --------------------------------------------------------------------------

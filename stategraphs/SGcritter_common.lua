@@ -72,7 +72,13 @@ SGCritterStates.AddIdle = function(states, num_emotes, timeline, idle_anim_fn)
 						inst.sg:GoToState("combat_pre")
 					else
 						local choice = math.random(inst.components.crittertraits:IsDominantTrait("playful") and (num_emotes + 1) or num_emotes) -- if playful, then add a chance to play the cute emote instead of normal emotes
-						inst.sg:GoToState("emote_"..((choice <= num_emotes) and tostring(choice) or "cute"))
+						local emote_suffix = ((choice <= num_emotes) and tostring(choice) or "cute")
+						inst.sg:GoToState("emote_"..emote_suffix)
+
+						local leader = inst.components.follower and inst.components.follower.leader
+						if leader then
+							leader:PushEvent("critter_doemote", { critter = inst })
+						end
 					end
 
 				else

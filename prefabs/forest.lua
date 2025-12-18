@@ -559,6 +559,9 @@ local prefabs =
 
     --rifts 6
     "oceanwhirlbigportal",
+
+	--winter 2025
+	"giftsurprise",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")
@@ -671,6 +674,7 @@ local function master_postinit(inst)
 
     if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
         inst:AddComponent("gingerbreadhunter")
+        inst:AddComponent("wintersurprisespawner")
     end
     inst:AddComponent("snowballmanager")
 

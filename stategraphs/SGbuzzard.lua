@@ -12,13 +12,30 @@ local actionhandlers =
     end),
 }
 
+local MUTATEDBUZZARD_SEARCH_RANGE = 10
+local MUTATEDBUZZARD_MUST_TAGS = { "buzzard", "gestaltmutant" }
+local MUTATEDBUZZARD_NO_TAGS = { "NOCLICK" }
+local function TargetAlreadyBeingFlameThrowered(inst, target)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local buzzards = TheSim:FindEntities(x, y, z, MUTATEDBUZZARD_SEARCH_RANGE, MUTATEDBUZZARD_MUST_TAGS, MUTATEDBUZZARD_NO_TAGS)
+
+    for k, ent in ipairs(buzzards) do
+        if ent.components.combat.target == target and ent.sg.currentstate.name == "flamethrower_pre" then
+            return true
+        end
+    end
+
+    return false
+end
+
 local function ChooseAttack(inst, target)
     target = target or inst.components.combat.target
 	if target ~= nil and not target:IsValid() then
 		target = nil
 	end
 
-    if inst.canflamethrower and not inst.components.timer:TimerExists("flamethrower_cd") then
+    -- Take turns flamethrowering one target, otherwise we all go in the same line potentially and that looks ugly.
+    if inst.canflamethrower and not inst.components.timer:TimerExists("flamethrower_cd") and not TargetAlreadyBeingFlameThrowered(inst, target) then
 		inst.sg:GoToState("flamethrower_pre", target)
     elseif inst:IsNear(target, inst.components.combat:GetHitRange()) then
         inst.sg:GoToState("attack", target)
@@ -39,7 +56,7 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 		fx:SetFXOwner(inst)
 	end
 
-	local scale = (0.8 + math.random() * 0.25)
+	local scale = (0.85 + math.random() * 0.15)
 
 	angle = (inst.Transform:GetRotation() + angle) * DEGREES
 	x = x + math.cos(angle) * dist
@@ -69,13 +86,6 @@ end
 local function GetLunarFlamePuffAnim(sz, ht)
 	return string.format(ht and "lunarflame_puff_%s_%s" or "lunarflame_puff_%s", sz or "small", ht)
 end
-
-local SIZE_TO_CORPSE_HEALTH = { -- How many times to feast on this corpse for us to consume it?
-    ["tiny"] = 1, -- e.g. rabbits
-    ["small"] = 4, -- e.g. hounds
-    ["med"] = 9, -- e.g. beefalo
-    ["large"] = 25, -- e.g. bosses, like bearger or deerclops
-}
 
 local function FlyAwayToSky(inst)
     local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
@@ -155,13 +165,6 @@ end
 
 local states =
 {
-    State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
-
     State{
         name = "idle",
         tags = {"idle", "canrotate"},
@@ -519,8 +522,7 @@ local states =
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("death")
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(inst:GetPosition())
-            inst:SetDeathLootLevel(1)
+            inst:DropDeathLoot()
             inst.SoundEmitter:PlaySound(inst.sounds.death)
         end,
 
@@ -781,15 +783,11 @@ local states =
                 inst.SoundEmitter:PlaySound(inst.sounds.eat, "eating_loop")
             end
 
-            if corpse ~= nil and corpse:IsValid() then
+            if corpse ~= nil and corpse:IsValid() and inst:IsNear(corpse, inst.components.combat:GetHitRange() + corpse:GetPhysicsRadius(0)) then
                 inst.sg.statemem.corpse = corpse
 
-                if not corpse:IsFading() and not corpse:WillMutate() then
+                if not corpse:WillMutate() then
                     local _, sz, ht = GetCombatFxSize(corpse)
-
-                    if not corpse._eaten_times then
-                        corpse._eaten_times = 0
-                    end
 
                     if corpse.components.burnable and corpse.components.burnable:IsBurning() then
                         -- Hack!
@@ -801,16 +799,11 @@ local states =
                         fx.Transform:SetPosition(corpse.Transform:GetWorldPosition())
                     end
 
-                    corpse:PushEvent("chomped", { eater = inst, amount = 1, weapon_sound_modifier = "sharp" })
+                    corpse:PushEvent("chomped", { eater = inst, amount = 1.5, weapon_sound_modifier = "sharp" })
 
-                    if CanEntityBeNonGestaltMutated(corpse) then
+                    if CanEntityBeNonGestaltMutated(corpse) and corpse.meat_level >= 2 then
+                        -- TODO hack? set back to level 1?
                         corpse:StartReviveMutateTimer(.5 + math.random() * .1)
-                    elseif math.random() < 0.33 then
-                        corpse._eaten_times = corpse._eaten_times + 1
-
-                        if corpse._eaten_times >= SIZE_TO_CORPSE_HEALTH[sz] then
-                            corpse:StartFadeTimer(3 + math.random() * 2)
-                        end
                     end
                 end
             end
@@ -825,7 +818,7 @@ local states =
         {
             EventHandler("animover", function(inst)
                 local corpse = inst.sg.statemem.corpse
-                if corpse and corpse:IsValid() and not corpse._eroding_away and not corpse:IsMutating() then
+                if corpse and inst.brain:IsCorpseValid() and inst.brain.corpse == corpse then
                     inst.sg:GoToState("corpse_eat_loop", corpse)
                 else
                     inst.sg:GoToState("corpse_eat_pst")
@@ -942,5 +935,7 @@ CommonStates.AddLunarRiftMutationStates(states, nil, nil,
     keep_twitch_lp = true,
     post_mutate_state = "flyaway",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("buzzard", states, events, "init", actionhandlers)

@@ -190,6 +190,20 @@ local function ExtraPourWaterDist(doer, dest, bufferedaction)
     return 1.5
 end
 
+-- Small hack, some things (Brightshades) have a lower physics radius override than their actual physics,
+-- This should probably be more encompassing, but let's just fix up this action for now.
+local function ExtraHealRange(doer, dest, bufferedaction)
+    local target = bufferedaction and bufferedaction.target or nil
+    if target then
+        local phys_rad_delta = target:GetPhysicsRadius(0) - target.Physics:GetRadius()
+        if phys_rad_delta < 0 then
+            return math.abs(phys_rad_delta)
+        end
+    end
+    --
+    return 0
+end
+
 local function ArriveAnywhere()
     return true
 end
@@ -316,7 +330,7 @@ ACTIONS =
     HARVEST = Action(),
     GOHOME = Action(),
     SLEEPIN = Action(),
-    CHANGEIN = Action({ priority=-1 }),
+    CHANGEIN = Action({ priority=0 }), -- Must be bigger than RUMMAGE.
     HITCHUP = Action({ priority=-1 }),
     MARK = Action({ distance=2, priority=-1 }),
     UNHITCH = Action({ distance=2, priority=-1 }),
@@ -358,7 +372,7 @@ ACTIONS =
     ACTIVATE = Action({ priority=2, invalid_hold_action = true }),
     OPEN_CRAFTING = Action({priority=2, distance = TUNING.RESEARCH_MACHINE_DIST - 1}),
     MURDER = Action({ priority=1, mount_valid=true }),
-    HEAL = Action({ mount_valid=true }),
+    HEAL = Action({ mount_valid=true, extra_arrive_dist=ExtraHealRange }),
     INVESTIGATE = Action(),
     UNLOCK = Action(),
     USEKLAUSSACKKEY = Action(),
@@ -563,7 +577,7 @@ ACTIONS =
 	APPLYMODULE_FAIL = Action({ mount_valid=true, instant = true }),
     REMOVEMODULES = Action({ mount_valid=true }),
 	REMOVEMODULES_FAIL = Action({ mount_valid=true, instant = true }),
-    CHARGE_FROM = Action({ mount_valid=false }),
+    CHARGE_FROM = Action({ distance=1.25, mount_valid=false }),
 
     ROTATE_FENCE = Action({ rmb=true }),
 
@@ -625,6 +639,10 @@ ACTIONS =
     STARTELECTRICLINK = Action({ priority = 2, invalid_hold_action = true  }),
     ENDELECTRICLINK = Action({ priority = 1, invalid_hold_action = true }),
     REMOVELUNARBUILDUP = Action({priority=3, invalid_hold_action=true}),
+
+	-- Winter 2025
+	SOAKIN = Action({ invalid_hold_action = true }),
+    TRANSFER_CRITTER = Action({ invalid_hold_action = true }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -663,6 +681,11 @@ ACTIONS.APPRAISE.fn = function(act)
     elseif reason == "NOTNOW" then
         return false, "NOTNOW"
     end
+end
+
+ACTIONS.EAT.strfn = function(act)
+    return (act.invobject ~= nil and act.invobject:HasTag("fooddrink")) and "DRINK"
+        or nil
 end
 
 ACTIONS.EAT.fn = function(act)
@@ -2459,6 +2482,14 @@ ACTIONS.HARVEST.fn = function(act)
         return act.target.components.stewer:Harvest(act.doer)
     elseif act.target.components.dryer ~= nil then
         return act.target.components.dryer:Harvest(act.doer)
+    elseif act.target.components.dryingrack ~= nil and act.invobject and act.target.components.container ~= nil then
+        local targetitem = act.target.components.container:RemoveItem(act.invobject)
+        if targetitem ~= nil then
+            targetitem.prevcontainer = nil
+            targetitem.prevslot = nil
+            act.doer.components.inventory:GiveItem(targetitem)
+            return true
+        end
     elseif act.target.components.occupiable ~= nil and act.target.components.occupiable:IsOccupied() then
         local item = act.target.components.occupiable:Harvest(act.doer)
         if item ~= nil then
@@ -5583,13 +5614,28 @@ ACTIONS.REMOVEMODULES_FAIL.stroverridefn = function(act)
     return STRINGS.ACTIONS.REMOVEMODULES
 end
 
+ACTIONS.CHARGE_FROM.strfn = function(act)
+    return act.invobject and act.invobject:HasTag("batteryuser") and "ITEM"
+        or act.doer and act.doer:HasTag("batteryuser") and "SELF"
+        or nil
+end
+
 ACTIONS.CHARGE_FROM.fn = function(act)
-    if (act.target ~= nil and act.target.components.battery ~= nil) and
-            (act.doer ~= nil and act.doer.components.batteryuser ~= nil) then
-        return act.doer.components.batteryuser:ChargeFrom(act.target)
-    else
+    if not act.target or act.target.components.battery == nil then
         return false
     end
+
+    local user
+    if act.invobject and act.invobject.components.batteryuser then
+        user = act.invobject
+    elseif act.doer and act.doer.components.batteryuser then
+        user = act.doer
+    end
+    if not user then
+        return false
+    end
+
+    return user.components.batteryuser:ChargeFrom(act.target)
 end
 
 ACTIONS.ROTATE_FENCE.fn = function(act)
@@ -6361,4 +6407,30 @@ ACTIONS.REMOVELUNARBUILDUP.validfn = function(act)
         return false
     end
     return (act.invobject == nil or act.doer == nil or act.invobject.components.equippable == nil or not act.invobject.components.equippable:IsRestricted(act.doer))
+end
+
+ACTIONS.SOAKIN.fn = function(act)
+	if act.target and act.target.components.bathingpool then
+		return act.target.components.bathingpool:EnterPool(act.doer)
+	end
+end
+
+local HERMITCRAB_MUST_TAGS = { "hermitcrab", "character" }
+ACTIONS.TRANSFER_CRITTER.fn = function(act)
+    if act.doer.components.petleash ~= nil and act.target.components.crittertraits ~= nil then
+        local hermitcrab = FindEntity(act.doer, 10, nil, HERMITCRAB_MUST_TAGS)
+        if not hermitcrab or hermitcrab.components.petleash == nil then
+            return false
+        elseif hermitcrab.components.petleash:IsFull() then
+            return false--, "FULL"
+        end
+
+        act.doer.components.petleash:DetachPet(act.target)
+        hermitcrab.components.petleash:AttachPet(act.target)
+        act.target.components.crittertraits:OnPet(act.doer)
+
+        hermitcrab:PushEvent("adopted_critter", { critter = act.target })
+
+        return true
+    end
 end

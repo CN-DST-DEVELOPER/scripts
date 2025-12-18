@@ -1858,6 +1858,52 @@ function self:OnPostInit()
 		end
 	end
 
+	---------------------------------------------------------------------------
+
+	if self.retrofit_enable_pearl_score then
+		self.retrofit_enable_pearl_score = nil
+
+		for k, v in pairs(Ents) do
+			if v.prefab == "hermithouse" then
+				local id = TheWorld.Map:GetTopologyIDAtPoint(v.Transform:GetWorldPosition())
+    			if id ~= "StaticLayoutIsland:HermitcrabIsland" then -- hack
+					v.components.pearldecorationscore:Enable()
+				end
+			end
+		end
+	end
+
+	---------------------------------------------------------------------------
+
+    if self.hermitcrab_relocation_change then
+        self.hermitcrab_relocation_change = nil
+
+        local nopearlexists = true
+        if TheSim:FindFirstEntityWithTag("hermitpearl") then
+            nopearlexists = false
+        else
+            local crabking = TheSim:FindFirstEntityWithTag("crabking")
+            if crabking ~= nil and crabking.gemcount ~= nil then
+                nopearlexists = crabking.gemcount.pearl <= 0
+            end
+        end
+
+        for _, v in pairs(Ents) do
+            if v.prefab == "hermitcrab" and v.components.craftingstation then
+                if v.components.craftingstation:KnowsItem("hermitcrab_relocation_kit") then
+                    print("Fixing Pearl's relocation kit recipe", v)
+                    v.components.craftingstation:ForgetItem("hermitcrab_relocation_kit")
+                    v.components.craftingstation:LearnItem("hermitcrab_relocation_kit", "hermitcrab_relocation_kit")
+                end
+                local shouldknowshellweaver = nopearlexists and v.pearlgiven
+                if shouldknowshellweaver and not v.components.craftingstation:KnowsItem("shellweaver") then
+                    print("Fixing Pearl's shellweaver knowledge", v)
+                    v.gotcrackedpearl = true
+                    v.components.craftingstation:LearnItem("shellweaver", "shellweaver")
+                end
+            end
+        end
+    end
 
 	---------------------------------------------------------------------------
 
@@ -1923,6 +1969,8 @@ function self:OnLoad(data)
         self.fix_pearl_eating_everything = data.fix_pearl_eating_everything or false
 		self.floating_heavyobstaclephysics_fix = data.floating_heavyobstaclephysics_fix or false
 		self.retrofit_missing_retrofits_generated_densities = data.retrofit_missing_retrofits_generated_densities or false
+		self.retrofit_enable_pearl_score = data.retrofit_enable_pearl_score or false
+        self.hermitcrab_relocation_change = data.hermitcrab_relocation_change or false
     end
 end
 

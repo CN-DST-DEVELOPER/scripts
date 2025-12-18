@@ -26,6 +26,7 @@ local prefabs =
 	"winter_ornament_boss_malbatross",
 	"chesspiece_malbatross_sketch",
 	"premiumwateringcan",
+    "malbatrosscorpse",
 }
 
 --------------------------------------------------------------------------

@@ -105,8 +105,8 @@ return{
         },
         CHARGE_FROM =
         {
-            NOT_ENOUGH_CHARGE = "only_used_by_wx78",
-            CHARGE_FULL = "only_used_by_wx78",
+            NOT_ENOUGH_CHARGE = "There's not enough charge.",
+            CHARGE_FULL = "Ready to go!",
         },
 		COMPARE_WEIGHABLE =
 		{
@@ -488,6 +488,12 @@ return{
         {
             MISSED = "Missed it!",
         },
+
+		-- Winter 2025
+		SOAKIN =
+		{
+			NOSPACE = "It's occupied",--there's someone in that space. there's no room there.
+		},
     },
 
 	ANNOUNCE_CANNOT_BUILD =
@@ -1188,6 +1194,10 @@ return{
 
     -- Hallowed Nights 2025
     ANNOUNCE_MUTATED_BUZZARD_ARRIVAL = "Those buzzards look different to you, Luce?", -- Mutated buzzards arrive to lurk and circle the player
+
+    -- Winter's Feast 2025
+    ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "It didn't work, Luce.",
+    ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "We're here!",
 
 	BATTLECRY =
 	{
@@ -5898,6 +5908,77 @@ return{
             BURNING = "Better to do it now than regret it later, eh?",
             REVIVING = "Oh geez.",
         },
+
+		--Winter's Feast 2025
+
+		HERMITHOTSPRING  =
+        {
+            BOMBED = "Looks comfy.",
+            GENERIC = "Careful Lucy, wouldn't want you to rust.",
+            EMPTY = "It's no good to me like that.",
+        },
+		HERMITHOTSPRING_CONSTR = "It's still being built.",
+		MEATRACK_HERMIT_MULTI = --talk to vito; want to reuse MEATRACK, but less meat focused; more fish/tea
+        {
+            DONE = "That looks done.",
+            DRYING = "This is like watching water dry.",
+            DRYINGINRAIN = "This is like watching water dry... in the rain.",
+            GENERIC =  "That's a lot of drying space.",
+            BURNT = "Its usefulness has dried up.",
+            DONE_NOTMEAT = "That looks done.",
+            DRYING_NOTMEAT = "This is like watching water dry.",
+            DRYINGINRAIN_NOTMEAT = "This is like watching water dry... in the rain.",
+            DONE_SALT = "A little salty surprise there.",
+			ABANDONED = "What a waste.",
+        },
+		HERMITHOUSE_ORNAMENT = "That would really spruce up the old cabin.",
+        HERMITHOUSE_LAUNDRY = "I really should do my laundry.",
+
+        PETALS_DRIED = "Smells nice.",
+        PETALS_EVIL_DRIED = "Smells nice.",
+        FOLIAGE_DRIED = "Smells nice.",
+        SUCCULENT_PICKED_DRIED = "Smells nice.",
+        FIRENETTLES_DRIED = "Smells nice.",
+        TILLWEED_DRIED = "Smells nice.",
+        MOON_TREE_BLOSSOM_DRIED = "Smells nice.",
+        FORGETMELOTS_DRIED = "Smells nice.",
+
+        HERMITCRABTEA_PETALS = "Maybe you should have some of this, Luce.",
+        HERMITCRABTEA_PETALS_EVIL = "Just what I need.",
+        HERMITCRABTEA_FOLIAGE = "I've never gone nuts a day in my life. Right, Luce?",
+        HERMITCRABTEA_SUCCULENT_PICKED = "Perfect for a hot day.",
+        HERMITCRABTEA_FIRENETTLES = "This would have been good up north.",
+        HERMITCRABTEA_TILLWEED = "It even smells healthy.",
+        HERMITCRABTEA_MOON_TREE_BLOSSOM = "It's from the moon, eh?",
+        HERMITCRABTEA_FORGETMELOTS = "Hopefully I'll know when to drink it.",
+        SHELLWEAVER = "I don't think it makes pickles.",
+        ICESTAFF2 = "Might need mitts for this.",
+        ICESTAFF3 = "We'll send them straight to the Yukon with this.",
+        NONSLIPGRIT = "I would have made a fortune selling this back home.",
+        NONSLIPGRITBOOSTED = "This stuff won't quit!",
+        DESICCANT = "Remember how much it rained back home, Luce?",
+        DESICCANTBOOSTED = "Take that, rain!",
+        HERMITCRAB_SHELL = "Shortcut to Pearl's.",
+        SALTY_DOGHAT = "At least it doesn't attract birds.",
+        SALTY_DOG = "Hey buddy!",
+
+        HERMITCRAB_TEASHOP =
+        {
+            GENERIC = "She's not in, Lucy.", -- Inactive state, no Pearl inside.
+            ACTIVE = "Pearl makes a good cup of tea.", -- Active, Pearl is inside, can buy from her
+            BREWING = "It's worth the wait.", -- A trade just happened and she's brewing the tea!|
+            BURNT = "Oh, Pearl. I'm so sorry.", -- burnt strings.
+        },
+
+        FISHMEAT_DRIED = "Beats bird jerky.",
+        FISHMEAT_SMALL_DRIED = "Beats bird jerky.",
+
+        HERMITCRAB_LIGHTPOST = -- Similar to YOTS_LANTERN_POST
+        {
+            GENERIC = "Wish I had those around the cabin.",
+            ABANDONED = "It's just garbage now.",
+        },
+        HERMITCRAB_LIGHTPOST_ITEM = "What do you think, Luce?",
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

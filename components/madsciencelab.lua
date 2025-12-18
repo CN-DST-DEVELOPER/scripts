@@ -4,6 +4,7 @@ local MadScienceLab = Class(function(self, inst)
 
     self.task = nil
     self.product = nil
+    self.name = nil
 
 	self.stages = {}
 end)
@@ -24,6 +25,7 @@ function MadScienceLab:SetStage(stage, time_override) -- time override is for sa
 		local result = self.product
 		self.task = nil
 		self.product = nil
+        self.name = nil
 
 		if self.OnScienceWasMade ~= nil then
 			self.OnScienceWasMade(self.inst, result)
@@ -38,7 +40,8 @@ function MadScienceLab:SetStage(stage, time_override) -- time override is for sa
 	end
 end
 
-function MadScienceLab:StartMakingScience(product)
+function MadScienceLab:StartMakingScience(product, name) -- NOTES(JBK): name is an optional field for recipe names.
+    self.name = name
 	self.product = product
 	self:SetStage(1)
 
@@ -49,6 +52,7 @@ end
 
 function MadScienceLab:OnSave()
     return {
+        name = self.name,
 		product = self.product,
 		stage = self.stage,
 		time_remaining = self.task ~= nil and GetTaskRemaining(self.task) or nil
@@ -57,6 +61,7 @@ end
 
 function MadScienceLab:OnLoad(data)
 	if data ~= nil and data.time_remaining ~= nil then
+        self.name = data.name
 		self.product = data.product
 		self:SetStage(data.stage, data.time_remaining)
 	end

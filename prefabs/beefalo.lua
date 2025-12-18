@@ -41,6 +41,7 @@ local prefabs =
     "explode_reskin",
     "beefalo_carry",
     "spawn_fx_medium",
+    --"beefalocorpse",
 }
 
 local brain = require("brains/beefalobrain")
@@ -504,6 +505,10 @@ end
 local function OnGetItemFromPlayer(inst, giver, item)
     if inst.components.eater:CanEat(item) then
         inst.components.eater:Eat(item, giver)
+
+        if item:IsValid() then -- HACK: For the case of tea which can be eaten multiple times
+            Launch2(item, inst, 1, 1, .1, .1)
+        end
     end
 end
 

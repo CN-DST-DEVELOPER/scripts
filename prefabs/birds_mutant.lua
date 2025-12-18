@@ -214,6 +214,8 @@ local function commonPostMain(inst)
     MakeFeedableSmallLivestock(inst, TUNING.BIRD_PERISH_TIME, OnPutInInventory, OnDropped)
 
     inst:SetStateGraph("SGbird_mutant")
+    inst.sg.mem.nocorpse = true
+    inst.sg.mem.nolunarmutate = true
     inst:SetBrain(brain)
 
     return inst

@@ -176,12 +176,6 @@ end
 
 local states =
 {
-    State{
-		name = "init",
-		onenter = function(inst)
-			inst.sg:GoToState(inst.components.locomotor ~= nil and "idle" or "corpse_idle")
-		end,
-	},
 
     State{
         name = "funnyidle",
@@ -1007,8 +1001,7 @@ local states =
 
             if not inst.shadowthrall_parasite_hosted_death or not TheWorld.components.shadowparasitemanager then
                 RemovePhysicsColliders(inst)
-                inst.components.lootdropper:DropLoot(inst:GetPosition())
-                inst:SetDeathLootLevel(1)
+                inst:DropDeathLoot()
             end 
         end,
 
@@ -1068,20 +1061,7 @@ CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 CommonStates.AddSimpleActionState(states, "pickup", "pig_pickup", 10 * FRAMES, { "busy" })
 CommonStates.AddParasiteReviveState(states)
-
-CommonStates.AddCorpseStates(states, nil,
-{
-    corpseoncreate = function(inst, corpse)
-        if inst:HasTag("mermguard") then
-            local mermkingmanager = TheWorld.components.mermkingmanager
-            if mermkingmanager and mermkingmanager:HasKingAnywhere() then
-                corpse:SetAltBuild("mermguard")
-            else
-                corpse:SetAltBuild("mermguard_small")
-            end
-        end
-    end,
-}, "mermcorpse")
+CommonStates.AddCorpseStates(states, nil, nil, "mermcorpse")
 
 CommonStates.AddLunarPreRiftMutationStates(states,
 {
@@ -1125,5 +1105,7 @@ CommonStates.AddLunarPreRiftMutationStates(states,
     mutated_spawn_timing = 52 * FRAMES,
     post_mutate_state = "funnyidle",
 })
+
+CommonStates.AddInitState(states, "idle")
 
 return StateGraph("merm", states, events, "init", actionhandlers)

@@ -14,6 +14,7 @@ local prefabs =
     "cutgrass",
     "plantmeat",
     "twigs",
+    "grassgatorcorpse",
 }
 
 local grass_gator = {"plantmeat","plantmeat","plantmeat","plantmeat","plantmeat","plantmeat","plantmeat","cutgrass","twigs","cutgrass","twigs"}

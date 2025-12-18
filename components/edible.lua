@@ -27,6 +27,7 @@ local Edible = Class(function(self, inst)
     self.degrades_with_spoilage = true
     self.gethealthfn = nil
     self.getsanityfn = nil
+    --self.handleremovefn = nil
 
     self.temperaturedelta = 0
     self.temperatureduration = 0
@@ -143,6 +144,14 @@ function Edible:SetOnEatenFn(fn)
     self.oneaten = fn
 end
 
+function Edible:SetHandleRemoveFn(fn)
+    self.handleremovefn = fn
+end
+
+function Edible:SetOverrideStackMultiplierFn(fn)
+    self.overridestackmultiplierfn = fn
+end
+
 function Edible:SetGetHealthFn(fn)
     self.gethealthfn = fn
 end
@@ -182,6 +191,28 @@ function Edible:OnEaten(eater)
     if self.inst.eatensound ~= nil and eater.SoundEmitter ~= nil then
         eater.SoundEmitter:PlaySound(self.inst.eatensound)
     end
+end
+
+function Edible:HandleEatRemove(eatwholestack) -- Called from eater.lua, internal, don't touch elsewhere!
+    if self.inst:IsValid() then --might get removed in OnEaten...
+        if self.handleremovefn ~= nil then
+            self.handleremovefn(self.inst, eatwholestack)
+        elseif not eatwholestack and self.inst.components.stackable ~= nil then
+            self.inst.components.stackable:Get():Remove()
+        else
+            self.inst:Remove()
+        end
+    end
+end
+
+function Edible:GetStackMultiplier()
+    if self.overridestackmultiplierfn then
+        return self.overridestackmultiplierfn(self.inst) or 1
+    elseif self.inst.components.stackable then
+        return self.inst.components.stackable:StackSize()
+    end
+    --
+    return 1
 end
 
 function Edible:AddChill(delta)

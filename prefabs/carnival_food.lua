@@ -1,7 +1,7 @@
 
 local food_defs =
 {
-    {name = "carnivalfood_corntea", anim = "corn_tea", art = "carnival_food", food=FOODTYPE.VEGGIE, hunger = TUNING.CALORIES_TINY, health = 0, sanity = TUNING.SANITY_TINY,	perishtime = TUNING.PERISH_SUPERFAST, temperature = TUNING.COLD_FOOD_BONUS_TEMP, temperatureduration = TUNING.FOOD_TEMP_LONG, floater = {"small", .9}},
+    {name = "carnivalfood_corntea", anim = "corn_tea", art = "carnival_food", tags = {"fooddrink"}, food=FOODTYPE.VEGGIE, hunger = TUNING.CALORIES_TINY, health = 0, sanity = TUNING.SANITY_TINY,	perishtime = TUNING.PERISH_SUPERFAST, temperature = TUNING.COLD_FOOD_BONUS_TEMP, temperatureduration = TUNING.FOOD_TEMP_LONG, floater = {"small", .9}},
 }
 
 local function MakeFood(def)
@@ -20,8 +20,8 @@ local function MakeFood(def)
         inst.AnimState:PlayAnimation(def.anim)
         inst.scrapbook_anim = def.anim
 
-        if def.art.tags ~= nil then
-            for _,v in ipairs(def.art.tags) do
+        if def.tags ~= nil then
+            for _,v in ipairs(def.tags) do
                 inst:AddTag(v)
             end
         end

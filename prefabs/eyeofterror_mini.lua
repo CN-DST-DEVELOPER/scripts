@@ -6,7 +6,10 @@ local assets =
     Asset("SOUND", "sound/bee.fsb"),
 }
 
-local prefabs = nil
+local prefabs =
+{
+    "eyeofterror_minicorpse",
+}
 
 local creature_sounds =
 {

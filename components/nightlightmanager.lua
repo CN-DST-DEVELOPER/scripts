@@ -10,7 +10,6 @@ function NightLightManager:OnRemoveFromEntity()
     self.inst:RemoveEventCallback("ms_registernightlight", self.OnRegisterNightLight_Bridge)
     for nightlight, nightlightdata in pairs(self.nightlights) do
         self.inst:RemoveEventCallback("onremove", nightlightdata.onremove, nightlight)
-        self.inst:RemoveEventCallback("onbuilt", nightlightdata.onbuilt, nightlight)
     end
 end
 
@@ -93,26 +92,29 @@ NightLightManager.OnRegisterNightLight_Bridge = function(inst, nightlight)
     self:OnRegisterNightLight(nightlight)
 end
 function NightLightManager:OnRegisterNightLight(nightlight)
-    local nightlightdata = {}
-    local function onremove()
-        self.nightlights[nightlight] = nil
-    end
-    local onbuilttask = nil
+    local haseventlisteners = true
     local function onbuilt()
-        if onbuilttask ~= nil then
-            onbuilttask:Cancel()
-            onbuilttask = nil
+        if haseventlisteners then
+            haseventlisteners = nil
+            self.inst:RemoveEventCallback("onbuilt", onbuilt, nightlight)
+            self.inst:RemoveEventCallback("entitywake", onbuilt, nightlight)
+            self.inst:RemoveEventCallback("entitysleep", onbuilt, nightlight)
         end
+
         if nightlight:GetCurrentPlatform() == nil then
-            self.nightlights[nightlight] = nightlightdata
+            local function onremove()
+                self.nightlights[nightlight] = nil
+            end
+            self.nightlights[nightlight] = {
+                onremove = onremove,
+            }
             self.inst:ListenForEvent("onremove", onremove, nightlight)
             self:UpdateNightLightPosition(nightlight)
         end
     end
-    nightlightdata.onremove = onremove
-    nightlightdata.onbuilt = onbuilt
     self.inst:ListenForEvent("onbuilt", onbuilt, nightlight)
-    onbuilttask = nightlight:DoTaskInTime(0, onbuilt)
+    self.inst:ListenForEvent("entitywake", onbuilt, nightlight)
+    self.inst:ListenForEvent("entitysleep", onbuilt, nightlight)
 end
 
 return NightLightManager

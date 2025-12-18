@@ -32,6 +32,10 @@ function Leader:OnRemoveFromEntity()
     self:RemoveAllFollowers()
 end
 
+function Leader:SetForceLeash()
+    self.forceleash = true
+end
+
 function Leader:IsFollower(guy)
     return self.followers[guy] ~= nil
 end

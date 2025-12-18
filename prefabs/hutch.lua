@@ -27,6 +27,8 @@ local prefabs =
     "chester_transform_fx",
     "impact",
     "globalmapiconunderfog",
+
+    "chestercorpse",
 }
 
 local brain = require "brains/chesterbrain"

@@ -13,12 +13,18 @@ local AmphibiousCreature = Class(function(self, inst)
 	self.land_bank = nil
 	self.ocean_bank = nil
 
+    self.transitiondistance = 2.5
+
 	if not self.inst:IsAsleep() and not IsEntityDead(self.inst) then
 		self.inst:StartUpdatingComponent(self)
 	end
 
     self.inst:ListenForEvent("death", OnDeath)
 end)
+
+function AmphibiousCreature:OnRemoveFromEntity()
+    self.inst:RemoveEventCallback("death", OnDeath)
+end
 
 function AmphibiousCreature:OnEntitySleep()
 	self.inst:StopUpdatingComponent(self)
@@ -33,6 +39,14 @@ end
 function AmphibiousCreature:SetBanks(land, ocean)
 	self.land_bank = land
 	self.ocean_bank = ocean
+end
+
+function AmphibiousCreature:SetTransitionDistance(transitiondistance)
+    self.transitiondistance = transitiondistance
+end
+
+function AmphibiousCreature:GetTransitionDistance()
+    return self.transitiondistance
 end
 
 function AmphibiousCreature:OnUpdate(dt)

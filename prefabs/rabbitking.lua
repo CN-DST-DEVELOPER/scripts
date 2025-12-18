@@ -93,6 +93,7 @@ local assets_passive = {
 }
 local prefabs_passive = {
     "smallmeat",
+    "rabbitkingcorpse",
     -- shop
     "armor_carrotlure",
     "rabbitkinghorn",
@@ -155,6 +156,7 @@ local prefabs_aggressive = {
     "beardhair",
     "rabbitkingminion_bunnyman",
     "rabbitkingspear",
+    "rabbitkingcorpse",
 }
 local loot_aggressive = {
     "monstermeat",
@@ -309,6 +311,7 @@ local prefabs_bunnyman = {
     "monstermeat",
     "meat",
     "manrabbit_tail",
+    "rabbitkingminion_bunnymancorpse",
 }
 local bunnyman_brain = require("brains/rabbitking_bunnymanbrain")
 local function OnTalk_Bunnyman(inst)
@@ -502,6 +505,7 @@ local assets_lucky = {
 }
 local prefabs_lucky = {
     "smallmeat",
+    "rabbitkingcorpse",
 }
 local loot_lucky = {
     "smallmeat",

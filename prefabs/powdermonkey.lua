@@ -19,6 +19,8 @@ local prefabs =
     "cursed_monkey_token",
     "oar_monkey",
     "monkey_smallhat",
+
+    "powder_monkeycorpse",
 }
 
 local brain = require "brains/powdermonkeybrain"

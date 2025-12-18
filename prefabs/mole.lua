@@ -13,6 +13,8 @@ local prefabs =
     "cookedsmallmeat",
     "mole_move_fx",
     "molehat",
+
+    "molecorpse",
 }
 
 local brain = require("brains/molebrain")

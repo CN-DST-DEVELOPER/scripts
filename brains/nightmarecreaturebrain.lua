@@ -1,6 +1,7 @@
 require "behaviours/wander"
 require "behaviours/chaseandattack"
 require "behaviours/follow"
+local BrainCommon = require("brains/braincommon")
 
 local MIN_FOLLOW = 5
 local MED_FOLLOW = 15
@@ -41,6 +42,7 @@ end)
 function NightmareCreatureBrain:OnStart()
     local root = PriorityNode(
     {
+        BrainCommon.PanicTriggerShadowCreature(self.inst),
         WhileNode(function() return ShouldAttack(self) end, "Attack", ChaseAndAttack(self.inst, 40)),
         WhileNode(function() return ShouldHarass(self) end, "Harass",
             PriorityNode({

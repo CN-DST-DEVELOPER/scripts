@@ -152,7 +152,11 @@ local events =
     EventHandler("socket", function(inst, data)
         inst.sg:GoToState("socket")
     end),
-	EventHandler("attacked", CommonHandlers.TryElectrocuteOnAttacked),
+	EventHandler("attacked", function(inst, data)
+        if not (inst.components.health and inst.components.health:IsDead()) then
+            CommonHandlers.TryElectrocuteOnAttacked(inst, data)
+	    end
+    end),
 }
 
 local states =

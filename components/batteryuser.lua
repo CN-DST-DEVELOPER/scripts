@@ -1,14 +1,14 @@
 local BatteryUser = Class(function(self, inst)
     self.inst = inst
 
-    --V2C: Recommended to explicitly add tag to prefab pristine state
-    self.inst:AddTag("engineeringbatteryuser")
+    --Recommended to explicitly add tag to prefab pristine state
+    self.inst:AddTag("batteryuser")
 
     --self.onbatteryused = nil
 end)
 
 function BatteryUser:OnRemoveFromEntity()
-    self.inst:RemoveTag("engineeringbatteryuser")
+    self.inst:RemoveTag("batteryuser")
 end
 
 ---------------------------------------------------------------------------------

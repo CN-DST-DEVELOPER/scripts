@@ -29,6 +29,9 @@ local events =
             inst.sg:GoToState("refuseitem", giver)
         end
     end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local SNEEZE_CHANCE = .2
@@ -530,10 +533,18 @@ CommonStates.AddCombatStates(states,
         end),
 
     },
+},
+nil,
+nil,
+{
+    has_corpse_handler = true,
 })
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddSleepStates(states)
 
-return StateGraph("dustmoth", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("dustmoth", states, events, "init", actionhandlers)

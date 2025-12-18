@@ -1490,7 +1490,7 @@ local function finale_Brighten(inst)
 	end
 end
 
-local function finale_OnEntityRemoved(inst)
+local function finale_OnRemoveEntity(inst)
 	if inst.highlightparent then
 		table.removearrayvalue(inst.highlightparent.highlightchildren, inst)
 		if inst.fx then
@@ -1510,7 +1510,7 @@ local function finale_OnEntityReplicated(inst)
 		table.insert(parent.highlightchildren, inst)
 		table.insert(parent.highlightchildren, inst.fx)
 		inst.highlightparent = parent
-		inst.OnEntityRemoved = finale_OnEntityRemoved
+		inst.OnRemoveEntity = finale_OnRemoveEntity
 	end
 end
 
@@ -1520,7 +1520,7 @@ local function AttachToAlter(inst, alter)
 	if inst.fx then
 		inst.fx.entity:SetParent(alter.entity)
 		inst.fx.Follower:FollowSymbol(alter.GUID, "player_follow")
-		inst.OnEntityRemoved = finale_OnEntityRemoved --need this for fx or highlightchildren
+		inst.OnRemoveEntity = finale_OnRemoveEntity --need this for fx or highlightchildren
 	end
 	if alter.highlightchildren then
 		table.insert(alter.highlightchildren, inst)
@@ -1528,7 +1528,7 @@ local function AttachToAlter(inst, alter)
 			table.insert(alter.highlightchildren, inst.fx)
 		end
 		inst.highlightparent = alter
-		inst.OnEntityRemoved = finale_OnEntityRemoved --need this for fx or highlightchildren
+		inst.OnRemoveEntity = finale_OnRemoveEntity --need this for fx or highlightchildren
 	end
 end
 

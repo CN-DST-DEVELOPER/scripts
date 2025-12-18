@@ -156,7 +156,7 @@ local function DoAOEWork(inst, x, z, isocean)
 				end
 
 				v:Remove()
-			elseif (not v:HasTag("structure") or
+			elseif (not v:HasAnyTag("structure", "sign") or
 					(v.components.childspawner and not v:HasTag("playerowned")) or
 					(v:HasTag("statue") and not v:HasTag("sculpture")) or
 					v:HasTag("smashable")

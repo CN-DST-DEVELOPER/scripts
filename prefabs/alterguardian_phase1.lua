@@ -32,6 +32,7 @@ local prefabs_rift =
 	"mining_moonglass_fx",
 	"moonrocknugget",
 	"alterguardian_phase1_lunarrift_gestalt",
+    "winter_ornament_boss_celestialrevenant",
 }
 
 SetSharedLootTable("alterguardian_phase1",
@@ -43,6 +44,30 @@ SetSharedLootTable("alterguardian_phase1",
     {"moonrocknugget",      1.00},
     {"moonrocknugget",      0.66},
     {"moonrocknugget",      0.66},
+})
+
+SetSharedLootTable("alterguardian_phase1_lunarrift",
+{
+    {"moonrocknugget",      1.00},
+    {"moonrocknugget",      1.00},
+    {"moonrocknugget",      1.00},
+    {"moonrocknugget",      0.66},
+    {"moonrocknugget",      0.66},
+    --
+    {"moonglass",           1.00},
+    {"moonglass",           1.00},
+    {"moonglass",           0.66},
+    {"moonglass",           0.66},
+    {"moonglass",           0.33},
+    --
+    {"moonglass_charged",   1.00},
+    {"moonglass_charged",   1.00},
+    {"moonglass_charged",   0.66},
+    {"moonglass_charged",   0.34},
+    {"moonglass_charged",   0.34},
+
+	{ "purebrilliance",		1.0 },
+	{ "purebrilliance",		1.0 },
 })
 
 local brain = require "brains/alterguardian_phase1brain"
@@ -598,6 +623,13 @@ local function server_postinit_rift(inst)
 	inst.components.health:SetMinHealth(1)
 
 	inst:AddComponent("colouradder")
+
+    inst.components.lootdropper:SetChanceLootTable("alterguardian_phase1_lunarrift")
+    -- Don't fling them out anymore, we drop when captured now.
+    inst.components.lootdropper.min_speed = nil
+    inst.components.lootdropper.max_speed = nil
+    inst.components.lootdropper.y_speed = nil
+    inst.components.lootdropper.y_speed_variance = nil
 
 	inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/idle_wagboss_LP", "idle_LP")
 

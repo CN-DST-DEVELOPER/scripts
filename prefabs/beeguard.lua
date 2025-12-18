@@ -12,6 +12,7 @@ local prefabs =
     "stinger",
 	"ocean_splash_med1",
 	"ocean_splash_med2",
+    "beeguardcorpse",
 }
 
 --------------------------------------------------------------------------

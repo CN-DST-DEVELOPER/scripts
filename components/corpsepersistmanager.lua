@@ -13,6 +13,8 @@ assert(TheWorld.ismastersim, "CorpsePersistManager should not exist on client")
 local CHECK_CORPSE_TIME_BASE = 10
 local CHECK_CORPSE_TIME_VAR = 5
 
+local MAX_CORPSES = 200 -- This is the ABSOLUTE max across the entire world.
+
 --------------------------------------------------------------------------
 --[[ Member variables ]]
 --------------------------------------------------------------------------
@@ -66,12 +68,21 @@ end
 function self:RemovePersistSourceFn(key)
     _persist_fns[key] = nil
 
+    for i, v in ipairs(_corpses) do
+        v:RemovePersistSource(key)
+    end
+
     if self.inst.updatecomponents[self] ~= nil and next(_persist_fns) == nil then
         self.inst:StopUpdatingComponent(self)
     end
 end
 
 function self:ShouldRetainCreatureAsCorpse(creature)
+    -- Hey we have too many! Stop it!
+    if self:IsMaxReached() then
+        return false
+    end
+    --
     for persist_key, persist_fn in pairs(_persist_fns) do
         if persist_fn(creature) then
             return true
@@ -81,14 +92,30 @@ function self:ShouldRetainCreatureAsCorpse(creature)
     return false
 end
 
+function self:IsMaxReached()
+    return #_corpses >= MAX_CORPSES
+end
+
 function self:OnUpdate(dt)
     if check_corpses_cooldown <= 0 then
-        for _, corpse in ipairs(_corpses) do
+        -- Persist up to this many corpses
+        for i = 1, math.min(#_corpses, MAX_CORPSES) do
+            local corpse = _corpses[i]
             for persist_key, persist_fn in pairs(_persist_fns) do
                 local should_persist = persist_fn(corpse)
                 if should_persist then
                     corpse:SetPersistSource(persist_key, true)
                 else
+                    corpse:RemovePersistSource(persist_key)
+                end
+            end
+        end
+
+        -- Too much. Get rid of the rest.
+        if self:IsMaxReached() then
+            for i = MAX_CORPSES + 1, #_corpses do
+                local corpse = _corpses[i]
+                for persist_key in pairs(_persist_fns) do -- Need to go!
                     corpse:RemovePersistSource(persist_key)
                 end
             end

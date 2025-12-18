@@ -291,7 +291,7 @@ function CraftingMenuHUD:RebuildRecipes()
 
 				local is_build_tag_restricted = not builder:CanLearn(recipe.name) -- canlearn is "not build tag restricted"
 
-				if knows_recipe or should_hint_recipe or recipe.force_hint or freecrafting then --Knows enough to see it
+				if knows_recipe or should_hint_recipe or recipe.force_hint or recipe.always_allow_buffered_placer or freecrafting then --Knows enough to see it
 				--and (self.filter == nil or self.filter(recipe.name, builder, nil)) -- Has no filter or passes the filter in place
 
 					if builder:IsBuildBuffered(recipe.name) and not is_build_tag_restricted then

@@ -1987,7 +1987,10 @@ function PRNG_Uniform:SetSeed(seed)
     self.X2 = 1 -- This must be an odd number.
 end
 
-function PRNG_Uniform:Rand()
+function PRNG_Uniform:Rand(optmin, optmax)
+	if optmin then
+		return self:RandInt(optmin, optmax)
+	end
     local U = self.X2 * self.A2
     local V = (self.X1 * self.A2 + self.X2 * self.A1) % self.D20
     V = (V * self.D20 + U) % self.D40
@@ -1997,8 +2000,12 @@ function PRNG_Uniform:Rand()
 end
 
 function PRNG_Uniform:RandInt(min, max)
+	if max == nil then
+		max = min
+		min = 1
+	end
     local rand = self:Rand()
-    return min + math.floor(rand * (max - min + 1))
+	return math.min(max, min + math.floor(rand * (max - min + 1)))
 end
 ------------------------------
 -- Checks for if teleportations should be blocked for any inst going from points A to B.

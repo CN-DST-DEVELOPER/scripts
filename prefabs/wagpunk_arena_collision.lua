@@ -332,7 +332,7 @@ local function GetIn(ent, oneway_size)
 end
 
 local function OnCollide_oneway(inst, other)
-    if inst:IsValid() and other:IsValid() then
+    if inst:IsValid() and other and other:IsValid() then
         if not other.oncollide_onewaytask then -- Get off of physics thread.
             other.oncollide_onewaytask = other:DoTaskInTime(0, GetIn, inst.oneway_size)
         end

@@ -1,9 +1,9 @@
 local assets = {
     Asset("ANIM", "anim/wagpunk_workstation.zip"),
-    Asset("SOUND", "sound/together.fsb"), -- FIXME(JBK): WA: Sounds.
+    Asset("SOUND", "sound/together.fsb"),
 }
 
-local sounds = { -- FIXME(JBK): WA: Sounds.
+local sounds = {
     idle = "rifts5/wagpunk_station/proximity_LP",
     use = "rifts5/wagpunk_station/use",
 }

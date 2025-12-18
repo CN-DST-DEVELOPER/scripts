@@ -14,6 +14,15 @@ local function Spawn(inst)
     inst.sg:GoToState("spawn")
 end
 
+local rift_portal_defs = require("prefabs/rift_portal_defs")
+local RIFTPORTAL_CONST = rift_portal_defs.RIFTPORTAL_CONST
+rift_portal_defs = nil
+-- Just choose the first one, we don't fully support multiple rifts.
+local function GetFirstLunarRift()
+    local lunarrifts = TheWorld.components.riftspawner and TheWorld.components.riftspawner:GetRiftsOfAffinity(RIFTPORTAL_CONST.AFFINITY.LUNAR) or nil
+    return lunarrifts ~= nil and lunarrifts[1]
+end
+
 local function GeSpawnPoint(inst, target)
     local pos = target:GetPosition()
     pos.y = 0
@@ -23,12 +32,30 @@ local function GeSpawnPoint(inst, target)
     return pos + (offset or Vector3(0,0,0))
 end
 
+local SCREEN_DIST_SQ = PLAYER_CAMERA_SEE_DISTANCE_SQ
+local function ShouldSpawnFromRift()
+    local rift = GetFirstLunarRift()
+    for i, player in ipairs(AllPlayers) do
+        if rift:GetDistanceSqToInst(player) < SCREEN_DIST_SQ then
+            return true
+        end
+    end
+end
+
 local function SetTarget(inst, target)
     if target ~= nil and target:IsValid() then
         inst.components.entitytracker:TrackEntity(CORPSE_TRACK_NAME, target)
 
-        local pos = GeSpawnPoint(inst, target)
-        inst.Physics:Teleport(pos:Get())
+        local spawn_from_rift = ShouldSpawnFromRift()
+        
+        if spawn_from_rift then
+            local rift = GetFirstLunarRift()
+            rift.SoundEmitter:PlaySound("monkeyisland/portal/spit_item")
+            inst.Physics:Teleport(rift.Transform:GetWorldPosition())
+        else
+            local pos = GeSpawnPoint(inst, target)
+            inst.Physics:Teleport(pos:Get())
+        end
     else
         inst.components.entitytracker:ForgetEntity(CORPSE_TRACK_NAME)
     end

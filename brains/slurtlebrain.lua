@@ -34,6 +34,9 @@ local function ShouldGoHome(inst)
 end
 
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
+local function IsFoodValid(item, inst)
+    return item:GetTimeAlive() >= 8 and item:IsOnValidGround() and inst.components.eater:CanEat(item)
+end
 local function EatFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return
@@ -44,16 +47,7 @@ local function EatFoodAction(inst)
         end
     end
 
-    local target = FindEntity(inst,
-        30,
-        function(item)
-            return item:GetTimeAlive() >= 8
-                and item:IsOnValidGround()
-                and inst.components.eater:CanEat(item)
-        end,
-        nil,
-        EATFOOD_CANT_TAGS
-    )
+    local target = FindEntity(inst, 30, IsFoodValid, nil, EATFOOD_CANT_TAGS)
     if target ~= nil then
         local ba = BufferedAction(inst, target, ACTIONS.PICKUP)
         ba.distance = 1.5
@@ -61,8 +55,8 @@ local function EatFoodAction(inst)
     end
 end
 
-local STEALFOOD_CANT_TAGS = { "playerghost", "fire", "burnt", "INLIMBO", "outofreach" }
-local STEALFOOD_ONEOF_TAGS = { "player", "_container" }
+local STEALFOOD_CANT_TAGS = { "playerghost", "fire", "burnt", "INLIMBO", "outofreach", "slurtle", "snurtle" }
+local STEALFOOD_ONEOF_TAGS = { "_inventory", "_container", "slurtlepickable" }
 local function StealFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return
@@ -72,7 +66,7 @@ local function StealFoodAction(inst)
 
     for i, v in ipairs(ents) do
         if not v:HasDebuff("healingsalve_acidbuff") then
-            --go through player inv and find valid food
+            --go through inventories and find valid food
             local inv = v.components.inventory
             if inv and v:IsOnValidGround() then
                 local pack = inv:GetEquippedItem(EQUIPSLOTS.BODY)
@@ -107,6 +101,7 @@ local function StealFoodAction(inst)
                 end
             end
 
+            --go through containers and find valid food
             local container = v.components.container
             if container then
                 local validfood = {}
@@ -124,6 +119,12 @@ local function StealFoodAction(inst)
                     act.attack = true
                     return act
                 end
+            end
+
+            --go through slurtlepickables and find valid food
+            local pickable = v.components.pickable
+            if pickable and pickable.caninteractwith and pickable:CanBePicked() then
+                return BufferedAction(inst, v, ACTIONS.PICK)
             end
         end
     end

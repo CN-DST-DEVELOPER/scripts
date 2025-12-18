@@ -8,11 +8,12 @@ end
 
 local Sittable = Class(function(self, inst)
 	self.inst = inst
-	self.occupier = nil
+	--self.occupier = nil
 
 	self._onremoveoccupier = function() self:SetOccupier(nil) end
 
 	inst:AddTag("cansit")
+	inst:PushEvent("becomesittable")
 end,
 nil,
 {
@@ -36,6 +37,8 @@ function Sittable:SetOccupier(occupier)
 				self.inst:ListenForEvent("onignite", OnIgnite)
 			end
 			self.inst:PushEvent("becomeunsittable")
+		else
+			self.inst:PushEvent("becomesittable")
 		end
 	end
 end
@@ -46,6 +49,12 @@ end
 
 function Sittable:IsOccupiedBy(occupier)
 	return self.occupier == occupier and occupier ~= nil
+end
+
+function Sittable:EjectOccupier()
+	if self.occupier then
+		self.inst:PushEvent("becomeunsittable")
+	end
 end
 
 function Sittable:OnRemoveFromEntity()

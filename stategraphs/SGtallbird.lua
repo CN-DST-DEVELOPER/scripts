@@ -11,7 +11,7 @@ local events=
 {
     CommonHandlers.OnAttacked(),
     EventHandler("doattack", function(inst)
-		if not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
+		if inst.components.health and not inst.components.health:IsDead() and ((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy")) then
 			if inst:HasTag("teenbird") and inst:HasTag("peck_attack") then
 				inst.sg:GoToState("peck")
 			else
@@ -29,6 +29,9 @@ local events=
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
     CommonHandlers.OnLocomote(false,true),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local states=
@@ -38,14 +41,18 @@ local states=
         name = "death",
         tags = {"busy"},
 
-        onenter = function(inst)
+        onenter = function(inst, data)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/tallbird/death")
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
     State{
@@ -400,4 +407,7 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("tallbird", states, events, "wake", actionhandlers)
+CommonStates.AddInitState(states, "wake")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("tallbird", states, events, "init", actionhandlers)

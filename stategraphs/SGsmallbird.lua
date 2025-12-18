@@ -22,11 +22,14 @@ local events =
         end
     end),
     EventHandler("doattack", function(inst)
-        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
+        if inst.components.health and not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
             inst.sg:GoToState("attack")
         end
     end),
     CommonHandlers.OnDeath(),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function CheckForNewLeader(inst)
@@ -152,9 +155,13 @@ local states =
             inst.AnimState:PlayAnimation("death")
             inst.components.locomotor:StopMoving()
             RemovePhysicsColliders(inst)
-            inst.components.lootdropper:DropLoot(Vector3(inst.Transform:GetWorldPosition()))
+            inst:DropDeathLoot()
         end,
 
+        events =
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        },
     },
 
 
@@ -307,4 +314,7 @@ CommonStates.AddSleepStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 
-return StateGraph("smallbird", states, events, "idle", actionhandlers)
+CommonStates.AddInitState(states, "idle")
+CommonStates.AddCorpseStates(states)
+
+return StateGraph("smallbird", states, events, "init", actionhandlers)

@@ -10,6 +10,8 @@ local prefabs =
     "kelp",
     "froglegs",
     "merm_king_splash",
+
+    "mermkingcorpse",
 }
 
 local loot =

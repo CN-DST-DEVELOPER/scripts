@@ -14,6 +14,7 @@ local prefabs =
     "beardhair",
     "nightmarefuel",
 	"shadow_despawn",
+    "monkeycorpse",
 }
 
 local brain = require "brains/monkeybrain"

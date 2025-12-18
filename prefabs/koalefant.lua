@@ -16,6 +16,7 @@ local prefabs =
     "poop",
     "trunk_summer",
     "trunk_winter",
+    "koalefantcorpse",
 }
 
 local loot_summer = {"meat","meat","meat","meat","meat","meat","meat","meat","trunk_summer"}

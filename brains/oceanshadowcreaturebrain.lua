@@ -1,6 +1,7 @@
 require "behaviours/wander"
 require "behaviours/standstill"
 require "behaviours/standandattack"
+local BrainCommon = require("brains/braincommon")
 
 local TELEPORT_FREQUENCY = 3
 
@@ -89,6 +90,7 @@ function OceanShadowCreatureBrain:OnStart()
     {
         WhileNode(function() return not self.inst.sg:HasStateTag("teleporting") end, "TeleportBlock",
             PriorityNode({
+            BrainCommon.PanicTriggerShadowCreature(self.inst),
             IfNode(function() return targetonland(self.inst) end, "target on land",
                 DoAction(self.inst, teleport)),
 

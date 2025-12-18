@@ -17,7 +17,7 @@ local prefabs =
     "collapse_small",
 }
 
-FLOWER_TEST_RADIUS = 30
+local FLOWER_TEST_RADIUS = 30
 
 local levels =
 {
@@ -225,7 +225,7 @@ local function SeasonalSpawnChanges(inst, season)
         if season == SEASONS.SPRING then
             inst.components.childspawner:SetRegenPeriod(TUNING.BEEBOX_REGEN_TIME / TUNING.SPRING_COMBAT_MOD)
             inst.components.childspawner:SetSpawnPeriod(TUNING.BEEBOX_RELEASE_TIME / TUNING.SPRING_COMBAT_MOD)
-            inst.components.childspawner:SetMaxChildren(TUNING.BEEBOX_BEES * TUNING.SPRING_COMBAT_MOD)
+            inst.components.childspawner:SetMaxChildren(math.ceil(TUNING.BEEBOX_BEES * TUNING.SPRING_COMBAT_MOD))
         else
             inst.components.childspawner:SetRegenPeriod(TUNING.BEEBOX_REGEN_TIME)
             inst.components.childspawner:SetSpawnPeriod(TUNING.BEEBOX_RELEASE_TIME)
@@ -336,21 +336,6 @@ local function beebox_common(inst)
     inst.AnimState:PlayAnimation("idle")
 end
 
-local function beebox_hermit(inst)
-    inst.MiniMapEntity:SetIcon("beebox_hermitcrab.png")
-
-    inst.AnimState:SetBank("bee_box_hermitcrab")
-    inst.AnimState:SetBuild("bee_box_hermitcrab")
-    inst.AnimState:PlayAnimation("idle")
-
-	inst:AddTag("antlion_sinkhole_blocker")
-
-    inst.scrapbook_specialinfo = "BEEBOX"
-
-    TheWorld:PushEvent("ms_register_beebox_hermit", inst)
-    TheWorld:PushEvent("ms_register_pearl_entity", inst)
-end
-
 local function beebox_master(inst)
     inst:AddComponent("lootdropper")
     inst:AddComponent("workable")
@@ -364,12 +349,21 @@ local function beebox_master(inst)
     inst:ListenForEvent("onignite", onignite)
 end
 
-local function beebox_hermit_master(inst)
+local function hermit_common(inst)
+	inst.MiniMapEntity:SetIcon("beebox_hermitcrab.png")
 
+	inst.AnimState:SetBank("bee_box_hermitcrab")
+	inst.AnimState:SetBuild("bee_box_hermitcrab")
+	inst.AnimState:PlayAnimation("idle")
+
+	inst:AddTag("antlion_sinkhole_blocker")
+
+	inst.scrapbook_specialinfo = "BEEBOX"
+
+	TheWorld:PushEvent("ms_register_beebox_hermit", inst)
+	TheWorld:PushEvent("ms_register_pearl_entity", inst)
 end
 
 return MakeBeebox("beebox", beebox_common, beebox_master),
         MakePlacer("beebox_placer", "bee_box", "bee_box", "idle"),
-        MakeBeebox("beebox_hermit", beebox_hermit, beebox_hermit_master)
-
-
+		MakeBeebox("beebox_hermit", hermit_common, nil)
