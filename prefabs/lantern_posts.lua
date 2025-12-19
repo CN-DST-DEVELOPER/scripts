@@ -527,7 +527,9 @@ local function RemoveChain(inst, instant)
     if inst.chains then
         local partner1, partner2 = inst.partners[1]:value(), inst.partners[2]:value()
         local function PlayBreakAnimation(v, is_lantern)
-            v:PlayVariationSound("broke")
+			if v.PlayVariationSound then
+				v:PlayVariationSound("broke")
+			end
             v.AnimState:PlayAnimation(is_lantern and "break" or "break_"..v.variation)
         end
         if instant or inst:IsAsleep() then
@@ -690,7 +692,7 @@ local function MakeLanternLightChain(data)
     end
 
     local function PlayVariationSound(inst, sound)
-        local variation_sounds = inst.variation ~= nil and data.sounds.variation_sounds and data.sounds.variation_sounds[inst.variation]
+		local variation_sounds = inst.variation and data.sounds and data.sounds.variation_sounds and data.sounds.variation_sounds[inst.variation]
         if variation_sounds and variation_sounds[sound] then
             inst.SoundEmitter:PlaySound(variation_sounds[sound])
         end

@@ -234,11 +234,11 @@ end
 wood_table_square_init_fn = function(inst, build_name) basic_init_fn(inst, build_name, "wood_table_square") end
 wood_table_square_clear_fn = function(inst) basic_clear_fn(inst, "wood_table_square") end
 wood_stool_init_fn = function(inst, build_name, facings)
-	basic_init_fn(inst, build_name, "wood_chair_stool")
+	basic_init_fn(inst, build_name, "wood_stool")
 	_set_round_furniture_facings(inst, facings)
 end
 wood_stool_clear_fn = function(inst)
-	basic_clear_fn(inst, "wood_chair_stool")
+	basic_clear_fn(inst, "wood_stool")
 	inst.Transform:SetNoFaced()
 end
 wood_chair_init_fn = function(inst, build_name)

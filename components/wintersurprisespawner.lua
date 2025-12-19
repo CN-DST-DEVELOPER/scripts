@@ -38,7 +38,7 @@ local _spawnsthiswinter = 0
 --------------------------------------------------------------------------
 
 local function GetKlausSack()
-    return TheWorld.components.klaussackspawner and TheWorld.components.klaussackspawner:GetKlausSack()
+    return TheWorld.components.klaussackspawner and TheWorld.components.klaussackspawner:GetKlausSack() or nil
 end
 
 local function CanSpawnWinterSurprise()
@@ -48,18 +48,20 @@ end
 local function IsValidSpawner(x, y, z)
     x, y, z = TheWorld.Map:GetTileCenterPoint(x, 0, z)
 
-    -- If we're not in the same biome as the sack, don't spawn here!
     local klaus_sack = GetKlausSack()
-    local topology_data = GetTopologyDataAtPoint(x, z)
-    local sack_topology_data = GetTopologyDataAtInst(klaus_sack)
-    if klaus_sack and topology_data.task_id and sack_topology_data.task_id
-        and topology_data.task_id ~= sack_topology_data.task_id then
-        return false
-    end
+    if klaus_sack then
+        -- If we're not in the same biome as the sack, don't spawn here!
+        local topology_data = GetTopologyDataAtPoint(x, z)
+        local sack_topology_data = GetTopologyDataAtInst(klaus_sack)
+        if topology_data.task_id and sack_topology_data.task_id
+            and topology_data.task_id ~= sack_topology_data.task_id then
+            return false
+        end
 
-    -- But not in the same spot as the sack.
-    if klaus_sack and klaus_sack:GetDistanceSqToPoint(x, 0, z) <= MAX_RADIUS_FROM_SPAWNER_SQ then
-        return false
+        -- But not in the same spot as the sack.
+        if klaus_sack:GetDistanceSqToPoint(x, 0, z) <= MAX_RADIUS_FROM_SPAWNER_SQ then
+            return false
+        end
     end
 
     -- And not if another tree already spawned.

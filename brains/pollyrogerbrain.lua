@@ -119,7 +119,7 @@ function PollyRogerBrain:OnStart()
                 IfNode(function()
                     if self.inst.prefab == "salty_dog" then
                         local x, y, z = self.inst.Transform:GetWorldPosition()
-                        if TheWorld.Map:IsOceanAtPoint(x, y, z, true) then
+                        if TheWorld.Map:IsOceanAtPoint(x, y, z, false) then
                             return false
                         end
                         local counter = self.inst.components.counter
