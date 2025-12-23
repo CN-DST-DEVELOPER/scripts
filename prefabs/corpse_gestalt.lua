@@ -20,7 +20,7 @@ rift_portal_defs = nil
 -- Just choose the first one, we don't fully support multiple rifts.
 local function GetFirstLunarRift()
     local lunarrifts = TheWorld.components.riftspawner and TheWorld.components.riftspawner:GetRiftsOfAffinity(RIFTPORTAL_CONST.AFFINITY.LUNAR) or nil
-    return lunarrifts ~= nil and lunarrifts[1]
+	return lunarrifts and lunarrifts[1]
 end
 
 local function GeSpawnPoint(inst, target)
@@ -33,23 +33,23 @@ local function GeSpawnPoint(inst, target)
 end
 
 local SCREEN_DIST_SQ = PLAYER_CAMERA_SEE_DISTANCE_SQ
-local function ShouldSpawnFromRift()
+local function GetRiftToSpwanFrom()
     local rift = GetFirstLunarRift()
-    for i, player in ipairs(AllPlayers) do
-        if rift:GetDistanceSqToInst(player) < SCREEN_DIST_SQ then
-            return true
-        end
-    end
+	if rift then
+		for i, player in ipairs(AllPlayers) do
+			if rift:GetDistanceSqToInst(player) < SCREEN_DIST_SQ then
+				return rift
+			end
+		end
+	end
 end
 
 local function SetTarget(inst, target)
     if target ~= nil and target:IsValid() then
         inst.components.entitytracker:TrackEntity(CORPSE_TRACK_NAME, target)
 
-        local spawn_from_rift = ShouldSpawnFromRift()
-        
-        if spawn_from_rift then
-            local rift = GetFirstLunarRift()
+		local rift = GetRiftToSpwanFrom()
+		if rift then
             rift.SoundEmitter:PlaySound("monkeyisland/portal/spit_item")
             inst.Physics:Teleport(rift.Transform:GetWorldPosition())
         else

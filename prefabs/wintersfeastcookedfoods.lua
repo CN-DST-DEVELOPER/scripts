@@ -40,6 +40,8 @@ local function MakeFood(name)
 
 		inst:AddTag("wintersfeastcookedfood")
 
+		inst.wet_prefix = data.wet_prefix
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then
@@ -53,7 +55,6 @@ local function MakeFood(name)
 		--inst.components.finiteuses:SetOnFinished(inst.Remove) -- removed by the winters feast table
 
         inst:AddComponent("inspectable")
-		inst.wet_prefix = data.wet_prefix
 
         inst:AddComponent("inventoryitem")
 

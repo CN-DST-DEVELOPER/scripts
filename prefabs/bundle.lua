@@ -420,27 +420,23 @@ local gift =
 
 local redpouch =
 {
-    master_postinit = function(inst, setupdata)
+	common_postinit = function(inst, setupdata)
         inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
     end,
 }
 
 local redpouch_yotp =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
 		inst:SetPrefabNameOverride("redpouch")
     end,
 }
 
 local redpouch_yotc =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst:SetPrefabNameOverride("redpouch")
     end,
 }
@@ -468,30 +464,24 @@ local yotc_seedpacket_loots =
 
 local redpouch_yotb =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst:SetPrefabNameOverride("redpouch")
     end,
 }
 
 local redpouch_yot_catcoon =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst:SetPrefabNameOverride("redpouch")
     end,
 }
 
 local redpouch_yotr =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst:SetPrefabNameOverride("redpouch")
     end,
 }
@@ -499,24 +489,15 @@ local redpouch_yotr =
 local redpouch_yotd =
 {
     common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst:SetPrefabNameOverride("redpouch")
 
         MakeInventoryFloatable(inst, nil, 0.15)
     end,
     master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-
         inst.components.inventoryitem:SetSinks(false)
     end,
 }
-
-local hermit_bundle_shell_loots =
-{
-    singingshell_octave5 = 2,
-    singingshell_octave4 = 2,
-    singingshell_octave3 = 1,
-}
-
 
 local yotc_seedpacket =
 {
@@ -585,23 +566,24 @@ local carnival_seedpacket =
 
 local hermit_bundle =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
-        inst:SetPrefabNameOverride("hermit_bundle")
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
     end,
 }
 
 local HERMIT_BUNDLE_SHELLS_SHELL_COUNT = 8
 
+local hermit_bundle_shell_loots =
+{
+	singingshell_octave5 = 2,
+	singingshell_octave4 = 2,
+	singingshell_octave3 = 1,
+}
+
 local hermit_bundle_shells =
 {
-    master_postinit = function(inst, setupdata)
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
-    end,
     common_postinit = function(inst, setupdata)
-        inst:SetPrefabNameOverride("hermit_bundle")
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
     end,
     lootfn = function(inst, doer)
         return weighted_random_choices(hermit_bundle_shell_loots, HERMIT_BUNDLE_SHELLS_SHELL_COUNT)
@@ -658,10 +640,13 @@ local wetpouch =
         return { item }
     end,
 
+	common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
+	end,
+
     master_postinit = function(inst, setupdata)
         inst.build = "wetpouch"
         inst.setupdata = setupdata
-        inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
         inst.components.inventoryitem:InheritMoisture(100, true)
     end,
 }

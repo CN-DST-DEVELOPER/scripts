@@ -818,7 +818,7 @@ local states =
         {
             EventHandler("animover", function(inst)
                 local corpse = inst.sg.statemem.corpse
-                if corpse and inst.brain:IsCorpseValid() and inst.brain.corpse == corpse then
+                if corpse and inst.brain and inst.brain:IsCorpseValid() and inst.brain.corpse == corpse then
                     inst.sg:GoToState("corpse_eat_loop", corpse)
                 else
                     inst.sg:GoToState("corpse_eat_pst")

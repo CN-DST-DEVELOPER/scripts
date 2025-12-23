@@ -389,6 +389,8 @@ local function DropWetTool(inst, data)
             if tool.components.inventoryitem ~= nil then
                 tool.components.inventoryitem:OnDropped()
             end
+		elseif tool ~= data.weapon then
+			return
         else
             inst.components.inventory:Unequip(EQUIPSLOTS.HANDS, true)
             inst.components.inventory:DropItem(tool)

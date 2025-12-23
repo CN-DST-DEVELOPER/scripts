@@ -142,7 +142,7 @@ local function ConfigureWinterSurprise(tree)
             end
 
             local surprise = SpawnPrefab("giftsurprise")
-            surprise:SetCreatureSurprise(hounded and hounded:GetSpawnPrefab(false))
+			surprise:SetCreatureSurprise(hounded and hounded.GetSpawnPrefab and hounded:GetSpawnPrefab(false) or "hound")
             table.insert(items, surprise)
 
             for i = 1, 4 - #items do -- Padding

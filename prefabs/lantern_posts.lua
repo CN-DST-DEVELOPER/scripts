@@ -413,7 +413,28 @@ local function GetChainLinkPosition(inst, partner)
     return partner.AnimState:GetSymbolPosition("swap_shackle")
 end
 
+local SpawnChain, RemoveChain --forward declare
+
+local function LightChain_OnSkinDirty(inst)
+	if inst.chains then
+		RemoveChain(inst, true)
+		-- respawn
+		SpawnChain(inst)
+	end
+end
+
+local function LightChain_OnUpdateSkin_Client(inst)
+	if inst.chains then
+		inst.clientskindirty = true
+	end
+end
+
 local function LightChain_OnPostUpdate(inst)
+	if inst.clientskindirty then
+		inst.clientskindirty = nil
+		LightChain_OnSkinDirty(inst)
+	end
+
     -- TODO faster when high up
 	local dt = GetDeltaTime(inst) * TheSim:GetTimeScale() * GetSwayTimeScale()
 
@@ -470,7 +491,10 @@ local function GetNextVariation(inst, prng)
 end
 
 local ANIM_SCALE = 150
-local function SpawnChain(inst, nohide)
+--local function SpawnChain(inst, nohide) --forward declared
+SpawnChain = function(inst, nohide)
+	inst.clientskindirty = nil
+
     local partner1 = inst.partners[1]:value()
     local partner2 = inst.partners[2]:value()
     if not partner1 or not partner2 then
@@ -498,8 +522,9 @@ local function SpawnChain(inst, nohide)
 
     local link_halfway = math.ceil(chain_len / 2)
     for i = 1, chain_len do
-        local parent_partner = i <= link_halfway and partner1 or partner2 -- used for skins
-        local link = inst:CreateChainLink(parent_partner, GetNextVariation(inst, prng))
+		local skin_parent1 = i <= link_halfway and partner1 or partner2 --1st priority
+		local skin_parent2 = i <= link_halfway and partner2 or partner1 --2nd priority
+		local link = inst:CreateChainLink(skin_parent1, skin_parent2, GetNextVariation(inst, prng))
         ShowOrHideLight(link)
         table.insert(chains.chain_link, link)
 
@@ -513,8 +538,9 @@ local function SpawnChain(inst, nohide)
         local lantern_len = math.min(5, math.floor(chain_len / 2))
         local lantern_halfway = math.ceil(lantern_len / 2)
         for i = 1, lantern_len do
-            local parent_partner = i <= lantern_halfway and partner1 or partner2 -- used for skins
-            local lantern = inst:CreateLantern(parent_partner)
+			local skin_parent1 = i <= lantern_halfway and partner1 or partner2 --1st priority
+			local skin_parent2 = i <= lantern_halfway and partner2 or partner1 --2nd priority
+			local lantern = inst:CreateLantern(skin_parent1, skin_parent2)
             ShowOrHideLight(lantern)
             table.insert(chains.lantern_link, lantern)
         end
@@ -523,7 +549,8 @@ local function SpawnChain(inst, nohide)
     inst.chains = chains
 end
 
-local function RemoveChain(inst, instant)
+--local function RemoveChain(inst, instant) --forward declared
+RemoveChain = function(inst, instant)
     if inst.chains then
         local partner1, partner2 = inst.partners[1]:value(), inst.partners[2]:value()
         local function PlayBreakAnimation(v, is_lantern)
@@ -672,6 +699,27 @@ local function LightChain_EnableLightsDirty(inst, force)
     end
 end
 
+local function LightChain_OnPartnerDirty(inst)
+	local partner1, partner2 = inst.partners[1]:value(), inst.partners[2]:value()
+	if partner1 and partner2 then
+		if not inst.chains and not inst.sleepstatepending then
+			SpawnChain(inst)
+		end
+	elseif inst.chains then
+		RemoveChain(inst)
+	end
+end
+
+local function LightChain_OnLoadPostPass(inst)
+	local partner1 = inst.components.entitytracker:GetEntity("partner1")
+	local partner2 = inst.components.entitytracker:GetEntity("partner2")
+	if partner1 and partner2 and not (partner1:HasTag("burnt") or partner2:HasTag("burnt")) then
+		inst:SetPartners(partner1, partner2)
+	else
+		inst:Remove()
+	end
+end
+
 local NUM_PARTNERS = 2
 local function MakeLanternLightChain(data)
     local bank = data.bank or data.name
@@ -681,13 +729,18 @@ local function MakeLanternLightChain(data)
 
     local has_skins = PREFAB_SKINS[data.name] ~= nil
 
-    local function GetChainBuild(inst)
-        local skin_build = inst.AnimState:GetSkinBuild()
-
-        if skin_build and skin_build ~= "" then
-            return skin_build, true
-        end
-
+	local function GetChainBuild(skin_parent1, skin_parent2)
+		if skin_parent1.prefab == data.name then
+			local skin_build = skin_parent1.AnimState:GetSkinBuild()
+			if skin_build and skin_build ~= "" then
+				return skin_build, true
+			end
+		elseif skin_parent2.prefab == data.name then
+			local skin_build = skin_parent2.AnimState:GetSkinBuild()
+			if skin_build and skin_build ~= "" then
+				return skin_build, true
+			end
+		end
         return build, false
     end
 
@@ -698,8 +751,8 @@ local function MakeLanternLightChain(data)
         end
     end
 
-    local function CreateChainLink(chain, parent, variation)
-        local chain_build, is_skin = GetChainBuild(parent)
+	local function CreateChainLink(chain, skin_parent1, skin_parent2, variation)
+		local chain_build, is_skin = GetChainBuild(skin_parent1, skin_parent2)
     	local inst = CreateEntity()
 
     	inst:AddTag("FX")
@@ -730,8 +783,8 @@ local function MakeLanternLightChain(data)
     	return inst
     end
 
-    local function CreateLantern(chain, parent)
-        local chain_build, is_skin = GetChainBuild(parent)
+	local function CreateLantern(chain, skin_parent1, skin_parent2)
+		local chain_build, is_skin = GetChainBuild(skin_parent1, skin_parent2)
     	local inst = CreateEntity()
 
     	inst:AddTag("FX")
@@ -760,34 +813,6 @@ local function MakeLanternLightChain(data)
     	return inst
     end
 
-    local function OnPartnerDirty(inst)
-        local partner1, partner2 = inst.partners[1]:value(), inst.partners[2]:value()
-        if partner1 and partner2 then
-            if not inst.chains and not inst.sleepstatepending then
-                SpawnChain(inst)
-            end
-        elseif inst.chains then
-            RemoveChain(inst)
-        end
-    end
-
-    local function LightChain_OnLoadPostPass(inst)
-        local partner1 = inst.components.entitytracker:GetEntity("partner1")
-	    local partner2 = inst.components.entitytracker:GetEntity("partner2")
-
-        if partner1 and partner2 then
-            inst:SetPartners(partner1, partner2)
-        end
-    end
-
-    local function OnSkinDirty(inst)
-        if inst.chains then
-            RemoveChain(inst, true)
-            -- respawn
-            SpawnChain(inst)
-        end
-    end
-
     local function lightchainfn()
         local inst = CreateEntity()
 
@@ -812,7 +837,7 @@ local function MakeLanternLightChain(data)
         inst.enable_lights:set(false)
 
         if has_skins then
-            inst.update_skin = net_event(inst.GUID, "updateskindirty")
+			inst.update_skin = net_event(inst.GUID, "lantern_light_chain.update_skin")
         end
 
         inst.link_length = data.link_length
@@ -845,13 +870,15 @@ local function MakeLanternLightChain(data)
 
 		    inst.EnableLightsDirty = LightChain_EnableLightsDirty
 		    inst.OnRemoveEntity = LightChain_OnRemoveEntity_Client
-		    inst.OnPartnerDirty = OnPartnerDirty
-            inst.OnSkinDirty = OnSkinDirty
+			inst.OnPartnerDirty = LightChain_OnPartnerDirty
+			inst.OnSkinDirty = LightChain_OnSkinDirty
         end
 
         if notmastersim then
-            inst:ListenForEvent("updateskindirty", OnSkinDirty)
-            inst:ListenForEvent("partnerdirty", OnPartnerDirty)
+			if has_skins then
+				inst:ListenForEvent("lantern_light_chain.update_skin", LightChain_OnUpdateSkin_Client)
+			end
+			inst:ListenForEvent("partnerdirty", LightChain_OnPartnerDirty)
             inst:ListenForEvent("enablelightsdirty", LightChain_EnableLightsDirty)
             return inst
         end

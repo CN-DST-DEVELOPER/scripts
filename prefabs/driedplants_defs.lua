@@ -32,7 +32,7 @@ local DRIED_DEFS =
     },
     {
         name = "tillweed",
-        healthvalue = TUNING.HEALING_MED,
+		healthvalue = TUNING.HEALING_MEDSMALL,
     },
     {
         name = "moon_tree_blossom",

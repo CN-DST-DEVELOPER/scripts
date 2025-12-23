@@ -581,6 +581,7 @@ local function fishmeat_dried()
     inst.components.edible.hungervalue = TUNING.CALORIES_MED
     inst.components.edible.sanityvalue = TUNING.SANITY_MED
     inst.components.perishable:SetPerishTime(TUNING.PERISH_SLOW)
+	inst.components.perishable.onperishreplacement = "spoiled_fish"
 
     return inst
 end

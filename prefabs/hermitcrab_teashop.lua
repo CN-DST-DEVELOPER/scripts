@@ -286,6 +286,11 @@ local function OnHermitCrabDirty(inst)
     end
 end
 
+local function OnBurnt(inst)
+	DefaultBurntStructureFn(inst)
+	inst.front.AnimState:PlayAnimation("burnt")
+end
+
 local function OnSave(inst, data)
     if inst:HasTag("burnt") or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
         data.burnt = true
@@ -398,6 +403,7 @@ local function fn()
     inst.OnLoad = OnLoad
 
     MakeLargeBurnable(inst, nil, nil, true)
+	inst.components.burnable:SetOnBurntFn(OnBurnt)
     MakeLargePropagator(inst)
 
     inst.MakePrototyper = MakePrototyper

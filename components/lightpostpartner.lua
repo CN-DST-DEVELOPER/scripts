@@ -1,3 +1,4 @@
+-- NOTE: for searching: this file is used with "lantern_post"
 -- Note: This is a common component
 local function RemoveChainLights(inst) -- Server callback
     local lightpostpartner = inst.components.lightpostpartner
@@ -27,13 +28,11 @@ local LightPostPartner = Class(function(self, inst)
 
     inst:AddTag("lightpostpartner")
 
-    if not self.ismastersim then
-        self.OnSave = nil
-        self.LoadPostPass = nil
-    else
+	if self.ismastersim then
         inst:ListenForEvent("teleported", RemoveChainLights)
         inst:ListenForEvent("teleport_move", RemoveChainLights)
         inst:ListenForEvent("onremove", RemoveChainLights)
+		inst:ListenForEvent("onburnt", RemoveChainLights)
     end
 end)
 
@@ -79,11 +78,17 @@ end
 -- Server
 
 function LightPostPartner:ShacklePartnerToID(partner, id)
+	if not self.ismastersim then
+		return
+	end
     self.shackled_entities[id]:set(partner)
     partner.shackle_id = id
 end
 
 function LightPostPartner:ShacklePartnerToNextID(partner)
+	if not self.ismastersim then
+		return
+	end
     local id = self:GetNextAvailableShackleID()
     if id then
         self:ShacklePartnerToID(partner, id)
@@ -91,7 +96,9 @@ function LightPostPartner:ShacklePartnerToNextID(partner)
 end
 
 function LightPostPartner:UnshackleAll()
-    if self.shackled_entities then
+	if not self.ismastersim then
+		return
+	elseif self.shackled_entities then
         for i = 1, #self.shackled_entities do
             local ent = self.shackled_entities[i]:value()
             if ent then
@@ -105,10 +112,8 @@ end
 -- Server
 
 function LightPostPartner:OnSave()
-    local ents = {}
-    local refs = {}
-
     if self.shackled_entities then
+		local ents, refs = {}, {}
         for k, v in pairs(self.shackled_entities) do
             local ent = v:value()
             if ent then
@@ -116,13 +121,14 @@ function LightPostPartner:OnSave()
                 table.insert(refs, ent.GUID)
             end
         end
+		if #ents > 0 then
+			return { entities = ents }, refs
+		end
     end
-
-    return { entities = ents }, refs
 end
 
 function LightPostPartner:LoadPostPass(ents, data)
-    if data.entities ~= nil then
+	if data.entities and not self.inst:HasTag("burnt") then
         for i, v in ipairs(data.entities) do
             local ent = ents[v.GUID]
             if ent ~= nil then

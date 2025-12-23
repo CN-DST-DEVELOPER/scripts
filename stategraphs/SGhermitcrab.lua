@@ -2817,7 +2817,7 @@ local states =
 
             inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 
-            local selected_tea_shop = inst.brain and inst.brain:GetSelectedTeaShop()
+            local selected_tea_shop = inst.brain and inst.brain:GetSelectedTeaShop() or nil
             if inst.components.stuckdetection:IsStuck() and selected_tea_shop then
                 inst.sg.mem.tea_shop_teleport = selected_tea_shop
                 inst.sg:GoToState("idle")

@@ -402,8 +402,8 @@ end
 function PearlDecorationScore:IsEntityDecorTaker(ent)
     return ent.components.furnituredecortaker ~= nil
 end
-local JUNK_ONEOF_TAGS = { "junk_pile", "_inventoryitem", "heavy" }
-local JUNK_CANT_TAGS = { "singingshell", "frozen", "vase", "INLIMBO", "farm_plant_killjoy" }
+local JUNK_ONEOF_TAGS = { "junk_pile", "_inventoryitem" }
+local JUNK_CANT_TAGS = { "singingshell", "frozen", "vase", "INLIMBO", "heavy" }
 function PearlDecorationScore:IsEntityJunk(ent)
     local furnituredecor = ent.components.furnituredecor
     if furnituredecor and furnituredecor.on_furniture then

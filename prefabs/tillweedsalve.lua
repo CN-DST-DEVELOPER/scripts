@@ -41,10 +41,10 @@ local function fn()
     inst.components.healer:SetHealthAmount(TUNING.HEALING_MEDSMALL)
 	inst.components.healer:SetOnHealFn(OnUse)
 
-    inst:AddComponent("perishable")
+    --[[inst:AddComponent("perishable")
     inst.components.perishable:SetPerishTime(TUNING.PERISH_MED)
     inst.components.perishable:StartPerishing()
-    inst.components.perishable.onperishreplacement = "spoiled_food"
+    inst.components.perishable.onperishreplacement = "spoiled_food"]]
 
     MakeHauntableLaunch(inst)
 
@@ -115,7 +115,6 @@ local function buff_fn()
 
     return inst
 end
-
 
 return Prefab("tillweedsalve", fn, assets),
 	Prefab("tillweedsalve_buff", buff_fn, assets)
