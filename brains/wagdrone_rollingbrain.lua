@@ -69,7 +69,7 @@ local DRONE_NO_TAGS = { "INLIMBO", "NOCLICK", "HAMMER_workable", "usesdepleted" 
 local WORK_TAGS = { "CHOP_workable", "MINE_workable" }
 local WORK_NO_TAGS = { "INLIMBO", "NOCLICK", "waxedplant", "event_trigger" }
 
-function FriendlyTargeting(inst)
+local function FriendlyTargeting(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local pos = GetDeployPoint(inst)
 	if pos then

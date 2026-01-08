@@ -2262,6 +2262,32 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    tree_rock_regrowth = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 0,
+            },
+            veryslow = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 0.25,
+            },
+            slow = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 0.5,
+            },
+            --[[
+            default = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 1,
+            },
+            --]]
+            fast = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 1.5,
+            },
+            veryfast = {
+                TREE_ROCK_REGROWTH_TIME_MULT = 3,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
     carrots_regrowth = function(difficulty)
         local tuning_vars =
         {

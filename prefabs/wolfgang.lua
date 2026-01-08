@@ -215,6 +215,15 @@ local function OnDoingWork(inst, data)
     end
 end
 
+local function OnClearingLunarHailBuildup(inst, data)
+	if data and data.target then
+		local gains = TUNING.WOLFGANG_MIGHTINESS_WORK_GAIN.MINE
+		if gains then
+			inst.components.mightiness:DoDelta(gains)
+		end
+	end
+end
+
 local function OnTilling(inst)
 	inst.components.mightiness:DoDelta(TUNING.WOLFGANG_MIGHTINESS_WORK_GAIN.TILL)	
 end
@@ -668,6 +677,7 @@ local function master_postinit(inst)
         inst:ListenForEvent("unequip", OnUnequip)
         
         inst:ListenForEvent("working", OnDoingWork)
+		inst:ListenForEvent("workinglunarhailbuildup", OnClearingLunarHailBuildup)
 		inst:ListenForEvent("tilling", OnTilling)
 		inst:ListenForEvent("rowing", OnRowing)
 		inst:ListenForEvent("on_lower_sail_boost", OnSailBoost)

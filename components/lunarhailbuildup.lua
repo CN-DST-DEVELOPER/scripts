@@ -136,6 +136,9 @@ function LunarHailBuildup:DoWorkToRemoveBuildup(workcount, doer)
             self:StartBuildupTask()
         end
     end
+	if doer then
+		doer:PushEvent("workinglunarhailbuildup", { target = self.inst })
+	end
     self.inst:PushEvent("lunarhailbuildupworked", {doer = doer})
 end
 

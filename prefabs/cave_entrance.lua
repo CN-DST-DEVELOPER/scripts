@@ -137,22 +137,28 @@ local function fn(bank, build, anim, minimap, isbackground)
     return inst
 end
 
+local function closed_init_poi(inst)
+	if inst:HasTag("NOCLICK") then
+		inst.scrapbook_ignore = true -- when hidden, can't be seen
+	elseif not TheNet:IsDedicated() then
+		inst:AddComponent("pointofinterest")
+		inst.components.pointofinterest:SetHeight(200)
+	end
+end
+
 local function closed_fn()
     local inst = fn("cave_entrance", "cave_entrance", "idle_closed", "cave_closed.png", false)
 
     inst.scrapbook_anim = "idle_closed"    
-
-    if not TheNet:IsDedicated() then
-        inst:AddComponent("pointofinterest")
-        inst.components.pointofinterest:SetHeight(200)
-        inst.components.pointofinterest:SetShouldShowFn(function(inst)
-            return not inst:HasTag("NOCLICK")
-        end)
-    end
+	inst.scrapbook_thingtype = "POI" --specify this because pointofinterest component is missing when hidden
 
     if not TheWorld.ismastersim then
+		inst.OnEntityReplicated = closed_init_poi
+
         return inst
     end
+
+	closed_init_poi(inst)
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.MINE)

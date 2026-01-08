@@ -744,6 +744,11 @@ local mutated_scrapbook_overridedata = {
     { "flameR", "lunar_flame", "flameanim", 0.6 },
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 local COOLANT_LOOT = {"coolant"}
 local function LootSetupFn_mutated(lootdropper)
     lootdropper:SetLoot(TheWorld.components.wagboss_tracker and TheWorld.components.wagboss_tracker:IsWagbossDefeated() and COOLANT_LOOT or nil)
@@ -798,6 +803,7 @@ local function mutatedfn()
 
     inst.sounds = mutated_sounds
     inst.scrapbook_overridedata = mutated_scrapbook_overridedata
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
 
 	inst.cancombo = true
 	inst.canbutt = true

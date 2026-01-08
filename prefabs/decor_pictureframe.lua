@@ -6,6 +6,7 @@ local assets =
     Asset("ATLAS_BUILD", "images/inventoryimages1.xml", 256),
     Asset("ATLAS_BUILD", "images/inventoryimages2.xml", 256),
     Asset("ATLAS_BUILD", "images/inventoryimages3.xml", 256),
+    Asset("ATLAS_BUILD", "images/inventoryimages4.xml", 256),
 }
 
 local function item_frame_displaynamefn(inst)

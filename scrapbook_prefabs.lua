@@ -1970,7 +1970,9 @@ local PREFABS =
     ["vault_statue"] = true,
     ["vault_torch"] = true,
     ["ancient_husk"] = true, -- Skeleton remains.
-    ["vaultrelic_vase"] = true,
+	--["vaultrelic_bowl"] = true,
+	--["vaultrelic_vase"] = true,
+	--["vaultrelic_planter"] = true,
 
     ["abysspillar_minion"] = true,
     ["abysspillar_trial"] = true,

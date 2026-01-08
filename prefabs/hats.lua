@@ -2762,6 +2762,7 @@ local function MakeHat(name)
 	fns.mask_ancient = function()
 		local inst = fns.mask_common(fns.mask_ancient_custom_init, true)
         inst.scrapbook_specialinfo = nil -- Let the prefab override these ones.
+		inst.scrapbook_subcat = "costume"
         return inst
 	end
 

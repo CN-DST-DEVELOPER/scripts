@@ -21,10 +21,7 @@ local prefabs_hand =
     "shadowhand_fx",
 }
 
-local assets_arm =
-{
-
-}
+local assets_arm = nil
 
 local prefabs_arm =
 {
@@ -146,6 +143,7 @@ local function fn()
     end
 
     inst.scrapbook_anim = "idle"
+	inst.scrapbook_thingtype = "creature"
 
     inst.persists = false
 
@@ -521,9 +519,8 @@ local function markerfn()
     return inst
 end
 
-
 return  Prefab("waveyjones", fn, assets, prefabs),
-        Prefab("waveyjones_hand", handfn,  {}, prefabs_hand),
-        Prefab("waveyjones_hand_art", handartfn, assets_hand, {}),
+		Prefab("waveyjones_hand", handfn, nil, prefabs_hand),
+		Prefab("waveyjones_hand_art", handartfn, assets_hand, nil),
         Prefab("waveyjones_arm", armfn, assets_arm, prefabs_arm),
         Prefab("waveyjones_marker", markerfn, assets, prefabs)

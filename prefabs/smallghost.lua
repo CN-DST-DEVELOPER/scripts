@@ -172,7 +172,8 @@ local function on_begin_quest(inst, doer)
             ghost_position = ghost_position + toy_center_offset
         end
 
-        inst._toy_center_position = ghost_position
+		--V2C: what is this used for?
+		--inst._toy_center_position = ghost_position
 
         local toy_count = GetRandomMinMax(TUNING.GHOST_HUNT.TOY_COUNT.MIN, TUNING.GHOST_HUNT.TOY_COUNT.MAX)
         if doer.isplayer and doer.components.skilltreeupdater:IsActivated("wendy_smallghost_2") then
@@ -340,7 +341,24 @@ local function onsave(inst, data)
         data.toy_datas = inst._toy_datas
     end
 
-    data.toy_center_position = inst._toy_center_position
+	--V2C: what is this used for?
+	--data.toy_center_position = inst._toy_center_position
+
+	--[[ * ! * ! * !!! WARNING !!! * ! * ! *
+	****** V2C: cannot save/load Vector class! if needed, use this method instead. ******
+
+	if inst._toy_center_position then
+		local x, y, z = inst._toy_center_position:Get()
+		data.toy_center_position =
+		{
+			x = math.floor(x * 1000) / 1000,
+			z = math.floor(z * 1000) / 1000,
+		}
+		if y ~= 0 then
+			y = math.floor(y * 1000) / 1000
+			data.toy_center_position.y = y ~= 0 and y or nil
+		end
+	end]]
 
     data.shard_id = inst._shard_id
 
@@ -377,7 +395,19 @@ local function onload(inst, data, newents)
             inst._hotcold_task = inst._hotcold_task or inst:DoPeriodicTask(0.25, hot_cold_update)
         end
 
-        inst._toy_center_position = data.toy_center_position
+		--V2C: what is this used for?
+		--inst._toy_center_position = data.toy_center_position
+
+		--[[ * ! * ! * !!! WARNING !!! * ! * ! *
+		****** V2C: cannot save/load Vector class! if needed, use this method instead. ******
+
+		if data.toy_center_position then
+			inst._toy_center_position = Vector3(
+				data.toy_center_position.x or 0,
+				data.toy_center_position.y or 0,
+				data.toy_center_position.z or 0
+			)
+		end]]
     end
 end
 

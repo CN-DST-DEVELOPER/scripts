@@ -99,7 +99,7 @@ local function SpawnInvestigators(inst, data)
 
         for _ = 1, num_to_release do
             local spider = inst.components.childspawner:SpawnChild()
-            if spider ~= nil and targetpos ~= nil then
+            if spider ~= nil and targetpos ~= nil and spider.components.knownlocations ~= nil then
                 spider.components.knownlocations:RememberLocation("investigate", targetpos)
             end
         end
@@ -126,9 +126,11 @@ end
 
 local function OnGoHome(inst, child)
     -- Drops the hat before it goes home if it has any
-    local hat = child.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
-    if hat ~= nil then
-        child.components.inventory:DropItem(hat)
+    if child.components.inventory ~= nil then
+        local hat = child.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+        if hat ~= nil then
+            child.components.inventory:DropItem(hat)
+        end
     end
 end
 

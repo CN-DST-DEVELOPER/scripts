@@ -523,6 +523,9 @@ local function OnConstructed(inst, doer)
 				--the new house would re-enable scoring.
 				TheWorld:PushEvent("pearldecorationscore_updatestatus")
 			end
+		-- Covers a case where Pearl can be relocated before house is upgraded, if rifts are turned on in world settings.
+		elseif new_house.components.pearldecorationscore and IsInValidHermitCrabDecorArea(inst) then
+			new_house.components.pearldecorationscore:Enable()
 		end
 
 		if new_house.StartTrackingHermitCrab then

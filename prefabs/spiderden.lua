@@ -315,7 +315,9 @@ local function AttemptMakeQueen(inst)
 end
 
 local function onspawnspider(inst, spider)
-    spider.sg:GoToState("taunt")
+    if spider.sg and spider.sg:HasState("taunt") then
+        spider.sg:GoToState("taunt")
+    end
     if inst:HasTag("bedazzled") then
         inst.components.bedazzlement:PacifySpiders()
     end
@@ -411,7 +413,7 @@ local function SpawnInvestigators(inst, data)
 
             for _ = 1, num_to_release do
                 local spider = inst.components.childspawner:SpawnChild()
-                if spider ~= nil and targetpos ~= nil then
+                if spider ~= nil and targetpos ~= nil and spider.components.knownlocations ~= nil then
                     spider.components.knownlocations:RememberLocation("investigate", targetpos)
                 end
             end

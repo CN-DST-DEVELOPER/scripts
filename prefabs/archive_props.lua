@@ -244,6 +244,8 @@ local function runefn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "LINE_1"
+
 	inst.anim = math.random(3)
 	if inst.anim ~= 1 then
 		inst.AnimState:PlayAnimation("idle"..tostring(inst.anim))
@@ -894,6 +896,7 @@ local function switchbasefn()
     inst.scrapbook_build = "archive_switch"
     inst.scrapbook_specialinfo = "ARCHIVESWITCH"
     inst.scrapbook_speechname = "archive_switch"
+	inst.scrapbook_speechstatus = "GEMS"
 
     inst:DoTaskInTime(0,function()
         local x,y,z = inst.Transform:GetWorldPosition()

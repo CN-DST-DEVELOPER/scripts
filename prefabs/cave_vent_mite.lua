@@ -145,6 +145,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_hidesymbol = { "red_vent" }
+
     inst.override_combat_fx_size = "small"
 
     local color = 0.5 + math.random() * 0.5

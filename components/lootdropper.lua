@@ -401,7 +401,7 @@ function LootDropper:DropLoot(pt, prefabs)
     end
 
     if IsSpecialEventActive(SPECIAL_EVENTS.WINTERS_FEAST) then
-        local prefabname = string.upper(self.inst.prefab)
+        local prefabname = string.upper(self.overridewinterlootprefabname or self.inst.prefab)
         local num_decor_loot = self.GetWintersFeastOrnaments ~= nil and self.GetWintersFeastOrnaments(self.inst) or TUNING.WINTERS_FEAST_TREE_DECOR_LOOT[prefabname] or nil
         if num_decor_loot ~= nil then
             for i = 1, num_decor_loot.basic do
@@ -410,7 +410,7 @@ function LootDropper:DropLoot(pt, prefabs)
             if num_decor_loot.special ~= nil then
                 self:SpawnLootPrefab(num_decor_loot.special, pt)
             end
-        elseif not TUNING.WINTERS_FEAST_LOOT_EXCLUSION[prefabname] and (self.inst:HasTag("monster") or self.inst:HasTag("animal")) then
+        elseif not TUNING.WINTERS_FEAST_LOOT_EXCLUSION[prefabname] and self.inst:HasAnyTag("monster", "animal", "creaturecorpse") then
             local loot = math.random()
             if loot < 0.005 then
                 self:SpawnLootPrefab(GetRandomBasicWinterOrnament(), pt)

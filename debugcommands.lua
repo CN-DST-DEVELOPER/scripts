@@ -2212,7 +2212,9 @@ local function Scrapbook_DefineSubCategory(t)
 
     local foodtype = t.components.edible ~= nil and t.components.edible.foodtype or nil
 
-    if t:HasOneOfTags({ "wall", "wallbuilder" }) then
+	if t.scrapbook_subcat then
+		subcat = t.scrapbook_subcat
+	elseif t:HasOneOfTags({ "wall", "wallbuilder" }) then
         subcat = "wall"
     elseif t.scrapbook_specialinfo == "COSTUME" then
         subcat = "costume"
@@ -2252,9 +2254,9 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "elixer"
     elseif t:HasTag("farm_plant") then
         subcat = "farmplant"
-    elseif t.components.tool or t.scrapbook_subcat == "tool" then
+	elseif t.components.tool then
         subcat = "tool"
-    elseif t.components.weapon or t.scrapbook_subcat == "weapon" then
+	elseif t.components.weapon then
         subcat = "weapon"
     elseif t:HasTag("spidermutator") then
         subcat = "mutator"
@@ -2532,6 +2534,7 @@ end
         scrapbook_sanityvalue: Sanity food value (number).
         scrapbook_scale: Scale (number).
         scrapbook_specialinfo: Entry in STRINGS.SCRAPBOOK.SPECIALINFO (string).
+		scrapbook_speechstatus: Overrides status used with speech description (string, number, or array).
         scrapbook_speechname: Entry in STRINGS.CHARACTERS.GENERIC.DESCRIBE (string).
         scrapbook_subcat: Sub-Category (string).
         scrapbook_tex: Icon texture (without .tex) (string).
@@ -2815,6 +2818,34 @@ function d_createscrapbookdata(print_missing_icons)
             print(string.format("[!!!!]  Speech Name [ %s ] isn't defined in STRINGS.CHARACTERS.GENERIC.DESCRIBE!", t.scrapbook_speechname))
         end
 
+		local speechstr = STRINGS.CHARACTERS.GENERIC.DESCRIBE[string.upper(speechname or entry)]
+
+		local speechstatus = type(t.scrapbook_speechstatus) == "string" and string.upper(t.scrapbook_speechstatus) or t.scrapbook_speechstatus or "GENERIC"
+		if speechstatus ~= "GENERIC" then
+			AddInfo("speechstatus", t.scrapbook_speechstatus)
+			if type(speechstatus) == "table" then
+				local statusstr = ""
+				for _, v in ipairs(speechstatus) do
+					if type(v) == "string" then
+						v = string.upper(v)
+						statusstr = statusstr.."."..v
+					else
+						statusstr = statusstr.."["..v.."]"
+					end
+					speechstr = type(speechstr) == "table" and speechstr[v] or nil
+				end
+				if type(speechstr) ~= "string" then
+					print(string.format("[!!!!]  Speech string STRINGS.CHARACTERS.GENERIC.DESCRIBE.%s%s isn't defined!", string.upper(t.scrapbook_speechname or entry), statusstr))
+				end
+			elseif type(speechstr) ~= "table" or speechstr[speechstatus] == nil then
+				print(string.format("[!!!!]  Speech string STRINGS.CHARACTERS.GENERIC.DESCRIBE.%s.%s isn't defined!", string.upper(t.scrapbook_speechname or entry), speechstatus))
+			end
+		elseif type(speechstr) == "table" then
+			if speechstr.GENERIC == nil and #speechstr == 0 then
+				print(string.format("[!!!!]  Speech string STRINGS.CHARACTERS.GENERIC.DESCRIBE.%s.GENERIC isn't defined!", string.upper(t.scrapbook_speechname or entry)))
+			end
+		end
+
         if t.scrapbook_inspectonseen == nil and
             t.components.inspectable == nil and
             t.components.health == nil and
@@ -2837,7 +2868,7 @@ function d_createscrapbookdata(print_missing_icons)
         local maxhealth = not t.scrapbook_hidehealth and (t.scrapbook_maxhealth or (t.components.health ~= nil and t.components.health.maxhealth)) or nil
         if maxhealth ~= nil then
             if type(maxhealth) == "table" then
-                maxhealth = string.format("%d-%d", maxhealth[1], maxhealth[2])
+				maxhealth = string.format("%d-%d", math.min(unpack(maxhealth)), math.max(unpack(maxhealth)))
             end
 
             AddInfo( "health", maxhealth )
@@ -2849,7 +2880,9 @@ function d_createscrapbookdata(print_missing_icons)
         if damage ~= nil then
             if type(damage) == "table" then
                 local mod = not t.scrapbook_ignoreplayerdamagemod and t.components.combat ~= nil and t.components.combat.playerdamagepercent or 1
-                damage = string.format("%d-%d", damage[1]*mod , damage[2]*mod)
+				local dmg1 = damage[1] * mod
+				local dmg2 = damage[2] * mod
+				damage = string.format("%d-%d", math.min(dmg1, dmg2), math.max(dmg1, dmg2))
             end
 
             if checkstring(damage) or damage > 0 then
@@ -2860,7 +2893,7 @@ function d_createscrapbookdata(print_missing_icons)
         local planardamage = t.scrapbook_planardamage or (t.components.planardamage ~= nil and t.components.planardamage.basedamage) or nil
         if planardamage ~= nil then
             if type(planardamage) == "table" then
-                planardamage = string.format("%d-%d", planardamage[1] , planardamage[2])
+				planardamage = string.format("%d-%d", math.min(unpack(planardamage)), math.max(unpack(planardamage)))
             end
 
             if checkstring(planardamage) or planardamage > 0 then
@@ -2907,7 +2940,7 @@ function d_createscrapbookdata(print_missing_icons)
                     local weapondamage = t.scrapbook_weapondamage
 
                     if type(weapondamage) == "table" then
-                        weapondamage = string.format("%d-%d", weapondamage[1] , weapondamage[2])
+						weapondamage = string.format("%d-%d", math.min(unpack(weapondamage)), math.max(unpack(weapondamage)))
                     end
 
                     if not weapondamage and type(t.components.weapon.damage) == "function" then

@@ -193,7 +193,7 @@ local function FromBeyondRetrofitting_Fumarole(world_map, savedata)
 		local FUMAROLE_ID = "FumaroleRetrofit:0:Chasm"
         local tags = { "fumarolearea" }
         local topology_node_index = AddTopologyData(topology, left * TILE_SCALE - (map_width * 0.5 * TILE_SCALE), top * TILE_SCALE - (map_height * 0.5 * TILE_SCALE), main_area_size * TILE_SCALE, main_area_size * TILE_SCALE, FUMAROLE_ID, tags)
-        AddTileNodeIdsForArea(world_map, topology_node_index, left + main_area_size + 1, top + main_area_size + 1, main_area_size - 1, main_area_size - 1)
+        AddTileNodeIdsForArea(world_map, topology_node_index, left + 1, top + 1, main_area_size - 1, main_area_size - 1)
 
 		obj_layout.PlaceAndPopulatePrefabDensities({left, top}, "retrofit_fumarole", add_fn, nil, world_map, FUMAROLE_ID, generated.densities)
 

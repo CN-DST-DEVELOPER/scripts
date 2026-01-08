@@ -93,6 +93,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "WARN"
+
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = GetStatus
 

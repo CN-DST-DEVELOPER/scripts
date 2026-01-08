@@ -359,6 +359,8 @@ local function dispencerfn()
         return inst
     end
 
+	inst.scrapbook_hidesymbol = { "moss" }
+
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
 

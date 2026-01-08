@@ -57,6 +57,8 @@ local function UpdatePercent(inst)
                 maxcount = maxcount + 1
             end
         end)
+
+		local oldcount = inst.soulcount
         inst.soulcount = count
         local percent = (maxcount == 0 and 0 or math.min(count / maxcount, 1))
         
@@ -64,7 +66,7 @@ local function UpdatePercent(inst)
             inst.components.finiteuses:SetPercent(percent)
         end
 
-        local owner = inst.components.inventoryitem and inst.components.inventoryitem.owner or nil
+		local owner = inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner()
         local shouldleakfrombadowner = owner == nil or owner.components.skilltreeupdater == nil or not owner.components.skilltreeupdater:IsActivated("wortox_souljar_1") 
         if percent > 0 and shouldleakfrombadowner and not inst.components.container:IsOpen() then
             if inst.leaksoulstask == nil then
@@ -77,6 +79,10 @@ local function UpdatePercent(inst)
             end
             inst.souljar_oldpercent = percent
         end
+
+		if owner and oldcount ~= inst.soulcount then
+			owner:PushEvent("ms_souljar_count_changed", { item = inst, old = oldcount, count = inst.soulcount })
+		end
     end
 end
 

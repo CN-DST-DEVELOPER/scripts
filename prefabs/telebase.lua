@@ -210,6 +210,8 @@ local function commonfn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "VALID"
+
     inst.onteleto = teleport_target
     inst.canteleto = validteleporttarget
 

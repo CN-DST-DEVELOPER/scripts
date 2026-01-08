@@ -5,7 +5,40 @@ local assets = {
 
 local prefabs = {
     "wave_med",
+	"globalmapiconunderfog",
 }
+
+--------------------------------------------------------------------------
+
+--Used by server & client
+local function EnablePOI(inst, enable)
+	inst.scrapbook_ignore = not enable or nil
+
+	if inst.animlayers then --same as: not TheNet:IsDedicated()
+		if not enable then
+			inst:RemoveComponent("pointofinterest")
+		elseif inst.components.pointofinterest == nil then
+			inst:AddComponent("pointofinterest")
+			inst.components.pointofinterest:SetHeight(450)
+		end
+	end
+end
+
+--Used by server
+local function EnableMapIcon(inst, enable)
+	inst.MiniMapEntity:SetEnabled(enable)
+
+	if enable then
+		if inst.icon == nil then
+			inst.icon = SpawnPrefab("globalmapiconunderfog")
+			inst.icon.MiniMapEntity:SetPriority(-2)
+			inst.icon:TrackEntity(inst, nil, nil, true) --true for noupdate, since we can't move
+		end
+	elseif inst.icon then
+		inst.icon:Remove()
+		inst.icon = nil
+	end
+end
 
 --------------------------------------------------------------------------
 
@@ -72,17 +105,21 @@ end
 local function PostUpdate_Client(inst)
 	if inst.AnimState:IsCurrentAnimation("closed") then
 		DoSyncPlayAnim(inst, "closed")
+		EnablePOI(inst, false)
 	elseif inst.AnimState:IsCurrentAnimation("open_pst") then
 		DoSyncPlayAnim(inst, "open_pst")
 		DoSyncAnimTime(inst, inst.AnimState:GetCurrentAnimationTime())
 		DoSyncPushAnim(inst, "closed", false)
+		EnablePOI(inst, false)
 	elseif inst.AnimState:IsCurrentAnimation("open_loop") then
 		DoSyncPlayAnim(inst, "open_loop", true)
 		DoSyncAnimTime(inst, inst.AnimState:GetCurrentAnimationTime())
+		EnablePOI(inst, true)
 	elseif inst.AnimState:IsCurrentAnimation("open_pre") then
 		DoSyncPlayAnim(inst, "open_pre")
 		DoSyncAnimTime(inst, inst.AnimState:GetCurrentAnimationTime())
 		DoSyncPushAnim(inst, "open_loop")
+		EnablePOI(inst, true)
 	else
 		assert(false)
 	end
@@ -129,6 +166,8 @@ local function OpenWhirlportal_finalize(inst)
     inst.AnimState:PlayAnimation("open_loop", true)
 	SyncAnims(inst, "open_loop", true)
     inst.components.oceanwhirlportalphysics:SetEnabled(true)
+	EnableMapIcon(inst, true)
+	EnablePOI(inst, true)
 end
 
 local function OpenWhirlportal(inst)
@@ -138,6 +177,8 @@ local function OpenWhirlportal(inst)
             inst.AnimState:PlayAnimation("open_pre")
 			SyncAnims(inst, "open_pre")
             inst:ListenForEvent("animover", inst.OpenWhirlportal_finalize)
+			EnableMapIcon(inst, true)
+			EnablePOI(inst, true)
             inst.openingwhirlportal = true
         end
     else
@@ -161,6 +202,8 @@ local function CloseWhirlportal(inst)
 		SyncAnims(inst, "open_pst")
 	end
     inst.components.oceanwhirlportalphysics:SetEnabled(false)
+	EnableMapIcon(inst, false)
+	EnablePOI(inst, false)
 end
 
 local function SplashWhirlportal(inst, data)
@@ -232,6 +275,8 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("oceanwhirlbigportal.png")
     inst.MiniMapEntity:SetPriority(-2)
+	inst.MiniMapEntity:SetCanUseCache(false)
+	inst.MiniMapEntity:SetEnabled(false)
 
     inst:AddTag("birdblocker")
     inst:AddTag("ignorewalkableplatforms")
@@ -243,6 +288,8 @@ local function fn()
 
     inst.highlightoverride = {0.1, 0.1, 0.3}
     inst.scrapbook_inspectonseen = true
+	inst.scrapbook_ignore = true -- when closed, can't be seen
+	inst.scrapbook_thingtype = "POI" --specify this because pointofinterest component is missing when closed
 
 	inst.syncanims = net_event(inst.GUID, "oceanwhirlbigportal.syncanims")
 

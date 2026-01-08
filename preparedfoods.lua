@@ -1052,7 +1052,7 @@ local foods =
 	beefalotreat = 
 	{
 		-- good beefalo food
-		test = function(cooker, names, tags) return tags.inedible and tags.seed and names.forgetmelots and not tags.monster and not tags.meat and not tags.fish and not tags.egg and not tags.fat and not tags.dairy and not tags.magic end,
+		test = function(cooker, names, tags) return tags.inedible and tags.seed and (names.forgetmelots or names.forgetmelots_dried) and not tags.monster and not tags.meat and not tags.fish and not tags.egg and not tags.fat and not tags.dairy and not tags.magic end,
 		priority = -4,
 		foodtype = FOODTYPE.ROUGHAGE,
 		overridebuild = "cook_pot_food11",

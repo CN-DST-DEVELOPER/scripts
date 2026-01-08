@@ -208,6 +208,7 @@ local function fn()
     end
 
     inst.scrapbook_hidehealth = true
+	inst.scrapbook_speechstatus = "SITTING"
 
     MakeSnowCovered(inst)
     SetLunarHailBuildupAmountSmall(inst)

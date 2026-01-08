@@ -723,6 +723,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_thingtype = "creature"
+
 	--Remove these tags so that they can be added properly when replicating components below
 	inst:RemoveTag("_hunger")
 

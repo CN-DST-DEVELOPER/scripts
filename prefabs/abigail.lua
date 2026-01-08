@@ -874,6 +874,7 @@ local function fn()
     --
     inst.scrapbook_damage = { TUNING.ABIGAIL_DAMAGE.day, TUNING.ABIGAIL_DAMAGE.night }
     inst.scrapbook_ignoreplayerdamagemod = true
+	inst.scrapbook_speechstatus = { "LEVEL1", 1 }
 
     inst.is_defensive = true
     inst.issued_health_warning = false

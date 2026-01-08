@@ -46,6 +46,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "OFF"
+
     inst._back = SpawnPrefab("atrium_light_back")
     inst._back.entity:SetParent(inst.entity)
 

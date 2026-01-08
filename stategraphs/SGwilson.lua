@@ -664,6 +664,39 @@ local function find_lucy(item)
     return item.prefab == "lucy"
 end
 
+local function TryReturnItemToFeeder(inst)
+	local feed = inst.sg.statemem.feed
+	if feed and not feed.persists and feed:IsValid() and feed.components.inventoryitem then
+		--restore config from ACTIONS.FEEDPLAYER that assumes item is deleted when eaten
+		inst:RemoveChild(feed)
+		if feed:IsInLimbo() then
+			feed:ReturnToScene()
+		end
+		feed.components.inventoryitem:WakeLivingItem()
+		feed.persists = true
+		--
+		local range = TUNING.RETURN_ITEM_TO_FEEDER_RANGE
+		local feeder = inst.sg.statemem.feeder
+		local pos = inst:GetPosition()
+		if feeder and feeder:IsValid() and
+			feeder.components.inventory and
+			feeder.components.inventory.isopen and
+			feeder:GetDistanceSqToPoint(pos) < range * range
+		then
+			if inst.sg.statemem.feedwasactiveitem and
+				feeder.components.inventory:GetActiveItem() == nil and
+				feeder.components.inventory.isvisible
+			then
+				feeder.components.inventory:GiveActiveItem(feed)
+			else
+				feeder.components.inventory:GiveItem(feed, nil, pos)
+			end
+		else
+			inst.components.inventory:GiveItem(feed, nil, pos)
+		end
+	end
+end
+
 --------------------------------------------------------------------------
 
 local function IsPlayerFloater(item)
@@ -972,7 +1005,7 @@ local actionhandlers =
                 return
             end
 
-            
+			--NOTE: Keep states in sync with ACTIONS.FEEDPLAYER.fn
 			local state =
 				(obj:HasTag("quickeat") and "quickeat") or
 				(obj:HasTag("sloweat") and "eat") or
@@ -5851,6 +5884,7 @@ local states =
                 inst:ClearBufferedAction()
                 inst.sg.statemem.feed = foodinfo.feed
                 inst.sg.statemem.feeder = foodinfo.feeder
+				inst.sg.statemem.feedwasactiveitem = foodinfo.active
                 inst.sg:AddStateTag("pausepredict")
                 if inst.components.playercontroller ~= nil then
                     inst.components.playercontroller:RemotePausePrediction()
@@ -5944,9 +5978,7 @@ local states =
             if not GetGameModeProperty("no_hunger") then
                 inst.components.hunger:Resume()
             end
-            if inst.sg.statemem.feed ~= nil and inst.sg.statemem.feed:IsValid() then
-                inst.sg.statemem.feed:Remove()
-            end
+			TryReturnItemToFeeder(inst)
             if inst.sg.statemem.soulfx ~= nil then
                 inst.sg.statemem.soulfx:Remove()
             end
@@ -5967,6 +5999,7 @@ local states =
                 inst:ClearBufferedAction()
                 inst.sg.statemem.feed = foodinfo.feed
                 inst.sg.statemem.feeder = foodinfo.feeder
+				inst.sg.statemem.feedwasactiveitem = foodinfo.active
                 inst.sg:AddStateTag("pausepredict")
                 if inst.components.playercontroller ~= nil then
                     inst.components.playercontroller:RemotePausePrediction()
@@ -6045,9 +6078,7 @@ local states =
             if not GetGameModeProperty("no_hunger") then
                 inst.components.hunger:Resume()
             end
-            if inst.sg.statemem.feed ~= nil and inst.sg.statemem.feed:IsValid() then
-                inst.sg.statemem.feed:Remove()
-            end
+			TryReturnItemToFeeder(inst)
 			CheckPocketRummageMem(inst)
         end,
     },
@@ -24672,7 +24703,7 @@ local states =
 		name = "float_quickeat",
 		tags = { "busy", "floating", "silentmorph" },
 
-		onenter = function(inst, foodinfo)
+		onenter = function(inst)
 			inst.components.locomotor:Stop()
 			inst.DynamicShadow:Enable(false)
 			inst:ShowCrafting(false)

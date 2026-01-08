@@ -174,9 +174,9 @@ local function DoErode(inst)
         inst:RemoveComponent("burnable")
     end
     inst:AddTag("NOCLICK")
+    inst:DropCorpseLoot()
     inst:RemoveTag("creaturecorpse")
     inst.persists = false
-    inst:DropCorpseLoot()
 
     if inst.corpseerodefn then
         inst.corpseerodefn(inst)
@@ -729,6 +729,8 @@ local function MakeCreatureCorpse(data)
         inst.components.sanityaura.aurafn = sanity_aurafn --Can be nil
 
         inst:AddComponent("lootdropper")
+        inst.components.lootdropper.overridewinterlootprefabname = creature
+
         inst:AddComponent("entitytracker")
         inst:AddComponent("savedscale")
 

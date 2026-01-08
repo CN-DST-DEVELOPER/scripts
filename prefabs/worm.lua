@@ -393,6 +393,8 @@ local function default_fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "WORM"
+
     return inst
 end
 

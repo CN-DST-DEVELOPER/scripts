@@ -3385,7 +3385,7 @@ local states =
 
     State{
         name = "oceanfishing_idle",
-        tags = { "npc_fishing", "canrotate" },
+		tags = { "npc_fishing"--[[, "canrotate"]] },
 
         onenter = function(inst)
             inst:AddTag("fishing_idle")
@@ -3442,7 +3442,7 @@ local states =
 
     State{
         name = "oceanfishing_reel",
-        tags = { "npc_fishing", "doing", "reeling", "canrotate" },
+		tags = { "npc_fishing", "doing", "reeling"--[[, "canrotate"]] },
 
         onenter = function(inst)
             inst:AddTag("fishing_idle")

@@ -259,6 +259,7 @@ local function sanityrock()
     local inst = commonfn({"sanityrock"})
 
     inst.scrapbook_anim = "idle_active" 
+	inst.scrapbook_speechstatus = "ACTIVE"
 
     inst.activeonsane = true
 

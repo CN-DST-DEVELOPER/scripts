@@ -187,6 +187,11 @@ local mutated_prefabs =
     "circlingbuzzard_lunar",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 local FX_SIZES = { "tiny", "small", "med", "large" }
 local FX_HEIGHTS = { "_low", "", "_high" } -- "med" height has no identifier
 for i, size in ipairs(FX_SIZES) do
@@ -434,6 +439,9 @@ local function mutated_fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
+
     ------------------------------------------
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.MUTATEDBUZZARD_HEALTH)

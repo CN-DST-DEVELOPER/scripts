@@ -45,32 +45,41 @@ local function getstring(inst, stringdata)
 end
 
 -- UMBRELLA
-local function using_umbrella(inst)
-    local equipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-    return equipped and equipped:HasTag("umbrella") or nil
+local function holding_umbrella(inst) --hand slot specifically
+	local tool = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	return tool ~= nil and tool:HasTag("umbrella")
+end
+
+local function equipped_umbrella(inst) --any slot
+	return inst.components.inventory:EquipHasTag("umbrella")
 end
 
 local function has_umbrella(inst)
-    return inst.components.inventory:FindItem(function(testitem) return testitem:HasTag("umbrella") end)
+	local ret--[[, num]] = inst.components.inventory:HasItemWithTag("umbrella", 1)
+	return ret
 end
 
-local function getumbrella(inst)
-    local handequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-    return inst.components.inventory:FindItem(function(testitem) return testitem:HasTag("umbrella") end) or (handequipped and  handequipped:HasTag("umbrella") and handequipped )
+local function item_is_umbrella(item)
+	return item:HasTag("umbrella")
 end
 
 local function EquipUmbrella(inst)
-    local umbrella = getumbrella(inst)
+	local umbrella = inst.components.inventory:FindItem(item_is_umbrella)
     if umbrella then
         inst.components.inventory:Equip(umbrella)
     end
 end
 
-local function UnEquipHands(inst)
-    local item = inst.components.inventory:Unequip(EQUIPSLOTS.HANDS)
-    inst.components.inventory:GiveItem(item)
+local function try_unequip_umbrella(item, inst)
+	if item:HasTag("umbrella") then
+		item = inst.components.inventory:Unequip(item.components.equippable.equipslot)
+		inst.components.inventory:GiveItem(item)
+	end
 end
 
+local function UnEquipUmbrella(inst)
+	inst.components.inventory:ForEachEquipment(try_unequip_umbrella, inst)
+end
 
 -- COAT
 local function using_coat(inst)
@@ -364,7 +373,7 @@ local FISH_TAGS = {"oceanfish", "oceanfishable"}
 local FISH_NO_TAGS = {"INLIMBO"}
 
 local function DoFishingAction(inst)
-    if not using_umbrella(inst) and not inst:IsInBadLivingArea() then
+	if not holding_umbrella(inst) and not inst:IsInBadLivingArea() then
         local source = inst.CHEVO_marker
         if source then
             local x,y,z = source.Transform:GetWorldPosition()
@@ -421,7 +430,7 @@ local function runawaytest(inst)
 end
 
 local function DoBottleToss(inst)
-    if not inst.components.timer:TimerExists("bottledelay") and not using_umbrella(inst) and not inst:IsInBadLivingArea() then
+	if not inst.components.timer:TimerExists("bottledelay") and not holding_umbrella(inst) and not inst:IsInBadLivingArea() then
         local source = inst.CHEVO_marker
         if source then
             local x,y,z = source.Transform:GetWorldPosition()
@@ -594,7 +603,8 @@ end
 local function GetFirstHungryPetCritter(inst)
     local pets = inst.components.petleash:GetPets()
     for k, v in pairs(pets) do
-        if v:HasTag("critter") and v:IsHungry() and not v:IsOnOcean(true) then
+        local x, y, z = v.Transform:GetWorldPosition()
+        if v:HasTag("critter") and v:IsHungry() and not v:IsOnOcean(true) and not IsPointCoveredByBlocker(x, y, z) then
             return v
         end
     end
@@ -602,7 +612,8 @@ end
 local function IsPetCritterHungry(inst)
     local pets = inst.components.petleash:GetPets()
     for k, v in pairs(pets) do
-        if v:HasTag("critter") and v:IsHungry() and not v:IsOnOcean(true) then
+        local x, y, z = v.Transform:GetWorldPosition()
+        if v:HasTag("critter") and v:IsHungry() and not v:IsOnOcean(true) and not IsPointCoveredByBlocker(x, y, z) then
             return true
         end
     end
@@ -676,7 +687,13 @@ function HermitBrain:OnStart()
 								ActionNode(function() ExitHotSpring(self.inst) end)),
 							FailIfSuccessDecorator(
 								Leash(self.inst,
-									function() return self:GetSelectedTeaShopPos() end,
+									function()
+										local pos = self:GetSelectedTeaShopPos()
+										if pos then
+											return pos
+										end
+										self.inst.components.locomotor:Stop()
+									end,
 									function() return self.selected_tea_shop:GetPhysicsRadius(0) + 1.5 end,
 									function() return self.selected_tea_shop:GetPhysicsRadius(0) + 1 end,
 									true)),
@@ -749,10 +766,10 @@ function HermitBrain:OnStart()
                     Panic(self.inst))),
             RunAway(self.inst, function(guy) return guy:HasTag("pig") and guy.components.combat and guy.components.combat.target == self.inst end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),
 
-            IfNode( function() return not self.inst.sg:HasStateTag("busy") and TheWorld.state.israining and has_umbrella(self.inst) and not using_umbrella(self.inst) end, "umbrella",
+            IfNode( function() return not self.inst.sg:HasStateTag("busy") and TheWorld.state.israining and has_umbrella(self.inst) and not equipped_umbrella(self.inst) end, "umbrella",
                     DoAction(self.inst, EquipUmbrella, "umbrella", true )),
-            IfNode( function() return not self.inst.sg:HasStateTag("busy") and not TheWorld.state.israining and using_umbrella(self.inst) end, "stop umbrella",
-                    DoAction(self.inst, UnEquipHands, "stop umbrella", true )),
+            IfNode( function() return not self.inst.sg:HasStateTag("busy") and not TheWorld.state.israining and equipped_umbrella(self.inst) end, "stop umbrella",
+					DoAction(self.inst, UnEquipUmbrella, "stop umbrella", true )),
             IfNode( function() return not self.inst.sg:HasStateTag("busy") and TheWorld.state.issnowing and has_coat(self.inst) and not using_coat(self.inst) end, "coat",
                     DoAction(self.inst, EquipCoat, "coat", true )),
             IfNode( function() return not self.inst.sg:HasStateTag("busy") and not TheWorld.state.issnowing and using_coat(self.inst) end, "stop coat",

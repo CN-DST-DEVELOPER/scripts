@@ -109,6 +109,7 @@ local function fn()
 	end
 
     inst.scrapbook_anim = "eye_idle"
+	inst.scrapbook_hidehealth = true
     --inst.scrapbook_inspectonseen = true --No need for inspect on seen they can die
 
     --

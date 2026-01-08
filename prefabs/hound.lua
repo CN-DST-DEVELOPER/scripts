@@ -858,6 +858,27 @@ local function OnHedgeKilled(inst)
     end
 end
 
+local hedge_scrapbook_deps =
+{
+	--from statueharp_hedgespawner.lua::COSTUME_ITEMS
+	"mask_dollhat",			"costume_doll_body",
+	"mask_blacksmithhat",	"costume_blacksmith_body",
+	"mask_mirrorhat",		"costume_mirror_body",
+	"mask_queenhat",		"costume_queen_body",
+	"mask_kinghat",			"costume_king_body",
+	"mask_treehat",			"costume_tree_body",
+	"mask_foolhat",			"costume_fool_body",
+
+	--from charlie_stage.lua::REWARDPOOL
+	"pickaxe", "minerhat", "lightbulb",
+	"wateringcan", "farm_hoe", "farm_plow_item",
+	"oceanfishingrod", "oceanfishingbobber_ball", "oceanfishinglure_spoon_red",
+	"axe", "backpack", "shovel",
+	"spear", "armorgrass", "trap",
+	"earmuffshat", "meat_dried", "umbrella",
+	"tophat", "sewing_kit", "grass_umbrella",
+}
+
 local function fnhedge()
     local inst = fncommon("hound", "hound_hedge_ocean", nil, nil, nil, {amphibious = true})
 
@@ -866,6 +887,8 @@ local function fnhedge()
     if not TheWorld.ismastersim then
         return inst
     end 
+
+	inst.scrapbook_deps = hedge_scrapbook_deps
 
 	inst.sounds = sounds_hedge
 

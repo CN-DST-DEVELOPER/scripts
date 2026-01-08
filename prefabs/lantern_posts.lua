@@ -75,18 +75,31 @@ local function LanternPost_UpdateLightState(inst)
     end
 end
 
+local function LanternPost_ClearNeighbourLight(inst, light)
+	if inst.neighbour_lights then
+		inst.neighbour_lights[light] = nil
+		if next(inst.neighbour_lights) == nil then
+			inst.neighbour_lights = nil
+		end
+	end
+end
+
 local function LanternPost_RemoveNeighbourLights(inst)
     if inst.neighbour_lights then
 		for light in pairs(inst.neighbour_lights) do
+			--assert(light:IsValid())
             -- For the chain to know where to break off of, let's set the partner to nil.
             for i, partner in ipairs(light.partners) do
-                if partner:value() == inst then
+				local partnerinst = partner:value()
+				if partnerinst == inst then
                     partner:set(nil)
-                    break
+				elseif partnerinst then
+					LanternPost_ClearNeighbourLight(partnerinst, light)
                 end
             end
 			light:Remove()
 		end
+		inst.neighbour_lights = nil
 	end
 end
 
@@ -620,8 +633,8 @@ local function LightChain_SetPartners(inst, partner1, partner2)
 
     LightChain_EnableLight(inst, partner1.Light:IsEnabled() or partner2.Light:IsEnabled())
 
-    inst._partner1_onremove = function() partner2.neighbour_lights[inst] = nil end
-    inst._partner2_onremove = function() partner1.neighbour_lights[inst] = nil end
+	inst._partner1_onremove = function() LanternPost_ClearNeighbourLight(partner2, inst) end
+	inst._partner2_onremove = function() LanternPost_ClearNeighbourLight(partner1, inst) end
     inst:ListenForEvent("onremove", inst._partner1_onremove, partner1)
     inst:ListenForEvent("onremove", inst._partner2_onremove, partner2)
 end

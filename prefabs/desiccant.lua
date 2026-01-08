@@ -76,7 +76,7 @@ local function OnMoistureDeltaCallback(inst, oldmoisture, newmoisture)
     end
     OnIsDampDirty(inst)
     local deltasfx = newmoisture - (inst._playsfx_threshold or 0)
-    if deltasfx > PLAY_SFX_THRESHOLD or newmoisture == TUNING.MAX_WETNESS then
+    if math.abs(deltasfx) > PLAY_SFX_THRESHOLD or newmoisture == TUNING.MAX_WETNESS then
         inst._playsfx_threshold = newmoisture
         if deltasfx > 0 then
             inst._playsfx:push()

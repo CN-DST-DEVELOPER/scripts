@@ -23,6 +23,11 @@ local lunar_prefabs =
     "froglegs",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 -----------------------------------------------------------------------------------------------------------------
 
 local LUNARFROG_SCALE = 1.15
@@ -226,6 +231,8 @@ local function lunarfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
 
     inst.sounds = LUNAR_SOUNDS
 

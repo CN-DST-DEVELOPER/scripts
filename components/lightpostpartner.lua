@@ -7,9 +7,14 @@ local function RemoveChainLights(inst) -- Server callback
 		for light in pairs(inst.neighbour_lights) do
             -- For the chain to know where to break off of, let's set the partner to nil.
             for i, partner in ipairs(light.partners) do
-                if partner:value() == inst then
+				local partnerinst = partner:value()
+				if partnerinst == inst then
                     partner:set(nil)
-                    break
+				elseif partnerinst and partnerinst.neighbour_lights then
+					partnerinst.neighbour_lights[light] = nil
+					if next(partnerinst.neighbour_lights) == nil then
+						partnerinst.neighbour_lights = nil
+					end
                 end
             end
 			light:Remove()

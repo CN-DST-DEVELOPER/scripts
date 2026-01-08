@@ -419,13 +419,6 @@ local function commonfn(common_postinit, server_postinit)
         return inst
     end
 
-    WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the boss is fully defeated.
-
-    inst.scrapbook_adddeps = scrapbook_adddeps
-
-    inst.scrapbook_damage = { TUNING.ALTERGUARDIAN_PHASE1_ROLLDAMAGE, TUNING.ALTERGUARDIAN_PHASE3_DAMAGE }
-    inst.scrapbook_maxhealth = TUNING.ALTERGUARDIAN_PHASE1_HEALTH + TUNING.ALTERGUARDIAN_PHASE2_STARTHEALTH + TUNING.ALTERGUARDIAN_PHASE3_STARTHEALTH
-
     --inst._loot_dropped = nil      -- For handling save/loads during death; see SGalterguardian_phase1
 
     inst.EnableRollCollision = EnableRollCollision
@@ -507,6 +500,12 @@ local function common_postinit_basic(inst)
 end
 
 local function server_postinit_basic(inst)
+	WORLDSTATETAGS.SetTagEnabled("CELESTIAL_ORB_FOUND", true) -- Will drop when the boss is fully defeated.
+
+	inst.scrapbook_adddeps = scrapbook_adddeps
+	inst.scrapbook_damage = { TUNING.ALTERGUARDIAN_PHASE1_ROLLDAMAGE, TUNING.ALTERGUARDIAN_PHASE3_DAMAGE }
+	inst.scrapbook_maxhealth = TUNING.ALTERGUARDIAN_PHASE1_HEALTH + TUNING.ALTERGUARDIAN_PHASE2_STARTHEALTH + TUNING.ALTERGUARDIAN_PHASE3_STARTHEALTH
+
 	inst.SoundEmitter:PlaySound("moonstorm/creatures/boss/alterguardian1/idle_LP", "idle_LP")
 end
 

@@ -1393,6 +1393,12 @@ t = {
                 FlagForRetrofitting_Forest(savedata, "hermitcrab_relocation_change")
             end,
         },
+        {
+            version = 5.21, -- Redo 5.19 patch, there was a case where pearl scoring didn't activate due to being moved before upgraded to house with decoration score component
+            fn = function(savedata)
+                FlagForRetrofitting_Forest(savedata, "retrofit_enable_pearl_score")
+            end,
+        },
     },
 }
 

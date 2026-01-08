@@ -304,6 +304,8 @@ local function MakeCookPot(name, common_postinit, master_postinit, assets, prefa
             return inst
         end
 
+		inst.scrapbook_speechstatus = "EMPTY"
+
         inst:AddComponent("stewer")
         inst.components.stewer.onstartcooking = startcookfn
         inst.components.stewer.oncontinuecooking = continuecookfn

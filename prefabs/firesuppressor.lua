@@ -320,6 +320,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "OFF"
+
     inst._warninglevel = "off"
     inst._fuellevel = 10
 

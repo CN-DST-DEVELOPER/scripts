@@ -1,5 +1,5 @@
-local function UpdatePosition(inst, target)
-    local x, y, z = target.Transform:GetWorldPosition()
+local function UpdatePosition(inst)
+	local x, y, z = inst._target.Transform:GetWorldPosition()
     if inst._x ~= x or inst._z ~= z then
         inst._x = x
         inst._z = z
@@ -7,7 +7,7 @@ local function UpdatePosition(inst, target)
     end
 end
 
-local function TrackEntity(inst, target, restriction, icon)
+local function TrackEntity(inst, target, restriction, icon, noupdate)
     -- TODO(JBK): This function is not able to be ran twice without causing issues.
     inst._target = target
     if restriction ~= nil then
@@ -21,7 +21,11 @@ local function TrackEntity(inst, target, restriction, icon)
         inst.MiniMapEntity:SetIcon(target.prefab..".png")
     end
     inst:ListenForEvent("onremove", function() inst:Remove() end, target)
-    inst:DoPeriodicTask(0, UpdatePosition, nil, target)
+
+	if not noupdate then
+		inst:AddComponent("updatelooper")
+		inst.components.updatelooper:AddOnUpdateFn(UpdatePosition)
+	end
     UpdatePosition(inst, target)
 end
 

@@ -9041,6 +9041,8 @@ function Tune(overrides)
         WINTERSURPRISE_SPAWN_DELAY_VARIANCE = total_day_time * 1,
         WINTERSURPRISE_MAX_SPAWNS = 3,
         SPAWN_WINTERSURPRISE = true,
+
+		RETURN_ITEM_TO_FEEDER_RANGE = 4,
     }
 
     TUNING_MODIFIERS = {}

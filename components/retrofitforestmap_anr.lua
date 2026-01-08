@@ -1865,8 +1865,7 @@ function self:OnPostInit()
 
 		for k, v in pairs(Ents) do
 			if v.prefab == "hermithouse" then
-				local id = TheWorld.Map:GetTopologyIDAtPoint(v.Transform:GetWorldPosition())
-    			if id ~= "StaticLayoutIsland:HermitcrabIsland" then -- hack
+				if IsInValidHermitCrabDecorArea(v) then
 					v.components.pearldecorationscore:Enable()
 				end
 			end

@@ -48,6 +48,11 @@ local mutated_prefabs =
     "coolant",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 local normal_sounds =
 {
 	step = "dontstarve/creatures/deerclops/step",
@@ -83,7 +88,7 @@ end
 
 local function WantsToLeave(inst)
     return
-        not TheWorld.state.iswinter or
+		not (TUNING.DEERCLOPS_ATTACKS_OFF_SEASON or TheWorld.state.iswinter) or
         (
             not inst.components.combat:HasTarget()
             and inst:IsSated()
@@ -163,7 +168,7 @@ local function OnEntitySleep(inst)
 end
 
 local function OnStopWinter(inst)
-    if inst:IsAsleep() then
+	if not TUNING.DEERCLOPS_ATTACKS_OFF_SEASON and inst:IsAsleep() then
 		if not inst.ignorebase then
 			TheWorld:PushEvent("storehassler", inst)
 		end
@@ -659,6 +664,8 @@ local function mutatedfn()
 
         return inst
     end
+
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
 
     inst.sounds = mutated_sounds
 	inst.hasiceaura = true

@@ -14,6 +14,11 @@ local prefabs =
     --"lunarfeather",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 SetSharedLootTable('bird_mutant_rift',
 {
     {'spoiled_food',       1.00},
@@ -241,6 +246,8 @@ local function commonfn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_adddeps = mutated_scrapbook_adddeps
 
     inst.sounds = sounds
     inst.flyawaydistance = TUNING.BIRD_SEE_THREAT_DISTANCE

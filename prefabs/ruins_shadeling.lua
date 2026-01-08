@@ -131,6 +131,8 @@ local function fn()
 
 	inst.scrapbook_anim = "scrapbook"
 	inst.scrapbook_overridedata = { { "chair", "ruins_chair", "chair" } }
+	inst.scrapbook_hidesymbol = { "shad_parts2_red", "shad_head_white" }
+	inst.scrapbook_thingtype = "creature"
 
 	inst:AddComponent("sanityaura")
 	inst.components.sanityaura.aurafn = CalcSanityAura

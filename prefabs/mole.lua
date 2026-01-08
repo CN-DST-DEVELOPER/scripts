@@ -200,6 +200,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "ABOVEGROUND"
+
     inst:AddComponent("tradable")
 
     local locomotor = inst:AddComponent("locomotor")

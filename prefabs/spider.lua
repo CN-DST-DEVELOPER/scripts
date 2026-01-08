@@ -942,7 +942,7 @@ local function LoadCorpseData(inst, corpse)
 	end
 
     local home = corpse.components.entitytracker:GetEntity("spider_home")
-    if home ~= nil then
+    if home ~= nil and not home:HasTag("spidercocoon") then
         if data and data.isemergencychild then
             home.components.childspawner:TakeEmergencyOwnership(inst)
         else

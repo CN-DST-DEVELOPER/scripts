@@ -133,6 +133,8 @@ local function OnEquip(inst, owner)
     inst:ListenForEvent("itemget", inst.OnInventoryStateChanged, owner)
     inst:ListenForEvent("itemlose", inst.OnInventoryStateChanged, owner)
     inst:ListenForEvent("stacksizechange", inst.OnInventoryStateChanged, owner)
+	inst:ListenForEvent("newactiveitem", inst.OnInventoryStateChanged, owner)
+	inst:ListenForEvent("ms_souljar_count_changed", inst.OnInventoryStateChanged, owner)
 
     inst.OnInventoryStateChanged(owner)
 end
@@ -151,6 +153,8 @@ local function OnUnequip(inst, owner)
     inst:RemoveEventCallback("itemget", inst.OnInventoryStateChanged, owner)
     inst:RemoveEventCallback("itemlose", inst.OnInventoryStateChanged, owner)
     inst:RemoveEventCallback("stacksizechange", inst.OnInventoryStateChanged, owner)
+	inst:RemoveEventCallback("newactiveitem", inst.OnInventoryStateChanged, owner)
+	inst:RemoveEventCallback("ms_souljar_count_changed", inst.OnInventoryStateChanged, owner)
 
     inst:UpdateStats(0, 0)
 end

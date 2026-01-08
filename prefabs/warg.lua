@@ -45,6 +45,11 @@ local prefabs_mutated =
     "moonglass",
 }
 
+local mutated_scrapbook_adddeps =
+{
+	"lunarthrall_plant_gestalt",
+}
+
 local brain = require("brains/wargbrain")
 
 local sounds =
@@ -910,6 +915,10 @@ local function MakeWarg(data)
         if not TheWorld.ismastersim then
             return inst
         end
+
+		if is_mutated then
+			inst.scrapbook_adddeps = mutated_scrapbook_adddeps
+		end
 
 		inst.override_combat_fx_size = "med"
 

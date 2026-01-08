@@ -262,6 +262,7 @@ local function makesculpture(name, physics_radius, scale, second_piece_name, poi
         end
 
         inst.scrapbook_adddeps = { "sculpture_"..name.."head" }
+		inst.scrapbook_speechstatus = "UNCOVERED"
 
         inst:AddComponent("lootdropper")
         inst.components.lootdropper:SetChanceLootTable("sculptures_loot")

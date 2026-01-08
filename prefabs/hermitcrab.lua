@@ -171,10 +171,6 @@ local function iscoat(item)
            item.components.equippable.equipslot == EQUIPSLOTS.BODY
 end
 
-local function item_is_umbrella(item)
-    return item:HasTag("umbrella")
-end
-
 local function is_flowersalad(inst)
     return (inst.food_basename or inst.prefab) == "flowersalad"
 end
@@ -191,11 +187,12 @@ local function ShouldAcceptItem(inst, item)
     end
 
     -- Accept if we're given an umbrella, when it's raining, and we don't already have one.
-    if TheWorld.state.israining and item:HasTag("umbrella") then
-        local handequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-        if (inst.components.inventory:FindItem(item_is_umbrella) == nil) and (not handequipped or not handequipped:HasTag("umbrella")) then
-            return true
-        end
+	if TheWorld.state.israining and item:HasTag("umbrella") and
+		not (	inst.components.inventory:EquipHasTag("umbrella") or
+				inst.components.inventory:HasItemWithTag("umbrella", 1)
+			)
+	then
+		return true
     end
 
     -- Accept if we're given a coat, when it's showing, and we don't already have one.
@@ -230,10 +227,9 @@ local function OnRefuseItem(inst, giver, item)
     end
 
     if item:HasTag("umbrella") then
-        local handequipped = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-        local umbrella = inst.components.inventory:FindItem(function(testitem) return testitem:HasTag("umbrella") end) or (handequipped and  handequipped:HasTag("umbrella") and handequipped )
-
-        if umbrella then
+		if inst.components.inventory:EquipHasTag("umbrella") or
+			inst.components.inventory:HasItemWithTag("umbrella", 1)
+		then
             inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_UMBRELLA_HASONE", 1)
         elseif not TheWorld.state.israining then
             inst.components.npc_talker:Chatter("HERMITCRAB_REFUSE_UMBRELLA", 1)
@@ -1385,15 +1381,18 @@ local function initfriendlevellisteners(inst)
     end
     inst:ListenForEvent("CHEVO_lureplantdied", function(world,data)
         if data.target and data.target:HasTag("planted") then
-            -- INVESTIGATE
-            local gfl = inst.getgeneralfriendlevel(inst)
-            if not inst.comment_data then
-                inst.comment_data = {
-                    pos = data.target:GetPosition(),
-                    do_chatter = true,
-                    speech = "HERMITCRAB_PLANTED_LUREPLANT_DIED."..gfl,
-                    chat_priority = CHATPRIORITIES.LOW,
-                }
+			local source = inst.CHEVO_marker
+			if source and data.target:IsNear(source, ISLAND_RADIUS) then
+				-- INVESTIGATE
+				local gfl = inst.getgeneralfriendlevel(inst)
+				if not inst.comment_data then
+					inst.comment_data = {
+						pos = data.target:GetPosition(),
+						do_chatter = true,
+						speech = "HERMITCRAB_PLANTED_LUREPLANT_DIED."..gfl,
+						chat_priority = CHATPRIORITIES.LOW,
+					}
+				end
             end
         else
             checklureplant(inst,data)

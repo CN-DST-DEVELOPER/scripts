@@ -24,8 +24,6 @@ local WATER_RADIUS_CHECK_BIAS = -4
 local SHORE_CHECK_RADIUS = 2
 local SHORE_CHECK_ATTEMPTS = 12
 
-local BLOCKER_TAGS = {"blocker"}
-
 local WHIRL_PORTAL_TAGS = {"oceanwhirlbigportal"}
 local WHIRL_PORTAL_RADIUS = 16 -- Perfectly matching the spatial cell radius!
 
@@ -94,11 +92,8 @@ local function getoffsetfromtreasurespawnpoint(point_ind, radius, attempts, doer
 	end
 
 	-- Don't spawn close to a blocker
-	for _, ent in ipairs(TheSim:FindEntities(x, y, z, BLOCKER_RADIUS + MAX_PHYSICS_RADIUS, nil, nil, BLOCKER_TAGS)) do
-		local range = BLOCKER_RADIUS + ent:GetPhysicsRadius(0)
-		if ent:GetDistanceSqToPoint(x, 0, z) < range * range then
-			return nil
-		end
+	if IsPointCoveredByBlocker(x, y, z, BLOCKER_RADIUS) then
+		return nil
 	end
 
 	for _, v in ipairs(AllPlayers) do

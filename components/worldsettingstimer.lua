@@ -5,7 +5,10 @@ local WorldSettingsTimer = Class(function(self, inst)
 end)
 
 function WorldSettingsTimer:AddTimer(name, maxtime, enabled, callback, externallongupdate)
-    if self:TimerExists(name) then
+	if not (name and maxtime) then
+		print(string.format("Invalid WorldSettingsTimer: name=%s time=%s", tostring(name), tostring(maxtime)))
+		return
+	elseif self:TimerExists(name) then
         return
     end
 
@@ -24,11 +27,11 @@ function WorldSettingsTimer:AddTimer(name, maxtime, enabled, callback, externall
 end
 
 function WorldSettingsTimer:TimerEnabled(name)
-    return self:TimerExists(name) and self.timers[name].enabled
+	return self:TimerExists(name) and self.timers[name].enabled or false
 end
 
 function WorldSettingsTimer:GetMaxTime(name)
-    return self:TimerExists(name) and self.timers[name].maxtime
+	return self:TimerExists(name) and self.timers[name].maxtime or nil
 end
 
 function WorldSettingsTimer:OnRemoveFromEntity()
@@ -44,7 +47,7 @@ function WorldSettingsTimer:TimerExists(name)
 end
 
 function WorldSettingsTimer:ActiveTimerExists(name)
-    return self.timers[name] and self.timers[name].timeleft ~= nil
+	return self.timers[name] ~= nil and self.timers[name].timeleft ~= nil
 end
 
 local function OnTimerDone(inst, self, name)
@@ -93,7 +96,7 @@ function WorldSettingsTimer:StopTimer(name)
 end
 
 function WorldSettingsTimer:IsPaused(name)
-    return self:TimerExists(name) and (not self:TimerEnabled(name) or self.timers[name].paused)
+	return self:TimerExists(name) and (not self:TimerEnabled(name) or self.timers[name].paused or false)
 end
 
 function WorldSettingsTimer:PauseTimer(name, blocklongupdate)
@@ -151,20 +154,23 @@ function WorldSettingsTimer:SetMaxTime(name, time)
     if not self:ActiveTimerExists(name) or not self:TimerEnabled(name) then
         return
     elseif self:IsPaused(name) then
-        self.timers[name].timeleft = math.max(0, time) / self.timers[name].maxtime * self.timers[name].timeleft
-        self.timers[name].maxtime  = math.max(0, time)
+		local oldmaxtime = self.timers[name].maxtime
+		self.timers[name].maxtime = math.max(0, time)
+		self.timers[name].timeleft = oldmaxtime ~= 0 and self.timers[name].maxtime / oldmaxtime * self.timers[name].timeleft or 0
     else
         self:PauseTimer(name)
-        self.timers[name].timeleft = math.max(0, time) / self.timers[name].maxtime * self.timers[name].timeleft
-        self.timers[name].maxtime  = math.max(0, time)
+		local oldmaxtime = self.timers[name].maxtime
+		self.timers[name].maxtime = math.max(0, time)
+		self.timers[name].timeleft = oldmaxtime ~= 0 and self.timers[name].maxtime / oldmaxtime * self.timers[name].timeleft or 0
         self:ResumeTimer(name)
     end
 end
 
 function WorldSettingsTimer:GetTimeElapsed(name)
-    return self:ActiveTimerExists(name)
-        and (self.timers[name].initial_time or 0) - self:GetTimeLeft(name)
-        or nil
+	local timeleft = self:GetTimeLeft(name)
+	if timeleft then
+		return (self.timers[name].initial_time or 0) - timeleft
+	end
 end
 
 function WorldSettingsTimer:OnSave()
@@ -173,14 +179,14 @@ function WorldSettingsTimer:OnSave()
         if self:ActiveTimerExists(k) then
             data[k] =
             {
-                timeleft = self:GetTimeLeft(k) / v.maxtime,
+				timeleft = v.maxtime ~= 0 and self:GetTimeLeft(k) / v.maxtime or 0,
                 paused = v.paused,
                 blocklongupdate = v.blocklongupdate,
                 initial_time = v.initial_time,
             }
         end
     end
-    return {timers = data}
+	return next(data) and { timers = data }
 end
 
 function WorldSettingsTimer:OnLoad(data)
@@ -198,8 +204,11 @@ end
 
 function WorldSettingsTimer:LongUpdate(dt)
     for k, v in pairs(self.timers) do
-        if self:ActiveTimerExists(k) and not v.externallongupdate and not v.paused and not v.blocklongupdate then
-            self:SetTimeLeft(k, self:GetTimeLeft(k) - dt)
+		if not (v.externallongupdate or v.paused or v.blocklongupdate) then
+			local timeleft = self:GetTimeLeft(k)
+			if timeleft then
+				self:SetTimeLeft(k, timeleft - dt)
+			end
         end
     end
 end
@@ -210,14 +219,14 @@ function WorldSettingsTimer:GetDebugString()
         str = str..string.format(
             "\n    --%s: maxtime: %.2f enabled: %s",
             k,
-            self:GetMaxTime(k) or 0,
-            tostring(self:TimerEnabled(k) == true)
+			self:GetMaxTime(k),
+			tostring(self:TimerEnabled(k))
         )
         if v.timeleft ~= nil then
             str = str..string.format(
                 " timeleft: %.2f paused: %s",
                 self:GetTimeLeft(k) or 0,
-                tostring(self:IsPaused(k) == true)
+				tostring(self:IsPaused(k))
             )
         end
     end

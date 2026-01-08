@@ -62,6 +62,8 @@ function Bedazzlement:Stop()
 	end
 end
 
+local SPIDER_MUST_TAGS = { "spider" }
+local SPIDER_CANT_TAGS = { "spiderqueen", "creaturecorpse", "NOCLICK" }
 function Bedazzlement:PacifySpiders()
 	local x, y, z = self.inst.Transform:GetWorldPosition()
 	local den_tier = self.inst.components.growable ~= nil and self.inst.components.growable:GetStage() or 1
@@ -70,7 +72,7 @@ function Bedazzlement:PacifySpiders()
 		den_tier = 3
 	end
 
-    local ents = TheSim:FindEntities(x, y, z, TUNING.BEDAZZLEMENT_RADIUS[den_tier], {"spider"}, {"spiderqueen"})
+    local ents = TheSim:FindEntities(x, y, z, TUNING.BEDAZZLEMENT_RADIUS[den_tier], SPIDER_MUST_TAGS, SPIDER_CANT_TAGS)
 
     for k, spider in pairs(ents) do
 		spider:AddDebuff("bedazzle_buff", "bedazzle_buff")

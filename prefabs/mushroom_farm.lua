@@ -359,6 +359,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "EMPTY"
+
     ---------------------
     inst:AddComponent("harvestable")
     inst.components.harvestable:SetOnGrowFn(ongrow)

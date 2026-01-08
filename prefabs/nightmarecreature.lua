@@ -1,7 +1,13 @@
 local prefabs =
 {
     "nightmarefuel",
-    "ruinsnightmare_horn_attack",
+}
+
+local prefabs_ruinsnightmare =
+{
+	"ruinsnightmare_horn_attack",
+	"nightmarefuel",
+	"horrorfuel",
 }
 
 local brain = require( "brains/nightmarecreaturebrain")
@@ -264,7 +270,7 @@ local function MakeShadowCreature(data)
         return inst
     end
 
-    return Prefab(data.name, fn, assets, prefabs)
+	return Prefab(data.name, fn, assets, data.prefabs or prefabs)
 end
 
 local data =
@@ -320,7 +326,8 @@ local data =
             inst:ListenForEvent("newstate", inst._onnewstate)
             inst:ListenForEvent("ms_riftaddedtopool",     inst._onriftchanged, TheWorld)
             inst:ListenForEvent("ms_riftremovedfrompool", inst._onriftchanged, TheWorld)
-        end
+		end,
+		prefabs = prefabs_ruinsnightmare,
     },
 }
 

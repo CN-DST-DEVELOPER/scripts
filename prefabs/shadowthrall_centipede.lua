@@ -312,6 +312,9 @@ local function headfn()
     end
 
     inst.scrapbook_anim = "scrapbook"
+	inst.scrapbook_maxhealth = TUNING.SHADOWTHRALL_CENTIPEDE.HEALTH
+	inst.scrapbook_speechname = "shadowthrall_centipede"
+	inst.scrapbook_speechstatus = "BODY"
 
     --TODO do sleep and create a number of segments when waking as simulation of how much miasma we've eaten
     inst:SetBrain(head_brain)

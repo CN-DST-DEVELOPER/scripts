@@ -61,6 +61,10 @@ local function OnChatterDirty(inst)
                 local hud = ThePlayer and ThePlayer.HUD or nil
                 if hud and ThePlayer:GetDistanceSqToInst(inst) <= PLAYER_CAMERA_SEE_DISTANCE_SQ then -- NOTES(JBK): Replicate range check for chatter. [RCCHATTER]
                     -- Replicate to chat.
+                    if ThePlayer and not self.inst:HasTag("monkey") and ThePlayer:HasTag("wonkey") then
+                        str = CraftGiberish()
+                    end
+
                     local name_colour = self.name_colour and {self.name_colour.x, self.name_colour.y, self.name_colour.z, 1} or WHITE
                     local colour = self.colour and {self.colour.x, self.colour.y, self.colour.z, 1} or WHITE
                     ChatHistory:OnChatterMessage(inst, name_colour, str, colour, self.chaticon, self.chaticonbg, echotochatpriority)

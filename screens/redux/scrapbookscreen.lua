@@ -76,35 +76,6 @@ local function GetPeriodString(period)
 	end
 end
 
-local DESCRIPTION_STATUS_LOOKUP =
-{
-	ARCHIVE_COOKPOT = "EMPTY",
-	ARCHIVE_RUNE_STATUE = "LINE_1",
-	ARCHIVE_SWITCH = "GEMS",
-	ATRIUM_GATE = "OFF",
-	ATRIUM_LIGHT = "OFF",
-	ATRIUM_RUBBLE = "LINE_1",
-	BLUEPRINT = "COMMON",
-	CAVE_EXIT = "OPEN",
-	COOKPOT = "EMPTY",
-	FIRESUPPRESSOR = "OFF",
-	MOLE = "ABOVEGROUND",
-	MUSHROOM_FARM = "EMPTY",
-	MUSHROOM_LIGHT = "OFF",
-	MUSHROOM_LIGHT2 = "OFF",
-	NIGHTMARE_TIMEPIECE = "WARN",
-	SANITYROCK = "INACTIVE",
-	SCULPTINGTABLE = "EMPTY",
-	SCULPTURE_BISHOPBODY = "UNCOVERED",
-	SCULPTURE_KNIGHTBODY = "UNCOVERED",
-	SCULPTURE_ROOKBODY = "UNCOVERED",
-	STAGEHAND = "HIDING",
-	STAGEUSHER = "SITTING",
-	TELEBASE = "VALID",
-	WORM = "WORM",
-
-}
-
 local FUELTYPE_SUBICON_LOOKUP = {
 	[FUELTYPE.BURNABLE]  = "icon_fuel_burnable.tex",
 	[FUELTYPE.CAVE] 	 = "icon_fuel_cavelight.tex",
@@ -1020,7 +991,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			"scrap2",
 		}
 		if not tex then
-			tex = materials[math.ceil(self.PRNG:Rand()*#materials)]..suffix.. ".tex"
+			tex = materials[self.PRNG:RandInt(#materials)]..suffix..".tex"
 		end
 		if not source then
 			source = "images/scrapbook.xml"
@@ -1063,7 +1034,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			tape4:SetPosition(w/2-15,-h/2+15)
 			tape4:SetRotation(270)
 		elseif choice < 0.7 then
-			local tape1 = widget:AddChild(Image("images/scrapbook.xml", "tape".. math.ceil(self.PRNG:Rand()*2).."_centre.tex"))
+			local tape1 = widget:AddChild(Image("images/scrapbook.xml", "tape"..self.PRNG:RandInt(2).."_centre.tex"))
 			tape1:SetScale(0.5)
 			tape1:SetClickable(false)
 			tape1:SetPosition(0,h/2)
@@ -1081,7 +1052,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 				end
 			end
 			if (self.PRNG:Rand() < 0.5 and not shortblock) or (diagonal==true and right==false) then
-				local tape1 = widget:AddChild(Image("images/scrapbook.xml", "tape".. math.ceil(self.PRNG:Rand()*2).."_corner.tex"))
+				local tape1 = widget:AddChild(Image("images/scrapbook.xml", "tape"..self.PRNG:RandInt(2).."_corner.tex"))
 				tape1:SetScale(0.5)
 				tape1:SetClickable(false)
 				tape1:SetPosition(-w/2+5,-h/2+5)
@@ -1090,7 +1061,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			end
 
 			if not diagonal or right then
-				local tape2 = widget:AddChild(Image("images/scrapbook.xml", "tape".. math.ceil(self.PRNG:Rand()*2).."_corner.tex"))
+				local tape2 = widget:AddChild(Image("images/scrapbook.xml", "tape"..self.PRNG:RandInt(2).."_corner.tex"))
 				tape2:SetScale(0.5)
 				tape2:SetClickable(false)
 				tape2:SetPosition(-w/2+5,h/2-5)
@@ -1099,7 +1070,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			end
 
 			if not diagonal or right == false then
-				local tape3 = widget:AddChild(Image("images/scrapbook.xml", "tape".. math.ceil(self.PRNG:Rand()*2).."_corner.tex"))
+				local tape3 = widget:AddChild(Image("images/scrapbook.xml", "tape"..self.PRNG:RandInt(2).."_corner.tex"))
 				tape3:SetScale(0.5)
 				tape3:SetClickable(false)
 				tape3:SetPosition(w/2-5,h/2-5)
@@ -1108,7 +1079,7 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 			end
 
 			if (self.PRNG:Rand() < 0.5 and not shortblock) or (diagonal==true and right==true) then
-				local tape4 = widget:AddChild(Image("images/scrapbook.xml", "tape".. math.ceil(self.PRNG:Rand()*2).."_corner.tex"))
+				local tape4 = widget:AddChild(Image("images/scrapbook.xml", "tape"..self.PRNG:RandInt(2).."_corner.tex"))
 				tape4:SetScale(0.5)
 				tape4:SetClickable(false)
 				tape4:SetPosition(w/2-5,-h/2+5)
@@ -1116,8 +1087,8 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 				tape4:SetRotation(rotation)
 			end
 		else
-			local ropechoice = math.ceil(self.PRNG:Rand()*3)
-			local rope = widget:AddChild(Image("images/scrapbook.xml", "rope".. ropechoice.."_corner.tex"))
+			local ropechoice = self.PRNG:RandInt(3)
+			local rope = widget:AddChild(Image("images/scrapbook.xml", "rope"..ropechoice.."_corner.tex"))
 			rope:SetScale(0.5)
 			rope:SetClickable(false)
 			if ropechoice == 1 then
@@ -2143,17 +2114,28 @@ function ScrapbookScreen:PopulateInfoPanel(entry)
 					end
 
 					if type(objstr) == "table" then
-						if #objstr > 0 then
-							objstr = objstr[math.floor(self.PRNG:Rand()*#objstr)+1]
+						if data.speechstatus then
+							if type(data.speechstatus) == "string" then
+								local num = tonumber(data.speechstatus)
+								objstr = num and objstr[num] or objstr[string.upper(data.speechstatus)]
+							elseif type(data.speechstatus) == "table" then
+								for _, v in ipairs(data.speechstatus) do
+									if type(v) == "string" then
+										local num = tonumber(v)
+										objstr = num and objstr[num] or objstr[v]
+									else
+										objstr = objstr[v]
+									end
+									if objstr == nil then
+										break
+									end
+								end
+							else
+								objstr = objstr[data.speechstatus]
+							end
 
-						elseif DESCRIPTION_STATUS_LOOKUP[entry_upper] ~= nil then
-							objstr = objstr[DESCRIPTION_STATUS_LOOKUP[entry_upper]]
-
-						elseif entry_upper == "ABIGAIL" then
-							objstr = objstr["LEVEL1"][1]
-
-						elseif entry_upper == "FLOWER" and data.prefab == "flower_rose" then
-							objstr = objstr["ROSE"]
+						elseif #objstr > 0 then
+							objstr = objstr[self.PRNG:RandInt(#objstr)]
 
 						else
 							objstr = objstr["GENERIC"]

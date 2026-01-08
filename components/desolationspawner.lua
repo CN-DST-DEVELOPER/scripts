@@ -205,6 +205,11 @@ self:SetSpawningForType("palmconetree", "palmcone_sapling", TUNING.PALMCONETREE_
     return (_worldstate.iswinter and 0) or TUNING.PALMCONETREE_REGROWTH_TIME_MULT
 end)
 
+-- NOTE: This is deprecated, but needs to stay here for previous saves and retrofit
+self:SetSpawningForType("tree_rock", "tree_rock_sapling", TUNING.TREE_ROCK_REGROWTH.DESOLATION_RESPAWN_TIME, {"rock_tree"}, function()
+    return TUNING.TREE_ROCK_REGROWTH_TIME_MULT
+end)
+
 self:SetSpawningForType("tree_rock1", "tree_rock_sapling", TUNING.TREE_ROCK_REGROWTH.DESOLATION_RESPAWN_TIME, {"rock_tree"}, function()
     return TUNING.TREE_ROCK_REGROWTH_TIME_MULT
 end)

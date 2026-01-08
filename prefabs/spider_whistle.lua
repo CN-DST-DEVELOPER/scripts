@@ -17,9 +17,13 @@ local function CanHerd(whistle, leader)
     return true
 end
 
+local SPIDER_MUST_TAGS = { "spider" }
+local SPIDER_CANT_TAGS = { "spiderqueen", "creaturecorpse", "NOCLICK" }
+
+local SPIDERDEN_ONEOF_TAGS = { "spidercocoon", "spiderden" }
 local function OnHerd(whistle, leader)
     local x, y, z = leader.Transform:GetWorldPosition()
-    local ents = TheSim:FindEntities(x, y, z, TUNING.SPIDER_WHISTLE_RANGE, nil, nil, {"spidercocoon", "spiderden"})
+    local ents = TheSim:FindEntities(x, y, z, TUNING.SPIDER_WHISTLE_RANGE, nil, nil, SPIDERDEN_ONEOF_TAGS)
 
     for _, den in pairs(ents) do
         if den.components.childspawner and den.components.childspawner.childreninside > 0 and den.SummonChildren then
@@ -27,7 +31,7 @@ local function OnHerd(whistle, leader)
         end
     end
 
-    ents = TheSim:FindEntities(x, y, z, TUNING.SPIDER_WHISTLE_RANGE, {"spider"}, {"spiderqueen"})
+    ents = TheSim:FindEntities(x, y, z, TUNING.SPIDER_WHISTLE_RANGE, SPIDER_MUST_TAGS, SPIDER_CANT_TAGS)
     for _, spider in pairs(ents) do
         if spider.components.sleeper and spider.components.sleeper:IsAsleep() then
             spider.components.sleeper:WakeUp()

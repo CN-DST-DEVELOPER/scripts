@@ -1638,3 +1638,20 @@ function IsEntityGestaltProtected(inst)
     return (inventory and inventory:EquipHasTag("gestaltprotection"))
         or inst:HasDebuff("hermitcrabtea_moon_tree_blossom_buff")
 end
+
+--------------------------------------------------------------------------
+
+local BLOCKER_TAGS = { "blocker" }
+
+function IsPointCoveredByBlocker(x, y, z, extra_radius)
+    extra_radius = extra_radius or 0
+
+    for _, ent in ipairs(TheSim:FindEntities(x, 0, z, extra_radius + MAX_PHYSICS_RADIUS, nil, nil, BLOCKER_TAGS)) do
+		local range = extra_radius + ent:GetPhysicsRadius(0)
+		if ent:GetDistanceSqToPoint(x, 0, z) < range * range then
+			return true
+		end
+	end
+
+    return nil
+end

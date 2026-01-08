@@ -251,6 +251,8 @@ local TRANSLATE_TO_PREFABS = {
 	["junkyard"] =		    {"junk_pile", "junk_pile_big"},
 	-- Allow for the balatro machine to be required world gen prefabs, but still disable-able via World Gen settings
 	["balatro"] =		    {"balatro_machine"},
+
+	["tree_rock"] =			{ "tree_rock", "tree_rock1", "tree_rock2" },
 }
 
 local TRANSLATE_TO_CLUMP = {

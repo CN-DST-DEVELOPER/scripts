@@ -39,7 +39,9 @@ local function cocoon_ignited(inst, source, doer)
     if inst:GetTimeAlive() > 5 then
         local children_released = inst.components.childspawner:ReleaseAllChildren()
         for _, child in ipairs(children_released) do
-            child.sg:GoToState("dropper_enter")
+            if child.sg and child.sg:HasState("dropper_enter") then
+                child.sg:GoToState("dropper_enter")
+            end
         end
     end
     inst.components.childspawner:StopSpawning()
@@ -93,10 +95,15 @@ end
 local function spawn_one_investigator(inst, target_position)
     local spider = inst.components.childspawner:SpawnChild(nil, nil, 4)
     if spider ~= nil then
-        spider.sg:GoToState("dropper_enter")
-        spider.components.timer:StartTimer("investigating", TUNING.SPIDER_WATER_INVESTIGATETIMEBASE + 5*math.random())
+        if spider.sg and spider.sg:HasState("dropper_enter") then
+            spider.sg:GoToState("dropper_enter")
+        end
 
-        if target_position ~= nil then
+        if spider.components.timer then
+            spider.components.timer:StartTimer("investigating", TUNING.SPIDER_WATER_INVESTIGATETIMEBASE + 5*math.random())
+        end
+
+        if target_position ~= nil and spider.components.knownlocations then
             spider.components.knownlocations:RememberLocation("investigate", target_position)
         end
     end
@@ -157,8 +164,14 @@ local function look_for_fish(inst)
             -- Spawn out a spider, and send it to investigate.
             local spider = inst.components.childspawner:SpawnChild(nil, nil, 4)
             if spider ~= nil then
-                spider.components.knownlocations:RememberLocation("investigate", a_fish:GetPosition())
-                spider.sg:GoToState("dropper_enter")
+                if spider.components.knownlocations then
+                    spider.components.knownlocations:RememberLocation("investigate", a_fish:GetPosition())
+                end
+
+                if spider.sg and spider.sg:HasState("dropper_enter") then
+                    spider.sg:GoToState("dropper_enter")
+                end
+
                 look_time = (2 + 2*math.random()) * TUNING.SEG_TIME
             end
         end
@@ -265,7 +278,9 @@ local function SummonChildren(inst)
                 for _, v in ipairs(children_released) do
                     v:AddDebuff("spider_summoned_buff", "spider_summoned_buff")
 
-                    v.sg:GoToState("dropper_enter")
+                    if v.sg and v.vg:HasState("dropper_enter") then
+                        v.sg:GoToState("dropper_enter")
+                    end
                 end
             end
         end

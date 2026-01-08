@@ -174,6 +174,8 @@ local function MakeAnyBlueprint()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "COMMON"
+
     local unknownrecipes = {}
     local knownrecipes = {}
     local allplayers = AllPlayers

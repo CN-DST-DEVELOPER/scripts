@@ -13,6 +13,11 @@ end
 
 local brain = require "brains/lunarthrall_plant_gestalt_brain"
 
+local scrapbook_adddeps =
+{
+	"lunarrift_portal",
+}
+
 local function fn()
     local inst = CreateEntity()
 
@@ -54,6 +59,9 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
+
+	inst.scrapbook_thingtype = "creature"
+	inst.scrapbook_adddeps = scrapbook_adddeps
 
     inst:AddComponent("timer")
 

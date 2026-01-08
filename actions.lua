@@ -2250,18 +2250,24 @@ ACTIONS.FEEDPLAYER.fn = function(act)
             act.invobject:HasTag("spoiled"))) then
 
         if act.target.components.eater:PrefersToEat(act.invobject) then
+			local isactive = act.doer.components.inventory:GetActiveItem() == act.invobject
             local food = act.invobject.components.inventoryitem:RemoveFromOwner()
             if food ~= nil then
+				--Config food assuming it is deleted when eaten.
+				--NOTE: Keep in sync with SGwilson.lua::TryReturnItemToFeeder
                 act.target:AddChild(food)
                 food:RemoveFromScene()
                 food.components.inventoryitem:HibernateLivingItem()
                 food.persists = false
+				--
+				--NOTE: Keep states in sync with SGwilson.lua ACTIONS.EAT handler.
+				--NOTE: Floating not supported (should not make it past the "idle" check.)
                 act.target.sg:GoToState(
 					(food:HasTag("quickeat") and "quickeat") or
 					(food:HasTag("sloweat") and "eat") or
-					(food.components.edible.foodtype == FOODTYPE.MEAT and "eat") or
+					(food.components.edible.foodtype == FOODTYPE.MEAT and not food:HasTag("fooddrink") and "eat") or
 					"quickeat",
-                    { feed = food, feeder = act.doer }
+					{ feed = food, feeder = act.doer, active = isactive }
                 )
                 return true
             end
@@ -5762,11 +5768,11 @@ ACTIONS.CAST_SPELLBOOK.fn = function(act)
 		end
 		if act.invobject.components.inventoryitem and
 			act.invobject.components.inventoryitem:GetGrandOwner() == act.doer and
-			act.invobject.components.spellbook
+			act.invobject.components.spellbook and act.invobject.components.spellbook:CanBeUsedBy(act.doer)
 		then
 			return act.invobject.components.spellbook:CastSpell(act.doer)
 		end
-	elseif act.target == act.doer and act.target.components.spellbook then
+	elseif act.target == act.doer and act.target.components.spellbook and act.target.components.spellbook:CanBeUsedBy(act.doer) then
 		return act.target.components.spellbook:CastSpell(act.doer)
 	end
 end

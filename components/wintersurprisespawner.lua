@@ -12,7 +12,6 @@ assert(TheWorld.ismastersim, "WinterSurpriseSpawner should not exist on client")
 
 local INLIMBO_TAGS = { "INLIMBO" }
 
-local BLOCKER_TAGS = { "blocker" }
 local BLOCKER_RADIUS = 2
 
 local WINTER_TREE_TAGS = { "winter_tree" }
@@ -179,12 +178,9 @@ local function IsValidSpawnOffset(pos)
         return false
     end
 
-    for _, ent in ipairs(TheSim:FindEntities(x, 0, z, BLOCKER_RADIUS + MAX_PHYSICS_RADIUS, nil, nil, BLOCKER_TAGS)) do
-		local range = BLOCKER_RADIUS + ent:GetPhysicsRadius(0)
-		if ent:GetDistanceSqToPoint(x, 0, z) < range * range then
-			return false
-		end
-	end
+    if IsPointCoveredByBlocker(x, 0, z, BLOCKER_RADIUS) then
+        return false
+    end
 
     return true
 end

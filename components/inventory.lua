@@ -1271,8 +1271,7 @@ function Inventory:RemoveItem(item, wholestack, checkallcontainers, keepoverstac
         self:SetActiveItem()
         self.inst:PushEvent("itemlose", { activeitem = true, prev_item = item })
         item.components.inventoryitem:OnRemoved()
-        item.prevslot = prevslot
-        item.prevcontainer = nil
+		--keep current prevcontainer, prevslot
         return item
     end
 
@@ -2212,7 +2211,7 @@ function Inventory:CastSpellBookFromInv(item, spell_id)
 	if self.inst.components.playercontroller and
 		not self.inst.components.playercontroller:IsBusy() and
 		(item == self.inst or self:CanAccessItem(item)) and
-		item.components.spellbook
+		item.components.spellbook and (item == self.inst or item.components.spellbook:CanBeUsedBy(self.inst))
 	then
 		if spell_id ~= nil then
 			item.components.spellbook:SelectSpell(spell_id)

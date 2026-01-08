@@ -6302,7 +6302,7 @@ STRINGS =
         LIGHT_POSTS = { "My home is so bright and beautiful now!", "All these lights really liven the mood!", "The lights look give such a warm and cozy glow. It's perfect.", },
         MEAT_RACKS = { "I love my new drying racks!", "Thank you dearie! Now I have so much room for drying!", "I'll never run out of drying space again!", },
         FLOWERS = { "Oh dearie, I love all the flowers you've planted for me!", "My garden is full of beautiful flowers thanks to you, dearie!", "All these flowers make me so happy! Thank you, my dearie." },
-        BEE_BOXES = { "Thank you for all the beeboxes, dearie!", "My bees love their new homes! Thank you, dearie!", "All these beeboxes! Now I'll have plenty of honey for my tea!" },
+        BEE_BOXES = { "Thank you for all the bee boxes, dearie!", "My bees love their new homes! Thank you, dearie!", "All these bee boxes! Now I'll have plenty of honey for my tea!" },
 
         WATER_TREE = { "What a wonderful tree you planted for me, dearie!", "I love my tree, dearie! It protects me from the hot sun and cold rain!", "Thank you for planting the beautiful tree for me, dearie."},
         CRITTER_PET = { "I don't much take to company, dearie... except yours and now this sweet little one's.", "Thank you for bringing me this perfect little companion, dearie."},
@@ -8649,7 +8649,7 @@ STRINGS.UI =
         NEEDSCARPENTRY_THREE = "Use a Sawhorse with a strong blade to build a prototype!",
         NEEDSCELESTIAL_ONE = "Find a small source of lunar energy to craft this at.",
         NEEDSCELESTIAL_THREE = "Find a big source of lunar energy to craft this at.",
-        NEEDSCARTOGRAPHYDESK = "Use a Cartography Desk to write this.",
+        NEEDSCARTOGRAPHYDESK = "Use a Cartographer's Desk to write this.",
 
 		NEEDSYOTG = "Available during Year of the Gobbler!",
 		NEEDSYOTV = "Available during Year of the Varg!",
@@ -11276,6 +11276,7 @@ STRINGS.UI =
         FLOWER_CAVE_REGROWTH = "Light Flower",
         LIGHTFLIER_FLOWER_REGROWTH = "Lightbug Flower",
         SALTSTACK_REGROWTH = "Salt Formations",
+        TREE_ROCK_REGROWTH = "Boulderboughs",
 
         MOON_TREE = "Lune Trees",
         MOON_SAPLING = "Lunar Saplings",
@@ -11340,6 +11341,8 @@ STRINGS.UI =
         MUTATED_DEERCLOPS = "Crystal Deerclops",
         MUTATED_BEARGER = "Armored Bearger",
         MUTATED_WARG = "Possessed Vargs",
+
+        TREE_ROCK = "Boulderboughs",
 		-- End of world customization strings
     },
 
@@ -18084,7 +18087,7 @@ STRINGS.SCRAPBOOK = {
         HERMITCRABTEA_FIRENETTLES = "Warm yourself with this lovingly brewed concoction from Pearl.",
         HERMITCRABTEA_TILLWEED = "Tend to your wounds with this lovingly brewed concoction from Pearl.",
         HERMITCRABTEA_MOON_TREE_BLOSSOM = "Scare off shadows of the night with this lovingly brewed concoction from Pearl.",
-        HERMITCRABTEA_FORGETMELOTS = "Soothe your mind like nothing else can, with this exception brewed concotion from Pearl.",
+        HERMITCRABTEA_FORGETMELOTS = "Soothe your mind like nothing else can, with this exception brewed concoction from Pearl.",
 
         HERMITCRAB_LIGHTPOST = "String up pearlescent lights. Connects to Tea Shops and Pearl's Place too!",
     },

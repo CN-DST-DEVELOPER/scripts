@@ -390,6 +390,7 @@ local function rock_fn()
     end
 
     inst.scrapbook_anim = "full"
+	inst.scrapbook_hidesymbol = { "red_vents" }
 
     inst.ventilation_type = VENT_TYPES.NONE
 

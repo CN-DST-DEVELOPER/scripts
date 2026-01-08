@@ -173,6 +173,7 @@ local function fn()
     end
 
 	inst.scrapbook_overridedata = SCRAPBOOK_OVERRIDEDATA
+	inst.scrapbook_thingtype = "creature"
 
 	inst.persists = false
 

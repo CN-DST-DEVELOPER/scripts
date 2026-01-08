@@ -353,6 +353,7 @@ local WORLDGEN_GROUP = {
 			["fern"] = {value = "default", image = "fern.tex", world={"cave"}},
 			["flower_cave"] = {value = "default", image = "flower_cave.tex", world={"cave"}},
 			["wormlights"] = {value = "default", image = "wormlights.tex", world={"cave"}},
+			["tree_rock"] = {value = "default", image = "tree_rock.tex", world={"cave"}},
 			["berrybush"] = {value = "default", image = "berrybush.tex", world={"forest", "cave"}},
 			["carrot"] = {value = "default", image = "carrot.tex", world={"forest"}},
 			["mushroom"] = {value = "default", image = "mushrooms.tex", world={"forest", "cave"}},
@@ -543,13 +544,13 @@ local WORLDSETTINGS_GROUP = {
 		items={
 			["regrowth"] = {value = "default", image = "regrowth.tex", order = 1, world={"forest", "cave"}},
 
-			["evergreen_regrowth"] = {value = "default", image = "evergreen.tex", world={"forest"}},
+			["evergreen_regrowth"] = {value = "default", image = "evergreen.tex", world={"forest", "cave"}},
 			["deciduoustree_regrowth"] = {value = "default", image = "deciduoustree.tex", world={"forest"}},
-			["twiggytrees_regrowth"] = {value = "default", image = "twiggytrees.tex", world={"forest"}},
+			["twiggytrees_regrowth"] = {value = "default", image = "twiggytrees.tex", world={"forest", "cave"}},
 			["moon_tree_regrowth"] = {value = "default", image = "moon_tree.tex", world={"forest"}},
 			["flowers_regrowth"] = {value = "default", image = "flowers.tex", world={"forest"}},
 			["carrots_regrowth"] = {value = "default", image = "carrots.tex", world={"forest"}},
-			["reeds_regrowth"] = {value = "default", image = "reeds.tex", world={"forest"}},
+			["reeds_regrowth"] = {value = "default", image = "reeds.tex", world={"forest", "cave"}},
 			["cactus_regrowth"] = {value = "default", image = "cactus.tex", world={"forest"}},
 			["saltstack_regrowth"] = {value = "default", image = "saltstack.tex", world={"forest"}},
             ["palmconetree_regrowth"] = {value = "default", image = "palmconetree.tex", world={"forest"}},
@@ -558,6 +559,7 @@ local WORLDSETTINGS_GROUP = {
 			["lightflier_flower_regrowth"] = {value = "default", image = "lightflier_flower.tex", world={"cave"}},
 			["mushtree_regrowth"] = {value = "default", image = "mushtree.tex", world={"cave"}},
 			["mushtree_moon_regrowth"] = {value = "default", image = "mushtree_moon.tex", world={"cave"}},
+			["tree_rock_regrowth"] = {value = "default", image = "tree_rock.tex", world={"cave"}},
 
 			["basicresource_regrowth"] = {value = "none", image = "basicresource_regrowth.tex", desc = enableddisabled_descriptions, masteroption = true, master_controlled = true, master_sync = true},
 		}

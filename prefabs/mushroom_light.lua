@@ -280,6 +280,8 @@ local function MakeMushroomLight(name, onlywhite, physics_rad)
             return inst
         end
 
+		inst.scrapbook_speechstatus = "OFF"
+
         inst.onlywhite = onlywhite
 
         MakeSmallBurnable(inst, nil, nil, true)

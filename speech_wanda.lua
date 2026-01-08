@@ -5873,7 +5873,7 @@ return{
 
 		PUMPKINHAT =
 		{
-			GENERIC = "Yes, that will no nicely.",
+			GENERIC = "Yes, that will go nicely.",
 			UNCARVED = "Pumpkin carving reminds me of a simpler time.",--can't wear it unless it's carved.
 		},
 

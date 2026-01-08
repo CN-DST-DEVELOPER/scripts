@@ -586,6 +586,8 @@ local function fn()
         CreateFloor().entity:SetParent(inst.entity)
     end
 
+	inst.scrapbook_speechstatus = "OFF"
+
     --Dedicated servers need this too
     AddTerraformBlockers(inst)
 

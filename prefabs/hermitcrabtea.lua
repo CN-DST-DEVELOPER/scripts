@@ -8,13 +8,27 @@ hermitcrabtea_defs = nil
 --------------------------------------------------------------------------------------------------------
 
 local function OnFinishTea(inst)
-    local owner = inst.components.inventoryitem.owner
-    local x, y, z = (owner ~= nil and owner or inst).Transform:GetWorldPosition()
+	--V2C: GetParent() for when feeding others (see ACTIONS.FEEDPLAYER.fn)
+	local owner = inst.components.inventoryitem:GetGrandOwner() or inst.entity:GetParent()
+	local x, y, z = (owner or inst).Transform:GetWorldPosition()
 
     inst:Remove()
 	local refund = SpawnPrefab("messagebottleempty")
-	if owner ~= nil and owner.components.inventory ~= nil then
-		owner.components.inventory:GiveItem(refund, nil, Vector3(x, y, z))
+	if owner then
+		local range = TUNING.RETURN_ITEM_TO_FEEDER_RANGE
+		local feeder = owner.sg and owner.sg.statemem.feeder
+		if feeder and feeder:IsValid() and
+			feeder.components.inventory and feeder.components.inventory.isopen and
+			feeder:GetDistanceSqToPoint(x, y, z) < range * range
+		then
+			feeder.components.inventory:GiveItem(refund, nil, Vector3(x, y, z))
+		elseif owner.components.inventory and owner.components.inventory.isopen then
+			owner.components.inventory:GiveItem(refund, nil, Vector3(x, y, z))
+		elseif owner.components.container then
+			owner.components.container:GiveItem(refund, nil, Vector3(x, y, z))
+		else
+			refund.components.inventoryitem:DoDropPhysics(x, y, z, true)
+		end
 	else
 		refund.Transform:SetPosition(x, y, z)
 	end

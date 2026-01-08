@@ -91,6 +91,8 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "HIDING"
+
     MakeSmallPropagator(inst)
     MakeHauntableWork(inst)
     MakeSnowCovered(inst)

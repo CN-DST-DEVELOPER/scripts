@@ -236,6 +236,8 @@ local function rosefn()
         return inst
     end
 
+	inst.scrapbook_speechstatus = "ROSE"
+
     setflowertype(inst, ROSE_NAME)
     inst.DoRoseBounceAnim = DoRoseBounceAnim
 
