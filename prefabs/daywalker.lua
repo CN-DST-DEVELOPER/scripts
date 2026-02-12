@@ -955,7 +955,7 @@ local function MakeHostile(inst)
 end
 
 local function MakeDefeated(inst)
-	if not (inst.chained or inst.defated) and inst.hostile then
+	if not (inst.chained or inst.defeated) and inst.hostile then
 		inst.defeated = true
 		inst.hostile = false
 		inst:RemoveEventCallback("attacked", OnAttacked)

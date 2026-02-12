@@ -36,11 +36,16 @@ local MermBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function GetHealerFn(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     local players = FindPlayersInRange(x, y, z, TRADE_DIST, true)
+    local leader = GetLeader(inst)
     for _, v in ipairs(players) do
-		if (v == inst.components.follower:GetLeader() or v:HasTag("merm")) and not inst.components.combat:TargetIs(v) then
+		if (v == leader or v:HasTag("merm")) and not inst.components.combat:TargetIs(v) then
 			local target
 			local act = v:GetBufferedAction()
 			if act then
@@ -57,7 +62,7 @@ local function GetHealerFn(inst)
 end
 
 local function KeepHealerFn(inst, target)
-	if (target == inst.components.follower:GetLeader() or target:HasTag("merm")) and not inst.components.combat:TargetIs(target) then
+	if (target == GetLeader(inst) or target:HasTag("merm")) and not inst.components.combat:TargetIs(target) then
         local act = target:GetBufferedAction()
 		if act then
 			return act.target == inst and act.action == ACTIONS.HEAL
@@ -87,7 +92,8 @@ local function GetFaceTargetFn(inst)
     if inst.components.timer:TimerExists("dontfacetime") then
         return nil
     end
-    local shouldface = inst.components.follower.leader or FindClosestPlayerToInst(inst, SEE_PLAYER_DIST, true)
+    local leader = GetLeader(inst)
+    local shouldface = leader or FindClosestPlayerToInst(inst, SEE_PLAYER_DIST, true)
     if shouldface and not inst.components.timer:TimerExists("facetime") then
         inst.components.timer:StartTimer("facetime", FACETIME_BASE + math.random()*FACETIME_RAND)
     end
@@ -98,11 +104,16 @@ local function KeepFaceTargetFn(inst, target)
     if inst.components.timer:TimerExists("dontfacetime") then
         return nil
     end
-    local keepface = (inst.components.follower.leader and inst.components.follower.leader == target) or (target:IsValid() and inst:IsNear(target, SEE_PLAYER_DIST))
+    local leader = GetLeader(inst)
+    local keepface = (leader and leader == target) or (target:IsValid() and inst:IsNear(target, SEE_PLAYER_DIST))
     if not keepface then
         inst.components.timer:StopTimer("facetime")
     end
     return keepface
+end
+
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
 end
 
 local EATFOOD_MUST_TAGS = { "edible_VEGGIE" }
@@ -119,7 +130,8 @@ local function EatFoodAction(inst)
         target = inst.components.inventory:FindItem(function(item) return item:HasTag("moonglass_piece") or inst.components.eater:CanEat(item) end)
     end
 
-    if target == nil and inst.components.follower.leader == nil then
+    local leader = GetLeader(inst)
+    if target == nil and leader == nil then
         target = FindEntity(inst, SEE_FOOD_DIST, function(item)
             return inst.components.eater ~= nil and inst.components.eater:CanEat(item)
         end, EATFOOD_MUST_TAGS, EATFOOD_CANT_TAGS)
@@ -309,7 +321,7 @@ local function GoHomeAction(inst)
 end
 
 local function ShouldGoHome(inst)
-    if not TheWorld.state.isday or (inst.components.follower ~= nil and inst.components.follower.leader ~= nil) then
+    if not TheWorld.state.isday or (GetLeader(inst) ~= nil) then
         return false
     end
 
@@ -329,7 +341,7 @@ local function IsHomeOnFire(inst)
 end
 
 local function GetNoLeaderHomePos(inst)
-    if inst.components.follower and inst.components.follower.leader ~= nil then
+    if GetLeader(inst) ~= nil then
         return nil
     else
         return inst.components.knownlocations:GetLocation("home")
@@ -447,8 +459,11 @@ end
 
 local function DigAction(inst, leaderdist, finddist)
     local target = FindEntity(inst, finddist, nil, FARM_DEBRIS_TAGS)
-    if target == nil and inst.components.follower.leader ~= nil then
-        target = FindEntity(inst.components.follower.leader, finddist, nil, FARM_DEBRIS_TAGS)
+    if target == nil then
+        local leader = GetLeader(inst)
+        if leader then
+            target = FindEntity(leader, finddist, nil, FARM_DEBRIS_TAGS)
+        end
     end
 
     if target ~= nil then
@@ -469,21 +484,18 @@ local dig_clump_starter = function(inst,finddist)
     if not target then
         target = findTillTarget(inst,finddist)
     end
-
-    local leaderisdigging = inst.components.follower.leader ~= nil and
-                    inst.components.follower.leader.sg ~= nil and
-                    inst.components.follower.leader.sg:HasStateTag("digging")
-
-    local leaderistilling = inst.components.follower.leader ~= nil and
-                    inst.components.follower.leader.sg ~= nil and
-                    inst.components.follower.leader.sg:HasStateTag("tilling")
+    local leader = GetLeader(inst)
+    local leaderisdigging = leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("digging")
+    local leaderistilling = leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("tilling")
 
     return (leaderisdigging or leaderistilling) and (inst.stump_target or target) or nil
 end
 local dig_clump_keepgoing = function(inst, leaderdist, finddist)
-    return inst.stump_target ~= nil
-        or (inst.components.follower.leader ~= nil and
-            inst:IsNear(inst.components.follower.leader, leaderdist))
+    if inst.stump_target then
+        return true
+    end
+    local leader = GetLeader(inst)
+    return leader ~= nil and inst:IsNear(leader, leaderdist)
 end
 local dig_clump_finder = function(inst, leaderdist, finddist)
     local action = DigAction(inst, leaderdist, finddist)
@@ -501,15 +513,20 @@ local function dig_stump_starter(inst,finddist)
 end
 
 local function dig_stump_keepgoing(inst, leaderdist, finddist)
-    return inst.stump_target ~= nil
-        or (inst.components.follower.leader ~= nil and
-            inst:IsNear(inst.components.follower.leader, leaderdist))
+    if inst.stump_target then
+        return true
+    end
+    local leader = GetLeader(inst)
+    return leader ~= nil and inst:IsNear(leader, leaderdist)
 end
 
 local function dig_stump_finder(inst, leaderdist, finddist)
     local target = FindEntity(inst, finddist, nil, DIG_TAGS, DIG_CANT_TAGS)
-    if target == nil and inst.components.follower.leader ~= nil then
-        target = FindEntity(inst.components.follower.leader, finddist, nil, DIG_TAGS, DIG_CANT_TAGS)
+    if target == nil then
+        local leader = GetLeader(inst)
+        if leader then
+            target = FindEntity(leader, finddist, nil, DIG_TAGS, DIG_CANT_TAGS)
+        end
     end
     if target ~= nil then
         if inst.stump_target ~= nil then
@@ -524,7 +541,7 @@ end
 local OFFERINGPOT_MUST_TAGS = { "offering_pot" }
 
 local function shouldanswercall(inst)
-    if inst:HasTag("lunarminion") or inst:HasTag("shadowminion") or inst.components.follower.leader ~= nil then
+    if inst:HasTag("lunarminion") or inst:HasTag("shadowminion") or GetLeader(inst) ~= nil then
         return false
     end
 
@@ -599,7 +616,7 @@ function MermBrain:OnStart()
         WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "Attack Momentarily",
             ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST))),
         WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
-            RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
 
         in_contest,
 
@@ -652,9 +669,9 @@ function MermBrain:OnStart()
             FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),
 
         ChattyNode(self.inst, "MERM_TALK_FOLLOWWILSON",
-		    Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TargetFollowDistFn, MAX_FOLLOW_DIST, nil, true)),
+		    Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TargetFollowDistFn, MAX_FOLLOW_DIST, nil, true)),
 
-        IfNode(function() return self.inst.components.follower.leader ~= nil end, "Has A Leader",
+        IfNode(function() return GetLeader(self.inst) ~= nil end, "Has A Leader",
             ChattyNode(self.inst, "MERM_TALK_FOLLOWWILSON",
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn ))),
 

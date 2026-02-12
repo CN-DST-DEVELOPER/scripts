@@ -120,7 +120,7 @@ local states=
 				if inst.components.entitytracker:GetEntity("tracking") then
 					if inst.components.questowner.questcomplete then
 						inst.sg:GoToState("searching") 
-					elseif inst.components.follower.leader then
+					elseif inst.components.follower and inst.components.follower:GetLeader() then
 						inst.sg:GoToState("waiting")
 					else
 						inst.sg:GoToState("idle") 
@@ -158,7 +158,7 @@ local states=
         {
             EventHandler("animover", function(inst) 
 				if inst.sg.statemem.msg then
-					local leader = inst.components.follower.leader
+					local leader = inst.components.follower and inst.components.follower:GetLeader()
 					if leader ~= nil and leader.components.talker ~= nil then
 						leader.components.talker:Say(GetString(leader, inst.sg.statemem.msg))
 					end
@@ -181,7 +181,7 @@ local states=
         timeline =
         {
             TimeEvent(35*FRAMES, function(inst)
-				local leader = inst.components.follower.leader
+				local leader = inst.components.follower and inst.components.follower:GetLeader()
 				if leader ~= nil and leader.components.talker ~= nil then
 					leader.components.talker:Say(GetString(leader, "ANNOUNCE_TICOON_GET_LEADER_ATTENTION"))
 					inst.sg.mem.prev_wait_talk_time = GetTime()
@@ -234,7 +234,7 @@ local states=
         timeline =
         {
             TimeEvent(30*FRAMES, function(inst)
-				local leader = inst.components.follower.leader
+				local leader = inst.components.follower and inst.components.follower:GetLeader()
 				if leader ~= nil and leader.components.talker ~= nil then
 					local t = GetTime()
 					if inst.sg.mem.prev_wait_talk_time == nil or inst.sg.mem.prev_wait_talk_time + 30 < t then
@@ -248,7 +248,7 @@ local states=
         events =
         {
             EventHandler("animover", function(inst) 
-				if inst.components.follower.leader == nil then
+				if inst.components.follower == nil or inst.components.follower:GetLeader() == nil then
 					inst.sg:GoToState("idle") 
 				else
 					inst.sg:GoToState("waiting_loop") 

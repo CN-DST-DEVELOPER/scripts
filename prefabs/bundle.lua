@@ -33,6 +33,8 @@ local function MakeWrap(name, containerprefab, tag, cheapfuel)
             inst:AddTag(tag)
         end
 
+        inst.pickupsound = "paper"
+
         inst.scrapbook_specialinfo = "BUNDLEWRAP"
 
         inst.entity:SetPristine()
@@ -186,7 +188,7 @@ local function MakeJiggle(inst)
 	inst.components.unwrappable:SetUnwrapDelayFn(UnwrapDelay)
 end
 
-local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, bank, build, inventoryimage)
+local function MakeBundle(name, numsizes, variations, loot, tossloot, setupdata, bank, build, inventoryimage)
     local assets =
     {
         Asset("ANIM", "anim/"..(inventoryimage or name)..".zip"),
@@ -194,24 +196,28 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
 
     if variations ~= nil then
         for i = 1, variations do
-            if onesize then
+			if numsizes == 1 then
                 table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name)..tostring(i)))
             else
                 table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_small"..tostring(i)))
-                table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_medium"..tostring(i)))
+				if numsizes > 2 then
+					table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_medium"..tostring(i)))
+				end
                 table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_large"..tostring(i)))
             end
         end
-    elseif not onesize then
+	elseif numsizes > 1 then
         table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_small"))
-        table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_medium"))
+		if numsizes > 2 then
+			table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_medium"))
+		end
         table.insert(assets, Asset("INV_IMAGE", (inventoryimage or name).."_large"))
     end
 
     local prefabs =
     {
         "ash",
-        name.."_unwrap",
+		(inventoryimage or name).."_unwrap",
     }
 
     if loot ~= nil then
@@ -224,21 +230,18 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         local suffix = inst.suffix or "_small"
         if variations ~= nil then
             inst.variation = inst.variation or math.random(variations)
-            local variation_string = tostring(inst.variation)
-
-            suffix = (onesize and variation_string) or suffix..variation_string
-
-            inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or name)..suffix)
-        elseif not onesize then
-            inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or name)..suffix)
+			suffix = (numsizes == 1 and tostring(inst.variation)) or (suffix..tostring(inst.variation))
+			inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or inventoryimage or name)..suffix)
+		elseif numsizes > 1 then
+			inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or inventoryimage or name)..suffix)
         end
     end
 
     local function OnWrapped(inst, num, doer)
         local suffix =
-            (onesize and "_onesize") or
+			(numsizes == 1 and "_onesize") or
             (num > 3 and "_large") or
-            (num > 1 and "_medium") or
+			(num > 1 and (numsizes > 2 and "_medium" or "_large")) or
             "_small"
 
         inst.suffix = suffix
@@ -291,7 +294,7 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
                     end
                 end
             end
-            SpawnPrefab(name.."_unwrap").Transform:SetPosition(pos:Get())
+			SpawnPrefab((inventoryimage or name).."_unwrap").Transform:SetPosition(pos:Get())
         end
         if doer ~= nil and doer.SoundEmitter ~= nil then
             doer.SoundEmitter:PlaySound(inst.skin_wrap_sound or "dontstarve/common/together/packaged")
@@ -313,6 +316,9 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         end
     end or nil
 
+    local anim = (variations ~= nil and
+		(numsizes == 1 and "idle_onesize1" or "idle_large1") or
+		(numsizes == 1 and "idle_onesize" or "idle_large"))
     local function fn()
         local inst = CreateEntity()
 
@@ -324,14 +330,8 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
 
         inst.AnimState:SetBank(bank or name)
         inst.AnimState:SetBuild(build or name)
-        inst.AnimState:PlayAnimation(
-            variations ~= nil and
-            (onesize and "idle_onesize1" or "idle_large1") or
-            (onesize and "idle_onesize" or "idle_large")
-        )
-        inst.scrapbook_anim = variations ~= nil and
-            (onesize and "idle_onesize1" or "idle_large1") or
-            (onesize and "idle_onesize" or "idle_large")
+        inst.AnimState:PlayAnimation(anim)
+        inst.scrapbook_anim = anim
 
         inst:AddTag("bundle")
 
@@ -360,15 +360,13 @@ local function MakeBundle(name, onesize, variations, loot, tossloot, setupdata, 
         inst:AddComponent("inventoryitem")
         inst.components.inventoryitem:SetSinks(true)
 
-        if inventoryimage then
-            inst.components.inventoryitem:ChangeImageName(inventoryimage)
-        end
-
-        if variations ~= nil or not onesize then
+		if variations ~= nil or numsizes > 1 then
             inst.components.inventoryitem:ChangeImageName(
-                name..
-                (variations == nil and "_large" or (onesize and "1" or "_large1"))
+				(inventoryimage or name)..
+				(variations == nil and "_large" or (numsizes == 1 and "1" or "_large1"))
             )
+		elseif inventoryimage then
+			inst.components.inventoryitem:ChangeImageName(inventoryimage)
         end
 
         inst:AddComponent("unwrappable")
@@ -499,6 +497,25 @@ local redpouch_yotd =
     end,
 }
 
+local redpouch_yoth =
+{
+    common_postinit = function(inst, setupdata)
+		inst.wet_prefix = STRINGS.WET_PREFIX.POUCH
+        inst:SetPrefabNameOverride("redpouch")
+    end,
+}
+
+local redpouch_yoth_small =
+{
+    common_postinit = function(inst, setupdata)
+		redpouch_yoth.common_postinit(inst, setupdata)
+		inst:SetPrefabName("redpouch_yoth")
+    end,
+    master_postinit = function(inst)
+		inst.components.unwrappable:WrapItems({ "lucky_goldnugget" })
+    end,
+}
+
 local yotc_seedpacket =
 {
     common_postinit = function(inst, setupdata)
@@ -556,7 +573,8 @@ local carnival_seedpacket =
 		table.insert(loots, "corn_seeds")
 		table.insert(loots, "corn_seeds")
 		table.insert(loots, "corn_seeds")
-		if math.random() < 0.1 then
+
+        if TryLuckRoll(doer, TUNING.CARNIVAL_SEEDPACKET_EXTRA_SEED_CHANCE, LuckFormulas.LootDropperChance) then
 			table.insert(loots, "corn_seeds")
 		end
 
@@ -657,22 +675,24 @@ return MakeContainer("bundle_container", "ui_bundle_2x2"),
 	MakeContainer("construction_repair_container", "ui_construction_4x1", "repairconstructionsite"),
 	MakeContainer("construction_rebuild_container", "ui_construction_4x1", "rebuildconstructionsite"),
     --"bundle", "bundlewrap"
-	MakeBundle("bundle", false, nil, { "waxpaper" }, nil, bundle),
+	MakeBundle("bundle", 3, nil, { "waxpaper" }, nil, bundle),
     MakeWrap("bundle", "bundle_container", nil, false),
     --"gift", "giftwrap"
-	MakeBundle("gift", false, 2, nil, nil, gift),
+	MakeBundle("gift", 3, 2, nil, nil, gift),
     MakeWrap("gift", "bundle_container", nil, true),
     --"redpouch"
-    MakeBundle("redpouch", true, nil, { "lucky_goldnugget" }, true, redpouch),
-    MakeBundle("redpouch_yotp", false, nil, nil, true, redpouch_yotp),
-    MakeBundle("redpouch_yotc", false, nil, nil, true, redpouch_yotc),
-    MakeBundle("redpouch_yotb", false, nil, nil, true, redpouch_yotb),
-    MakeBundle("redpouch_yot_catcoon", false, nil, nil, true, redpouch_yot_catcoon),
-    MakeBundle("redpouch_yotr",        false, nil, nil, true, redpouch_yotr),
-    MakeBundle("redpouch_yotd",        false, nil, nil, true, redpouch_yotd),
-	MakeBundle("yotc_seedpacket", true, nil, nil, true, yotc_seedpacket),
-	MakeBundle("yotc_seedpacket_rare", true, nil, nil, true, yotc_seedpacket_rare),
-	MakeBundle("carnival_seedpacket", true, nil, nil, true, carnival_seedpacket),
-    MakeBundle("hermit_bundle", true, nil, nil, true, hermit_bundle),
-    MakeBundle("hermit_bundle_shells", true, nil, nil, true, hermit_bundle_shells, "hermit_bundle","hermit_bundle","hermit_bundle"),
-    MakeBundle("wetpouch", true, nil, JoinArrays(table.getkeys(wetpouch.loottable), GetAllWinterOrnamentPrefabs()), false, wetpouch)
+	MakeBundle("redpouch", 1, nil, { "lucky_goldnugget" }, true, redpouch),
+	MakeBundle("redpouch_yotp", 3, nil, nil, true, redpouch_yotp),
+	MakeBundle("redpouch_yotc", 2, nil, nil, true, redpouch_yotc),
+	MakeBundle("redpouch_yotb", 2, nil, nil, true, redpouch_yotb),
+	MakeBundle("redpouch_yot_catcoon", 2, nil, nil, true, redpouch_yot_catcoon),
+	MakeBundle("redpouch_yotr", 2, nil, nil, true, redpouch_yotr),
+	MakeBundle("redpouch_yotd", 2, nil, nil, true, redpouch_yotd),
+	MakeBundle("redpouch_yoth", 2, nil, nil, true, redpouch_yoth),
+	MakeBundle("redpouch_yoth_small", 2, nil, nil, true, redpouch_yoth_small, "redpouch_yoth", "redpouch_yoth", "redpouch_yoth"),
+	MakeBundle("yotc_seedpacket", 1, nil, nil, true, yotc_seedpacket),
+	MakeBundle("yotc_seedpacket_rare", 1, nil, nil, true, yotc_seedpacket_rare),
+	MakeBundle("carnival_seedpacket", 1, nil, nil, true, carnival_seedpacket),
+	MakeBundle("hermit_bundle", 1, nil, nil, true, hermit_bundle),
+	MakeBundle("hermit_bundle_shells", 1, nil, nil, true, hermit_bundle_shells, "hermit_bundle", "hermit_bundle", "hermit_bundle"),
+	MakeBundle("wetpouch", 1, nil, JoinArrays(table.getkeys(wetpouch.loottable), GetAllWinterOrnamentPrefabs()), false, wetpouch)

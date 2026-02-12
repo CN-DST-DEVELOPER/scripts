@@ -14,7 +14,7 @@ local PigEliteFighterBrain = Class(Brain, function(self, inst)
 end)
 
 local function GetLeader(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 function PigEliteFighterBrain:OnStart()

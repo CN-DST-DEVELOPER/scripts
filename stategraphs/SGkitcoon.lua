@@ -78,7 +78,7 @@ local states =
 		    inst:PerformBufferedAction()
 			inst.next_play_time = GetTime() + TUNING.KITCOON_PLAYFUL_DELAY + math.random() * TUNING.KITCOON_PLAYFUL_DELAY_RAND
 
-			local target = finder or (inst.components.follower ~= nil and inst.components.follower.leader) or nil
+			local target = finder or (inst.components.follower ~= nil and inst.components.follower:GetLeader()) or nil
 			if target then 
 				inst:ForceFacePoint(target.Transform:GetWorldPosition())
 

@@ -1541,6 +1541,9 @@ function GetNextOwnedSkin(prefab, cur_skin)
 			end
 		end
 	end
+    if not new_skin and PREFAB_SKINS_SHOULD_NOT_SELECT[prefab] then
+        new_skin = cur_skin
+    end
 	return new_skin
 end
 
@@ -1564,6 +1567,9 @@ function GetPrevOwnedSkin(prefab, cur_skin)
 			end
 		end
 	end
+    if not new_skin and PREFAB_SKINS_SHOULD_NOT_SELECT[prefab] then
+        new_skin = cur_skin
+    end
 	return new_skin
 end
 

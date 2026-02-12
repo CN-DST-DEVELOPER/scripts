@@ -146,8 +146,8 @@ local function SetTeenAttackPeck(inst)
 end
 
 local function OnNewTarget(inst, data)
-    --print("teenbird - OnNewTarget", data.target, inst.components.follower.leader)
-    if data.target and data.target == inst.components.follower.leader then--old implementation was ":HasTag("player") then "
+    --print("teenbird - OnNewTarget", data.target, inst.components.follower:GetLeader())
+    if data.target and data.target == inst.components.follower:GetLeader() then--old implementation was ":HasTag("player") then "
         -- combat component will restore target to player, give them the benefit of the doubt and use peck instead of attack to begin with
         SetTeenAttackPeck(inst)
     else
@@ -172,8 +172,8 @@ local RETARGET_ONEOF_TAGS = {"player", "monster"}
 local function TeenRetarget(inst)
     return FindEntity(inst, SpringCombatMod(TUNING.TEENBIRD_TARGET_DIST), function(guy)
         if inst.components.combat:CanTarget(guy)  and (not guy:IsInLight()) then
-            if inst.components.follower.leader ~= nil then
-                return (guy:HasTag("monster") or (guy == inst.components.follower.leader and inst.components.hunger and inst.components.hunger:IsStarving()))
+            if inst.components.follower:GetLeader() ~= nil then
+                return (guy:HasTag("monster") or (guy == inst.components.follower:GetLeader() and inst.components.hunger and inst.components.hunger:IsStarving()))
             else
                 return guy:HasTag("monster") or guy:HasTag("tallbird")
             end
@@ -192,7 +192,7 @@ end
 local function OnAttacked(inst, data)
     --print("smallbird - OnAttacked !!!")
 
-    if inst:HasTag("teenbird") and data.attacker ~= nil and (data.attacker == inst.components.follower.leader or data.attacker:HasTag("player")) then
+    if inst:HasTag("teenbird") and data.attacker ~= nil and (data.attacker == inst.components.follower:GetLeader() or data.attacker:HasTag("player")) then
         --print("  what did I ever do to you!?")
         -- well i was just annoyed, but now you done pissed me off!
         SetTeenAttackDefault(inst)
@@ -215,8 +215,8 @@ local function SpawnTeen(inst)
     teenbird.Transform:SetPosition(inst.Transform:GetWorldPosition())
     teenbird.sg:GoToState("idle")
 
-    if inst.components.follower.leader then
-        teenbird.components.follower:SetLeader(inst.components.follower.leader)
+    if inst.components.follower:GetLeader() then
+        teenbird.components.follower:SetLeader(inst.components.follower:GetLeader())
     end
 
     inst:Remove()
@@ -263,10 +263,10 @@ local function GetTallGrowTime(inst)
 end
 
 local function OnHealthDelta(inst, data)
-    if data.cause == "hunger" and data.newpercent < .5 and inst.components.follower.leader then
+    if data.cause == "hunger" and data.newpercent < .5 and inst.components.follower:GetLeader() then
         --print("teenbird - STARVING i'm blowing this popsicle stand!", data.newpercent)
 
-        if inst.components.combat.target == inst.components.follower.leader then
+        if inst.components.combat.target == inst.components.follower:GetLeader() then
             inst.components.combat:SetTarget(nil)
         end
 

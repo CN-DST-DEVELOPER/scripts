@@ -342,7 +342,7 @@ local function GiveSpecialReward(inst, target)
 	gift.components.unwrappable:WrapItems({
 		"chesspiece_sharkboi_sketch",
 		"winter_ornament_boss_sharkboi",
-		math.random() <= .4 and GetRandomLightWinterOrnament() or "winter_food"..math.random(NUM_WINTERFOOD),
+		TryLuckRoll(target, TUNING.SHARKBOI_GIVE_WINTERLIGHTORNAMENT_CHANCE, LuckFormulas.LootDropperChance) and GetRandomLightWinterOrnament() or "winter_food"..math.random(NUM_WINTERFOOD),
 		"winter_food"..math.random(NUM_WINTERFOOD),
 	})
 

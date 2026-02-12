@@ -374,6 +374,29 @@ local Wisecracker = Class(function(self, inst)
 		end
 	end)
 
+    local last_yoth_cooldown = -999
+    local yoth_cooldown_task
+    local function do_yoth_cooldown(inst)
+        yoth_cooldown_task = nil
+        inst.components.talker:Say(GetString(inst, "ANNOUNCE_YOTH_ONCOOLDOWN"))
+    end
+    inst:ListenForEvent("yoth_oncooldown", function(inst)
+        if yoth_cooldown_task == nil then
+            local t = GetTime()
+            if last_yoth_cooldown + 10 < t then
+                last_yoth_cooldown = t
+                yoth_cooldown_task = inst:DoTaskInTime(2 + math.random(), do_yoth_cooldown)
+            end
+        end
+    end)
+    inst:ListenForEvent("yoth_oncooldown_cancel", function(inst)
+        if yoth_cooldown_task ~= nil then
+            yoth_cooldown_task:Cancel()
+            yoth_cooldown_task = nil
+            last_yoth_cooldown = -999
+        end
+    end)
+
 	if inst:HasTag("dogrider") then
 		local lasttalktowobytime = 0
 		local lastwobymsg = nil

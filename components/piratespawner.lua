@@ -277,7 +277,10 @@ local function DoAnnouncePirates(player)
 	end
 end
 
-local function spawnpirateship(pt)
+local EXTRAMONKEY1_CHANCE = 0.7
+local EXTRAMONKEY2_CHANCE = 0.3
+
+local function spawnpirateship(pt, player)
     local shipdata = {}
 
     -- SPAWN BOAT
@@ -319,14 +322,16 @@ local function spawnpirateship(pt)
     local day = GetAveragePlayerAgeInDays()
     local monkeys = 1
 
+    local add_extra_monkey = TryLuckRoll(player, EXTRAMONKEY1_CHANCE, LuckFormulas.ChildSpawnerRareChild)
+    local add_anotherextra_monkey = TryLuckRoll(player, EXTRAMONKEY2_CHANCE, LuckFormulas.ChildSpawnerRareChild)
     if day < 15 then
-        monkeys = 2+ (math.random() < 0.7 and 1 or 0)
+        monkeys = 2+ (add_extra_monkey and 1 or 0)
     elseif day < 30 then
-        monkeys = 2+ (math.random() < 0.7 and 1 or 0) + (math.random() < 0.3 and 1 or 0)
+        monkeys = 2+ (add_extra_monkey and 1 or 0) + (add_anotherextra_monkey and 1 or 0)
     elseif day < 60 then
-        monkeys = 3+ (math.random() < 0.7 and 1 or 0) + (math.random() < 0.3 and 1 or 0)
+        monkeys = 3+ (add_extra_monkey and 1 or 0) + (add_anotherextra_monkey and 1 or 0)
     else
-        monkeys = 4+ (math.random() < 0.7 and 1 or 0)    
+        monkeys = 4+ (add_extra_monkey and 1 or 0)
     end
 
     shipdata.crew = {}
@@ -398,7 +403,7 @@ local function SpawnPiratesForPlayer(player, nodelivery, forcedelivery)
 
         if spawnpoint ~= nil then
             spawnedPirates = true
-            local shipdata = spawnpirateship(spawnpoint)
+            local shipdata = spawnpirateship(spawnpoint, player)
 
             if forcedelivery or (math.random() < TUNING.MONKEY_PIRATE_TREASURE_BOAT_CHANCE and not nodelivery) then
                 shipdata.boat.components.boatcrew.status = "delivery"
@@ -412,7 +417,7 @@ local function SpawnPiratesForPlayer(player, nodelivery, forcedelivery)
 
                 local x,y,z = shipdata.boat.Transform:GetWorldPosition()
 
-                messagebottletreasures.GenerateTreasure(Vector3(x+1.5, y, z+1.5))
+                messagebottletreasures.GenerateTreasure(Vector3(x+1.5, y, z+1.5), nil, nil, nil, player)
 
                 local cannon = SpawnPrefab("boat_cannon")
                 cannon.Transform:SetPosition(x-1.5, y, z-1.5)
@@ -429,10 +434,10 @@ local MUST_BOAT = {"boat"}
 
 local function onmegaflaredetonation(world,data)
     if data.sourcept and not TheWorld.Map:IsVisualGroundAtPoint(data.sourcept.x,data.sourcept.y,data.sourcept.z) then
-        if math.random() < 0.6 then
+        local players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
+        if math.random() <= GetEntitiesLuckChance(players, TUNING.PIRATERAID_MEGAFLARE_SPAWN_CHANCE, LuckFormulas.MegaFlareEvent) then
             self.inst:DoTaskInTime(5 + (math.random()* 20),
                 function()
-
                     local ents = TheSim:FindEntities(data.sourcept.x, data.sourcept.y, data.sourcept.z, 40, MUST_BOAT)
                     local pirates = false
                     for i, ent in ipairs(ents)do
@@ -442,7 +447,7 @@ local function onmegaflaredetonation(world,data)
                         end
                     end
                     if not pirates then
-                        local players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
+                        players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
 
                         if #players > 0 then
                             for i, player in ipairs(players) do
@@ -695,7 +700,7 @@ function self:OnUpdate(dt)
                 for i,data in ipairs(weights) do
                     count = count + data.weight
                     if count >= choice then
-                        if math.random() < data.chance * TUNING.PIRATE_RAIDS_CHANCE_MODIFIER then
+                        if TryLuckRoll(data.char, data.chance * TUNING.PIRATE_RAIDS_CHANCE_MODIFIER, LuckFormulas.PirateRaidsSpawn) then
                             SpawnPiratesForPlayer(data.char)
                         end
                         break

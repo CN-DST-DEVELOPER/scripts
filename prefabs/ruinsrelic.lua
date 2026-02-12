@@ -66,6 +66,7 @@ local function item(name, animated, sound, radius, deploy_smart_radius)
         end
 	end or nil
 
+	local FLOATER_VERT_OFFSET = (name == "vase" or name == "bowl") and 0.3 or 0.1
     local function fn()
         local inst = CreateEntity()
 
@@ -78,6 +79,7 @@ local function item(name, animated, sound, radius, deploy_smart_radius)
 			inst.entity:AddFollower()
 
 			MakeInventoryPhysics(inst)
+			MakeInventoryFloatable(inst, "small", FLOATER_VERT_OFFSET, 0.95)
 
 			--furnituredecor (from furnituredecor component) added to pristine state for optimization
 			inst:AddTag("furnituredecor")

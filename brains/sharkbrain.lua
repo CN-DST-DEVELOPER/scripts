@@ -184,6 +184,11 @@ local function ShouldLeashRun(inst)
     return ((pvx * pvx) + (pvz * pvz)) >= SHARK_WALK_SQ
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.timer:TimerExists("getdistance")
+		and inst.components.combat.target
+		or nil
+end
 
 function SharkBrain:OnStart()
     local root = PriorityNode(
@@ -199,7 +204,7 @@ function SharkBrain:OnStart()
                         PriorityNode({
 							BrainCommon.PanicTrigger(self.inst),
                             BrainCommon.ElectricFencePanicTrigger(self.inst),
-                            RunAway(self.inst, function() return self.inst.components.timer:TimerExists("getdistance") and self.inst.components.combat.target end, 10, 20),
+							RunAway(self.inst, { getfn = GetRunAwayTarget }, 10, 20),
                             ChaseAndAttack(self.inst, 100),
                             DoAction(self.inst, isfoodnearby, "gotofood", true),
                             DoAction(self.inst, EatFishAction, "eat fish", true),

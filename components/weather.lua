@@ -496,6 +496,7 @@ return Class(function(self, inst)
             precipitationrate = CalculatePrecipitationRate(),
             snowlevel = _snowlevel:value(),
             lunarhaillevel = _lunarhaillevel:value(),
+            lunarhailrate = CalculateLunarHailRate(),
             wetness = _wetness:value(),
             light = CalculateLight(),
         }

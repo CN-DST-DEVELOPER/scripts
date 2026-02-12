@@ -252,6 +252,9 @@ local MainSounds =
 
     "winter2025.fev",
     "winter2025.fsb",
+
+    "yoth_2026.fev",
+    "yoth_2026.fsb",
 }
 
 function PreloadSoundList(list)

@@ -105,9 +105,9 @@ local function FindInvaderFn(guy, inst)
         return nil
     end
 
-    local leader = inst.components.follower and inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
 
-    local leader_guy = guy.components.follower and guy.components.follower.leader
+    local leader_guy = guy.components.follower and guy.components.follower:GetLeader()
     if leader_guy and leader_guy.components.inventoryitem then
         leader_guy = leader_guy.components.inventoryitem:GetGrandOwner()
     end
@@ -139,7 +139,7 @@ local function KeepTargetFn(inst, target)
     local defend_dist = (inst:HasTag("mermguard") and TUNING.MERM_GUARD_DEFEND_DIST) or TUNING.MERM_DEFEND_DIST
     defend_dist = (defend_dist * defend_dist)
     local home = inst.components.homeseeker and inst.components.homeseeker.home
-    local follower = inst.components.follower and inst.components.follower.leader
+    local follower = inst.components.follower and inst.components.follower:GetLeader()
 
     if home and not follower then
         return home:GetDistanceSqToInst(target) < defend_dist
@@ -255,7 +255,7 @@ local function GetOtherMerms(inst, radius, maxcount, giver)
             local follower = merm.components.follower
             if follower then
                 -- No leader or about to lose loyalty is high priority.
-                if follower.leader == nil or follower:GetLoyaltyPercent() < TUNING.MERM_LOW_LOYALTY_WARNING_PERCENT then
+                if follower:GetLeader() == nil or follower:GetLoyaltyPercent() < TUNING.MERM_LOW_LOYALTY_WARNING_PERCENT then
                     table.insert(merms_highpriority, merm)
                 else
                     table.insert(merms_lowpriority, merm)
@@ -477,20 +477,23 @@ local function UpdateDamageAndHealth(inst)
 
     inst.components.combat:SetDefaultDamage(damage)
 
-    local health
+    -- This could pull the merm out of death while death events were firing, which lead to very ugly bugs.
+    if not inst.components.health:IsDead() then
+        local health
 
-    if isguard then
-        health = (hasking and TUNING.MERM_GUARD_HEALTH)     or TUNING.PUNY_MERM_HEALTH
+        if isguard then
+            health = (hasking and TUNING.MERM_GUARD_HEALTH)     or TUNING.PUNY_MERM_HEALTH
 
-    else
-        health = (hasking and TUNING.MERM_HEALTH_KINGBONUS) or TUNING.MERM_HEALTH
+        else
+            health = (hasking and TUNING.MERM_HEALTH_KINGBONUS) or TUNING.MERM_HEALTH
+        end
+
+        if inst:HasTag("lunarminion") then
+            health = health + (isguard and TUNING.MERM_LUNAR_GUARD_EXTRA_HEALTH or TUNING.MERM_LUNAR_EXTRA_HEALTH)
+        end
+
+        inst.components.health:SetMaxHealth(health)
     end
-
-    if inst:HasTag("lunarminion") then
-        health = health + (isguard and TUNING.MERM_LUNAR_GUARD_EXTRA_HEALTH or TUNING.MERM_LUNAR_EXTRA_HEALTH)
-    end
-
-    inst.components.health:SetMaxHealth(health)
 end
 
 local function UpdateRoyalStatus(inst, scale)
@@ -575,7 +578,7 @@ end
 
 local function ShouldSleep(inst)
     return NocturnalSleepTest(inst)
-        and ((inst.components.follower == nil or inst.components.follower.leader) == nil and
+        and ((inst.components.follower == nil or not inst.components.follower:GetLeader()) and
         not TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:IsCandidate(inst))
 end
 
@@ -626,7 +629,7 @@ local function OnEntitySleepMerm(inst)
         return -- It did not want to teleport anyway, bail.
     end
 
-    if inst.components.follower and inst.components.follower.leader then
+    if inst.components.follower and inst.components.follower:GetLeader() then
         return -- Leader component takes care of this case by teleporting the entity to the leader.
     end
 
@@ -1148,35 +1151,6 @@ local function no_holes(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
 
-local function OnAttackOther(inst, data)
-    local victim = data.target
-    if not victim then return end
-
-    local leader = (inst.components.follower and inst.components.follower.leader) or nil
-    if not leader then return end
-
-    local leader_has_shadow_terrain_skill = (leader.components.skilltreeupdater
-        and leader.components.skilltreeupdater:IsActivated("wurt_shadow_allegiance_2")
-    ) or false
-    if leader_has_shadow_terrain_skill and math.random() > TUNING.WURT_TERRAFORMING_SHADOW_PROCCHANCE then
-        local tile_type = inst:GetCurrentTileType()
-        if tile_type == WORLD_TILES.SHADOW_MARSH then
-            local pt = victim:GetPosition()
-            local offset = FindWalkableOffset(pt, math.random() * TWOPI, 2, 3, false, true, no_holes, false, true)
-            if offset ~= nil then
-                inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_1")
-                inst.SoundEmitter:PlaySound("dontstarve/common/shadowTentacleAttack_2")
-                local tentacle = SpawnPrefab("shadowtentacle")
-                if tentacle ~= nil then
-                    tentacle.owner = inst
-                    tentacle.Transform:SetPosition(pt.x + offset.x, 0, pt.z + offset.z)
-                    tentacle.components.combat:SetTarget(victim)
-                end
-            end
-        end
-    end
-end
-
 -- Guard
 local function guard_common(inst)
     inst.AnimState:SetBuild("merm_guard_build")
@@ -1228,22 +1202,23 @@ local function Guard_ShouldWaitForHelp(inst)
 end
 
 local function Guard_CanTripleAttack(inst)
+    local leader = inst.components.follower:GetLeader()
     return inst.components.debuffable ~= nil
         and inst.components.debuffable:HasDebuff("mermkingtridentbuff")
-        and math.random() < TUNING.MERMKING_TRIDENTBUFF_TRIPLEHIT_CHANCE
+        and TryLuckRoll(leader, TUNING.MERMKING_TRIDENTBUFF_TRIPLEHIT_CHANCE, LuckFormulas.MermTripleAttack)
 end
 
 local function OnAttackOther(inst, data)
     local victim = data.target
     if not victim then return end
 
-    local leader = (inst.components.follower and inst.components.follower.leader) or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if not leader then return end
 
     local leader_has_shadow_terrain_skill = (leader.components.skilltreeupdater
         and leader.components.skilltreeupdater:IsActivated("wurt_shadow_allegiance_2")
     ) or false
-    if leader_has_shadow_terrain_skill and math.random() > TUNING.WURT_TERRAFORMING_SHADOW_PROCCHANCE then
+    if leader_has_shadow_terrain_skill and TryLuckRoll(leader, TUNING.WURT_TERRAFORMING_SHADOW_PROCCHANCE, LuckFormulas.ShadowTentacleSpawn) then
         local tile_type = inst:GetCurrentTileType()
         if tile_type == WORLD_TILES.SHADOW_MARSH then
             local pt = victim:GetPosition()

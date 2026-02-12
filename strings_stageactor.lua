@@ -1011,6 +1011,62 @@ stageactor = {
         BIRD_6 = "HA HA HA HA HA!",
 
     },
+
+    -- The Princess (Year of the Clockwork Knight)
+    PRINCESS_SOLILOQUY = {
+        -- Birds
+        BIRD1_1 = "Who's that?",
+        BIRD2_2 = "She looks... equine.",
+        BIRD1_3 = "A queen? More like a spoiled princess!",
+        BIRD_4 = "HA HA HA HA HA!",
+
+        -- The Princess
+        LINE1_PRINCESS = "Where, prithee, is my entourage?",
+        LINE2_PRINCESS = "My loyal escorts? My Knights in gilded armor?",
+        LINE3_PRINCESS = "Must I venture alone upon these lands",
+        LINE4_PRINCESS = "without thy steadfast company?",
+        LINE5_PRINCESS = "Come, Pascal!",
+        LINE6_PRINCESS = "We have many souls to meet!",
+        LINE7_PRINCESS = "Haste, Warren!",
+        LINE8_PRINCESS = "The Houses await thy arrival!",
+        LINE9_PRINCESS = "Make swift thy way, Fermin!",
+        LINE10_PRINCESS = "Turn thy thoughts to those in need!",
+        LINE11_PRINCESS = "Yet I fret not o'er thee, Desdemona,",
+        LINE12_PRINCESS = "for I know thou art ever bound to come.",
+        LINE13_PRINCESS = "And upon thy back,",
+        LINE14_PRINCESS = "shall we all return unto our hearth!",
+        LINE15_PRINCESS = "Thus you see,",
+        LINE16_PRINCESS = "much is to be done,",
+        LINE17_PRINCESS = "by my Four Knights and me.",
+        --
+
+        -- Birds
+        BIRD1_5 = "Relax, princess. They'll be here soon.",
+        BIRD2_6 = "Yeah, hold your horses!",
+        BIRD_7 = "HA HA HA HA HA!",
+    },
+
+    KNIGHT_SOLILOQUY = {
+        -- Birds
+        BIRD1_1 = "Tell us a joke!",
+        BIRD2_2 = "Straight from the horse's mouth!",
+
+        -- Knight
+        LINE1_KNIGHT = "...",
+
+        -- Birds
+        BIRD1_3 = "Quit stall-in!",
+        BIRD2_4 = "Feeling a little horse?",
+
+        -- Knight
+        LINE2_KNIGHT = "...",
+
+        -- Birds
+        BIRD2_5 = "So much for a mane attraction!",
+        BIRD1_6 = "What a foal!",
+
+        BIRD_7 = "HA HA HA HA HA!",
+    },
 }
 
 return stageactor

@@ -40,6 +40,11 @@ local function master_postinit(inst)
 	inst.components.houndedtarget.target_weight_mult:SetModifier(inst, TUNING.WES_HOUND_TARGET_MULT, "misfortune")
 	inst.components.houndedtarget.hound_thief = true
 
+    -- TODO #FIXME_CNY2026_LUCK, 
+    -- hook this up? if luck mechanic doesn't change wes too much.
+    -- ADDENDUM: Probably wait for skill tree. Too many changes!
+    -- inst.components.luckuser:SetLuckSource(TUNING.WES_LUCK, "wes_misfortune")
+
     inst.components.health:SetMaxHealth(TUNING.WES_HEALTH)
     inst.components.hunger:SetMax(TUNING.WES_HUNGER)
     inst.components.sanity:SetMax(TUNING.WES_SANITY)

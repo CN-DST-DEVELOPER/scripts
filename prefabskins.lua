@@ -139,6 +139,7 @@ PREFAB_SKINS = {
 	axe =
 	{
 		"axe_feathered",
+		"axe_heart",
 		"axe_invisible",
 		"axe_northern",
 		"axe_victorian",
@@ -298,6 +299,7 @@ PREFAB_SKINS = {
 	{
 		"boat_nautical",
 		"boat_pirate_skin",
+		"boat_tesla",
 		"boat_wagstaff",
 	},
 	boat_grass =
@@ -312,6 +314,7 @@ PREFAB_SKINS = {
 	{
 		"boat_nautical_item",
 		"boat_pirate_skin_item",
+		"boat_tesla_item",
 		"boat_wagstaff_item",
 	},
 	book_brimstone =
@@ -1032,6 +1035,7 @@ PREFAB_SKINS = {
 		"lantern_flower",
 		"lantern_flower_alt",
 		"lantern_gothic",
+		"lantern_insect",
 		"lantern_mummy",
 		"lantern_mummy_alt",
 		"lantern_mystical",
@@ -1101,10 +1105,12 @@ PREFAB_SKINS = {
 	},
 	mast_malbatross =
 	{
+		"mast_malbatross_tesla",
 		"mast_malbatross_wagstaff",
 	},
 	mast_malbatross_item =
 	{
+		"mast_malbatross_tesla_item",
 		"mast_malbatross_wagstaff_item",
 	},
 	mastupgrade_lamp =
@@ -1684,11 +1690,13 @@ PREFAB_SKINS = {
 	steeringwheel =
 	{
 		"steeringwheel_nautical",
+		"steeringwheel_tesla",
 		"steeringwheel_wagstaff",
 	},
 	steeringwheel_item =
 	{
 		"steeringwheel_nautical_item",
+		"steeringwheel_tesla_item",
 		"steeringwheel_wagstaff_item",
 	},
 	stone_chair =
@@ -1898,6 +1906,7 @@ PREFAB_SKINS = {
 	{
 		"walkingplank_nautical",
 		"walkingplank_pirate_skin",
+		"walkingplank_tesla",
 		"walkingplank_wagstaff",
 	},
 	walkingplank_grass =
@@ -2137,6 +2146,7 @@ PREFAB_SKINS = {
 		"waxwell_pirate",
 		"waxwell_rose",
 		"waxwell_rosep",
+		"waxwell_spring",
 		"waxwell_survivor",
 		"waxwell_survivorp",
 		"waxwell_unshadow",
@@ -2169,6 +2179,7 @@ PREFAB_SKINS = {
 		"webber_rosep",
 		"webber_shadow",
 		"webber_shadowp",
+		"webber_spring",
 		"webber_survivor",
 		"webber_survivorp",
 		"webber_victorian",
@@ -2190,6 +2201,7 @@ PREFAB_SKINS = {
 		"webber_beard_punk",
 		"webber_beard_rose",
 		"webber_beard_shadow",
+		"webber_beard_spring",
 		"webber_beard_survivor",
 		"webber_beard_victorian",
 		"webber_beard_wrestler",
@@ -2310,6 +2322,7 @@ PREFAB_SKINS = {
 		"willow_rosep",
 		"willow_shadow",
 		"willow_shadowp",
+		"willow_spring",
 		"willow_survivor",
 		"willow_survivorp",
 		"willow_victorian",
@@ -2338,6 +2351,7 @@ PREFAB_SKINS = {
 		"wilson_rosep",
 		"wilson_shadow",
 		"wilson_shadowp",
+		"wilson_spring",
 		"wilson_survivor",
 		"wilson_survivorp",
 		"wilson_victorian",
@@ -2358,6 +2372,7 @@ PREFAB_SKINS = {
 		"wilson_beard_pirate",
 		"wilson_beard_rose",
 		"wilson_beard_shadow",
+		"wilson_beard_spring",
 		"wilson_beard_survivor",
 		"wilson_beard_victorian",
 		"wilson_beard_yule",
@@ -2390,6 +2405,7 @@ PREFAB_SKINS = {
 		"winona_rosep",
 		"winona_shadow",
 		"winona_shadowp",
+		"winona_spring",
 		"winona_survivor",
 		"winona_survivorp",
 		"winona_victorian",

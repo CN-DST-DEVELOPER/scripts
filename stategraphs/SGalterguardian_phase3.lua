@@ -245,6 +245,11 @@ local function stop_summon_circle(inst)
     end
 end
 
+local LUCKFORMULA_RECIPROCAL = 3
+local function SpawnLargeGestaltChanceMult(inst, chance, luck)
+    return luck < 0 and chance * (1 + math.abs(luck))
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
 local function do_summon_spawn(inst)
     local player_in_range = false
     local ix, _, iz = inst.Transform:GetWorldPosition()
@@ -256,7 +261,9 @@ local function do_summon_spawn(inst)
                     and not p:HasTag("playerghost") then
                 player_in_range = true
 
-                local spawn_prefab = (math.random() < 0.4 and "largeguard_alterguardian_projectile") or "gestalt_alterguardian_projectile"
+                local spawn_prefab = TryLuckRoll(p, TUNING.ALTERGUARDIAN_SPAWN_LARGE_GESTALT_PROJECTILE_CHANCE, SpawnLargeGestaltChanceMult)
+                    and "largeguard_alterguardian_projectile"
+                    or "gestalt_alterguardian_projectile"
                 local gestalt = SpawnPrefab(spawn_prefab)
 
                 local px, py, pz = p.Transform:GetWorldPosition()

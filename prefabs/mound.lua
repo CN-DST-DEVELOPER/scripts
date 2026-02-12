@@ -54,8 +54,8 @@ local function ReturnChildren(inst)
     end
 end
 
-local function spawnghost(inst, chance)
-    if inst.ghost == nil and math.random() <= (chance or 1) then
+local function spawnghost(inst, chance, worker)
+    if inst.ghost == nil and TryLuckRoll(worker, chance or 1, LuckFormulas.ChildSpawnerRareChild) then
         inst.ghost = SpawnPrefab("ghost")
         if inst.ghost ~= nil then
             local x, y, z = inst.Transform:GetWorldPosition()
@@ -75,20 +75,19 @@ local function onfinishcallback(inst, worker)
         if worker.components.sanity ~= nil then
             worker.components.sanity:DoDelta(-TUNING.SANITY_SMALL)
         end
-        if not spawnghost(inst, inst.ghost_of_a_chance) then
+        if not spawnghost(inst, inst.ghost_of_a_chance, worker) then
             local item = math.random() < .5 and PickRandomTrinket() or weighted_random_choice(LOOTS) or nil
             if item ~= nil then
                 inst.components.lootdropper:SpawnLootPrefab(item)
             end
 
-			if math.random() < TUNING.COOKINGRECIPECARD_GRAVESTONE_CHANCE then
+			if TryLuckRoll(worker, TUNING.COOKINGRECIPECARD_GRAVESTONE_CHANCE, LuckFormulas.LootDropperChance) then
                 inst.components.lootdropper:SpawnLootPrefab("cookingrecipecard")
-
-            elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and math.random() < TUNING.HALLOWEEN_PUMPKINCARVER_GRAVESTONE_CHANCE then
+            elseif IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and TryLuckRoll(worker, TUNING.HALLOWEEN_PUMPKINCARVER_GRAVESTONE_CHANCE, LuckFormulas.LootDropperChance) then
                 inst.components.lootdropper:SpawnLootPrefab("pumpkincarver"..math.random(NUM_HALLOWEEN_PUMPKINCARVERS))
 			end
 
-            if math.random() < TUNING.SCRAPBOOK_PAGE_GRAVESTONE_CHANCE then
+            if TryLuckRoll(worker, TUNING.SCRAPBOOK_PAGE_GRAVESTONE_CHANCE, LuckFormulas.LootDropperChance) then
                 inst.components.lootdropper:SpawnLootPrefab("scrapbook_page")
             end
 
@@ -98,7 +97,7 @@ local function onfinishcallback(inst, worker)
 	                inst.components.lootdropper:SpawnLootPrefab("halloween_ornament_"..tostring(ornament))
 				end
 				if TheWorld.components.specialeventsetup ~= nil then
-					if math.random() < TheWorld.components.specialeventsetup.halloween_bat_grave_spawn_chance then
+                    if TryLuckRoll(worker, TheWorld.components.specialeventsetup.halloween_bat_grave_spawn_chance, LuckFormulas.BatGraveSpawn) then
 						local num_bats = 3
 						for i = 1, num_bats do
 							inst:DoTaskInTime(0.2 * i + math.random() * 0.3, function()

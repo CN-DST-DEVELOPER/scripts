@@ -30,7 +30,7 @@ local prefabs =
 
 --------------------------------------------------------------------------------
 local NUM_DIGITS, MAX_NUM = 4, 9999
-local function do_digits(inst, number)
+local function do_digits(inst, number, initspawn)
     number = math.min(MAX_NUM, number or 0)
 
     for digit_index = NUM_DIGITS, 1, -1 do
@@ -39,7 +39,7 @@ local function do_digits(inst, number)
         inst.AnimState:OverrideSymbol("column"..digit_index, "punchingbag", "number"..digit.."_black")
     end
 
-    if not (inst.components.burnable and inst.components.burnable:IsBurning()) then
+    if not initspawn and not (inst.components.burnable and inst.components.burnable:IsBurning()) then
         inst.SoundEmitter:PlaySound("farming/common/farm/veggie_scale/place")
     end
 end
@@ -112,7 +112,9 @@ local function onbuilt(inst)
 end
 
 local function onequipped(inst, data)
-    inst.SoundEmitter:PlaySound("stageplay_set/mannequin/swap")
+    if not inst.components.inventory.isloading then
+        inst.SoundEmitter:PlaySound("stageplay_set/mannequin/swap")
+    end
 end
 
 --------------------------------------------------------------------------------
@@ -182,7 +184,7 @@ local function basefn(build, tags)
     inst.AnimState:SetBuild(build)
     inst.AnimState:PlayAnimation("idle")
 
-    do_digits(inst, 0)
+    do_digits(inst, 0, true)
 
     if tags then
         for _, tag in ipairs(tags) do

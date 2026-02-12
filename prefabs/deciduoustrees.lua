@@ -553,7 +553,7 @@ local function chop_down_tree(inst, chopper)
         end
 
         --print("Chance is ", chance * chance_mod, TheWorld.state.season)
-        if math.random() < chance * chance_mod then
+        if TryLuckRoll(chopper, chance * chance_mod, LuckFormulas.DeciduousMonsterSpawn) then
             --print("Trying to spawn monster")
             local x, y, z = inst.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x, y, z, 30, FINDTREETOTRANSFORM_MUST_TAGS, FINDTREETOTRANSFORM_CANT_TAGS)

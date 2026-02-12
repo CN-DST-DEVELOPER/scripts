@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "TRANSFER ERROR",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "TRANSFER COMPLETE",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "UNITS CURRENTLY UNAVAILABLE? HOW DARE THEY!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I WILL DESTROY YOU",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "PATHETIC FLESH LOG",
         CHESSPIECE_WAGBOSS_ROBOT = "I WILL REMEMBER YOU",
         CHESSPIECE_WAGBOSS_LUNAR = "WHAT WENT WRONG FOR US?",
+        CHESSPIECE_YOTH = "THE ONLY HORSE I EVER LIKED",
 
         CHESSJUNK1 = "EX-AUTOMATON",
         CHESSJUNK2 = "EX-AUTOMATON",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "GARBAGE",
         },
 		HERMITHOUSE_ORNAMENT = "HATE IT",
-        HERMITHOUSE_LAUNDRY = "GROSS",
+		HERMITHOUSE_LAUNDRY = "GROSS",
 
         PETALS_DRIED = "DEHYDRATED PLANT MATTER",
         PETALS_EVIL_DRIED = "DEHYDRATED PLANT MATTER",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "HA",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "INSTALLATION REQUIRED",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "NOW GIVE!", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "YOU ASK TOO MUCH", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "HAHA", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "SOMEWHAT PRETTY",
+        COSTUME_PRINCESS_BODY = "FANCY",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "RUNSCRIPT \"MY KNIGHTS FOUR AND ME\"",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "I AM NOT YOUR ENEMY", -- Generic quote. It's aggressive.
+            FOLLOWING = "SO LOYAL, SO MAJESTIC", -- Following the character examining
+            FOLLOWING_OTHER = "YOU ARE BEING MISLED", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "NOW I SHALL STRIKE... AS A TROJAN HORSE! HAHA",
+        ARMOR_YOTH_KNIGHT = "I AM ARMOR!",
+        HORSESHOE = "SUPERSTITIOUS FLESHLINGS... MINE",
+        YOTH_LANCE = "NICE FLESH PIERCER",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "AS EXPECTED", -- Depleted and on the ground
+            HELD = "SINGLE-USE LIGHT UNIT", -- In the players inventory
+            GENERIC = "SUB-PAR. DOES NOT COMPARE", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "STRIDE AUGMENTATION DEVICE",
+        YOTH_CHAIR_ROCKING_ITEM = "OSCILLATION UNIT", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "ERROR: UNKNOWN",

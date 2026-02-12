@@ -4667,6 +4667,20 @@ MISC_ITEMS =
 		output_items = {  "winona_shadowp", "body_winona_shadowp", "willow_shadowp", "body_willow_shadowp", "woodie_shadowp", "body_woodie_shadowp", "wurt_shadow", "body_wurt_shadow", "hand_wurt_shadow", "legs_wurt_shadow", "wendy_shadowp", "body_wendy_shadowp", "wormwood_shadow", "abigail_shadow", "body_wormwood_shadow", "hand_wormwood_shadow", "legs_wormwood_shadow", "wathgrithr_shadowp", "body_wathgrithr_shadowp", "wes_shadowp", "body_wes_shadowp", "webber_shadowp", "body_webber_shadowp", "webber_beard_shadow", "wanda_shadow", "body_wanda_shadow", "hand_wanda_shadow", "legs_wanda_shadow", "wolfgang_shadowp", "body_wolfgang_shadowp", "wx78_shadowp", "body_wx78_shadowp", "wickerbottom_shadowp", "body_wickerbottom_shadowp", "waxwell_unshadowp", "body_waxwell_unshadowp", "wilson_shadowp", "body_wilson_shadowp", "wilson_beard_shadow", "wortox_shadow", "body_wortox_shadow", "hand_wortox_shadow", "legs_wortox_shadow", "walter_shadow", "body_walter_shadow", "legs_walter_shadow", "walterhat_shadow", "warly_shadow", "body_warly_shadow", "legs_warly_shadow", "feet_warly_shadow", },
 		release_group = 145,
 	},
+	pack_spring_1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_nature_all",
+		display_atlas = "images/iap_images_pack_spring_1.xml",
+		display_tex = "pack_spring_1.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "willow_spring", "waxwell_spring", "wilson_spring", "wilson_beard_spring", "winona_spring", "webber_spring", "webber_beard_spring", },
+		output_items = {  "willow_spring", "body_willow_spring", "feet_willow_spring", "waxwell_spring", "body_waxwell_spring", "wilson_spring", "wilson_beard_spring", "body_wilson_spring", "feet_wilson_spring", "winona_spring", "body_winona_spring", "hand_winona_spring", "webber_spring", "webber_beard_spring", "body_webber_spring", "legs_webber_spring", },
+		release_group = 177,
+	},
 	pack_spring_bundle =
 	{
 		type = "purchase",
@@ -5798,6 +5812,19 @@ MISC_ITEMS =
 		output_items = {  "waxwell_rosep", "body_waxwell_rosep", },
 		release_group = 137,
 	},
+	pack_waxwell_spring =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 109,
+		build_name_override = "waxwell_spring",
+		display_atlas = "bigportraits/waxwell_spring.xml",
+		display_tex = "waxwell_spring_oval.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "waxwell_spring", "body_waxwell_spring", },
+		output_items = {  "waxwell_spring", "body_waxwell_spring", },
+		release_group = 177,
+	},
 	pack_waxwell_survivor =
 	{
 		type = "purchase",
@@ -6017,6 +6044,19 @@ MISC_ITEMS =
 		display_items = {  "webber_shadowp", "body_webber_shadowp", "webber_beard_shadow", },
 		output_items = {  "webber_shadowp", "body_webber_shadowp", "webber_beard_shadow", },
 		release_group = 120,
+	},
+	pack_webber_spring =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 111,
+		build_name_override = "webber_spring",
+		display_atlas = "bigportraits/webber_spring.xml",
+		display_tex = "webber_spring_oval.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "webber_spring", "webber_beard_spring", "body_webber_spring", "legs_webber_spring", },
+		output_items = {  "webber_spring", "webber_beard_spring", "body_webber_spring", "legs_webber_spring", },
+		release_group = 177,
 	},
 	pack_webber_survivor =
 	{
@@ -6533,6 +6573,19 @@ MISC_ITEMS =
 		output_items = {  "willow_shadowp", "body_willow_shadowp", },
 		release_group = 66,
 	},
+	pack_willow_spring =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 102,
+		build_name_override = "willow_spring",
+		display_atlas = "bigportraits/willow_spring.xml",
+		display_tex = "willow_spring_oval.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "willow_spring", "body_willow_spring", "feet_willow_spring", },
+		output_items = {  "willow_spring", "body_willow_spring", "feet_willow_spring", },
+		release_group = 177,
+	},
 	pack_willow_survivor =
 	{
 		type = "purchase",
@@ -6638,6 +6691,19 @@ MISC_ITEMS =
 		output_items = {  "wilson_shadowp", "body_wilson_shadowp", "wilson_beard_shadow", },
 		release_group = 142,
 	},
+	pack_wilson_spring =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 101,
+		build_name_override = "wilson_spring",
+		display_atlas = "bigportraits/wilson_spring.xml",
+		display_tex = "wilson_spring_oval.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "wilson_spring", "wilson_beard_spring", "body_wilson_spring", "feet_wilson_spring", },
+		output_items = {  "wilson_spring", "wilson_beard_spring", "body_wilson_spring", "feet_wilson_spring", },
+		release_group = 177,
+	},
 	pack_wilson_survivor =
 	{
 		type = "purchase",
@@ -6742,6 +6808,19 @@ MISC_ITEMS =
 		display_items = {  "winona_shadowp", "body_winona_shadowp", },
 		output_items = {  "winona_shadowp", "body_winona_shadowp", },
 		release_group = 61,
+	},
+	pack_winona_spring =
+	{
+		type = "purchase",
+		skin_tags = { },
+		display_order = 112,
+		build_name_override = "winona_spring",
+		display_atlas = "bigportraits/winona_spring.xml",
+		display_tex = "winona_spring_oval.tex",
+		box_build = "box_shop_nature",
+		display_items = {  "winona_spring", "body_winona_spring", "hand_winona_spring", },
+		output_items = {  "winona_spring", "body_winona_spring", "hand_winona_spring", },
+		release_group = 177,
 	},
 	pack_winona_survivor =
 	{
@@ -8405,6 +8484,13 @@ MISC_ITEMS =
 		rarity = "Loyal",
 		release_group = 95,
 	},
+	playerportrait_bg_lanterninsect =
+	{
+		type = "playerportrait",
+		skin_tags = { "INSECT", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 177,
+	},
 	playerportrait_bg_lava =
 	{
 		type = "playerportrait",
@@ -9621,6 +9707,13 @@ MISC_ITEMS =
 		skin_tags = { "CRYSTAL", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 95,
+	},
+	profileflair_lantern_insect =
+	{
+		type = "profileflair",
+		skin_tags = { "INSECT", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 177,
 	},
 	profileflair_lightningrodnautical =
 	{
@@ -10961,6 +11054,14 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 102,
 	},
+	webber_beard_spring =
+	{
+		type = "beard",
+		skin_tags = { "SPRING", "WEBBER_BEARD", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 177,
+	},
 	webber_beard_survivor =
 	{
 		type = "beard",
@@ -11096,6 +11197,14 @@ MISC_ITEMS =
 		rarity = "Classy",
 		rarity_modifier = "Woven",
 		release_group = 97,
+	},
+	wilson_beard_spring =
+	{
+		type = "beard",
+		skin_tags = { "SPRING", "WILSON_BEARD", },
+		rarity = "Classy",
+		rarity_modifier = "Woven",
+		release_group = 177,
 	},
 	wilson_beard_survivor =
 	{

@@ -141,7 +141,7 @@ local function Retarget(inst)
             inst,
             TUNING.MINOTAUR_TARGET_DIST,
             function(guy)
-                return not (inst.components.follower ~= nil and inst.components.follower.leader == guy)
+                return not (inst.components.follower ~= nil and inst.components.follower:GetLeader() == guy)
                        and inst.components.combat:CanTarget(guy)
             end,
             RETARGET_MUST_TAGS,

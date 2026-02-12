@@ -2226,7 +2226,7 @@ local function Scrapbook_DefineSubCategory(t)
         subcat = "hauntedtoy"
     elseif t:HasTag("singingshell") then
         subcat = "shell"
-    elseif t:HasTag("bird") then
+    elseif t:HasAnyTag("bird", "buzzard", "tallbird", "teenbird", "smallbird", "malbatross", "moose", "mossling", "penguin") or t.prefab == "perd" then
         subcat = "bird"
     elseif t:HasAnyTag("pig", "pigtype") and not t:HasTag("manrabbit") then
         subcat = "pig"
@@ -2688,6 +2688,7 @@ local NOT_ALLOWED_RECIPE_TECH =
     [TechTree.Create(TECH.YOTS)] = true,
 }
 
+CREATING_SCRAPBOOK_DATA = nil
 function d_createscrapbookdata(print_missing_icons)
     if not TheWorld.state.isautumn or TheWorld.state.israining then
         -- Force the season (many entities change the build/animation during certain seasons).
@@ -2700,6 +2701,8 @@ function d_createscrapbookdata(print_missing_icons)
         scheduler:ExecuteInTime(0.05, ExecuteConsoleCommand, nil, string.format("d_createscrapbookdata(%s)", tostring(print_missing_icons or "")))
         return
     end
+
+	CREATING_SCRAPBOOK_DATA = true
 
     c_sethealth(1)
     c_setsanity(1)
@@ -3625,6 +3628,8 @@ function d_createscrapbookdata(print_missing_icons)
     exporter_data_helper:write("}\n")
     exporter_data_helper:close()
 
+	CREATING_SCRAPBOOK_DATA = nil
+
     d_unlockscrapbook()
 
     ThePlayer.HUD:OpenScrapbookScreen()
@@ -3954,7 +3959,7 @@ local function GetAvgCenterOfTask(task_name, manager)
         end
     end
     --
-    return num ~= 0 and Vector3(x / num, 0, y / num) or nil
+    return num ~= 0 and Vector3(x / num, 0, y / num) or Vector3(0, 0, 0)
 end
 function d_drawworldbirdmigration()
     if not TheWorld then
@@ -3971,7 +3976,7 @@ function d_drawworldbirdmigration()
     else
         worldmigrationvisuals = {}
 
-        local manager = TheWorld.components.mutatedbirdmanager
+        local manager = TheWorld.components.migrationmanager
         local migrationmap = manager and manager:Debug_GetMigrationMap()
         if not migrationmap then
             return
@@ -3979,23 +3984,23 @@ function d_drawworldbirdmigration()
 
         local migrationpopulations = manager:Debug_GetMigrationPopulations()
 
-        for task, neighbors in pairs(migrationmap) do
+        for task, data in pairs(migrationmap) do
             local pos = GetAvgCenterOfTask(task, manager)
             worldtopology_createent(worldmigrationvisuals, pos.x, pos.z, "oceanwhirlbigportal.png", task)
 
             local i = 0
-            for bird_type, populations in pairs(migrationpopulations) do
-                i = i + 1
-                for task_name, data in pairs(populations) do
-                    if task_name == task then
-                        local str = data.current.." "..bird_type
-                        worldtopology_createent(worldmigrationvisuals, pos.x + i * 5, pos.z + i * 5, "greenmooneye.png", str)
-                        break
-                    end
-                end
-            end
+            -- for bird_type, populations in pairs(migrationpopulations) do
+            --     i = i + 1
+            --     for task_name, data in pairs(populations) do
+            --         if task_name == task then
+            --             local str = data.current.." "..bird_type
+            --             worldtopology_createent(worldmigrationvisuals, pos.x + i * 5, pos.z + i * 5, "greenmooneye.png", str)
+            --             break
+            --         end
+            --     end
+            -- end
 
-            for i, neighbor in pairs(neighbors) do
+            for neighbor in pairs(data.neighbours) do
                 local neighborpos = GetAvgCenterOfTask(neighbor, manager)
 
                 local distmod = math.ceil(math.sqrt(distsq(pos.x, pos.z, neighborpos.x, neighborpos.z)) / 8)
@@ -4437,5 +4442,12 @@ function d_tiles()
             offx = 0
             offy = offy + 2
         end
+    end
+end
+
+function d_getmigrationpopulation(migrator_type)
+    local migrationpopulations = TheWorld.components.migrationmanager:Debug_GetMigrationPopulations()
+    if migrationpopulations[migrator_type] then
+        return migrationpopulations[migrator_type].populations
     end
 end

@@ -61,6 +61,7 @@ local function EatFoodAction(inst)
     end
 end
 
+local LOSE_LOYALTY_CHANCE = 0.2
 local function ScaredLoseLoyalty(self)
     local t = GetTime()
     if t >= self.scareendtime then
@@ -69,10 +70,10 @@ local function ScaredLoseLoyalty(self)
         self.scaredelay = t + 3
     elseif t >= self.scaredelay then
         self.scaredelay = t + 3
-        if math.random() < .2 and
-                self.inst.components.follower ~= nil and
-                self.inst.components.follower:GetLoyaltyPercent() > 0 and
-                self.inst.components.follower:GetLeader() ~= nil then
+        local leader = self.inst.components.follower ~= nil and self.inst.components.follower:GetLeader() or nil
+        if leader ~= nil and
+            self.inst.components.follower:GetLoyaltyPercent() > 0 and
+            TryLuckRoll(leader, LOSE_LOYALTY_CHANCE, LuckFormulas.LoseFollowerOnPanic) then
             self.inst.components.follower:SetLeader(nil)
             if self.inst.components.combat then
                 self.inst.components.combat:SetTarget(nil)
@@ -114,7 +115,7 @@ function RockyBrain:OnStart()
         ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)),
         DoAction(self.inst, EatFoodAction),
         Follow(self.inst, function(inst)
-                return inst.components.follower.leader
+                return inst.components.follower:GetLeader()
             end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         Wander(self.inst, function()

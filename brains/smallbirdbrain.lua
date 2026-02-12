@@ -22,6 +22,10 @@ local FIND_FOOD_HUNGER_PERCENT = 0.75 -- if hunger below this, forage for nearby
 local START_RUN_DIST = 4
 local STOP_RUN_DIST = 6
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function IsHungry(inst)
     return inst.components.hunger and inst.components.hunger:GetPercent() < FIND_FOOD_HUNGER_PERCENT
 end
@@ -31,8 +35,9 @@ local function IsStarving(inst)
 end
 
 local function ShouldStandStill(inst)
+    local leader = GetLeader(inst)
     return (inst.components.hunger and inst.components.hunger:IsStarving() and not inst:HasTag("teenbird")
-    	and (not inst.components.follower.leader or not inst.components.follower.leader:HasTag("tallbird")))
+    	and (not leader or not leader:HasTag("tallbird")))
 end
 
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
@@ -58,10 +63,11 @@ local function FindFoodAction(inst)
 end
 
 local function GetTraderFn(inst)
-    return inst.components.follower.leader ~= nil
-        and inst.components.trader:IsTryingToTradeWithMe(inst.components.follower.leader)
+    local leader = GetLeader(inst)
+    return leader ~= nil
+        and inst.components.trader:IsTryingToTradeWithMe(leader)
         and inst:HasTag("companion")
-        and inst.components.follower.leader
+        and leader
         or nil
 end
 
@@ -70,7 +76,7 @@ local function KeepTraderFn(inst, target)
 end
 
 local function ShouldRunAwayFromPlayer(inst, player)
-    return inst.components.follower.leader == nil and not inst:HasTag("companion")
+    return GetLeader(inst) == nil and not inst:HasTag("companion")
 end
 
 local SmallBirdBrain = Class(Brain, function(self, inst)
@@ -90,7 +96,7 @@ function SmallBirdBrain:OnStart()
                 WaitNode(math.random()*.5),
                 PriorityNode {
                     StandStill(self.inst, ShouldStandStill),
-                    Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+                    Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
                 },
             },
             DoAction(self.inst, function() return FindFoodAction(self.inst) end),
@@ -107,16 +113,21 @@ function SmallBirdBrain:OnStart()
                 WaitNode(1 + math.random()*2),
                 PriorityNode {
                     StandStill(self.inst, ShouldStandStill),
-                    Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+                    Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
                 },
             },
             DoAction(self.inst, function() return FindFoodAction(self.inst) end),
         },
         PriorityNode {
             StandStill(self.inst, ShouldStandStill),
-            Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+            Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         },
-        Wander(self.inst, function() if self.inst.components.follower.leader then return Vector3(self.inst.components.follower.leader.Transform:GetWorldPosition()) end end, MAX_FOLLOW_DIST- 1, {minwalktime=.5, randwalktime=.5, minwaittime=6, randwaittime=3}),
+        Wander(self.inst, function()
+            local leader = GetLeader(self.inst)
+            if leader then
+                return Vector3(leader.Transform:GetWorldPosition())
+            end
+        end, MAX_FOLLOW_DIST- 1, {minwalktime=.5, randwalktime=.5, minwaittime=6, randwaittime=3}),
     },.25)
     self.bt = BT(self.inst, root)
  end

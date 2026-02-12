@@ -188,6 +188,7 @@ local function OnDrakeSpawnTask(inst, self, pos, sectorsize)
     end
 end
 
+local SPAWN_NUM_LARGE_DRAKES_CHANCE = 0.33
 function DeciduousTreeUpdater:OnUpdate(dt)
     if self.monster and self.inst.monster_start_time and ((GetTime() - self.inst.monster_start_time) > self.inst.monster_duration) then
         self.monster = false
@@ -211,7 +212,7 @@ function DeciduousTreeUpdater:OnUpdate(dt)
         -- We want to spawn drakes at some interval
         if self.time_to_passive_drake <= 0 then
             if self.num_passive_drakes <= 0 then
-                self.num_passive_drakes = math.random() < .33 and TUNING.PASSIVE_DRAKE_SPAWN_NUM_LARGE or TUNING.PASSIVE_DRAKE_SPAWN_NUM_NORMAL
+                self.num_passive_drakes = TryLuckRoll(self.monster_target, SPAWN_NUM_LARGE_DRAKES_CHANCE, LuckFormulas.ChildSpawnerRareChild) and TUNING.PASSIVE_DRAKE_SPAWN_NUM_LARGE or TUNING.PASSIVE_DRAKE_SPAWN_NUM_NORMAL
                 self.passive_drakes_spawned = 0
             elseif self.passive_drakes_spawned < self.num_passive_drakes then
                 local passdrake = SpawnPrefab("birchnutdrake")

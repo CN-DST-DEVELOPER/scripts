@@ -57,6 +57,27 @@ local function KeepTraderFn(inst, target)
 end
 
 local FINDFOOD_CANT_TAGS = { "outofreach" }
+local function IsFoodValid(item, inst)
+    return item:GetTimeAlive() >= 8
+        and item.prefab ~= "mandrake"
+        and item.components.edible ~= nil
+        and (not inst.brain_noveggie or item.components.edible.foodtype == FOODTYPE.MEAT)
+        and item:IsOnPassablePoint()
+        and inst.components.eater:CanEat(item)
+end
+
+local FINDSHELF_ONEOF_TAGS = { "takeshelfitem" }
+local function IsFoodOnShelfValid(item, inst)
+    local shelf = item.components.shelf
+    return shelf ~= nil
+        and shelf.itemonshelf ~= nil
+        and shelf.cantakeitem
+        and shelf.itemonshelf.components.edible ~= nil
+        and (not inst.brain_noveggie or shelf.itemonshelf.components.edible.foodtype == FOODTYPE.MEAT)
+        and item:IsOnPassablePoint()
+        and inst.components.eater:CanEat(shelf.itemonshelf)
+end
+
 local function FindFoodAction(inst)
     if inst.sg:HasStateTag("busy") then
         return
@@ -80,37 +101,18 @@ local function FindFoodAction(inst)
 
     local noveggie = time_since_eat ~= nil and time_since_eat < TUNING.PIG_MIN_POOP_PERIOD * 4
 
-    local target = FindEntity(inst,
-        SEE_FOOD_DIST,
-        function(item)
-            return item:GetTimeAlive() >= 8
-                and item.prefab ~= "mandrake"
-                and item.components.edible ~= nil
-                and (not noveggie or item.components.edible.foodtype == FOODTYPE.MEAT)
-                and item:IsOnPassablePoint()
-                and inst.components.eater:CanEat(item)
-        end,
-        nil,
-        FINDFOOD_CANT_TAGS
-    )
+    inst.brain_noveggie = noveggie
+    local target = FindEntity(inst, SEE_FOOD_DIST, IsFoodValid, nil, FINDFOOD_CANT_TAGS, inst.components.eater:GetEdibleTags())
+    inst.brain_noveggie = nil
+
     if target ~= nil then
         return BufferedAction(inst, target, ACTIONS.EAT)
     end
 
-    target = FindEntity(inst,
-        SEE_FOOD_DIST,
-        function(item)
-            return item.components.shelf ~= nil
-                and item.components.shelf.itemonshelf ~= nil
-                and item.components.shelf.cantakeitem
-                and item.components.shelf.itemonshelf.components.edible ~= nil
-                and (not noveggie or item.components.shelf.itemonshelf.components.edible.foodtype == FOODTYPE.MEAT)
-                and item:IsOnPassablePoint()
-                and inst.components.eater:CanEat(item.components.shelf.itemonshelf)
-        end,
-        nil,
-        FINDFOOD_CANT_TAGS
-    )
+    inst.brain_noveggie = noveggie
+    target = FindEntity(inst, SEE_FOOD_DIST, IsFoodOnShelfValid, nil, FINDFOOD_CANT_TAGS, FINDSHELF_ONEOF_TAGS)
+    inst.brain_noveggie = nil
+
     if target ~= nil then
         return BufferedAction(inst, target, ACTIONS.TAKEITEM)
     end
@@ -125,18 +127,26 @@ local function FindDeciduousTreeMonster(inst)
     return FindEntity(inst, SEE_TREE_DIST / 3, IsDeciduousTreeMonster, CHOP_MUST_TAGS)
 end
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function KeepChoppingAction(inst)
-    return inst.tree_target ~= nil
-        or (inst.components.follower.leader ~= nil and
-            inst:IsNear(inst.components.follower.leader, KEEP_CHOPPING_DIST))
+    if inst.tree_target then
+        return true
+    end
+    local leader = GetLeader(inst)
+    return (leader ~= nil and
+            inst:IsNear(leader, KEEP_CHOPPING_DIST))
         or FindDeciduousTreeMonster(inst) ~= nil
 end
 
 local function StartChoppingCondition(inst)
-    return inst.tree_target ~= nil
-        or (inst.components.follower.leader ~= nil and
-            inst.components.follower.leader.sg ~= nil and
-            inst.components.follower.leader.sg:HasStateTag("chopping"))
+    if inst.tree_target then
+        return true
+    end
+    local leader = GetLeader(inst)
+    return (leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("chopping"))
         or FindDeciduousTreeMonster(inst) ~= nil
 end
 
@@ -162,15 +172,11 @@ local function HasValidHome(inst)
 end
 
 local function GoHomeAction(inst)
-    if not inst.components.follower.leader and
+    if not GetLeader(inst) and
         HasValidHome(inst) and
         not inst.components.combat.target then
             return BufferedAction(inst, inst.components.homeseeker.home, ACTIONS.GOHOME)
     end
-end
-
-local function GetLeader(inst)
-    return inst.components.follower.leader
 end
 
 local function GetHomePos(inst)
@@ -214,11 +220,11 @@ local function GivePlayerPigTokenAction(inst)
 end
 
 local function GetFaceTargetFn(inst)
-    return inst.components.follower.leader
+    return GetLeader(inst)
 end
 
 local function KeepFaceTargetFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetLeader(inst) == target
 end
 
 local function GetFaceTargetNearestPlayerFn(inst)
@@ -298,6 +304,18 @@ local function IsWatchingMinigameIntro(inst)
 	local minigame = inst.components.minigame_spectator ~= nil and inst.components.minigame_spectator:GetMinigame() or nil
 	return minigame ~= nil and minigame.sg ~= nil and minigame.sg:HasStateTag("intro")
 end
+
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
+local RUN_AWAY_FROM_PIG_PARAMS =
+{
+	tags = { "pig", "_combat" },
+	fn = function(guy, inst)
+		return guy.components.combat:TargetIs(inst)
+	end,
+}
 
 local PigBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -415,18 +433,18 @@ function PigBrain:OnStart()
                     AvoidElectricFence(self.inst))),
             BrainCommon.IpecacsyrupPanicTrigger(self.inst),
             ChattyNode(self.inst, "PIG_TALK_FIGHT",
-                WhileNode( function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
-                    ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST) )),
+				WhileNode(function() return not self.inst.components.combat:HasTarget() or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
+					ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST))),
             ChattyNode(self.inst, "PIG_TALK_RESCUE",
                 WhileNode( function() return GetLeader(self.inst) and GetLeader(self.inst).components.pinnable and GetLeader(self.inst).components.pinnable:IsStuck() end, "Leader Phlegmed",
                     DoAction(self.inst, RescueLeaderAction, "Rescue Leader", true) )),
             ChattyNode(self.inst, "PIG_TALK_FIGHT",
-                WhileNode( function() return self.inst.components.combat.target and self.inst.components.combat:InCooldown() end, "Dodge",
-                    RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST) )),
+				WhileNode(function() return self.inst.components.combat:HasTarget() and self.inst.components.combat:InCooldown() end, "Dodge",
+					RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST))),
             WhileNode(function() return IsHomeOnFire(self.inst) end, "OnFire",
                 ChattyNode(self.inst, "PIG_TALK_PANICHOUSEFIRE",
                     Panic(self.inst))),
-            RunAway(self.inst, function(guy) return guy:HasTag("pig") and guy.components.combat and guy.components.combat.target == self.inst end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),
+			RunAway(self.inst, RUN_AWAY_FROM_PIG_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
             ChattyNode(self.inst, "PIG_TALK_ATTEMPT_TRADE",
                 FaceEntity(self.inst, GetTraderFn, KeepTraderFn)),
             ChattyNode(self.inst, "PIG_TALK_GIVE_GIFT",

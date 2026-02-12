@@ -19,7 +19,7 @@ local function UpdateLure(inst)
             local x, y, z = owner.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x, y, z, TUNING.ARMOR_CARROTLURE_RANGE, CARROTLURE_MUST_TAGS)
             for _, v in ipairs(ents) do
-                if v.components.follower and not v.components.follower.leader and not owner.components.leader:IsFollower(v) then
+                if v.components.follower and not v.components.follower:GetLeader() and not owner.components.leader:IsFollower(v) then
                     owner.components.leader:AddFollower(v)
                     currentfollowerscount = currentfollowerscount + 1
                     currentfollowers[currentfollowerscount] = v

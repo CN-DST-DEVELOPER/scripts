@@ -14,7 +14,7 @@ local item_assets =
 local prefabs =
 {
     "collapse_small",
-	"steeringwheel_item", -- deprecated but kept for existing worlds and mods
+	"steeringwheel_item",
 }
 
 local function on_start_steering(inst, sailor)

@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "It's not responding for some reason.",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Ah yes. I have now arrived at Pearl's home.",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "It seems the mechanical knights are indisposed at the moment.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "One of the hungriest large invertebrates.",
         CHESSPIECE_WAGBOSS_ROBOT = "A miniature of the homicidal automaton. Hm.",
         CHESSPIECE_WAGBOSS_LUNAR = "This dreadful amalgamation was unprecedented.",
+        CHESSPIECE_YOTH = "This mechanical knight demonstrates loyalty to whomever dons the garb of its charge.",
 
         CHESSJUNK1 = "The magician's unfinished projects?",
         CHESSJUNK2 = "The magician's unfinished projects?",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "What a shame.",
         },
 		HERMITHOUSE_ORNAMENT = "An attractive ornament to be hung on Pearl's house.",
-        HERMITHOUSE_LAUNDRY = "Laundry.",
+		HERMITHOUSE_LAUNDRY = "Laundry.",
 
         PETALS_DRIED = "The drying process enhances the aroma.",
         PETALS_EVIL_DRIED = "The drying process enhances the aroma.",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "The remnants of a lighting apparatus.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Pearl dear, where would you like this?",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "A sufficient offering has been made.", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "It demands are particular offering.", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "This shrine has been burned.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "She descends from a royal breed.",
+        COSTUME_PRINCESS_BODY = "These garments are indicative of royal status.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "There is a rather dark metaphor here.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "This is a decidedly unruly breed!", -- Generic quote. It's aggressive.
+            FOLLOWING = "It follows me on account of the particular garb I wear.", -- Following the character examining
+            FOLLOWING_OTHER = "It is pledged to another.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "This knight's helm affords adequate cranial protection.",
+        ARMOR_YOTH_KNIGHT = "The rose decorating this armor is the maker's insignia.",
+        HORSESHOE = "This trinket confers a favorable advantage, yet its effect cannot be quantified.",
+        YOTH_LANCE = "During the medieval era, this type of lance was employed for jousting.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Now that the thermal lift is gone, it descended accordingly.", -- Depleted and on the ground
+            HELD = "Deployment consists simply of allowing it to ascend upon release.", -- In the players inventory
+            GENERIC = "Nothing magical here. It's flotation is merely due to hot air being less dense than the surrounding atmosphere.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "It simply confers greater swiftness upon one's steps.",
+        YOTH_CHAIR_ROCKING_ITEM = "It is a rocking horse, of the sort commonly found in children's nurseries.", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

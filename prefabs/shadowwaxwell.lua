@@ -211,11 +211,11 @@ end
         return false
     end
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader ~= nil
         and (leader == target
             or (target.components.follower ~= nil and
-                target.components.follower.leader == leader)) then
+                target.components.follower:GetLeader() == leader)) then
         return false
     end
 
@@ -234,8 +234,8 @@ end
 
     local ismonster = target:HasTag("monster")
     if ismonster and not TheNet:GetPVPEnabled() and 
-       ((target.components.follower and target.components.follower.leader ~= nil and 
-         target.components.follower.leader:HasTag("player")) or target.bedazzled) then
+       ((target.components.follower and target.components.follower:GetLeader() ~= nil and 
+         target.components.follower:GetLeader():HasTag("player")) or target.bedazzled) then
         return false
     end
 
@@ -250,9 +250,9 @@ local COMBAT_MUSHAVE_TAGS = { "_combat", "_health" }
 local COMBAT_CANTHAVE_TAGS = { "INLIMBO", "companion" }
 local COMBAT_MUSTONEOF_TAGS_AGGRESSIVE = { "monster", "prey", "insect", "hostile", "character", "animal" }
 local function HasFriendlyLeader(inst, target)
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader ~= nil then
-        local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+        local target_leader = target.components.follower and target.components.follower:GetLeader()
 
         if target_leader and target_leader.components.inventoryitem then
             target_leader = target_leader.components.inventoryitem:GetGrandOwner()

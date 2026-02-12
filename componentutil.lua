@@ -557,7 +557,7 @@ local function OnFuelPresentation1(inst, x, z, upgraded)
 end
 local function OnResidueActivated_Fuel_Internal(inst, doer, odds)
     local skilltreeupdater = doer.components.skilltreeupdater
-    local upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") and math.random() < odds or nil
+    local upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_charlie_2") and TryLuckRoll(doer, odds, LuckFormulas.ResidueUpgradeFuel) or nil
     local fuel = SpawnPrefab(upgraded and "horrorfuel" or "nightmarefuel")
     fuel:RemoveFromScene()
     local x, y, z = inst.Transform:GetWorldPosition()
@@ -1149,6 +1149,12 @@ function GetLunarRiftMutationChance(inst)
     return inst.gestalt_possession_chance or 1
 end
 
+local function GetCauseOfDeath(inst)
+    local health = inst.components.health
+    return (health and health.causeofdeath and health.causeofdeath:IsValid() and health.causeofdeath)
+        or nil
+end
+
 function CanLunarPreRiftMutateFromCorpse(inst)
     if not CanEntityBeNonGestaltMutated(inst) then
         return false
@@ -1164,7 +1170,8 @@ function CanLunarPreRiftMutateFromCorpse(inst)
         return inst._cached_prerift_mutation_result
     end
 
-    inst._cached_prerift_mutation_result = math.random() <= GetLunarPreRiftMutationChance(inst) -- mutation chance returns 0 if we're not in a lunacy area
+    local killer = GetCauseOfDeath(inst)
+    inst._cached_prerift_mutation_result = TryLuckRoll(killer, GetLunarPreRiftMutationChance(inst), LuckFormulas.PreRiftMutation)
     return inst._cached_prerift_mutation_result
 end
 
@@ -1184,7 +1191,8 @@ function CanLunarRiftMutateFromCorpse(inst)
         return inst._cached_rift_mutation_result
     end
 
-    inst._cached_rift_mutation_result = math.random() <= GetLunarRiftMutationChance(inst)
+    local killer = GetCauseOfDeath(inst)
+    inst._cached_rift_mutation_result = TryLuckRoll(killer, GetLunarRiftMutationChance(inst), LuckFormulas.RiftPossession)
     return inst._cached_rift_mutation_result
 end
 
@@ -1325,7 +1333,7 @@ function GetCreatureImpactSound(inst, weaponmod)
         (inst:HasTag("mound") and "mound_") or
 		(inst:HasAnyTag("shadow", "shadowminion", "shadowchesspiece") and "shadow_") or
 		(inst:HasAnyTag("tree", "wooden") and "tree_") or
-        (inst:HasTag("veggie") and "vegetable_") or
+        (inst:HasAnyTag("veggie", "hedge") and "vegetable_") or
         (inst:HasTag("shell") and "shell_") or
 		(inst:HasAnyTag("rocky", "fossil") and "stone_") or
         inst.override_combat_impact_sound or
@@ -1423,8 +1431,9 @@ function GetTopologyDataAtInst(inst)
 end
 
 --------------------------------------------------------------------------
-function MakeComponentAnInventoryItemSource(cmp)
+function MakeComponentAnInventoryItemSource(cmp, owner)
     local self = cmp
+    local owner = owner or self.inst
 
     local function removeowner()
         if self.itemsource_owner then
@@ -1476,20 +1485,29 @@ function MakeComponentAnInventoryItemSource(cmp)
     self.itemsource_oncontainerremoved = function()
         unstore(self.inst)
     end
-    self.inst:ListenForEvent("onputininventory", self.itemsource_topocket)
-    self.inst:ListenForEvent("ondropped", self.itemsource_toground)
-    self.inst:ListenForEvent("onremove", function()
+    self.itemsource_onremove = function()
         removeowner()
-    end)
+    end
+    local currentowner = owner.components.inventoryitem.owner
+    if currentowner then
+        self.itemsource_topocket(owner, currentowner)
+    end
+    self.inst:ListenForEvent("onputininventory", self.itemsource_topocket, owner)
+    self.inst:ListenForEvent("ondropped", self.itemsource_toground, owner)
+    self.inst:ListenForEvent("onremove", self.itemsource_onremove, owner)
 end
 
-function RemoveComponentInventoryItemSource(cmp)
+function RemoveComponentInventoryItemSource(cmp, owner)
     local self = cmp
-    self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket)
-    self.inst:RemoveEventCallback("ondropped", self.itemsource_toground)
+    local owner = owner or self.inst
+
+    self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket, owner)
+    self.inst:RemoveEventCallback("ondropped", self.itemsource_toground, owner)
+    self.inst:RemoveEventCallback("onremove", self.itemsource_onremove, owner)
     self.itemsource_toground(self.inst)
     self.itemsource_topocket = nil
     self.itemsource_toground = nil
+    self.itemsource_onremove = nil
     self.itemsource_oncontainerownerchanged = nil
     self.itemsource_oncontainerremoved = nil
 end
@@ -1654,4 +1672,226 @@ function IsPointCoveredByBlocker(x, y, z, extra_radius)
 	end
 
     return nil
+end
+
+--------------------------------------------------------------------------
+
+function EntityHasSetBonus(inst, setname)
+    local inventory = inst.components.inventory
+    if inventory then
+        local head, body = inventory.equipslots[EQUIPSLOTS.HEAD], inventory.equipslots[EQUIPSLOTS.BODY]
+
+        if head == nil or body == nil then
+            return false
+        end
+
+        if head.components.setbonus == nil or body.components.setbonus == nil then
+            return false
+        end
+
+        if head.components.setbonus.setname ~= setname or body.components.setbonus.setname ~= setname then
+            return false
+        end
+
+        return true
+    end
+end
+
+--------------------------------------------------------------------------
+-- Jousting.
+
+function CreatingJoustingData(inst)
+    local joustdata = {}
+
+    local target, source
+    local buffaction = inst:GetBufferedAction()
+    if buffaction then
+        target, source = buffaction.target, buffaction.invobject
+    end
+
+    local dir
+    if target and target:IsValid() then
+        --true dir (for movement)
+        dir = inst:GetAngleToPoint(target.Transform:GetWorldPosition())
+    else
+        --true dir (for movement)
+        dir = inst.Transform:GetRotation()
+    end
+    joustdata.dir = dir
+
+    if source and source:IsValid() then
+        if source.components.joustsource then
+            joustdata.source = source
+        end
+    end
+
+    return joustdata
+end
+
+--------------------------------------------------------------------------
+
+local TWOTHIRDS = 2 / 3
+
+local function CommonChanceLuckAdditive(mult)
+    return function(inst, chance, luck)
+        return luck > 0 and chance + ( luck * mult )
+    end
+end
+
+local function CommonChanceUnluckMultAndLuckHyperbolic(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (1 + math.abs(luck) * mult)
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+local function CommonChanceLuckHyperbolic(mult_max, asymptote, subtract)
+    subtract = subtract or 0
+    return function(inst, chance, luck)
+        return luck > 0 and chance * (mult_max - asymptote / ( asymptote + (luck - subtract) ))
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckMult(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (reciprocal / (reciprocal - luck) + .5) * TWOTHIRDS
+            or luck > 0 and chance * (1 + math.abs(luck) * mult)
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckAdditive(reciprocal, mult)
+    mult = mult or 1
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (reciprocal / (reciprocal - luck) + .5) * TWOTHIRDS
+            or luck > 0 and chance + ( luck * mult )
+    end
+end
+
+local function CommonChanceUnluckHyperbolicAndLuckHyperbolic(mult_max, asymptote, subtract, reciprocal)
+    subtract = subtract or 0
+    return function(inst, chance, luck)
+        return luck < 0 and chance * (mult_max - asymptote / ( asymptote + (luck - subtract) ))
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+local function CommonChanceLuckHyperbolicLower(reciprocal)
+    return function(inst, chance, luck)
+        return luck > 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+    end
+end
+
+LuckFormulas =
+{
+    AcidBatWave = CommonChanceUnluckMultAndLuckHyperbolic(5),
+    AncientTreeSeedTreasure = CommonChanceLuckAdditive(0.1),
+    BatGraveSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    BirdDropItem = CommonChanceUnluckHyperbolicAndLuckAdditive(2, .25),
+    BrightmareSpawn = CommonChanceUnluckMultAndLuckHyperbolic(4),
+    ChessJunkSpawnClockwork = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
+    ChildSpawnerOtherChild = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    ChildSpawnerRareChild = CommonChanceUnluckMultAndLuckHyperbolic(4),
+    CriticalStrike = CommonChanceLuckAdditive(.5),
+    CritterNuzzle = CommonChanceUnluckHyperbolicAndLuckMult(0.5),
+    DeciduousMonsterSpawn = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    DecreaseSanityMonsterPopulation = CommonChanceUnluckHyperbolicAndLuckMult(-2, 1),
+    DropWetTool = CommonChanceUnluckMultAndLuckHyperbolic(.5, 1),
+    GrassGekkoMorph = CommonChanceUnluckMultAndLuckHyperbolic(4, .5),
+    HuntAlternateBeast = CommonChanceUnluckMultAndLuckHyperbolic(3, 0.5),
+    IncreaseSanityMonsterPopulation = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    InspectablesUpgradedBox = CommonChanceLuckAdditive(0.5),
+    LeifChill = CommonChanceUnluckHyperbolicAndLuckMult(1),
+    LighterIgniteOnAttack = CommonChanceUnluckMultAndLuckHyperbolic(.5),
+    LootDropperChance = CommonChanceLuckHyperbolic(3, 6, 3),
+    LoseFollowerOnPanic = CommonChanceUnluckMultAndLuckHyperbolic(1),
+    LuckyRabbitSpawn = CommonChanceUnluckHyperbolicAndLuckAdditive(1), -- This will REALLY go high with luck, which makes sense, it's the lucky rabbit! So, special 'syngery'
+    LureplantChanceSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    MalbatrossSpawn = CommonChanceUnluckMultAndLuckHyperbolic(4, 1),
+    MegaFlareEvent = CommonChanceLuckHyperbolic(1.5, 1, -2), -- This takes into account every player.
+    MermTripleAttack = CommonChanceLuckAdditive(0.5),
+    MessageBottleContainsNote = CommonChanceLuckAdditive(-.2),
+    MonkeyFollowPlayer = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    ParasiteOverrideBlob = CommonChanceUnluckMultAndLuckHyperbolic(8),
+    PirateRaidsSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
+    PreRiftMutation = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    ResidueUpgradeFuel = CommonChanceLuckHyperbolic(2, 4),
+    RuinsHatProc = CommonChanceLuckAdditive(.33),
+    RuinsNightmare = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    RiftPossession = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    SchoolSpawn = CommonChanceLuckAdditive(0.5),
+    ShadowRiftQuaker = CommonChanceUnluckMultAndLuckHyperbolic(8),
+    ShadowTentacleSpawn = CommonChanceLuckAdditive(0.2),
+    SharkBoiSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2),
+    StatueSpawnNightmare = CommonChanceUnluckMultAndLuckHyperbolic(1, 1),
+    SpawnLeif = CommonChanceUnluckMultAndLuckHyperbolic(6),
+    SpecialSchoolSpawn = CommonChanceUnluckMultAndLuckHyperbolic(3),
+    SpiderQueenBetterSpider = CommonChanceUnluckMultAndLuckHyperbolic(3, .5),
+    SpookedChance = CommonChanceUnluckHyperbolicAndLuckHyperbolic(2, -1, 0, 2),
+    SquidHerdSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5),
+    TerrorbeakSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2, .5),
+    WildFireIgnition = CommonChanceLuckHyperbolicLower(2), -- Don't have unluckiness affect this, it affects other players really badly
+
+    SpawnPerd = function(inst, chance, luck)
+        -- Make gobblers spawn more often with luck during their year
+        if IsSpecialEventActive(SPECIAL_EVENTS.YOTG) then
+            return luck > 0 and chance + ( luck * .5 )
+        end
+
+        -- Otherwise, they're not helpful, so being unlucky will spawn them more, being lucky will spawn them less
+        local reciprocal = 3
+        return luck < 0 and chance * (1 + math.abs(luck))
+            or luck > 0 and chance * (reciprocal / (reciprocal + luck))
+    end,
+}
+
+function GetEntityLuck(inst)
+    return inst.components.luckuser and inst.components.luckuser:GetLuck() or 0
+end
+
+function GetLuckChance(luck, chance, formula)
+    return formula(nil, chance, luck) or chance
+end
+
+function GetEntityLuckChance(inst, chance, formula)
+    local luck = GetEntityLuck(inst)
+    return formula(inst, chance, luck) or chance
+end
+
+function GetEntitiesLuckChance(instances, chance, formula)
+    local luck = 0
+    for k, v in pairs(instances) do
+        luck = luck + GetEntityLuck(v)
+    end
+    return formula(instances, chance, luck) or chance
+end
+
+function GetEntityLuckWeightedTable(inst, weighted_table)
+    local luck = GetEntityLuck(inst)
+    -- return a new weighted table, giving away value from the heaviest weighted items to the lower weighted
+end
+
+local function DoLuckyEffect(inst, is_lucky)
+    if inst.player_classified ~= nil then
+        --Forces a netvar to be dirty regardless of value
+        inst.player_classified.playluckeffect:set_local(false)
+        inst.player_classified.playluckeffect:set(is_lucky or false)
+    end
+end
+
+function TryLuckRoll(inst, chance, formula) -- inst can be optional.
+    local roll = math.random()
+    --
+    if inst then
+        local new_chance = GetEntityLuckChance(inst, chance, formula)
+        local success = roll <= new_chance
+        -- Effect CUT to keep it ambigious
+        -- if (roll > chance and success) or (roll <= chance and not success) then
+        --     DoLuckyEffect(inst, GetEntityLuck(inst) > 0)
+        -- end
+        return success
+    end
+    --
+    return roll <= chance
 end

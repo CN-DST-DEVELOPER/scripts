@@ -80,6 +80,11 @@ local function IsHerdGrazing(self)
     -- todo: Ask TheWorld.components.deerherding if it is grazing
 end
 
+local function GetRunAwayTarget(inst)
+	local target = inst.components.combat.target
+	return target and target.isplayer and target or nil
+end
+
 local DeerBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -92,7 +97,7 @@ function DeerBrain:OnStart()
         WhileNode(function() return self.inst.components.combat:HasTarget() end, "Flee",
             PriorityNode{
                 AttackWall(self.inst),
-                RunAway(self.inst, {fn=function(guy) return self.inst.components.combat:TargetIs(guy) end, tags={"player"}}, TUNING.DEER_ATTACKER_REMEMBER_DIST, TUNING.DEER_ATTACKER_REMEMBER_DIST),
+				RunAway(self.inst, { getfn = GetRunAwayTarget }, TUNING.DEER_ATTACKER_REMEMBER_DIST, TUNING.DEER_ATTACKER_REMEMBER_DIST),
             }),
 		BrainCommon.PanicTrigger(self.inst),
         BrainCommon.ElectricFencePanicTrigger(self.inst),

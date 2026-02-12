@@ -64,15 +64,6 @@ function MutatedBirdBrain:OnStart()
         FlyAway(self.inst)
     end
 
-    local function flee_threat_fn()
-        -- dude, you pissed us off.
-        local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-        if mutatedbirdmanager then
-            mutatedbirdmanager:SetEnemyOfBirds(self.threat)
-        end
-        FlyAway(self.inst)
-    end
-    
     local root = PriorityNode(
     {
         WhileNode( function() return self.inst.components.hauntable ~= nil and self.inst.components.hauntable.panic end, "PanicHaunted",
@@ -80,7 +71,7 @@ function MutatedBirdBrain:OnStart()
         IfNode(function() return ShouldFlyAway(self.inst) end, "Threat Near",
             ActionNode(fly_away_fn)),
         IfNode(function() return ShouldFlyAwayFromThreat(self.inst) end, "Living threat Near",
-            ActionNode(flee_threat_fn)),
+            ActionNode(fly_away_fn)),
         EventNode(self.inst, "threatnear",
             ActionNode(fly_away_fn)),
 

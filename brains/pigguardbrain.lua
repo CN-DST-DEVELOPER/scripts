@@ -63,6 +63,10 @@ local function ShouldGoHome(inst)
     return homePos ~= nil and inst:GetDistanceSqToPoint(homePos:Get()) > GO_HOME_DIST * GO_HOME_DIST
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 local PigGuardBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -78,7 +82,7 @@ function PigGuardBrain:OnStart()
                 ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)))),
         ChattyNode(self.inst, "PIG_GUARD_TALK_FIGHT",
             WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
-                RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST))),
+				RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST))),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
         ChattyNode(self.inst, "PIG_GUARD_TALK_GOHOME",
             DoAction(self.inst, GoHomeAction, "Go Home", true))),

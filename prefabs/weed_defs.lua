@@ -79,14 +79,20 @@ WEED_DEFS.weed_ivy.prefab_deps			= {"ivy_snare"}
 -------------------------------------------------------------------------------
 -- Custom Forgetmelots Behaviours
 -------------------------------------------------------------------------------
+
+local LUCKFORMULA_RECIPROCAL = .5
+local function ForgetMeLotsSpreadChanceMult(inst, chance, luck)
+    return luck < 0 and chance * (1 + math.abs(luck))
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
 local WEED_FORGETMELOTS_RESPAWNER_TAG = {"weed_forgetmelots_respawner", "CLASSIFIED"}
-WEED_DEFS.weed_forgetmelots.ondigup = function(inst)
+WEED_DEFS.weed_forgetmelots.ondigup = function(inst, worker)
 	local stage_data = inst.components.growable ~= nil and inst.components.growable:GetCurrentStageData()
 	if stage_data and stage_data.name == "bolting" then
 		local x, y, z = inst.Transform:GetWorldPosition()
-		local num_respawners = #TheSim:FindEntities(x, y, z, 12, WEED_FORGETMELOTS_RESPAWNER_TAG)
+		local num_respawners = TheSim:CountEntities(x, y, z, 12, WEED_FORGETMELOTS_RESPAWNER_TAG)
 		local chance = 1 - (num_respawners + 1) / 4
-		if chance > 0 and math.random() < chance then
+		if chance > 0 and TryLuckRoll(worker, chance, ForgetMeLotsSpreadChanceMult) then
 			SpawnPrefab("weed_forgetmelots_respawner").Transform:SetPosition(x, y, z)
 		end
 	end

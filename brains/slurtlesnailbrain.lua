@@ -40,10 +40,14 @@ local function ShouldGoHome(inst)
     return GetTime() - inst.lastmeal > HUNGER_TOLERANCE
 end
 
-local function ShouldRunAway(guy)
-    return guy:HasTag("character") and not guy:HasTag("notarget") and not guy:HasDebuff("healingsalve_acidbuff")
-end
-
+local HUNTER_PARAMS =
+{
+	tags = { "character" },
+	notags = { "notarget" },
+	fn = function(guy, inst)
+		return not guy:HasDebuff("healingsalve_acidbuff")
+	end,
+}
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
 
 local function EatFoodAction(inst)
@@ -140,7 +144,7 @@ function SlurtleSnailBrain:OnStart()
         UseShield(self.inst, DAMAGE_UNTIL_SHIELD, SHIELD_TIME, AVOID_PROJECTILE_ATTACKS, HIDE_WHEN_SCARED),
 		BrainCommon.PanicTrigger(self.inst),
         BrainCommon.ElectricFencePanicTrigger(self.inst),
-        RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+		RunAway(self.inst, HUNTER_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         DoAction(self.inst, EatFoodAction),
         DoAction(self.inst, StealFoodAction),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",

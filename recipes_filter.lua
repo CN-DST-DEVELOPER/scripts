@@ -369,6 +369,7 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 }
 
 CRAFTING_FILTERS.CRAFTING_STATION.recipes =
@@ -615,6 +616,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_yots_builder",
 	"chesspiece_wagboss_robot_builder",
 	"chesspiece_wagboss_lunar_builder",
+	"chesspiece_yoth_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -644,8 +646,13 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"halloween_experiment_moon",
 	"halloween_experiment_root",
 
+	-- Year of the Clockwork Knight
+	"yoth_knightstick",
+	"yoth_chair_rocking_item",
+	"chesspiece_yoth_sketch",
+
 	-- Year of the Snake
-	"yots_lantern_post_item",
+	-- "yots_lantern_post_item", -- This is available for all lunar new years, so its in the "Year of the X" section
 	"chesspiece_yots_sketch",
 
     -- Year of the Dragon
@@ -738,6 +745,8 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"firecrackers",
 	"redlantern",
 	"miniboatlantern",
+	"floatinglantern",
+	"yots_lantern_post_item", -- marked with yots, but it is for all lunar years
 	"dragonheadhat",
 	"dragonbodyhat",
 	"dragontailhat",
@@ -901,6 +910,7 @@ CRAFTING_FILTERS.PROTOTYPERS.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 }
 
 CRAFTING_FILTERS.REFINE.recipes =
@@ -1234,6 +1244,7 @@ CRAFTING_FILTERS.STRUCTURES.recipes =
 	"yotr_rabbitshrine",
 	"yotd_dragonshrine",
 	"yots_snakeshrine",
+	"yoth_knightshrine",
 
 	"researchlab",
 	"researchlab2",

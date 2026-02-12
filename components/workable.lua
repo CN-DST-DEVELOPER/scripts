@@ -143,6 +143,7 @@ function Workable:WorkedBy_Internal(worker, numworks)
 		end
 	end
     self.lastworktime = GetTime()
+    self.lastworker = worker
 
     worker:PushEvent("working", { target = self.inst })
     self.inst:PushEvent("worked", { worker = worker, workleft = self.workleft })

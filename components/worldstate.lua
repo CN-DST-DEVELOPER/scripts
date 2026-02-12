@@ -141,6 +141,7 @@ local function OnWeatherTick(src, data)
     SetVariable("precipitationrate", data.precipitationrate)
     SetVariable("snowlevel", data.snowlevel)
     SetVariable("lunarhaillevel", data.lunarhaillevel)
+    SetVariable("lunarhailrate", data.lunarhailrate)
     SetVariable("wetness", data.wetness)
 end
 
@@ -258,6 +259,7 @@ self.data.issnowing = false
 self.data.issnowcovered = false
 self.data.snowlevel = 0
 self.data.lunarhaillevel = 0
+self.data.lunarhailrate = 0
 self.data.wetness = 0
 self.data.iswet = false
 

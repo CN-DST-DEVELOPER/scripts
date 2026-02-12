@@ -66,6 +66,8 @@ local function fn()
 
     inst:SetPrefabName("tacklesketch")
 
+    inst.pickupsound = "paper"
+
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
     inst.entity:SetPristine()

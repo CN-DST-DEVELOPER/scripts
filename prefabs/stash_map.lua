@@ -33,6 +33,8 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
+    inst.pickupsound = "paper"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -55,7 +57,6 @@ local function fn()
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
-
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)

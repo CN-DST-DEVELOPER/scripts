@@ -409,8 +409,8 @@ function Burnable:LongUpdate(dt)
         if self.task ~= nil then
             self.task:Cancel()
             self.task = nil
+            DoneBurning(self.inst, self)
         end
-        DoneBurning(self.inst, self)
     end
 end
 

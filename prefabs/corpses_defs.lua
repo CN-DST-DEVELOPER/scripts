@@ -24,6 +24,11 @@ local BUILDS_TO_NAMES =
         manrabbit_enforcer_build = "rabbitkingminion_bunnyman",
     },
 
+    buzzard =
+    {
+        buzzard_lunar_build = "mutatedbuzzard_gestalt",
+    },
+
     hound =
     {
         hound_ocean = "hound",
@@ -149,8 +154,8 @@ local function Player_CorpseErodeFn(inst)
     if skel ~= nil then
         skel.Transform:SetPosition(x, y, z)
         -- Set the description
-        skel:SetSkeletonDescription(inst.char, inst:GetDisplayName(), inst.cause, inst.pkname, inst.userid)
-        skel:SetSkeletonAvatarData(inst.deathclientobj)
+        skel:SetSkeletonDescription(inst.char, inst.playername, inst.cause or "unknown", inst.pkname, inst.userid)
+        skel:SetSkeletonAvatarData(inst.components.playeravatardata:GetData())
     end
 
     inst:Remove()
@@ -262,6 +267,7 @@ local CORPSE_DEFS =
                 return (build ~= "crow_build") and "bird_mutant_spitter" or "bird_mutant"
             end,
             enabled_tuning = "SPAWN_MUTATED_BIRDS",
+            mutation_chance = TUNING.BIRD_PRERIFT_MUTATION_SPAWN_CHANCE,
         },
 
         has_rift_mutation = true,
@@ -269,6 +275,7 @@ local CORPSE_DEFS =
         {
             overridemutantprefab = "mutatedbird",
             enabled_tuning = "SPAWN_MUTATED_BIRDS_GESTALT",
+            mutation_chance = TUNING.BIRD_RIFT_POSSESSION_SPAWN_CHANCE,
         },
 
         prefab_deps =
@@ -288,7 +295,7 @@ local CORPSE_DEFS =
         burntime = TUNING.MED_BURNTIME,
         faces = FACES.FOUR,
         sanityaura = -TUNING.SANITYAURA_MED,
-        tags = { },
+        tags = { "buzzard" },
         shadowsize = {1.25, .75},
         custom_physicsfn = function(inst)
             MakeInventoryPhysics(inst)
@@ -298,13 +305,11 @@ local CORPSE_DEFS =
         end,
 
         override_immediate_gestalt_mutate_cb = function(inst, gestalt)
-            local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+            local migrationmanager = TheWorld.components.migrationmanager
+            local buzzard = ReplacePrefab(inst, inst:GetRiftMutantPrefab())
 
-            if mutatedbirdmanager then
-                mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbuzzard_gestalt", inst, 1)
-                inst:Remove()
-            else
-                ReplacePrefab(inst, inst:GetRiftMutantPrefab())
+            if migrationmanager then
+                migrationmanager:EnterMigration(MIGRATION_TYPES.MUTATED_BUZZARD_GESTALT, buzzard)
             end
 
             if gestalt then
@@ -1410,6 +1415,7 @@ local CORPSE_DEFS =
 
         OnSave = function(inst, data)
             data.char = inst.char
+            data.playername = inst.playername
             data.userid = inst.userid
             data.pkname = inst.pkname
             data.cause = inst.cause
@@ -1422,6 +1428,7 @@ local CORPSE_DEFS =
             end
 
             inst.char = data.char
+            inst.playername = data.playername
             inst.userid = data.userid
             inst.pkname = data.pkname
             inst.cause = data.cause

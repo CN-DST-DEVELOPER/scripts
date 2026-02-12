@@ -101,8 +101,9 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.nameoverride  = more_data.nameoverride -- Override the name string in the crafting menu.
 	self.description   = more_data.description -- override the description string in the crafting menu
 
-    self.imagefn       = type(image) == "function" and image or nil
-    self.image         = self.imagefn == nil and image or (self.product .. ".tex")
+	self.layeredimagefn = more_data.layeredimagefn
+	self.imagefn = type(image) == "function" and image or nil
+	self.image = self.imagefn == nil and image or (self.product..".tex")
     self.atlas         = (atlas and resolvefilepath(atlas))-- or resolvefilepath(GetInventoryItemAtlas(self.image))
 	self.fxover        = more_data.fxover
 
@@ -119,7 +120,8 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
     self.testfn        = testfn					-- custom placer test function if default test isn't enough
 	self.canbuild      = more_data.canbuild		-- custom test function to see if we should be allowed to craft this recipe, return a build action fail message if false
 
-    self.nounlock      = nounlock or false
+    self.unlocks_from_skin = more_data.unlocks_from_skin
+    self.nounlock      = self.unlocks_from_skin or nounlock or false
 
     self.numtogive     = numtogive or 1
 	self.override_numtogive_fn = more_data.override_numtogive_fn

@@ -30,6 +30,12 @@ PLAYER_CAMERA_SHOULD_SNAP_DISTANCE_SQ = PLAYER_CAMERA_SHOULD_SNAP_DISTANCE * PLA
 PLAYER_CAMERA_MAX_DIST = 65 -- 50 maxdist in forest world + 15 maxdist from scrap_monoclehat
 PLAYER_CAMERA_MAX_DIST_CAVES = 50 -- 35 maxdist in caves world + 15 maxdist from scrap_monoclehat
 
+ENTITY_POPIN_RADIUS = 64.0 -- Read only value.
+ENTITY_POPOUT_RADIUS = ENTITY_POPIN_RADIUS * 1.2 -- Read only value.
+
+ENTITY_POPIN_RADIUS_SQ = ENTITY_POPIN_RADIUS * ENTITY_POPIN_RADIUS
+ENTITY_POPOUT_RADIUS_SQ = ENTITY_POPOUT_RADIUS * ENTITY_POPOUT_RADIUS
+
 MAX_FE_SCALE = 3 --Default if you don't call SetMaxPropUpscale
 MAX_HUD_SCALE = 1.25
 
@@ -839,8 +845,9 @@ SPECIAL_EVENTS =
     YOTR = "year_of_the_bunnyman",
     YOTD = "year_of_the_dragonfly",
     YOTS = "year_of_the_snake",
+    YOTH = "year_of_the_knight",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.WINTERS_FEAST
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.YOTH
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -869,6 +876,7 @@ IS_YEAR_OF_THE_SPECIAL_EVENTS =
     [SPECIAL_EVENTS.YOTR] = true,
     [SPECIAL_EVENTS.YOTD] = true,
     [SPECIAL_EVENTS.YOTS] = true,
+    [SPECIAL_EVENTS.YOTH] = true,
 }
 
 
@@ -975,6 +983,12 @@ SPECIAL_EVENT_MUSIC =
         sound = "dontstarve/music/music_FE_yotg",
     },  
     ]]  
+
+    [SPECIAL_EVENTS.YOTH] =
+    {
+        bank = "music_frontend_yoth2026.fsb",
+        sound = "dontstarve/music/music_FE_yoth2026",
+    },
 }
 
 FESTIVAL_EVENT_MUSIC =
@@ -1189,9 +1203,10 @@ PICKUPSOUNDS = {
     ["metal"] = "aqol/new_test/metal",
     ["rock"] = "aqol/new_test/rock",
     ["vegetation_firm"] = "aqol/new_test/vegetation_firm",
-    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",    
+    ["vegetation_grassy"] = "aqol/new_test/vegetation_grassy",
     ["squidgy"] = "aqol/new_test/squidgy",
     ["grainy"] = "aqol/new_test/grainy",
+    ["paper"] = "aqol/new_test/paper",
     ["DEFAULT_FALLBACK"] = "dontstarve/HUD/collect_resource",
 	["NONE"] = nil, --reserved
 }
@@ -1247,6 +1262,7 @@ TECH =
     RABBITOFFERING_THREE = { RABBITOFFERING = 3 },
     DRAGONOFFERING_THREE = { DRAGONOFFERING = 3 },
     WORMOFFERING_THREE = { WORMOFFERING = 3 },
+    KNIGHTOFFERING_THREE = { KNIGHTOFFERING = 3 },
 
     MADSCIENCE_ONE = { MADSCIENCE = 1 },
 	CARNIVAL_PRIZESHOP_ONE = { CARNIVAL_PRIZESHOP = 1 },
@@ -1286,6 +1302,7 @@ TECH =
     YOTR = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTD = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
     YOTS = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
+    YOTH = { SCIENCE = 10 }, -- ApplySpecialEvent() will change this from lost to 0
 
     LOST = { MAGIC = 10, SCIENCE = 10, ANCIENT = 10 },
 
@@ -2162,6 +2179,8 @@ EQUIPMENTSETNAMES =
     DREADSTONE = "dreadstone",
     LUNARPLANT = "lunarplant",
     VOIDCLOTH = "voidcloth",
+    YOTH_KNIGHT = "yoth_knight",
+    YOTH_PRINCESS = "yoth_princess",
 }
 
 -- this is a net_tinybyte on inventoryitem_classified.deploymode
@@ -2957,4 +2976,11 @@ PEARL_DECORATION_TYPES =
     FISHING_MARKERS = "FISHING_MARKERS",
     SPAWNER = "SPAWNER",
     JUNK = "JUNK",
+}
+
+YOTH_HORSE_NAMES = {
+    "CONQUEST",
+    "WAR",
+    "FAMINE",
+    "DEATH",
 }

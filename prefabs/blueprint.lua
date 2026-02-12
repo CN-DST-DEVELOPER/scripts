@@ -122,6 +122,7 @@ local function fn(is_rare)
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
     inst.scrapbook_proxy = "blueprint"
+    inst.pickupsound = "paper"
 
     inst.entity:SetPristine()
 

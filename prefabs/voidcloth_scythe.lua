@@ -257,7 +257,7 @@ table.insert(NO_TAGS, "player")
 table.insert(NO_TAGS, "wall")
 
 local function HasFriendlyLeader(target, attacker)
-    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    local target_leader = target.components.follower and target.components.follower:GetLeader()
 
     if target_leader ~= nil then
 
@@ -284,8 +284,8 @@ local function ShadowAoEValidFn(target, attacker)
     end
 
     if target:HasTag("monster") and not TheNet:GetPVPEnabled() and 
-        ((target.components.follower and target.components.follower.leader ~= nil and 
-            target.components.follower.leader:HasTag("player")) or target.bedazzled) then
+        ((target.components.follower and target.components.follower:GetLeader() ~= nil and 
+            target.components.follower:GetLeader():HasTag("player")) or target.bedazzled) then
         return false
     end
 

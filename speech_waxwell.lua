@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Surprise, surprise.",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I can't believe it worked.",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "What could possibly be so important that they would not come when I call?",
+
 	BATTLECRY =
 	{
 		GENERIC = "To arms!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "Let's leave this underground.",
         CHESSPIECE_WAGBOSS_ROBOT = "I loathe it.",
         CHESSPIECE_WAGBOSS_LUNAR = "It was a culmination of terrible decisions.",
+        CHESSPIECE_YOTH = "Make up your mind! Friend or foe?",
 
         CHESSJUNK1 = "There's a reason I never finished that.",
         CHESSJUNK2 = "That one was a jerk.",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "Not surprised. It was poorly made.",
         },
 		HERMITHOUSE_ORNAMENT = "Cute.",
-        HERMITHOUSE_LAUNDRY = "We're getting really comfortable around here.",
+		HERMITHOUSE_LAUNDRY = "We're getting really comfortable around here.",
 
         PETALS_DRIED = "They're all shrivelled up.",
         PETALS_EVIL_DRIED = "They're all shrivelled up.",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "That's depressing.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Once again I find myself toiling away for that old crab.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Well?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "Nothing is free in this world.", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "I was never that into horses.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "She looks a little bossy.",
+        COSTUME_PRINCESS_BODY = "I suppose it goes with the bossy horse head.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Someone really likes horses.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "What is the matter with you?", -- Generic quote. It's aggressive.
+            FOLLOWING = "Try to keep up.", -- Following the character examining
+            FOLLOWING_OTHER = "You are only as good as the company you keep.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Decent helmet, even with the horseface.",
+        ARMOR_YOTH_KNIGHT = "A rose huh?",
+        HORSESHOE = "Luck? Sure, why not?",
+        YOTH_LANCE = "I suppose that's the stabbing end.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Ah well.", -- Depleted and on the ground
+            HELD = "Just in case...", -- In the players inventory
+            GENERIC = "Yes, fine. It's nice.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "But I still have to use my own legs?",
+        YOTH_CHAIR_ROCKING_ITEM = "Amusing, perhaps. Still the thought of sitting...", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "You tell me.",

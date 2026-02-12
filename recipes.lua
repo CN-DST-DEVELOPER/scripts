@@ -52,6 +52,7 @@ PROTOTYPER_DEFS.yot_catcoonshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yotr_rabbitshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yotd_dragonshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.yots_snakeshrine = PROTOTYPER_DEFS.perdshrine
+PROTOTYPER_DEFS.yoth_knightshrine = PROTOTYPER_DEFS.perdshrine
 
 
 local function IsMarshLand(pt, rot)
@@ -119,17 +120,19 @@ Recipe2("wurt_swampitem_lunar",			{Ingredient("driftwood_log", 1), Ingredient("t
 local function elixir_numtogive(recipe, doer)
 	local total = 1
 	if doer.components.skilltreeupdater and doer.components.skilltreeupdater:IsActivated("wendy_potion_yield") then
-		if math.random() < 0.4 then
-			total = total+1
+		if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA1_CHANCE, LuckFormulas.LootDropperChance) then
+			total = total + 1
 		end
-		if math.random() < 0.1 then
-			total = total+1
-		end	
+
+		if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA2_CHANCE, LuckFormulas.LootDropperChance) then
+			total = total + 1
+		end
+
 		if total > 1 then
 			doer:PushEvent("craftedextraelixir",total)
 		end
 	end
-	return total	
+	return total
 end
 
 Recipe2("abigail_flower",				{Ingredient("ghostflower", 1), Ingredient("nightmarefuel", 1)},									TECH.NONE,				{builder_tag="ghostlyfriend"})
@@ -879,6 +882,7 @@ Recipe2("chesspiece_wormboss_builder",			{Ingredient(TECH_INGREDIENT.SCULPTING, 
 Recipe2("chesspiece_yots_builder",				{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_yots.tex"})
 Recipe2("chesspiece_wagboss_robot_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wagboss_robot.tex"})
 Recipe2("chesspiece_wagboss_lunar_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wagboss_lunar.tex"})
+Recipe2("chesspiece_yoth_builder",				{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_yoth.tex"})
 
 -- Hermitcrab
 Recipe2("hermitshop_hermit_bundle_shells",				{Ingredient("messagebottleempty", 1)},														TECH.HERMITCRABSHOP_ONE,	{nounlock = true, sg_state="give", product="hermit_bundle_shells",		image="hermit_bundle.tex", actionstr="HERMITCRABSHOP"})
@@ -1003,6 +1007,11 @@ Recipe2("record",										{Ingredient("batwing", 1), Ingredient("charcoal", 1)}
 
 
 ----YEAR OF THE X-----
+
+Recipe2("floatinglantern",							{Ingredient("lucky_goldnugget", 4)},                                 							TECH.PERDOFFERING_ONE,	    {nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yoth_knightstick",							{Ingredient("lucky_goldnugget", 6)},                                 							TECH.KNIGHTOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("yoth_chair_rocking_item",					{Ingredient("lucky_goldnugget", 2)},                                 							TECH.KNIGHTOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
+Recipe2("chesspiece_yoth_sketch",					{Ingredient("lucky_goldnugget", 8)},															TECH.KNIGHTOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
 
 Recipe2("yots_lantern_post_item",					{Ingredient("lucky_goldnugget", 6)},                                 							TECH.PERDOFFERING_ONE,	    {nounlock=true, actionstr="PERDOFFERING"})
 Recipe2("chesspiece_yots_sketch",					{Ingredient("lucky_goldnugget", 8)},															TECH.WORMOFFERING_THREE,	{nounlock=true, actionstr="PERDOFFERING"})
@@ -1171,6 +1180,7 @@ Recipe2("yot_catcoonshrine",			{Ingredient("goldnugget", 4), Ingredient("boards"
 Recipe2("yotr_rabbitshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTR,						{placer="yotr_rabbitshrine_placer", min_spacing=2.2, hint_msg = "NEEDSYOTR"})
 Recipe2("yotd_dragonshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTD,						{placer="yotd_dragonshrine_placer", min_spacing=2.2, hint_msg = "NEEDSYOTD"})
 Recipe2("yots_snakeshrine",				{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTS,						{placer="yots_snakeshrine_placer", min_spacing=2.2, hint_msg = "NEEDSYOTS"})
+Recipe2("yoth_knightshrine",			{Ingredient("goldnugget", 4), Ingredient("boards", 2)},																	TECH.YOTH,						{placer="yoth_knightshrine_placer", min_spacing=2.2, hint_msg = "NEEDSYOTH"})
 
 --WILSON TRANSMUTATION
 Recipe2("transmute_log",                {Ingredient("twigs", 3)}, 	TECH.NONE, 				{product="log", image="log.tex",     builder_skill="wilson_alchemy_1", description="transmute_log"})
@@ -1367,6 +1377,7 @@ DeconstructRecipe("gelblob_storage",  				{Ingredient("dreadstone", 5), Ingredie
 DeconstructRecipe("yots_lantern_post",				{Ingredient("lucky_goldnugget", 6)})
 DeconstructRecipe("gravestone",						{Ingredient("rocks", 3), Ingredient("petals_evil", 4), Ingredient("boneshard", 2)})
 DeconstructRecipe("portablefirepit",				{Ingredient("log", 3), Ingredient("rope", 1), Ingredient("rocks", 4)})
+DeconstructRecipe("yoth_chair_rocking",				{Ingredient("lucky_goldnugget", 2)})
 
 -- Loot drops.
 DeconstructRecipe("archive_resonator",				{Ingredient("moonrocknugget", 1), Ingredient("thulecite", 1)})
@@ -1406,6 +1417,36 @@ DeconstructRecipe("slingshot2ex",					{Ingredient("twigs", 1), Ingredient("mosqu
 
 -- Upgraded wagpunk frame deconstructs to frame ingredients + shard
 DeconstructRecipe("slingshot_frame_wagpunk",		{Ingredient("wagpunk_bits", 2), Ingredient("transistor", 1), Ingredient("trinket_6", 1), Ingredient("alterguardianhatshard", 1)})
+
+-- Stage play costumes
+DeconstructRecipe("mask_dollhat",						{Ingredient("marble", 2), Ingredient("silk", 4)})
+DeconstructRecipe("mask_dollbrokenhat",					{Ingredient("marble", 2), Ingredient("silk", 4)})
+DeconstructRecipe("mask_dollrepairedhat",				{Ingredient("marble", 1), Ingredient("silk", 4)})
+DeconstructRecipe("mask_blacksmithhat",					{Ingredient("marble", 2), Ingredient("silk", 4)})
+DeconstructRecipe("mask_treehat",						{Ingredient("marble", 2), Ingredient("silk", 4)})
+DeconstructRecipe("mask_foolhat",						{Ingredient("marble", 2), Ingredient("silk", 4)})
+DeconstructRecipe("mask_kinghat",						{Ingredient("marble", 2), Ingredient("silk", 4), Ingredient("papyrus", 1)})
+DeconstructRecipe("mask_queenhat",						{Ingredient("marble", 2), Ingredient("silk", 4), Ingredient("papyrus", 1)})
+DeconstructRecipe("mask_mirrorhat",						{Ingredient("marble", 2), Ingredient("silk", 4), Ingredient("goldnugget", 4)})
+
+DeconstructRecipe("costume_doll_body",					{Ingredient("silk", 6)})
+DeconstructRecipe("costume_fool_body",					{Ingredient("silk", 6)})
+DeconstructRecipe("costume_king_body",					{Ingredient("silk", 6), Ingredient("beefalowool", 3)})
+DeconstructRecipe("costume_queen_body",					{Ingredient("silk", 6)})
+DeconstructRecipe("costume_tree_body",					{Ingredient("silk", 4), Ingredient("log", 3)})
+DeconstructRecipe("costume_blacksmith_body",			{Ingredient("silk", 6)})
+DeconstructRecipe("costume_mirror_body",				{Ingredient("goldnugget", 6)})
+
+DeconstructRecipe("mask_sagehat",						{Ingredient("marble", 4)})
+DeconstructRecipe("mask_toadyhat",						{Ingredient("marble", 2)})
+DeconstructRecipe("mask_halfwithat",					{Ingredient("marble", 2)})
+
+DeconstructRecipe("mask_princesshat",					{Ingredient("goldnugget", 4), Ingredient("silk", 2)})
+DeconstructRecipe("costume_princess_body",				{Ingredient("goldnugget", 6), Ingredient("silk", 4)})
+
+DeconstructRecipe("yoth_knighthat",						{Ingredient("goldnugget", 4), Ingredient("feather_robin", 1)})
+DeconstructRecipe("armor_yoth_knight",					{Ingredient("goldnugget", 6), Ingredient("silk", 4)})
+
 
 require("recipes_filter")
 -- verify that all recipes are placed in at least one filter group

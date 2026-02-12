@@ -100,8 +100,9 @@ local function onpickedfn(inst, picker)
         end
     end
 
+    local spawnchance = IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE
     if not (picker and picker:HasTag("berrythief") or inst._noperd) and
-            math.random() < (IsSpecialEventActive(SPECIAL_EVENTS.YOTG) and TUNING.YOTG_PERD_SPAWNCHANCE or TUNING.PERD_SPAWNCHANCE) then
+            TryLuckRoll(picker, spawnchance, LuckFormulas.SpawnPerd) then
         inst:DoTaskInTime(3 + math.random() * 3, spawnperd)
     end
 end

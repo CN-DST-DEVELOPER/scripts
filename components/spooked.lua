@@ -51,7 +51,7 @@ function Spooked:ShouldSpook()
         return false
     end
     local k = (self.spookedlevel - self.spookedthreshold) / (self.maxspookedlevel - self.spookedthreshold)
-    return math.random() < k * k
+    return TryLuckRoll(self.inst, k * k, LuckFormulas.SpookedChance)
 end
 
 function Spooked:CalcSpookedLevelDecay(t)

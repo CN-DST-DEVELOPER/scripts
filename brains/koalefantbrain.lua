@@ -14,6 +14,8 @@ local STOP_RUN_AWAY_DIST = 12
 local START_FACE_DIST = 14
 local KEEP_FACE_DIST = 20
 
+local HUNTER_PARAMS = { tags = { "character" }, notags = { "notarget" } }
+
 local function GetFaceTargetFn(inst)
     if not BrainCommon.ShouldSeekSalt(inst) then
         local target = FindClosestPlayerToInst(inst, START_FACE_DIST, true)
@@ -25,10 +27,6 @@ local function KeepFaceTargetFn(inst, target)
     return not BrainCommon.ShouldSeekSalt(inst)
         and not target:HasTag("notarget")
         and inst:IsNear(target, KEEP_FACE_DIST)
-end
-
-local function ShouldRunAway(guy)
-    return guy:HasTag("character") and not guy:HasTag("notarget")
 end
 
 local KoalefantBrain = Class(Brain, function(self, inst)
@@ -43,7 +41,7 @@ function KoalefantBrain:OnStart()
         ChaseAndAttack(self.inst, MAX_CHASE_TIME),
         SequenceNode{
             FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 0.5),
-            RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
+			RunAway(self.inst, HUNTER_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
         },
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         BrainCommon.AnchorToSaltlick(self.inst),

@@ -75,7 +75,7 @@ local function OnInit(inst)
         if glommer ~= nil and
             glommer.components.health ~= nil and
             not glommer.components.health:IsDead() and
-            glommer.components.follower.leader ~= inst then
+            glommer.components.follower.leader ~= inst then -- Getting leader directly special case.
             glommer.components.follower:SetLeader(inst)
         end
     end

@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Curses! I hath not moved an inch!",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Quicker than if I didst ride Hermod the Swift himself!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "My warriors must still be feasting in Valhalla! I shall hail them in due time.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "I do relish thy slaying, worm.",
         CHESSPIECE_WAGBOSS_ROBOT = "The iron golem was indeed misguided.",
         CHESSPIECE_WAGBOSS_LUNAR = "This tribute to the unhallowed giant is an abomination unto itself.",
+        CHESSPIECE_YOTH = "This warrior's loyalty was as fleeting as the wind.",
 
         CHESSJUNK1 = "It's only a pile of fallen warriors.",
         CHESSJUNK2 = "More fallen mechanical warriors.",
@@ -5912,7 +5916,7 @@ return{
 
 		HERMITHOTSPRING  =
         {
-            BOMBED = "'Twill reinvigorate any weary warrior.'",
+            BOMBED = "'Twill reinvigorate any weary warrior.",
             GENERIC = "Perhaps a fire giant slumbers beneath!",
             EMPTY = "Odd, I do not see the fire giant...",
         },
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "It hath fallen.",
         },
 		HERMITHOUSE_ORNAMENT = "By the wind's touch, it doth dance.",
-        HERMITHOUSE_LAUNDRY = "Linger not thy gaze upon the accursed rags of the sea witch!",
+		HERMITHOUSE_LAUNDRY = "Linger not thy gaze upon the accursed rags of the sea witch!",
 
         PETALS_DRIED = "T'would make a most worthy offering to the gods!",
         PETALS_EVIL_DRIED = "T'would make a most worthy offering to the gods!",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "It is no more.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "I shall see to it.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Doth this not sate thee?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What tribute dost thou demand?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "A shame.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Lacking a warrior's visage, she yet commands.",
+        COSTUME_PRINCESS_BODY = "Robust it is not, but lovely? Most assuredly.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "An epic tale of noble creatures.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Come, rogue knight, be tested!", -- Generic quote. It's aggressive.
+            FOLLOWING = "With me, warrior! Onward to glory!", -- Following the character examining
+            FOLLOWING_OTHER = "It follows another's command.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "The helm of a dauntless stallion.",
+        ARMOR_YOTH_KNIGHT = "Proudly would I don this knight's armor.",
+        HORSESHOE = "A warrior shapes her luck, yet spurning Odin's favor is folly.",
+        YOTH_LANCE = "This weapon was wielded by a revered warrior class.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "The light hath faded, yet I shall endure!", -- Depleted and on the ground
+            HELD = "I shall fear no darkness!", -- In the players inventory
+            GENERIC = "Illuminate my path to glory, skyward lantern!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "A swift charger to ride into battle.",
+        YOTH_CHAIR_ROCKING_ITEM = "A fine chance for the younglings to learn the saddle!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

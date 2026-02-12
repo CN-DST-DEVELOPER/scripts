@@ -101,12 +101,18 @@ local function OnMalbatrossKilledOrRemoved(source, the_malbatross)
     TryBeginningMalbatrossSpawns()
 end
 
-local function OnShoalFishHooked(source, fish_shoal)
+local function OnShoalFishHookedRedux(source, data)
+    local fish_shoal = data.fish_shoal or nil
+    local fisher = data.fisher or nil
     if _activemalbatross == nil and fish_shoal ~= nil and (not _worldsettingstimer:ActiveTimerExists(MALBATROSS_TIMERNAME) or _worldsettingstimer:GetTimeLeft(MALBATROSS_TIMERNAME) < 10)
-            and math.random() < TUNING.MALBATROSS_HOOKEDFISH_SUMMONCHANCE then
+            and TryLuckRoll(fisher, TUNING.MALBATROSS_HOOKEDFISH_SUMMONCHANCE, LuckFormulas.MalbatrossSpawn) then
 
         _shuffled_shoals_for_spawning = {fish_shoal}
     end
+end
+
+local function OnShoalFishHooked(source, fish_shoal)
+    OnShoalFishHookedRedux(source, { fish_shoal = fish_shoal })
 end
 
 local function OnMalbatrossTimerDone()
@@ -271,6 +277,7 @@ end
 self.inst:ListenForEvent("ms_registerfishshoal", OnFishShoalAdded, TheWorld)
 self.inst:ListenForEvent("ms_unregisterfishshoal", OnFishShoalRemoved, TheWorld)
 self.inst:ListenForEvent("ms_shoalfishhooked", OnShoalFishHooked, TheWorld)
+self.inst:ListenForEvent("ms_shoalfishhooked_redux", OnShoalFishHookedRedux, TheWorld)
 self.inst:ListenForEvent("malbatrossremoved", OnMalbatrossKilledOrRemoved, TheWorld)
 self.inst:ListenForEvent("malbatrosskilled", OnMalbatrossKilledOrRemoved, TheWorld)
 

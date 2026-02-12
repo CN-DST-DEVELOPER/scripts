@@ -361,6 +361,9 @@ function MainScreen:Quit()
 end
 
 function MainScreen:OnHostButton()
+    if TheInventory:HasSupportForOfflineSkins() and not TheInventory:HasDownloadedInventory() then
+        TheInventory:ForceLoadOfflineCache() -- This can set HasDownloadedInventory and only does things if TheInventory:HasSupportForOfflineSkins() returns true.
+    end
     SaveGameIndex:LoadServerEnabledModsFromSlot()
     KnownModIndex:Save()
     local start_in_online_mode = false

@@ -137,7 +137,7 @@ function ShadowThrallCentipedeBrain:OnStart()
 		"<is in control state guard>",
 		PriorityNode({
             --RunAway(self.inst, runaway_from_lunar, 6, 10)
-            --RunAway(self.inst, function() return last_segment end, 7, 9),
+			--RunAway(self.inst, { getfn = function() return last_segment end }, 7, 9),
             IfNode(WantsToEat, "Do we want to eat?",
                 DoAction(self.inst, DoFindAndEatMiasmaAction, "Finding Miasma To Eat")),
             --TODO see if we actually have a good direction to go in.

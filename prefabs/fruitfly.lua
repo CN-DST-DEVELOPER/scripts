@@ -268,7 +268,7 @@ local function fn()
 end
 
 local function CanTargetAndAttack(inst)
-    return inst.components.follower.leader == nil and inst.hascausedhavoc
+    return inst.components.follower:GetLeader() == nil and inst.hascausedhavoc
 end
 
 local function ShouldKeepTarget(inst, target)
@@ -385,7 +385,7 @@ local function OnStopFollowing(inst)
 end
 
 local function OnStartFollowing(inst)
-    if inst.components.follower.leader:HasTag("fruitflyfruit") then
+    if inst.components.follower.leader:HasTag("fruitflyfruit") then -- Getting leader directly special case.
         inst:AddTag("companion")
     end
 end
@@ -531,7 +531,7 @@ local function OnInit(inst)
         if fruitfly ~= nil and
             fruitfly.components.health ~= nil and
             not fruitfly.components.health:IsDead() and
-            fruitfly.components.follower.leader ~= inst then
+            fruitfly.components.follower.leader ~= inst then -- Getting leader directly special case.
                 fruitfly.components.follower:SetLeader(inst)
         end
     end

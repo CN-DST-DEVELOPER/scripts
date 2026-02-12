@@ -1199,6 +1199,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Why Wolfgang still here?",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Wolfgang has arrive!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "Maybe horsey not ready come to Wolfgang.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -2134,6 +2137,7 @@ return{
         CHESSPIECE_YOTS = "Worm was no match for Wolfgang.",
         CHESSPIECE_WAGBOSS_ROBOT = "Machine guy kind of cute.",
         CHESSPIECE_WAGBOSS_LUNAR = "Wolfgang not understand what, how... and most of all, why.",
+        CHESSPIECE_YOTH = "Tough little horsey.",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",
@@ -5932,7 +5936,7 @@ return{
 			ABANDONED = "Once big and mighty dry rack, now garbage. Sad.",
         },
 		HERMITHOUSE_ORNAMENT = "Is quite elegant.",
-        HERMITHOUSE_LAUNDRY = "Hmm, when last time Wolfgang change underwears?",
+		HERMITHOUSE_LAUNDRY = "Hmm, when last time Wolfgang change underwears?",
 
         PETALS_DRIED = "Wolfgang appreciate delicate fragrance.",
         PETALS_EVIL_DRIED = "Wolfgang appreciate delicate fragrance.",
@@ -5979,6 +5983,42 @@ return{
             ABANDONED = "This is too bad.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Wolfgang have mighty eye for decorating.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Horsey happy now?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What do horsey want?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Poor horsey.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Sometime Wolfgang want to try royal treatment.",
+        COSTUME_PRINCESS_BODY = "Is for horsey princess.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "A horsey story. Beautiful.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Come fight Wolfgang, horsey!", -- Generic quote. It's aggressive.
+            FOLLOWING = "Follow Wolfgang, horsey!", -- Following the character examining
+            FOLLOWING_OTHER = "Wolfgang not mind you follow other.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Wolfgang strong as horse!",
+        ARMOR_YOTH_KNIGHT = "Ooh... Sir Wolfgang!",
+        HORSESHOE = "Lucky Wolfgang?",
+        YOTH_LANCE = "A mighty lance for Sir Wolfgang?",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "How sad.", -- Depleted and on the ground
+            HELD = "Wolfgang have a bright secret!", -- In the players inventory
+            GENERIC = "It is watching over Wolfgang.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Wolfgang love to gallop.",
+        YOTH_CHAIR_ROCKING_ITEM = "It remind Wolfgang of childhood.", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

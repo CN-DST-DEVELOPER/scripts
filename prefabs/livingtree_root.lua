@@ -57,7 +57,7 @@ local function ondeploy(inst, pt, deployer)
             TUNING.LEIF_PINECONE_CHILL_CHANCE_CLOSE or
             TUNING.LEIF_PINECONE_CHILL_CHANCE_FAR
 
-        if math.random() < chill_chance then
+        if TryLuckRoll(deployer, chill_chance, LuckFormulas.LeifChill) then
             if v.components.sleeper ~= nil then
                 v.components.sleeper:GoToSleep(1000)
                 AwardPlayerAchievement( "pacify_forest", deployer )

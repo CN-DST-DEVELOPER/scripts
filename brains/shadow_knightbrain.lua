@@ -26,14 +26,17 @@ local function KeepFaceTargetFn(inst, target)
         and inst:IsNear(target, KEEP_FACE_DIST)
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 function Shadow_KnightBrain:OnStart()
     local root = PriorityNode(
     {
-		WhileNode(function() return self.inst.components.combat.target == nil or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
-					ChaseAndAttack(self.inst, nil, 40)),
-        WhileNode(function() return self.inst.components.combat.target ~= nil end, "Dodge",
-				RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
-        ),
+		WhileNode(function() return not self.inst.components.combat:HasTarget() or not self.inst.components.combat:InCooldown() end, "AttackMomentarily",
+			ChaseAndAttack(self.inst, nil, 40)),
+		WhileNode(function() return self.inst.components.combat:HasTarget() end, "Dodge",
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         ParallelNode{
             SequenceNode{

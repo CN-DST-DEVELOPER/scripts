@@ -11,8 +11,8 @@ local function TryAddFollower(leader, follower)
         if leader.components.leader ~= nil and
             follower.components.follower ~= nil and
             not follower:HasTag("moonbeast") and
-            (follower.components.follower.leader == leader or leader.components.leader:CountFollowers("hound") < TUNING.HOUNDWHISTLE_MAX_FOLLOWERS) then
-            if follower.components.follower.leader ~= leader then
+            (follower.components.follower:GetLeader() == leader or leader.components.leader:CountFollowers("hound") < TUNING.HOUNDWHISTLE_MAX_FOLLOWERS) then
+            if follower.components.follower:GetLeader() ~= leader then
                 leader.components.leader:AddFollower(follower)
             end
             follower.components.follower:AddLoyaltyTime(TUNING.HOUNDWHISTLE_EFFECTIVE_TIME + math.random())

@@ -15,15 +15,15 @@ local PLATFORM_WANDER_DIST = 4
 local WANDER_DIST = 12
 
 local function GetOwner(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function KeepFaceOwnerFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetOwner(inst) == target
 end
 
 local function GetRiderFn(inst)
-    local leader = inst.components.follower ~= nil and inst.components.follower.leader
+    local leader = GetOwner(inst)
     if leader ~= nil and WobyBrainCommon.IsTryingToPerformAction(inst, leader, ACTIONS.MOUNT) then
         return leader
     end
@@ -85,7 +85,7 @@ local function _avoidtargetfn(self, target)
         return false
     end
 
-    local owner = self.inst.components.follower.leader
+    local owner = GetOwner(self.inst)
     local owner_combat = owner ~= nil and owner.components.combat or nil
     local target_combat = target.components.combat
     if owner_combat == nil or target_combat == nil then
@@ -258,7 +258,7 @@ function WobyBigBrain:OnStart()
 
 		--When recalling Woby, temporarily block helper actions until she's fully returned to you.
 		WobyBrainCommon.RecallNode(self.inst,
-			Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST, true)),
+			Follow(self.inst, function() return GetOwner(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST, true)),
 
         WhileNode(function() return HasTaskAidBehavior(self.inst) and IsAllowedToWorkThings(self.inst) end, "HasTaskAidBehavior",
             PriorityNode({
@@ -271,7 +271,7 @@ function WobyBigBrain:OnStart()
         WobyBrainCommon.RetrieveAmmoNode(self.inst),
         WobyBrainCommon.FetchingActionNode(self.inst),
 
-        Follow(self.inst, function() return self.inst.components.follower.leader end,
+        Follow(self.inst, function() return GetOwner(self.inst) end,
                      MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST, true),
 
         -- Kept down here because woby should prioritize following walter over storage and food by other players

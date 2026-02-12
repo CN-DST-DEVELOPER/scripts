@@ -48,6 +48,8 @@ local function fn()
 	inst.AnimState:SetBuild("mapscroll")
 	inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "paper"
+
 	inst.entity:SetPristine()
 
 	if not TheWorld.ismastersim then

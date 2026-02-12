@@ -111,6 +111,98 @@ if CAN_USE_DBUI then
     require("dbui_no_package/debug_skins_data/hooks").Hooks("fxinfo", reskin_fx_info)
 end
 
+local function GetNextSkin(userid, target, tool, skip_base)
+    local cached_skin = nil
+    local prefab_to_skin = target.prefab
+    local is_beard = false
+    local skin_custom = nil
+    if target.components.beard ~= nil and target.components.beard.is_skinnable then
+        prefab_to_skin = target.prefab .. "_beard"
+        is_beard = true
+    end
+    if target:IsValid() and tool:IsValid() and tool.parent and tool.parent:IsValid() then
+        local curr_skin = is_beard and target.components.beard.skinname or target.skinname
+        cached_skin = tool._cached_reskinname[prefab_to_skin]
+        local search_for_skin = cached_skin ~= nil --also check if it's owned
+        local force_change_cache
+        local must_have, must_not_have
+        if target.ReskinToolFilterFn ~= nil then
+            must_have, must_not_have = target:ReskinToolFilterFn()
+            if cached_skin then
+                if must_have ~= nil and not StringContainsAnyInArray(cached_skin, must_have) or must_not_have ~= nil and StringContainsAnyInArray(cached_skin, must_not_have) then
+                    force_change_cache = cached_skin
+                end
+            end
+        end
+        if force_change_cache or curr_skin == cached_skin or (search_for_skin and not TheInventory:CheckClientOwnership(userid, cached_skin)) or (cached_skin == nil and skip_base) then
+            local new_reskinname = nil
+    
+            local prefabskins = PREFAB_SKINS[prefab_to_skin]
+            if prefabskins ~= nil then
+                local unlockableskins = nil
+                local function UnlockableSkinDiffers(item_type)
+                    if UNLOCKABLE_SKINS[item_type] and target.ReskinToolCustomDataDiffers then
+                        if not unlockableskins then
+                            unlockableskins = TheInventory:GetClientUnlockableItems(userid)
+                        end
+                        if unlockableskins[item_type] then
+                            return target:ReskinToolCustomDataDiffers(unlockableskins[item_type].skin_custom)
+                        end
+                    end
+                    return false
+                end
+                local maxindex = #prefabskins
+                local foundskin = not search_for_skin
+                local i = 1
+                while i <= maxindex do
+                    local item_type = prefabskins[i]
+                    if item_type then
+                        local skip_this = PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] or false
+                        if SKINS_EVENTLOCK[item_type] and not IsSpecialEventActive(SKINS_EVENTLOCK[item_type]) then
+                            skip_this = true
+                        end
+                        if not skip_this then
+                            if must_have ~= nil and not StringContainsAnyInArray(item_type, must_have) or must_not_have ~= nil and StringContainsAnyInArray(item_type, must_not_have) then
+                                skip_this = true
+                            end
+                            if not skip_this then
+                                if search_for_skin then
+                                    if cached_skin == item_type then
+                                        search_for_skin = false
+                                        if UnlockableSkinDiffers(item_type) then
+                                            new_reskinname = item_type
+                                            skin_custom = unlockableskins[item_type].skin_custom
+                                            break
+                                        end
+                                        if skip_base and i == maxindex then
+                                            i = 0 -- Restart the loop.
+                                        end
+                                    end
+                                elseif item_type ~= curr_skin then
+                                    if TheInventory:CheckClientOwnership(userid, item_type) then
+                                        new_reskinname = item_type
+                                        break
+                                    end
+                                elseif UnlockableSkinDiffers(item_type) then
+                                    new_reskinname = item_type
+                                    skin_custom = unlockableskins[item_type].skin_custom
+                                    break
+                                end
+                            end
+                        end
+                    end
+                    i = i + 1
+                end
+            end
+            cached_skin = new_reskinname
+        end
+        if force_change_cache and force_change_cache == cached_skin then
+            cached_skin = nil
+        end
+    end
+    return cached_skin, prefab_to_skin, is_beard, skin_custom
+end
+
 local function spellCB(tool, target, pos, caster)
 	target = target or caster --if no target, then self target for beards
     if target == nil then -- Bail.
@@ -128,6 +220,14 @@ local function spellCB(tool, target, pos, caster)
     if target.reskin_tool_cannot_target_this then
         return
     end
+
+    local userid = tool.parent and tool.parent.userid or ""
+    local skip_base = PREFAB_SKINS_SHOULD_NOT_SELECT[target.prefab]
+    local cached_skin, prefab_to_skin, is_beard, skin_custom = GetNextSkin(userid, target, tool, skip_base)
+    if cached_skin == nil and skip_base then
+        return -- Client does not own any skin but they tried to reskin it anyway.
+    end
+    tool._cached_reskinname[prefab_to_skin] = cached_skin
 
     local fx_prefab = "explode_reskin"
     local skin_fx = SKIN_FX_PREFAB[tool:GetSkinName()]
@@ -149,66 +249,12 @@ local function spellCB(tool, target, pos, caster)
     fx.Transform:SetPosition(fx_pos_x, fx_pos_y, fx_pos_z)
 
     tool:DoTaskInTime(0, function()
-
-        local prefab_to_skin = target.prefab
-        local is_beard = false
-        if target.components.beard ~= nil and target.components.beard.is_skinnable then
-            prefab_to_skin = target.prefab .. "_beard"
-            is_beard = true
-        end
-
         if target:IsValid() and tool:IsValid() and tool.parent and tool.parent:IsValid() then
-            local curr_skin = is_beard and target.components.beard.skinname or target.skinname
-            local userid = tool.parent.userid or ""
-            local cached_skin = tool._cached_reskinname[prefab_to_skin]
-            local search_for_skin = cached_skin ~= nil --also check if it's owned
-            local force_change_cache
-            local must_have, must_not_have
-            if target.ReskinToolFilterFn ~= nil then
-                must_have, must_not_have = target:ReskinToolFilterFn()
-                if cached_skin then
-                    if must_have ~= nil and not StringContainsAnyInArray(cached_skin, must_have) or must_not_have ~= nil and StringContainsAnyInArray(cached_skin, must_not_have) then
-                        force_change_cache = cached_skin
-                    end
+            if skin_custom then
+                if target.ReskinToolUpdateCustomData then
+                    target:ReskinToolUpdateCustomData(skin_custom)
                 end
-            end
-            if force_change_cache or curr_skin == cached_skin or (search_for_skin and not TheInventory:CheckClientOwnership(userid, cached_skin)) then
-                local new_reskinname = nil
-
-                if PREFAB_SKINS[prefab_to_skin] ~= nil then
-                    for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
-                        local skip_this = PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] or false
-                        if SKINS_EVENTLOCK[item_type] and not IsSpecialEventActive(SKINS_EVENTLOCK[item_type]) then
-                            skip_this = true
-                        end
-                        if not skip_this then
-                            if must_have ~= nil and not StringContainsAnyInArray(item_type, must_have) or must_not_have ~= nil and StringContainsAnyInArray(item_type, must_not_have) then
-                                skip_this = true
-                            end
-                            if not skip_this then
-                                if search_for_skin then
-                                    if cached_skin == item_type then
-                                        search_for_skin = false
-                                    end
-                                else
-                                    if TheInventory:CheckClientOwnership(userid, item_type) then
-                                        new_reskinname = item_type
-                                        break
-                                    end
-                                end
-                            end
-                        end
-                    end
-                end
-                tool._cached_reskinname[prefab_to_skin] = new_reskinname
-                cached_skin = new_reskinname
-            end
-            if force_change_cache and force_change_cache == cached_skin then
-                cached_skin = nil
-                tool._cached_reskinname[prefab_to_skin] = nil
-            end
-
-            if is_beard then
+            elseif is_beard then
                 target.components.beard:SetSkin( cached_skin )
             else
                 TheSim:ReskinEntity( target.GUID, target.skinname, cached_skin, nil, userid )
@@ -234,7 +280,7 @@ local function spellCB(tool, target, pos, caster)
     end )
 end
 
-local function can_cast_fn(doer, target, pos)
+local function can_cast_fn(doer, target, pos, tool)
     if target.reskin_tool_target_redirect and target.reskin_tool_target_redirect:IsValid() then
         target = target.reskin_tool_target_redirect
     end
@@ -261,18 +307,13 @@ local function can_cast_fn(doer, target, pos)
         end
     end
 
-    if PREFAB_SKINS[prefab_to_skin] ~= nil then
-        for _,item_type in pairs(PREFAB_SKINS[prefab_to_skin]) do
-            if not PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] and TheInventory:CheckClientOwnership(doer.userid, item_type) then
-                local skip_this = PREFAB_SKINS_SHOULD_NOT_SELECT[item_type] or false
-                if SKINS_EVENTLOCK[item_type] and not IsSpecialEventActive(SKINS_EVENTLOCK[item_type]) then
-                    skip_this = true
-                end
-                if not skip_this then
-                    return true
-                end
-            end
-        end
+    local skip_base = PREFAB_SKINS_SHOULD_NOT_SELECT[target.prefab]
+    local cached_skin = GetNextSkin(doer.userid, target, tool, skip_base)
+    if cached_skin == nil and skip_base then
+        return false -- Client does not own any skin but they tried to reskin it anyway.
+    end
+    if cached_skin then
+        return true
     end
 
     --Is there a skin to turn off?

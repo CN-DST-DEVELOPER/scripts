@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local DefaultOnStrike = function(inst)
     if inst.components.health ~= nil and not (inst.components.health:IsDead() or inst.components.health:IsInvincible()) then
         if not inst.components.inventory:IsInsulated() then
@@ -12,6 +14,8 @@ local PlayerLightningTarget = Class(function(self, inst)
     self.inst = inst
     self.hitchance = TUNING.PLAYER_LIGHTNING_TARGET_CHANCE
     self.onstrikefn = DefaultOnStrike
+
+    self.hitchancemodifiers = SourceModifierList(self.inst)
 end)
 
 function PlayerLightningTarget:SetHitChance(chance)
@@ -19,7 +23,7 @@ function PlayerLightningTarget:SetHitChance(chance)
 end
 
 function PlayerLightningTarget:GetHitChance()
-    return self.hitchance
+    return self.hitchance * self.hitchancemodifiers:Get()
 end
 
 function PlayerLightningTarget:SetOnStrikeFn(fn)

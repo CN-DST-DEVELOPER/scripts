@@ -195,7 +195,16 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 	                end
                 end
 
-				for _,sym in pairs(CLOTHING[name].symbol_overrides) do
+                local symbols = {}
+                for _, symbol in ipairs(CLOTHING[name].symbol_overrides) do
+                    symbols[symbol] = true
+                end
+                if src_symbols_alt then
+                    for symbol, override in pairs(src_symbols_alt) do
+                        symbols[symbol] = true
+                    end
+                end
+				for sym, _ in pairs(symbols) do
 					if not ModManager:IsModCharacterClothingSymbolExcluded( prefab, sym ) then
 						if (not allow_torso and sym == "torso") or (not allow_arms and ((sym == "arm_upper" or sym == "arm_upper_skin" or sym == "arm_lower") or (sym == "arm_lower_cuff" and type == "body" )) ) then
 							--skip this symbol for wolfgang

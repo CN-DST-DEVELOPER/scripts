@@ -1399,6 +1399,14 @@ t = {
                 FlagForRetrofitting_Forest(savedata, "retrofit_enable_pearl_score")
             end,
         },
+        {
+            version = 5.22, -- Repopulate Node Id Tile Map due to change of removing land restriction from engine functionality
+            fn = function(savedata)
+                if savedata ~= nil and savedata.map ~= nil then
+					savedata.retrofit_nodeidtilemap = true
+				end
+            end,
+        },
     },
 }
 

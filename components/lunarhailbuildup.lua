@@ -129,7 +129,7 @@ end
 function LunarHailBuildup:DoWorkToRemoveBuildup(workcount, doer)
     self.workleft = math.clamp(self.workleft - workcount, 0, self.totalworkamount)
     if self.workleft == 0 then
-        self:DropRewards()
+        self:DropRewards(nil, doer)
         self:OnWorkFinished()
         self:StopTickTask()
         if TheWorld.state.islunarhailing then
@@ -148,15 +148,13 @@ function LunarHailBuildup:DoAllRemainingWorkToRemoveBuildup(doer)
     end
 end
 
-
-
-function LunarHailBuildup:DropRewards(mult)
+function LunarHailBuildup:DropRewards(mult, doer)
     local x, y, z = self.inst.Transform:GetWorldPosition()
     local launchspeed = math.max(self.inst:GetPhysicsRadius(0), 2)
     local todropcount = math.floor(self.moonglassamount * (mult or 1))
     local upgradeodds = Lerp(TUNING.LUNARHAIL_BUILDUP_MOONGLASS_REWARDS_CHARGED_CHANCE_MIN, TUNING.LUNARHAIL_BUILDUP_MOONGLASS_REWARDS_CHARGED_CHANCE_MAX, self.buildupcurrent)
     for i = 1, todropcount do
-        local moonglass_prefab = (math.random() < upgradeodds) and "moonglass_charged" or "moonglass"
+        local moonglass_prefab = TryLuckRoll(doer, upgradeodds, LuckFormulas.LootDropperChance) and "moonglass_charged" or "moonglass"
         local moonglass = SpawnPrefab(moonglass_prefab)
         moonglass.Transform:SetPosition(x, y, z)
         Launch(moonglass, self.inst, launchspeed)
@@ -168,7 +166,7 @@ LunarHailBuildup.OnWorked_Bridge = function(inst, data)
     if data and data.workleft and data.workleft == 0 then
         local lunarhailbuildup = inst.components.lunarhailbuildup
         if lunarhailbuildup then
-            lunarhailbuildup:DropRewards(TUNING.LUNARHAIL_BUILDUP_MOONGLASS_REWARDS_DESTRUCTION_MULT)
+            lunarhailbuildup:DropRewards(TUNING.LUNARHAIL_BUILDUP_MOONGLASS_REWARDS_DESTRUCTION_MULT, data.worker)
             lunarhailbuildup:OnWorkFinished()
         end
     end

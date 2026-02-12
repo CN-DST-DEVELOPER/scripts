@@ -281,6 +281,8 @@ local function try_electrocute_onattacked(inst, data, state, statedata, ongotost
 		and attack_can_electrocute(inst, data)
 		and not (inst.components.inventory and inst.components.inventory:IsInsulated())
 		--and not inst:HasTag("electricdamageimmune") --V2C: redundant. either shouldn't have "electrocute" states if immune, or if using a shared SG then set sg.mem.noelectrocute = true
+		--NOTE: players (e.g. wx) still goto electrocute state even if "electricdamageimmune"
+		--      so we actually CAN'T check the tag here, or it will break players' behaviour.
 		and (not inst.sg:HasAnyStateTag("nointerrupt", "noelectrocute") or inst.sg:HasStateTag("canelectrocute"))
 		and not electrocute_recovery_delay(inst)
 		and try_goto_electrocute_state(inst, data, state, statedata, ongotostatefn)
@@ -322,6 +324,8 @@ end
 local function try_electrocute_onevent(inst, data, state, statedata, ongotostatefn)
 	return not (inst.components.inventory and inst.components.inventory:IsInsulated())
 		--and not inst:HasTag("electricdamageimmune") and --V2C: redundant. either shouldn't have "electrocute" states if immune, or if using a shared SG then set sg.mem.noelectrocute = true
+		--NOTE: players (e.g. wx) still goto electrocute state even if "electricdamageimmune"
+		--      so we actually CAN'T check the tag here, or it will break players' behaviour.
 		and not inst.sg.mem.noelectrocute
 		and (not inst.sg:HasAnyStateTag("dead", "nointerrupt", "noelectrocute") or inst.sg:HasStateTag("canelectrocute"))
 		and try_goto_electrocute_state(inst, data, state, statedata, ongotostatefn)
@@ -761,7 +765,7 @@ end
 CommonHandlers.OnHop = function()
     return EventHandler("onhop",
         function(inst)
-            if (inst.components.health == nil or not inst.components.health:IsDead()) and (inst.sg:HasStateTag("moving") or inst.sg:HasStateTag("idle")) then
+            if (inst.components.health == nil or not inst.components.health:IsDead()) and inst.sg:HasAnyStateTag("moving", "idle") then
                 if not inst.sg:HasStateTag("jumping") then
                     if inst.components.embarker and inst.components.embarker.antic and inst:HasTag("swimming") then
                         inst.sg:GoToState("hop_antic")
@@ -816,6 +820,9 @@ CommonStates.AddHopStates = function(states, wait_for_pre, anims, timelines, lan
 	            inst.Physics:SetLocalCollisionMask(COLLISION.GROUND)
 			end
 			inst.components.embarker:StartMoving()
+            if fns and fns.pre_ontimeout then
+                fns.pre_ontimeout(inst)
+            end
 		end,
 
         events =
@@ -1422,16 +1429,12 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns, data)
 
         timeline = timelines ~= nil and timelines.attacktimeline or nil,
 
-        onexit = function(inst)
-            if fns ~= nil and fns.attackexit ~= nil then
-                fns.attackexit(inst)
-            end
-        end,
-
         events =
         {
             EventHandler("animover", idleonanimover),
         },
+
+		onexit = fns and fns.attackexit,
     })
 
     table.insert(states, State{
@@ -1457,6 +1460,8 @@ CommonStates.AddCombatStates = function(states, timelines, anims, fns, data)
         } or nil,
 
         timeline = timelines ~= nil and timelines.deathtimeline or nil,
+
+		onexit = fns and fns.deathexit,
     })
 end
 
@@ -1585,7 +1590,7 @@ CommonStates.AddElectrocuteStates = function(states, timelines, anims, fns)
 end
 
 --------------------------------------------------------------------------
-CommonStates.AddDeathState = function(states, timeline, anim)
+CommonStates.AddDeathState = function(states, timeline, anim, fns, data)
     table.insert(states, State{
         name = "death",
         tags = { "busy" },
@@ -1597,9 +1602,20 @@ CommonStates.AddDeathState = function(states, timeline, anim)
             inst.AnimState:PlayAnimation(anim or "death")
             RemovePhysicsColliders(inst)
             inst:DropDeathLoot()
+
+            if fns ~= nil and fns.deathenter ~= nil then
+                fns.deathenter(inst)
+            end
         end,
 
         timeline = timeline,
+
+        events = data ~= nil and data.has_corpse_handler and
+        {
+            CommonHandlers.OnCorpseDeathAnimOver(),
+        } or nil,
+
+		onexit = fns and fns.deathexit,
     })
 end
 

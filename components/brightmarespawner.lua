@@ -99,13 +99,13 @@ local function UpdatePopulation()
 				local gestalts = TheSim:FindEntities(x, y, z, TUNING.GESTALT_POPULATION_DIST, BRIGHTMARE_TAGS)
 				local maxpop = data.MAX_SPAWNS
 				local inc_chance = (#gestalts >= maxpop and 0)
-								or (level == 1 and 0.2)
-								or (level == 2 and 0.3)
-								or 0.4
+								or (level == 1 and TUNING.BRIGHTMARE_SPAWN_INC_CHANCES.LOW)
+								or (level == 2 and TUNING.BRIGHTMARE_SPAWN_INC_CHANCES.MED)
+								or TUNING.BRIGHTMARE_SPAWN_INC_CHANCES.HIGH
 
 				inc_chance = inc_chance * increased_spawn_factor
 
-				if math.random() < inc_chance then
+				if TryLuckRoll(player, inc_chance, LuckFormulas.BrightmareSpawn) then
 					TrySpawnGestaltForPlayer(player, level, data)
 				end
 			end

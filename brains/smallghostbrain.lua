@@ -6,8 +6,12 @@ local SmallGhostBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-local function get_follow_target(ghost)
-    return ghost.components.follower.leader
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
+local function get_follow_target(inst)
+    return GetLeader(inst)
 end
 
 local function get_closest_toy(toy_owner, dist_inst, dsq_gate)
@@ -43,7 +47,7 @@ end
 local MIN_HINT_DSQ = TUNING.GHOST_HUNT.MINIMUM_HINT_DIST * TUNING.GHOST_HUNT.MINIMUM_HINT_DIST
 local MAX_HINT_DSQ = TUNING.GHOST_HUNT.MAXIMUM_HINT_DIST * TUNING.GHOST_HUNT.MAXIMUM_HINT_DIST
 local function get_hint_location(inst)
-    local leader = (inst.components.follower ~= nil and inst.components.follower:GetLeader()) or nil
+    local leader = GetLeader(inst)
     if not leader then
         return nil
     end
@@ -71,7 +75,7 @@ local function get_hint_location(inst)
 end
 
 local function test_for_finished_hinting(inst)
-    local leader = (inst.components.follower ~= nil and inst.components.follower:GetLeader()) or nil
+    local leader = GetLeader(inst)
     if not leader then
         inst.sg.mem.is_hinting = false
         return
@@ -94,7 +98,7 @@ local function test_for_finished_hinting(inst)
 end
 
 local function test_for_toy_in_search_range(inst)
-    local leader = (inst.components.follower ~= nil and inst.components.follower:GetLeader()) or nil
+    local leader = GetLeader(inst)
     if not leader then
         return false
     end
@@ -119,7 +123,7 @@ local function _avoidtargetfn(self, target)
         return false
     end
 
-    local owner = self.inst.components.follower.leader
+    local owner = GetLeader(self.inst)
     local owner_combat = owner ~= nil and owner.components.combat or nil
     local target_combat = target.components.combat
     if owner_combat == nil or target_combat == nil then
@@ -176,7 +180,7 @@ local function validate_combat_avoidance(self)
 end
 
 local function KeepFacingTarget(inst, target)
-    return inst.components.follower.leader == target
+    return GetLeader(inst) == target
 end
 
 local COMBAT_YES_TAGS = {"_combat", "_health"}

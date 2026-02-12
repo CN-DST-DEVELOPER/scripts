@@ -82,7 +82,7 @@ end
 local function OnEntityDeath(inst, data)
     if data.inst ~= nil then
         data.inst._soulsource = data.afflicter -- Mark the victim.
-        if (data.inst.components.lootdropper == nil or data.inst.components.lootdropper.forcewortoxsouls or data.explosive) then -- NOTES(JBK): Explosive entities do not drop loot.
+        if (data.inst.components.lootdropper == nil or data.inst.components.lootdropper.forcewortoxsouls or data.explosive or data.corpsing) then -- NOTES(JBK): Explosive entities do not drop loot.
             OnEntityDropLoot(inst, data)
         end
     end

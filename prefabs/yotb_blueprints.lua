@@ -62,6 +62,8 @@ local function MakeCostumeBlueprint(data)
 		inst.AnimState:SetBank("blueprint_yotb")
         inst.AnimState:PlayAnimation("idle")
 
+        inst.pickupsound = "paper"
+
         inst.entity:SetPristine()
 
         if not TheWorld.ismastersim then

@@ -243,6 +243,7 @@ require("fonts")
 require("physics")
 require("modindex")
 require("mathutil")
+require("math2d")
 require("components/lootdropper")
 require("reload")
 require("saveindex") -- Added by Altgames for Android focus lost handling
@@ -533,6 +534,8 @@ require "consolecommands"
 if CHEATS_ENABLED then
     require "debugcommands"
     require "debugkeys"
+else
+	global("CREATING_SCRAPBOOK_DATA")
 end
 
 TheSystemService:SetStalling(false)

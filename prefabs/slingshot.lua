@@ -355,6 +355,9 @@ local function OnEquipToModel(inst, owner, from_ground)
     end
 end
 
+local function FreeAmmoChanceAdditive(inst, chance, luck)
+	return luck > 0 and chance + (luck * .2)
+end
 local function OnProjectileLaunched(inst, attacker, target, proj)
     if attacker ~= nil and attacker.components.rider ~= nil and attacker.components.rider:IsRiding() then
         if proj.SetHighProjectile ~= nil then
@@ -375,7 +378,7 @@ local function OnProjectileLaunched(inst, attacker, target, proj)
 	end
 
 	if inst.components.slingshotmods:HasPartName("slingshot_band_mimic") and
-		math.random() < TUNING.SLINGSHOT_MOD_FREE_AMMO_CHANCE
+		TryLuckRoll(attacker, TUNING.SLINGSHOT_MOD_FREE_AMMO_CHANCE, FreeAmmoChanceAdditive)
 	then
 		--launched a mimic ammo, so don't deplete real ammo stack
 	elseif inst.components.container then

@@ -136,14 +136,15 @@ local function ShowWorkState(inst, worker, workleft)
     )
 end
 
-local function OnWorkFinished(inst)--, worker)
+local function OnWorkFinished(inst, worker)
     inst.components.lootdropper:DropLoot(inst:GetPosition())
 
     local fx = SpawnAt("collapse_small", inst)
     fx:SetMaterial("rock")
 
-    if TheWorld.state.isnightmarewild and math.random() <= .3 then
-        SpawnAt(math.random() < .5 and "nightmarebeak" or "crawlingnightmare", inst)
+    if TheWorld.state.isnightmarewild and
+        TryLuckRoll(worker, TUNING.STATUERUINS_SPAWN_NIGHTMARE_CHANCE, LuckFormulas.StatueSpawnNightmare) then
+        SpawnAt(TryLuckRoll(worker, .5, LuckFormulas.TerrorbeakSpawn) and "nightmarebeak" or "crawlingnightmare", inst)
     end
 
     inst:Remove()

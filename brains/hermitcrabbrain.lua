@@ -429,6 +429,14 @@ local function runawaytest(inst)
     end
 end
 
+local RUN_AWAY_FROM_PIG_PARAMS =
+{
+	tags = { "pig", "_combat" },
+	fn = function(guy, inst)
+		return guy.components.combat:TargetIs(inst)
+	end,
+}
+
 local function DoBottleToss(inst)
 	if not inst.components.timer:TimerExists("bottledelay") and not holding_umbrella(inst) and not inst:IsInBadLivingArea() then
         local source = inst.CHEVO_marker
@@ -764,7 +772,7 @@ function HermitBrain:OnStart()
             WhileNode( function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "PanicHaunted",
                 ChattyNode(self.inst, { name = "HERMITCRAB_PANICHAUNT", chatterparams = CHATTERPARAMS_LOW },
                     Panic(self.inst))),
-            RunAway(self.inst, function(guy) return guy:HasTag("pig") and guy.components.combat and guy.components.combat.target == self.inst end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),
+			RunAway(self.inst, RUN_AWAY_FROM_PIG_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST ),
 
             IfNode( function() return not self.inst.sg:HasStateTag("busy") and TheWorld.state.israining and has_umbrella(self.inst) and not equipped_umbrella(self.inst) end, "umbrella",
                     DoAction(self.inst, EquipUmbrella, "umbrella", true )),

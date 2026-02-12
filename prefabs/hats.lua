@@ -6,6 +6,7 @@ local SPIDER_TAGS = {"spider"}
 local SHADOWTHRALL_PARASITE_RETARGET_CANT_TAGS = { "shadowthrall_parasite_hosted", "shadowthrall_parasite_mask" }
 local MOONGLASS_MUST_TAGS = {"moonglass_piece"}
 local MOONGLASS_CANT_TAGS = {"INLIMBO"}
+local KNIGHT_MUST_TAGS = {"gilded_knight"}
 
 ALL_HAT_PREFAB_NAMES = {}
 
@@ -476,7 +477,7 @@ local function MakeHat(name)
     local function tryproc(inst, owner, data)
         if inst._task == nil and
             not data.redirected and
-            math.random() < TUNING.ARMOR_RUINSHAT_PROC_CHANCE then
+            TryLuckRoll(owner, TUNING.ARMOR_RUINSHAT_PROC_CHANCE, LuckFormulas.RuinsHatProc) then
             ruinshat_proc(inst, owner)
         end
     end
@@ -827,7 +828,7 @@ local function MakeHat(name)
             local x,y,z = owner.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x,y,z, TUNING.SPIDERHAT_RANGE, SPIDER_TAGS)
             for k,v in pairs(ents) do
-                if v.components.follower and not v.components.follower.leader and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
+                if v.components.follower and not v.components.follower:GetLeader() and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
                     owner.components.leader:AddFollower(v)
                 end
             end
@@ -2642,7 +2643,7 @@ local function MakeHat(name)
         inst.components.spawner.onkilledfn = fns.update_polly_hat_art
         inst.components.spawner.onspawnedfn = fns.update_polly_hat_art
 
-        inst:AddComponent("migrationpetowner")
+        inst:AddComponent("migrationpetowner") -- Needed for pets being on the hat and not the player.
         inst.components.migrationpetowner:SetPetFn(fns.polly_rogers_migration)
         inst:ListenForEvent("player_despawn", fns.polly_rogers_onplayerdespawn)
 
@@ -2688,7 +2689,7 @@ local function MakeHat(name)
         inst.components.spawner.onkilledfn = fns.update_polly_hat_art
         inst.components.spawner.onspawnedfn = fns.update_polly_hat_art
 
-        inst:AddComponent("migrationpetowner")
+        inst:AddComponent("migrationpetowner") -- Needed for pets being on the hat and not the player.
         inst.components.migrationpetowner:SetPetFn(fns.polly_rogers_migration)
         inst:ListenForEvent("player_despawn", fns.polly_rogers_onplayerdespawn)
 
@@ -2714,10 +2715,10 @@ local function MakeHat(name)
             return inst
         end
 
-        inst:AddComponent("fuel")
-        inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
-
         if not noburn then
+            inst:AddComponent("fuel")
+            inst.components.fuel.fuelvalue = TUNING.SMALL_FUEL
+
             MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
             MakeSmallPropagator(inst)
         end
@@ -3354,7 +3355,7 @@ local function MakeHat(name)
                 gestalt._failed_lunarseedplant = true
             end
         end
-        if owner and not owner.is_snapshot_user_session then
+        if owner and not owner.is_snapshot_user_session and not owner.migration then
             if owner.components.petleash then
                 local pets = owner.components.petleash:GetPetsWithPrefab("gestalt_guard_evolved")
                 if pets then
@@ -3875,6 +3876,7 @@ local function MakeHat(name)
 		inst:AddTag("gestaltprotection")
 		inst:AddTag("goggles")
 		inst:AddTag("show_broken_ui")
+        inst:AddTag("fullhelm_hat")
 
 		--waterproofer (from waterproofer component) added to pristine state for optimization
 		inst:AddTag("waterproofer")
@@ -4087,6 +4089,7 @@ local function MakeHat(name)
 		inst:AddTag("shadow_item")
 		inst:AddTag("show_broken_ui")
 		inst:AddTag("miasmaimmune")
+        inst:AddTag("fullhelm_hat")
 
 		--shadowlevel (from shadowlevel component) added to pristine state for optimization
 		inst:AddTag("shadowlevel")
@@ -4200,6 +4203,7 @@ local function MakeHat(name)
     fns.wagpunk_custom_init = function(inst)
 		inst:AddTag("hardarmor")
         inst:AddTag("show_broken_ui")
+        inst:AddTag("metal")
 
         inst:AddComponent("talker")
         inst.components.talker.fontsize = 28
@@ -5596,6 +5600,7 @@ local function MakeHat(name)
     end
 
     fns.shadowthrall_parasite_ondeath = function(owner, data)
+        owner.causeofdeath = data.afflicter or nil
         owner.was_shadowthrall_parasited = true
         owner.components.inventory:Unequip(EQUIPSLOTS.HEAD)
     end
@@ -5723,7 +5728,7 @@ local function MakeHat(name)
                 owner:AddComponent("lootdropper")
             end
 
-            if math.random() <= 0.3 then
+            if TryLuckRoll(owner.causeofdeath, TUNING.DROP_SHADOWTHRALL_MASKHAT_CHANCE, LuckFormulas.LootDropperChance) then
                 local loot = {
                     "mask_sagehat",
                     "mask_halfwithat",
@@ -5731,7 +5736,6 @@ local function MakeHat(name)
                 }
 
                 local mask = SpawnPrefab(loot[math.random(#loot)])
-
                 owner.components.lootdropper:FlingItem(mask)
             end
 
@@ -6095,6 +6099,7 @@ local function MakeHat(name)
 		inst:AddTag("icebox_valid")
 		inst:AddTag("goggles")
 		inst:AddTag("spook_protection")
+        inst:AddTag("fullhelm_hat")
 
 		--waterproofer (from waterproofer component) added to pristine state for optimization
 		inst:AddTag("waterproofer")
@@ -6173,6 +6178,331 @@ local function MakeHat(name)
 
 		return inst
 	end
+
+    --
+    fns.princess_TryToMakeKnightsHostile = function(hat)
+        local owner = hat.components.inventoryitem:GetGrandOwner() or nil
+        local petleash = hat.components.petleash
+        if petleash then
+            local pets = petleash:GetPetsWithPrefab("knight_yoth")
+            if pets then
+                for _, pet in ipairs(pets) do
+                    petleash:DetachPet(pet)
+                    if hat.components.leader ~= nil then
+                        hat.components.leader:RemoveFollower(pet)
+                    end
+                    pet.persists = true
+                    if pet.MakeHostile then
+                        pet:MakeHostile()
+                    end
+                    if pet.components.combat ~= nil then
+                        if owner and owner.components.combat then
+                            pet.components.combat:SuggestTarget(owner)
+                        end
+                    end
+                end
+                fns.princess_trytocooldown(hat)
+            end
+        end
+    end
+    fns.princess_trytocooldown = function(hat)
+        local owner = hat.components.inventoryitem:GetGrandOwner() or nil
+        if owner then
+            local blamed = owner
+            if not blamed.isplayer then
+                -- This is not on a player so we must find a nearby player to blame.
+                -- The inventory item is already off of the player at this point and we have many cases where we do not know who did it.
+                -- So we will assume the closest player to the princess is the cause within a range.
+                local x, y, z = owner.Transform:GetWorldPosition()
+                local toblame = FindPlayersInRangeSortedByDistance(x, y, z, 9, true)
+                for _, player in ipairs(toblame) do
+                    if not player:HasDebuff("yoth_princesscooldown_buff") then
+                        blamed = player
+                        break
+                    end
+                end
+            end
+            if blamed.isplayer then
+                blamed:AddDebuff("yoth_princesscooldown_buff", "yoth_princesscooldown_buff")
+                return true
+            end
+        end
+        return false
+    end
+    fns.princess_trymakepethostiletoplayer = function(pet)
+        local leader = pet.components.follower:GetLeader()
+        if leader ~= nil and not leader.isplayer then
+            pet:MakeHostile(nil, true) -- should be hostile, but shouldn't flee.
+            fns.princess_trytocooldown(pet.components.follower.leader) -- Getting leader directly special case.
+        end
+    end
+    fns.princess_refreshtracking = function(inst, forgetthisknight)
+        if forgetthisknight then
+            for i = 1, #YOTH_HORSE_NAMES do
+                local knight = forgetthisknight.components.entitytracker:GetEntity(YOTH_HORSE_NAMES[i])
+                if knight then
+                    knight.components.entitytracker:ForgetEntity(forgetthisknight.horseman_type)
+                end
+            end
+        end
+        local pets = inst.components.petleash:GetPetsWithPrefab("knight_yoth")
+        if pets then
+            for _, pet1 in ipairs(pets) do
+                for _, pet2 in ipairs(pets) do
+                    if pet1 ~= pet2 then
+                        if pet2.components.entitytracker then
+                            pet2.components.entitytracker:TrackEntity(pet1.horseman_type, pet1)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    fns.princess_onpetspawn = function(inst, pet)
+        if pet.prefab == "knight_yoth" then
+            if pet.MakeFriendly then
+                pet:MakeFriendly()
+                --[[(OMAR): Forgive my sins.
+                Needs to be delayed due to the pet not having the item owner as the leader properly yet on load.]]
+                pet:DoTaskInTime(0, fns.princess_trymakepethostiletoplayer)
+            end
+            fns.princess_refreshtracking(inst)
+        end
+    end
+    fns.princess_onpetremoved = function(inst, pet)
+        if pet.prefab == "knight_yoth" and inst.components.petleash:GetNumPetsForPrefab("knight_yoth") == 0 then
+            fns.princess_trytocooldown(inst)
+        end
+    end
+    fns.princess_onhatremoved_petleash = function(petleash, ...)
+        local owner = petleash.inst.components.inventoryitem and petleash.inst.components.inventoryitem:GetGrandOwner() or nil
+        if not owner or not owner.is_snapshot_user_session then
+            petleash.inst:TryToMakeKnightsHostile()
+            if petleash.OnRemoveEntity_old then
+                petleash.OnRemoveEntity_old(petleash, ...)
+            end
+        end
+    end
+    fns.princess_pushworldevent = function(inst, eventname)
+        -- Search strings:
+        -- TheWorld:PushEvent("ms_register_yoth_princess", {
+        -- TheWorld:PushEvent("ms_unregister_yoth_princess", {
+        local owner = inst.components.inventoryitem:GetGrandOwner()
+        if owner and not owner.is_snapshot_user_session then
+            TheWorld:PushEvent(eventname, {hat = inst, owner = owner,})
+        end
+    end
+    fns.princess_trytomakenearbyknightsfollowers = function(hat)
+        local owner = hat.components.inventoryitem:GetGrandOwner()
+        if not owner then
+            return
+        end
+
+        if hat.components.petleash:IsFullForPrefab("knight_yoth") then
+            return
+        end
+
+        local x, y, z = hat.Transform:GetWorldPosition()
+        local knights = TheSim:FindEntities(x, y, z, 16, KNIGHT_MUST_TAGS)
+        if not knights[1] then
+            return
+        end
+
+        local claimednames = {}
+        local pets = hat.components.petleash:GetPetsWithPrefab("knight_yoth")
+        if pets then
+            for _, pet in ipairs(pets) do
+                local name = pet.horseman_type
+                if name then
+                    claimednames[name] = true
+                end
+            end
+        end
+        for _, knight in ipairs(knights) do
+            if knight.components.follower then
+                local leader = knight.components.follower:GetLeader()
+                if leader == nil then
+                    local name = knight.horseman_type
+                    if name and not claimednames[name] then
+                        if hat.components.petleash:AttachPet(knight) then
+                            claimednames[name] = true
+                            if knight.components.combat and knight.components.combat.target == owner then
+                                knight.components.combat:DropTarget()
+                            end
+                            owner:PushEvent("makefriend")
+                            if owner.isplayer then
+                                knight:MakeFriendly()
+                            end
+                            fns.princess_refreshtracking(hat, knight)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    fns.princess_onsetbonus_enabled = function(inst)
+        fns.princess_pushworldevent(inst, "ms_register_yoth_princess")
+        if inst.trytomakenearbyknightsfollowers_task ~= nil then
+            inst.trytomakenearbyknightsfollowers_task:Cancel()
+            inst.trytomakenearbyknightsfollowers_task = nil
+        end
+        inst.trytomakenearbyknightsfollowers_task = inst:DoPeriodicTask(5, fns.princess_trytomakenearbyknightsfollowers, math.random() * 0.1)
+
+        inst:AddTag("unluckysource")
+        local owner = inst.components.inventoryitem.owner
+        if owner and owner.components.luckuser then
+            owner.components.luckuser:SetLuckSource(TUNING.YOTH_PRINCESS_SETBONUS_LUCK, inst)
+        end
+    end
+    fns.princess_onsetbonus_disabled = function(inst)
+        fns.princess_pushworldevent(inst, "ms_unregister_yoth_princess")
+        if inst.trytomakenearbyknightsfollowers_task ~= nil then
+            inst.trytomakenearbyknightsfollowers_task:Cancel()
+            inst.trytomakenearbyknightsfollowers_task = nil
+        end
+        inst:TryToMakeKnightsHostile()
+
+        inst:RemoveTag("unluckysource")
+        local owner = inst.components.inventoryitem.owner
+        if owner and owner.components.luckuser then
+            owner.components.luckuser:RemoveLuckSource(inst)
+        end
+    end
+
+    fns.princess_migration = function(hat)
+        local petleash = hat.components.petleash
+        if petleash then
+            return petleash:GetPetsWithPrefab("knight_yoth")
+        end
+        return nil
+    end
+
+    fns.princess_onplayerdespawn = function(hat)
+        local petleash = hat.components.petleash
+        if petleash then
+            local pets = petleash:GetPetsWithPrefab("knight_yoth")
+            if pets then
+                for _, pet in ipairs(pets) do
+                    if pet.components.health == nil or not pet.components.health:IsDead() then
+                        if pet.components.health then
+                            pet.components.health:SetInvincible(true)
+                        end
+                        pet:PushEvent("despawn")
+                    end
+                end
+            end
+        end
+    end
+
+    local function princess_custom_init(inst)
+        inst:AddTag("metal")
+        inst:AddTag("hardarmor")
+        --waterproofer (from waterproofer component) added to pristine state for optimization
+        inst:AddTag("waterproofer")
+    end
+
+    fns.princess = function()
+        local inst = fns.mask_common(princess_custom_init, true)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("armor")
+        inst.components.armor:InitCondition(TUNING.MASK_PRINCESSHAT, TUNING.MASK_PRINCESSHAT_ABSORPTION)
+
+        inst:AddComponent("waterproofer")
+        inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        inst:AddComponent("leader")
+
+        local petleash = inst:AddComponent("petleash")
+        petleash:SetMaxPetsForPrefab("knight_yoth", #YOTH_HORSE_NAMES)
+        petleash:SetOnSpawnFn(fns.princess_onpetspawn)
+        petleash:SetOnRemovedFn(fns.princess_onpetremoved)
+        petleash.OnRemoveEntity_old = petleash.OnRemoveEntity
+        petleash.OnRemoveEntity = fns.princess_onhatremoved_petleash
+
+        inst:AddComponent("migrationpetowner") -- Needed for pets being on the hat and not the player.
+        inst.components.migrationpetowner:SetPetFn(fns.princess_migration)
+        inst:ListenForEvent("player_despawn", fns.princess_onplayerdespawn)
+
+        local setbonus = inst:AddComponent("setbonus")
+	    setbonus:SetSetName(EQUIPMENTSETNAMES.YOTH_PRINCESS)
+	    setbonus:SetOnEnabledFn(fns.princess_onsetbonus_enabled)
+	    setbonus:SetOnDisabledFn(fns.princess_onsetbonus_disabled)
+
+        inst.TryToMakeKnightsHostile = fns.princess_TryToMakeKnightsHostile
+
+        inst:ListenForEvent("onremove", inst.TryToMakeKnightsHostile)
+
+        return inst
+    end
+
+    --
+
+    local function yoth_knight_custom_init(inst)
+        inst:AddTag("metal")
+        inst:AddTag("hardarmor")
+        --waterproofer (from waterproofer component) added to pristine state for optimization
+        inst:AddTag("waterproofer")
+    end
+
+    fns.yoth_knight_onequip = function(inst, owner)
+        _onequip(inst, owner)
+    end
+
+    fns.yoth_knight_onunequip = function(inst, owner)
+        _onunequip(inst, owner)
+    end
+
+    fns.yoth_knight_update_luck = function(item)
+        if item.components.luckitem ~= nil then
+            item:PushEvent("updateownerluck")
+        end
+    end
+
+    fns.yoth_knight_onsetbonus_enabled = function(inst)
+        inst:AddTag("luckysource")
+        local owner = inst.components.inventoryitem.owner
+        if owner and owner.components.luckuser then
+            local luck = IsSpecialEventActive(SPECIAL_EVENTS.YOTH) and TUNING.YOTH_KNIGHT_SETBONUS_EVENT_LUCK or TUNING.YOTH_KNIGHT_SETBONUS_LUCK
+            owner.components.luckuser:SetLuckSource(luck, inst)
+            owner.components.inventory:ForEachItem(fns.yoth_knight_update_luck)
+        end
+    end
+    fns.yoth_knight_onsetbonus_disabled = function(inst)
+        inst:RemoveTag("luckysource")
+        local owner = inst.components.inventoryitem.owner
+        if owner and owner.components.luckuser then
+            owner.components.luckuser:RemoveLuckSource(inst)
+            owner.components.inventory:ForEachItem(fns.yoth_knight_update_luck)
+        end
+    end
+
+    fns.yoth_knight = function()
+        local inst = simple(yoth_knight_custom_init)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst:AddComponent("armor")
+        inst.components.armor:InitCondition(TUNING.ARMOR_YOTH_KNIGHTHAT, TUNING.ARMOR_YOTH_KNIGHTHAT_ABSORPTION)
+
+        inst:AddComponent("waterproofer")
+        inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        inst.components.equippable:SetOnEquip(fns.yoth_knight_onequip)
+        inst.components.equippable:SetOnUnequip(fns.yoth_knight_onunequip)
+
+        local setbonus = inst:AddComponent("setbonus")
+        setbonus:SetSetName(EQUIPMENTSETNAMES.YOTH_KNIGHT)
+        setbonus:SetOnEnabledFn(fns.yoth_knight_onsetbonus_enabled)
+	    setbonus:SetOnDisabledFn(fns.yoth_knight_onsetbonus_disabled)
+
+        return inst
+    end
 
     -----------------------------------------------------------------------------
     local fn = nil
@@ -6393,6 +6723,13 @@ local function MakeHat(name)
 		}
 		table.insert(assets, Asset("DYNAMIC_ATLAS", "images/pumpkinhat_face.xml"))
 		table.insert(assets, Asset("ASSET_PKGREF", "images/pumpkinhat_face.tex"))
+    elseif name == "mask_princess" then
+        fn = fns.princess
+        prefabs = {
+            "yoth_princesscooldown_buff",
+        }
+    elseif name == "yoth_knight" then
+        fn = fns.yoth_knight
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -7263,6 +7600,9 @@ return  MakeHat("straw"),
 
         MakeHat("shadow_thrall_parasite"),
 		MakeHat("pumpkin"),
+
+        MakeHat("mask_princess"),
+        MakeHat("yoth_knight"),
 
         MakeFollowFx("mask_halfwit_fx", {
 			createfn = fns2.mask_halfwit_CreateFxFollowFrame,

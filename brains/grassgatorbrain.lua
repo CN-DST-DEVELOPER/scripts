@@ -30,9 +30,7 @@ local function KeepFaceTargetFn(inst, target)
         and inst:IsNear(target, KEEP_FACE_DIST)
 end
 
-local function ShouldRunAway(guy)
-    return guy:HasTag("character") and not guy:HasTag("notarget")
-end
+local HUNTER_PARAMS = { tags = { "character" }, notags = { "notarget" } }
 
 local GrassgatorBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
@@ -57,7 +55,7 @@ function GrassgatorBrain:OnStart()
                 BrainCommon.ElectricFencePanicTrigger(self.inst),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME),
                 SequenceNode{
-                    RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+					RunAway(self.inst, HUNTER_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
                     FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn, 0.5)
                 },
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

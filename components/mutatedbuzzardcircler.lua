@@ -1,7 +1,21 @@
 --local easing = require("easing")
 
+local CORPSE_MUST_TAGS = { "creaturecorpse" }
+local CORPSE_NO_TAGS = { "NOCLICK" }
+
 local function IsValidToEnterNode(inst)
     return not inst._killed and inst:IsValid()
+end
+
+local function IsValidCorpse(corpse)
+    return not Buzzard_ShouldIgnoreCorpse(corpse)
+        and not corpse:WillMutate()
+        and not corpse:HasGestaltArriving()
+end
+
+local function GetCorpseRadius(corpse)
+    local r, sz, ht = GetCombatFxSize(corpse)
+    return math.max(r, corpse:GetPhysicsRadius(0))
 end
 
 local function OnRemove(inst)
@@ -11,8 +25,41 @@ local function OnRemove(inst)
     end
 end
 
+local function CreateFlareDetonatedListener(hit_num)
+    return function(inst, data)
+        data.hit_num_buzzards = data.hit_num_buzzards or 0
+        if data.sourcept and inst:GetDistanceSqToPoint(data.sourcept) <= TUNING.BUZZARDSPAWNER_FLARE_HIT_DIST_SQ and data.hit_num_buzzards < hit_num then
+            local sx, sy, sz = data.sourcept:Get()
+            local x, y, z = inst.Transform:GetWorldPosition()
+            y = 30 + math.random() * 15 - 7.5
+
+            x = (sx + x) / 2
+            z = (sz + z) / 2
+
+            inst:DoTaskInTime(.2 + math.random() * .8, function()
+                local buzzard = inst.buzzard
+                TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+                buzzard.Transform:SetPosition(x, y, z)
+                buzzard.sg:GoToState("fall")
+                buzzard.shouldGoAway = nil
+
+                inst:KillShadow()
+            end)
+
+            data.hit_num_buzzards = data.hit_num_buzzards + 1
+        end
+    end
+end
+
+local OnMiniFlareDetonated = CreateFlareDetonatedListener(1)
+local OnMegaFlareDetonated = CreateFlareDetonatedListener(5)
+
 local MutatedBuzzardCircler = Class(function(self, inst)
     self.inst = inst
+
+    -- Cache
+    self._migrationmanager = TheWorld.components.migrationmanager
+    self._mutatedbuzzardmanager = TheWorld.components.mutatedbuzzardmanager
 
     self.scale = 1
     self.speed = math.random(3)
@@ -33,12 +80,12 @@ local MutatedBuzzardCircler = Class(function(self, inst)
     self.update_target_pos_cooldown = 0
     self.last_valid_migration_node = nil
 
-    self.inst:ListenForEvent("onremove", OnRemove)
+    self.miniflare_detonated_cb = function(src, data) OnMiniFlareDetonated(inst, data) end
+    self.megaflare_detonated_cb = function(src, data) OnMegaFlareDetonated(inst, data) end
+    inst:ListenForEvent("onremove", OnRemove)
+    inst:ListenForEvent("miniflare_detonated", self.miniflare_detonated_cb, TheWorld)
+    inst:ListenForEvent("megaflare_detonated", self.megaflare_detonated_cb, TheWorld)
 end)
-
-function MutatedBuzzardCircler:SetMode(mode)
-    self.circlerMode = mode
-end
 
 function MutatedBuzzardCircler:Start()
     if self.circle_target == nil or not self.circle_target:IsValid() then
@@ -80,10 +127,8 @@ function MutatedBuzzardCircler:SetCircleTarget(tar)
         self.circle_target._num_circling_buzzards = (self.circle_target._num_circling_buzzards or 0) + 1
 
         self._ontargetremoved = function()
-            local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-            if mutatedbirdmanager and IsValidToEnterNode(self.inst) then
-                mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
-                mutatedbirdmanager:RemoveBuzzardShadow(self.inst)
+            if IsValidToEnterNode(self.inst) then
+                self.inst:KillShadow()
             end
 			self.circle_target = nil
 		end
@@ -123,20 +168,84 @@ function MutatedBuzzardCircler:UpdateMigrationNode()
         return
     end
 
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-    if mutatedbirdmanager then
-        local migration_node = mutatedbirdmanager:GetMigrationTaskAtInst(self.circle_target)
-        local dist_last_node_to_target = mutatedbirdmanager:GetMigrationDistanceFromTaskToTask(self.last_valid_migration_node, migration_node)
-        if migration_node ~= nil and (self.last_valid_migration_node == nil or (dist_last_node_to_target and dist_last_node_to_target <= 1) ) then
-            self.last_valid_migration_node = migration_node
-        else
-            -- Migration node is invalid, either because it doesn't exist, or it's too far away. Return.
-            if IsValidToEnterNode(self.inst) then
-                mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
-                mutatedbirdmanager:RemoveBuzzardShadow(self.inst)
-            end
+    local migration_node = self._migrationmanager:GetMigrationNodeAtInst(self.circle_target)
+    local dist_last_node_to_target = self._migrationmanager:GetDistanceNodeToNode(self.last_valid_migration_node, migration_node)
+    if migration_node ~= nil and (self.last_valid_migration_node == nil or (dist_last_node_to_target and dist_last_node_to_target <= 1) ) then
+        self.last_valid_migration_node = migration_node
+    else
+        self:StoreInMigrationNode() -- Migration node is invalid, either because it doesn't exist, or it's too far away. Return.
+    end
+end
+
+function MutatedBuzzardCircler:FindCorpse(target)
+    if not TheWorld.components.corpsepersistmanager:AnyCorpseExists() then
+        return
+    end
+
+    local x, y, z = target.Transform:GetWorldPosition()
+    local corpses = TheSim:FindEntities(x, y, z, 25, CORPSE_MUST_TAGS, CORPSE_NO_TAGS)
+
+    for i, v in ipairs(corpses) do
+        while v ~= nil and not IsValidCorpse(v) do
+            table.remove(corpses, i)
+            v = corpses[i]
         end
     end
+
+    return #corpses > 0 and corpses[math.random(#corpses)] or nil
+end
+
+function MutatedBuzzardCircler:LandOnCorpse(corpse)
+    local pos = corpse:GetPosition()
+    local rad = GetCorpseRadius(corpse) + 1.5
+    local offset = FindWalkableOffset(pos, math.random() * TWOPI, rad + math.random() * 2, 12, true) or Vector3(0, 0, 0)
+
+    if offset ~= nil then
+        local sx, sz = pos.x + offset.x, pos.z + offset.z
+        if not TheWorld.Map:IsOceanAtPoint(sx, 0, sz) then
+            local buzzard = self.inst.buzzard
+            self._migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+            buzzard.Transform:SetPosition(sx, 30, sz)
+            buzzard:ForceFacePoint(pos.x, pos.y, pos.z)
+            buzzard.sg:GoToState("glide")
+            buzzard.shouldGoAway = nil
+
+            buzzard:DoTaskInTime(0, buzzard.SetOwnCorpse, corpse) -- One tick delay for brain to initialize
+
+            self.inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/flock_squawk")
+            self.inst:KillShadow()
+            self:Stop()
+            return true
+        end
+    end
+
+    return false
+end
+
+function MutatedBuzzardCircler:DropBuzzard()
+    local x, y, z = self.inst.Transform:GetWorldPosition()
+    y = 30 + math.random() * 15 - 7.5
+
+    if self.circle_target and self.circle_target:IsValid() then
+        local sx, sy, sz = self.circle_target.Transform:GetWorldPosition()
+
+        x = (sx + x) / 2
+        z = (sz + z) / 2
+    end
+
+    local buzzard = self.inst.buzzard
+    local corpse = SpawnPrefab("buzzardcorpse")
+    corpse.Transform:SetPosition(x, y, z)
+    corpse.sg:GoToState("corpse_fall")
+    corpse.AnimState:SetBuild(buzzard.AnimState:GetBuild())
+    corpse:StartFadeTimer(10 + math.random() * 5)
+
+    -- Bye bye!
+    TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+    buzzard:Remove()
+
+    self.inst:KillShadow()
+    self:Stop()
 end
 
 local MIN_DIST_SQ = 10 * 10
@@ -146,9 +255,25 @@ function MutatedBuzzardCircler:OnUpdate(dt)
         self:Stop()
         self:SetCircleTarget(nil)
         return
+    elseif self.update_target_pos_cooldown <= 0 then
+        self.update_target_pos_cooldown = 0.5 + math.random() * 2
+        self:UpdateMigrationNode()
+
+        if not self.inst:IsValid() then -- Might become invalid from UpdateMigrationNode
+            return
+        end
+
+        if self._mutatedbuzzardmanager and self._mutatedbuzzardmanager:GetDropBuzzards() then
+            return
+        end
+
+        local corpse = self:FindCorpse(self.circle_target)
+        if corpse ~= nil and self:LandOnCorpse(corpse) then
+            return
+        end
     end
 
-	if self.target_pos then
+    if self.target_pos then
 		local x, _, z = self.circle_target.Transform:GetWorldPosition()
 		local k = math.min(1, dt / 2)
 		self.target_pos.x = x * k + self.target_pos.x * (1 - k)
@@ -156,15 +281,6 @@ function MutatedBuzzardCircler:OnUpdate(dt)
 	else
 		self.target_pos = self.circle_target:GetPosition()
 	end
-
-    if self.update_target_pos_cooldown <= 0 then
-        self.update_target_pos_cooldown = 3
-        self:UpdateMigrationNode()
-    end
-
-    if not self.inst:IsValid() then -- Might become invalid from UpdateMigrationNode
-        return
-    end
 
     local reverse = self.direction > 0
 
@@ -200,26 +316,22 @@ function MutatedBuzzardCircler:OnUpdate(dt)
     self.update_target_pos_cooldown = self.update_target_pos_cooldown - dt
 end
 
-function MutatedBuzzardCircler:OnEntitySleep()
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-    if mutatedbirdmanager then
-        local function StoreInMigrationNode()
-            if IsValidToEnterNode(self.inst) then
-                mutatedbirdmanager:FillMigrationTaskWithType("mutatedbuzzard_gestalt", self.last_valid_migration_node, 1)
-                self.inst:Remove()
-            end
-        end
+function MutatedBuzzardCircler:StoreInMigrationNode()
+    if IsValidToEnterNode(self.inst) then
+        self.inst:KillShadow()
+    end
+end
 
-        if self.circle_target and self.circle_target:IsValid() then
-            local migration_node = mutatedbirdmanager:GetMigrationTaskAtInst(self.circle_target)
-            local dist_last_node_to_target = mutatedbirdmanager:GetMigrationDistanceFromTaskToTask(self.last_valid_migration_node, migration_node)
-            if migration_node ~= nil and (self.last_valid_migration_node == nil or (dist_last_node_to_target and dist_last_node_to_target <= 1) ) then
-                self.last_valid_migration_node = migration_node
-            end
-            StoreInMigrationNode()
-        elseif self.last_valid_migration_node ~= nil then
-            StoreInMigrationNode()
+function MutatedBuzzardCircler:OnEntitySleep()
+    if self.circle_target and self.circle_target:IsValid() then
+        local migration_node = self._migrationmanager:GetMigrationNodeAtInst(self.circle_target)
+        local dist_last_node_to_target = self._migrationmanager:GetDistanceNodeToNode(self.last_valid_migration_node, migration_node)
+        if migration_node ~= nil and (self.last_valid_migration_node == nil or (dist_last_node_to_target and dist_last_node_to_target <= 1) ) then
+            self.last_valid_migration_node = migration_node
         end
+        self:StoreInMigrationNode()
+    elseif self.last_valid_migration_node ~= nil then
+        self:StoreInMigrationNode()
     end
 end
 

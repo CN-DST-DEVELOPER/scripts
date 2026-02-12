@@ -782,7 +782,7 @@ local states =
         {
             FrameEvent(12, function(inst)
 
-                if inst.components.follower.leader == nil then
+                if inst.components.follower:GetLeader() == nil then
                     inst:Remove()
                 else
                     local x0, y0, z0 = inst.Transform:GetWorldPosition()
@@ -804,7 +804,7 @@ local states =
         {
             EventHandler("animover", function(inst)
 
-                if inst.components.follower.leader == nil then
+                if inst.components.follower:GetLeader() == nil then
                     inst:Remove()
                 else
                     local x0, y0, z0 = inst.Transform:GetWorldPosition()

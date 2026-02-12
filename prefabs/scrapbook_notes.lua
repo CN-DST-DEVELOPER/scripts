@@ -115,6 +115,8 @@ local function MakeScrapbookNote(data)
 
         inst:SetPrefabNameOverride("wagstaff_mutations_note")
 
+        inst.pickupsound = "paper"
+
         inst.entity:SetPristine()
         if not TheWorld.ismastersim then
             return inst

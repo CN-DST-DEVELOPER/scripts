@@ -51,7 +51,7 @@ local FORMATION_MAX_SPEED = 10.5
 local FORMATION_RADIUS = 5.5
 local FORMATION_ROTATION_SPEED = 0.5
 local function OnUpdate(inst, dt)
-    local leader = inst.components.follower and inst.components.follower:GetLeader() or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader and leader.wormwood_lightflier_pattern and inst.brain and not inst.brain.stopped then
         local index = (leader.wormwood_lightflier_pattern[inst] or 1) - 1
         local maxpets = leader.wormwood_lightflier_pattern.maxpets

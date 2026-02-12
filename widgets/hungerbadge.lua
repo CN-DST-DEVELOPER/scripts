@@ -29,8 +29,8 @@ function HungerBadge:OnUpdate(dt)
 				gain = true
 			end
 
-			if self.owner:HasAnyTag("sleeping", "swimming_floater", "wonkey_run") or
-				(self.owner.sg and self.owner.sg:HasAnyStateTag("floating_predict_move", "monkey_predict_run"))
+			if self.owner:HasAnyTag("sleeping", "swimming_floater", "wonkey_run", "gallop_run") or
+				(self.owner.sg and self.owner.sg:HasAnyStateTag("floating_predict_move", "monkey_predict_run", "gallop_predict_run"))
 			then
 				drain = true
 			end

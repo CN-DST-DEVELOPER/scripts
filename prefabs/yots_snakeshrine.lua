@@ -223,6 +223,7 @@ local function fn()
     inst.AnimState:SetBank("wormshrine")
     inst.AnimState:SetBuild("wormshrine")
     inst.AnimState:PlayAnimation("idle")
+    inst.AnimState:Hide("swap_monstermeat01")
 
     inst:AddTag("structure")
     inst:AddTag("snakeshrine")
@@ -236,8 +237,6 @@ local function fn()
     if not TheWorld.ismastersim then
         return inst
     end
-
-    inst.AnimState:Hide("swap_monstermeat01")
 
     --inst.offering = nil
     inst._onofferingremoved = function() MakeEmpty(inst) end

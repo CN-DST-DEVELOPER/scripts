@@ -22,19 +22,6 @@ local GESTALT_TRACK_NAME = "gestalt"
 
 --------------------------------------------------------------------------------------------------------
 
-local function SpawnGestalt(inst)
-    if inst.components.burnable == nil or not inst.components.burnable:IsBurning() then
-        local gestalt = SpawnPrefab("corpse_gestalt")
-
-        inst.components.entitytracker:TrackEntity(GESTALT_TRACK_NAME, gestalt)
-
-        gestalt:SetTarget(inst)
-        gestalt:Spawn()
-
-        return gestalt -- Mods
-    end
-end
-
 local function HasGestaltArriving(inst)
     return inst.components.entitytracker:GetEntity(GESTALT_TRACK_NAME) ~= nil
 end
@@ -308,18 +295,6 @@ local function StartReviveMutateTimer(inst, time)
     inst.components.timer:StartTimer(CORPSE_TIMERS.REVIVE_MUTATE, time)
 end
 
-local function OnTimerDone(inst, data)
-    if not data then return end
-
-    if data.name == CORPSE_TIMERS.ERODE then
-        inst:RemovePersistSource(PERSIST_FADE_TIMER_SOURCE)
-    elseif data.name == CORPSE_TIMERS.SPAWN_GESTALT then
-        inst:SpawnGestalt()
-    elseif data.name == CORPSE_TIMERS.REVIVE_MUTATE then
-        inst:StartLunarMutation()
-    end
-end
-
 local function ImmediateGestaltMutate(inst)
     local gestalt = inst.components.entitytracker:GetEntity(GESTALT_TRACK_NAME)
     local is_rift_mutant = gestalt ~= nil or inst.components.timer:TimerExists(CORPSE_TIMERS.SPAWN_GESTALT)
@@ -338,13 +313,32 @@ local function ImmediateGestaltMutate(inst)
     end
 end
 
+local function TryGestaltMutateTaskOnSleep(inst, gestalt)
+    local time = 7 + math.random() * 3 + math.sqrt(inst:GetDistanceSqToInst(gestalt) / gestalt.components.locomotor.runspeed) -- Rough estimation
+    inst.mutate_task = inst:DoTaskInTime(time, ImmediateGestaltMutate)
+end
+
+local function SpawnGestalt(inst)
+    if inst.components.burnable == nil or not inst.components.burnable:IsBurning() then
+        local gestalt = SpawnPrefab("corpse_gestalt")
+
+        inst.components.entitytracker:TrackEntity(GESTALT_TRACK_NAME, gestalt)
+
+        gestalt:SetTarget(inst)
+        gestalt:Spawn()
+
+        if inst:IsAsleep() then
+            TryGestaltMutateTaskOnSleep(inst, gestalt)
+        end
+
+        return gestalt -- Mods
+    end
+end
+
 local function OnEntitySleep(inst)
     local gestalt = inst.components.entitytracker:GetEntity(GESTALT_TRACK_NAME)
     if gestalt then -- Gestalt mutation
-        local time = math.sqrt(inst:GetDistanceSqToInst(gestalt) / gestalt.components.locomotor.runspeed) -- Rough estimation
-        inst.mutate_task = inst:DoTaskInTime(time, ImmediateGestaltMutate)
-    elseif inst.components.timer:TimerExists(CORPSE_TIMERS.SPAWN_GESTALT) then
-        inst.mutate_task = inst:DoTaskInTime(0, ImmediateGestaltMutate)
+        TryGestaltMutateTaskOnSleep(inst, gestalt)
     elseif inst.sg:HasStateTag("prerift_mutating") then -- Regular mutation
         -- Timer is handled in timer finish.
         inst.mutate_task = inst:DoTaskInTime(0, inst.StartLunarMutation) --Just do it instantly.
@@ -355,6 +349,18 @@ local function OnEntityWake(inst)
     if inst.mutate_task ~= nil then
         inst.mutate_task:Cancel()
         inst.mutate_task = nil
+    end
+end
+
+local function OnTimerDone(inst, data)
+    if not data then return end
+
+    if data.name == CORPSE_TIMERS.ERODE then
+        inst:RemovePersistSource(PERSIST_FADE_TIMER_SOURCE)
+    elseif data.name == CORPSE_TIMERS.SPAWN_GESTALT then
+        inst:SpawnGestalt()
+    elseif data.name == CORPSE_TIMERS.REVIVE_MUTATE then
+        inst:StartLunarMutation()
     end
 end
 
@@ -537,6 +543,9 @@ local function MakeCreatureCorpse(data)
 
     local lunar_mutated_tuning = pre_rift_mutant_data and pre_rift_mutant_data.enabled_tuning or nil
     local gestalt_mutated_tuning = rift_mutant_data and rift_mutant_data.enabled_tuning or nil
+
+    local lunar_mutation_chance = pre_rift_mutant_data and pre_rift_mutant_data.mutation_chance or nil
+    local gestalt_mutation_chance = rift_mutant_data and rift_mutant_data.mutation_chance or nil
 
     local assets =
     {
@@ -755,6 +764,13 @@ local function MakeCreatureCorpse(data)
         inst:SetStateGraph(data.sg)
         --inst:ListenForEvent("electrocute", OnElectrocute)
 		inst.sg.mem.noelectrocute = true
+
+        if lunar_mutation_chance then
+            inst.lunar_mutation_chance = lunar_mutation_chance
+        end
+        if gestalt_mutation_chance then
+            inst.gestalt_possession_chance = gestalt_mutation_chance
+        end
 
         inst:AddComponent("timer")
         inst:ListenForEvent("timerdone", OnTimerDone)

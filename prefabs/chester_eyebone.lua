@@ -143,7 +143,7 @@ local function RebindChester(inst, chester)
         OpenEye(inst)
         inst:ListenForEvent("death", function() StartRespawn(inst, TUNING.CHESTER_RESPAWN_TIME) end, chester)
 
-        if chester.components.follower.leader ~= inst then
+        if chester.components.follower.leader ~= inst then -- Getting leader directly special case.
             chester.components.follower:SetLeader(inst)
         end
         return true

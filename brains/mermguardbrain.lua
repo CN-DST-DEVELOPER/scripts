@@ -34,6 +34,10 @@ end)
 
 -----------------------------------------------------------------------------------------------
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local ARMORY_ONEOF_TAGS = { "merm_armory", "merm_armory_upgraded" }
 
 local ARMOR_CANT_TAGS  = { "INLIMBO" }
@@ -198,7 +202,7 @@ local function GetFaceTargetFn(inst)
     if inst.components.timer:TimerExists("dontfacetime") then
         return nil
     end
-    local shouldface = inst.components.follower.leader or FindClosestPlayerToInst(inst, SEE_PLAYER_DIST, true)
+    local shouldface = GetLeader(inst) or FindClosestPlayerToInst(inst, SEE_PLAYER_DIST, true)
     if shouldface and not inst.components.timer:TimerExists("facetime") then
         inst.components.timer:StartTimer("facetime", FACETIME_BASE + math.random()*FACETIME_RAND)
     end
@@ -209,12 +213,17 @@ local function KeepFaceTargetFn(inst, target)
     if inst.components.timer:TimerExists("dontfacetime") then
         return nil
     end
-    local keepface = (inst.components.follower.leader and inst.components.follower.leader == target)
+
+    local keepface = (GetLeader(inst) == target)
         or (target:IsValid() and inst:IsNear(target, SEE_PLAYER_DIST))
     if not keepface then
         inst.components.timer:StopTimer("facetime")
     end
     return keepface
+end
+
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
 end
 
 ------------------------------------------------------------------------------
@@ -229,7 +238,7 @@ local function EatFoodAction(inst)
         target = inst.components.inventory:FindItem(function(item) return item:HasTag("moonglass_piece") or inst.components.eater:CanEat(item) end)
     end
 
-    if target == nil and inst.components.follower.leader == nil then
+    if target == nil and GetLeader(inst) == nil then
         target = FindEntity(inst, SEE_FOOD_DIST, function(item)
             return inst.components.eater ~= nil and inst.components.eater:CanEat(item)
         end, EATFOOD_MUST_TAGS, EATFOOD_CANT_TAGS)
@@ -248,7 +257,7 @@ local function EatFoodAction(inst)
 end
 
 local function GetNoLeaderHomePos(inst)
-    if inst.components.follower ~= nil and inst.components.follower.leader ~= nil then
+    if GetLeader(inst) then
         return nil
     else
         return inst.components.knownlocations:GetLocation("home")
@@ -280,7 +289,7 @@ end
 local OFFERINGPOT_MUST_TAGS = { "offering_pot" }
 
 local function shouldanswercall(inst)
-    if inst:HasTag("lunarminion") or inst:HasTag("shadowminion") or inst.components.follower.leader ~= nil then
+    if inst:HasTag("lunarminion") or inst:HasTag("shadowminion") or GetLeader(inst) ~= nil then
         return false
     end
 
@@ -351,7 +360,7 @@ function MermBrain:OnStart()
         ),
 
         WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
-            RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
         ),
 
         WhileNode(function()
@@ -401,9 +410,9 @@ function MermBrain:OnStart()
             DoAction(self.inst, EatFoodAction, "Eat Food")),
 
         ChattyNode(self.inst, "MERM_TALK_FOLLOWWILSON",
-            Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TargetFollowDistFn, MAX_FOLLOW_DIST, nil, true)),
+            Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TargetFollowDistFn, MAX_FOLLOW_DIST, nil, true)),
 
-        IfNode(function() return self.inst.components.follower.leader ~= nil end, "HasLeader",
+        IfNode(function() return GetLeader(self.inst) ~= nil end, "HasLeader",
             ChattyNode(self.inst, "MERM_TALK_FOLLOWWILSON",
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn ))),
 

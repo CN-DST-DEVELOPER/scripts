@@ -5,8 +5,14 @@ local assets =
 
 local prefabs =
 {
+    -- NOTE(Omar): What the heck are these?
     "spider_web_spit_creep",
     "splash_spiderweb"
+}
+
+local acidprefabs =
+{
+    "round_puff_fx_sm",
 }
 
 local function OnThrown(inst)
@@ -14,7 +20,9 @@ local function OnThrown(inst)
 end
 
 local function AcidInfused_Explode(inst, fx_target)
-    SpawnPrefab("round_puff_fx_sm").Transform:SetPosition(fx_target.Transform:GetWorldPosition())
+    if fx_target:IsValid() then
+        SpawnPrefab("round_puff_fx_sm").Transform:SetPosition(fx_target.Transform:GetWorldPosition())
+    end
 
     inst:Remove()
 end
@@ -81,4 +89,4 @@ end
 
 return
         Prefab("spider_web_spit",             fn,             assets, prefabs),
-        Prefab("spider_web_spit_acidinfused", fn_acidinfused, assets, prefabs)
+        Prefab("spider_web_spit_acidinfused", fn_acidinfused, assets, acidprefabs)

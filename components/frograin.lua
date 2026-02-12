@@ -48,12 +48,12 @@ local function GetSpawnPoint(pt)
     end
 end
 
-local function GetFrogPrefab(spawn_point)
-    return _lunarriftopen and math.random() <= TUNING.FROG_RAIN_LUNARFROG_CHANCE and "lunarfrog" or "frog"
+local function GetFrogPrefab(spawn_point, player)
+    return _lunarriftopen and TryLuckRoll(player, TUNING.FROG_RAIN_LUNARFROG_CHANCE, LuckFormulas.RiftPossession) and "lunarfrog" or "frog"
 end
 
-local function SpawnFrog(spawn_point)
-    local frog = SpawnPrefab(GetFrogPrefab(spawn_point))
+local function SpawnFrog(spawn_point, player)
+    local frog = SpawnPrefab(GetFrogPrefab(spawn_point, player))
     frog.persists = false
     if math.random() < .5 then
         frog.Transform:SetRotation(180)
@@ -71,7 +71,7 @@ local function SpawnFrogForPlayer(player, reschedule)
 		local spawn_point = GetSpawnPoint(pt)
 		if spawn_point ~= nil then
             -- print("Spawning a frog for player ",player)
-			local frog = SpawnFrog(spawn_point)
+			local frog = SpawnFrog(spawn_point, player)
 			self:StartTracking(frog)
 		end
 	end

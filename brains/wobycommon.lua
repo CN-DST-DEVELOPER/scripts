@@ -327,8 +327,12 @@ local function TryingToInteractWithWoby(inst, performer)
 		or inst.components.container:IsOpenedBy(performer)
 end
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function GetWalterInteractionFn(inst)
-   local leader = inst.components.follower ~= nil and inst.components.follower.leader
+   local leader = GetLeader(inst)
     if leader ~= nil and TryingToInteractWithWoby(inst, leader) then
         return leader
     end
@@ -343,7 +347,8 @@ end
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
 local function WatchingMinigame(inst)
-    return (inst.components.follower.leader ~= nil and inst.components.follower.leader.components.minigame_participator ~= nil) and inst.components.follower.leader.components.minigame_participator:GetMinigame() or nil
+    local leader = GetLeader(inst)
+    return (leader and leader.components.minigame_participator ~= nil) and leader.components.minigame_participator:GetMinigame() or nil
 end
 local function WatchingMinigame_MinDist(inst)
     local minigame = WatchingMinigame(inst)

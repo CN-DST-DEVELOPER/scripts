@@ -84,6 +84,10 @@ function PetLeash:GetMaxPetsForPrefab(prefab)
     return self.maxpetsperprefab[prefab] or 0
 end
 
+function PetLeash:IsFullForPrefab(prefab)
+    return self:GetNumPetsForPrefab(prefab) >= self:GetMaxPetsForPrefab(prefab)
+end
+
 function PetLeash:GetNumPetsForPrefab(prefab)
     if self.numpetsperprefab == nil then
         return 0
@@ -206,9 +210,23 @@ function PetLeash:SpawnPetAt(x, y, z, prefaboverride, skin)
 end
 
 function PetLeash:AttachPet(pet) -- NOTES(OMAR): This is for when something outside of petleash wants to control what happens to the pet for custom spawning without this component spawning them.
-    if self.pets[pet] == nil then
-        LinkPet(self, pet)
+    if self.pets[pet] ~= nil then
+        return false
     end
+
+    -- NOTES(JBK): Always adhere to limits imposed by the component.
+    if self:IsPetAPrefabLimitedOne(pet.prefab) then
+        if self:IsFullForPrefab(pet.prefab) then
+            return false
+        end
+    else
+        if self:IsFull() then
+            return false
+        end
+    end
+
+    LinkPet(self, pet)
+    return true
 end
 
 function PetLeash:DetachPet(pet) -- NOTES(JBK): This is for when something outside of petleash wants to control what happens to the pet for custom despawning without this component despawning them.

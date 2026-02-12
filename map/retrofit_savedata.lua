@@ -157,7 +157,8 @@ local function RepopulateNodeIdTileMap(world_map, savedata)
 		world_map:RepopulateNodeIdTileMap(i, node.x, node.y, node.poly)
 	end
 
-	print ("Retrofitting for Return of Them: Forgotten Knowledge - Added Node Id's to the world.")
+	print("Retrofitting Repopulation for Node Id Tile Map - Added Node Id's to the world.")
+	-- print ("Retrofitting for Return of Them: Forgotten Knowledge - Added Node Id's to the world.")
 end
 
 

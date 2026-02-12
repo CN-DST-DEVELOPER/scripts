@@ -92,7 +92,7 @@ local function bedazzle_fn()
     inst.duration = TUNING.BEDAZZLEMENT_DURATION
     inst.extendedfn = function(buff, target)
         
-        if not target.bedazzled and target.components.follower.leader == nil then
+        if not target.bedazzled and target.components.follower:GetLeader() == nil then
             target.sg:GoToState("hit")
             target:SetHappyFace(true)
         end
@@ -101,7 +101,7 @@ local function bedazzle_fn()
     end
     inst.detachfn = function(buff, target)
         if target ~= nil and target:IsValid() and not target.components.health:IsDead() then
-            if target.components.follower.leader == nil then
+            if target.components.follower:GetLeader() == nil then
                 target.sg:GoToState("hit")
                 target:SetHappyFace(false)
             end

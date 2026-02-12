@@ -72,7 +72,7 @@ local function dig_up(inst, worker)
         if not TheWorld.state.iswinter
             and worker ~= nil
             and worker:HasTag("player")
-            and math.random() < TUNING.GRASSGEKKO_MORPH_CHANCE then
+            and TryLuckRoll(worker, TUNING.GRASSGEKKO_MORPH_CHANCE, LuckFormulas.GrassGekkoMorph) then
             triggernearbymorph(inst, true)
         end
 
@@ -122,7 +122,7 @@ local function onpickedfn(inst, picker)
     if not TheWorld.state.iswinter
         and picker ~= nil
         and picker:HasTag("player")
-        and math.random() < TUNING.GRASSGEKKO_MORPH_CHANCE then
+        and TryLuckRoll(picker, TUNING.GRASSGEKKO_MORPH_CHANCE, LuckFormulas.GrassGekkoMorph) then
         triggernearbymorph(inst, true)
     end
 

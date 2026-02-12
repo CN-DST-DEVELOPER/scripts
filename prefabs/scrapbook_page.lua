@@ -122,6 +122,8 @@ local function commonfn(special)
         inst.scrapbook_proxy = "scrapbook_page"
     end
 
+    inst.pickupsound = "paper"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

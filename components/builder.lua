@@ -659,7 +659,7 @@ function Builder:DoBuild(recname, pt, rotation, skin)
         end
 
         if recipe.canbuild ~= nil then
-			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation, self.current_prototyper)
+			local success, msg = recipe.canbuild(recipe, self.inst, pt, rotation, self.current_prototyper, skin)
 			if not success then
 				return false, msg
 			end
@@ -820,9 +820,21 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
 	end
     if recipe == nil then
         return false
-	elseif self.freebuildmode then
+	elseif self.freebuildmode and not PREFAB_SKINS_SHOULD_NOT_SELECT[recipe.product] then
 		return true
 	end
+
+    if recipe.unlocks_from_skin and self.inst.isplayer then
+        local prefabskins = PREFAB_SKINS[recipe.product]
+        if prefabskins ~= nil then
+            local unlockableskins = TheInventory:GetClientUnlockableItems(self.inst.userid)
+            for _, skin in ipairs(prefabskins) do
+                if unlockableskins[skin] then
+                    return true
+                end
+            end
+        end
+    end
 
 	--the following builder_tag/skill checks are require due to character swapping
 	if (recipe.builder_tag and not self.inst:HasTag(recipe.builder_tag)) or

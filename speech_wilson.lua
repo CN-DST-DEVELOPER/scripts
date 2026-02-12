@@ -1208,6 +1208,9 @@ return {
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Why am I still here?",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I feel sea sick!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "They must be busy horsing around.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Go for the eyes!",
@@ -2143,6 +2146,7 @@ return {
         CHESSPIECE_YOTS = "I usually try to stay away from gold diggers.",
         CHESSPIECE_WAGBOSS_ROBOT = "Great design, questionable execution.",
         CHESSPIECE_WAGBOSS_LUNAR = "I'm over the moon.",
+        CHESSPIECE_YOTH = "That was a rough knight.",
 
         CHESSJUNK1 = "A pile of broken chess pieces.",
         CHESSJUNK2 = "Another pile of broken chess pieces.",
@@ -5988,6 +5992,42 @@ return {
             ABANDONED = "It's so sad, I can't stand it.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Let's string together some ambiance.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "I was shrine my best.", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "It gives the colt shoulder unless I offer it something.", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "It's not a donkey, but it's definitely an ash.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Hay, princess!",
+        COSTUME_PRINCESS_BODY = "Ignore the neigh-sayers.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Hoof you seen this one yet?",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Quit horsin' around!", -- Generic quote. It's aggressive.
+            FOLLOWING = "Good knight!", -- Following the character examining
+            FOLLOWING_OTHER = "Who's in charge? Have you herd?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Will I look like a foal?",
+        ARMOR_YOTH_KNIGHT = "I'm saddled with questions.",
+        HORSESHOE = "It would behoove me to keep this.",
+        YOTH_LANCE = "Hm, can't say I lance-a-lot.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Admit deflate!", -- Depleted and on the ground
+            HELD = "The trick is to let it go.", -- In the players inventory
+            GENERIC = "There we glow!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "I'm hot to trot!",
+        YOTH_CHAIR_ROCKING_ITEM = "It's a rocky ride!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

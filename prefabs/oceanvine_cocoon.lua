@@ -278,7 +278,7 @@ local function SummonChildren(inst)
                 for _, v in ipairs(children_released) do
                     v:AddDebuff("spider_summoned_buff", "spider_summoned_buff")
 
-                    if v.sg and v.vg:HasState("dropper_enter") then
+                    if v.sg and v.sg:HasState("dropper_enter") then
                         v.sg:GoToState("dropper_enter")
                     end
                 end

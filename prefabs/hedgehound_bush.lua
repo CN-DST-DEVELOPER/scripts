@@ -130,6 +130,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst:AddTag("hedge_hound_bush")
+    inst:AddTag("hedge")
 
     inst.AnimState:SetBank("hedgehound_bush")
     inst.AnimState:SetBuild("hedgehound_bush")

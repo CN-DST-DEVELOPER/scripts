@@ -54,11 +54,11 @@ local function IgnoreThis(sometarget, ignorethese, leader, worker)
 end
 
 local function GetLeader(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetLeaderPos(inst)
-    return inst.components.follower.leader:GetPosition()
+    return GetLeader(inst):GetPosition()
 end
 
 local function GetFaceTargetFn(inst)
@@ -252,7 +252,8 @@ local function ShouldKite(target, inst)
 end
 
 local function ShouldWatchMinigame(inst)
-	if inst.components.follower.leader ~= nil and inst.components.follower.leader.components.minigame_participator ~= nil then
+    local leader = GetLeader(inst)
+	if leader ~= nil and leader.components.minigame_participator ~= nil then
 		if inst.components.combat.target == nil or inst.components.combat.target.components.minigame_participator ~= nil then
 			return true
 		end
@@ -261,7 +262,8 @@ local function ShouldWatchMinigame(inst)
 end
 
 local function WatchingMinigame(inst)
-	return (inst.components.follower.leader ~= nil and inst.components.follower.leader.components.minigame_participator ~= nil) and inst.components.follower.leader.components.minigame_participator:GetMinigame() or nil
+    local leader = GetLeader(inst)
+	return (leader ~= nil and leader.components.minigame_participator ~= nil) and leader.components.minigame_participator:GetMinigame() or nil
 end
 
 local function WatchingMinigame_MinDist(inst)

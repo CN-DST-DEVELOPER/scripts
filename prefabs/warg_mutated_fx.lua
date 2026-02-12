@@ -60,6 +60,15 @@ local function OnUpdateHitbox(inst)
 	combat.ignorehitrange = true
 	combat.ignoredamagereflect = true
 
+	local _defaultdamage
+	local _planardamage
+	if inst.damage_configured then
+		_defaultdamage = combat.defaultdamage
+		_planardamage = combat.inst.components.planardamage:GetBaseDamage()
+		combat:SetDefaultDamage(inst.components.combat.defaultdamage)
+		combat.inst.components.planardamage:SetBaseDamage(inst.components.planardamage:GetBaseDamage())
+	end
+
 	local hit_frames = GetMultiHitFrames(inst)
 	local tick = GetTick()
 	local x, y, z = inst.Transform:GetWorldPosition()
@@ -94,6 +103,11 @@ local function OnUpdateHitbox(inst)
 				end
 			end
 		end
+	end
+
+	if _defaultdamage ~= nil then
+		combat.defaultdamage = _defaultdamage
+		combat.inst.components.planardamage:SetBaseDamage(_planardamage)
 	end
 
 	combat.ignorehitrange = false
@@ -186,6 +200,9 @@ local function SpawnEmbers(inst, scale, fadeoption)
 
 	inst.embers.Transform:SetPosition(x, 0, z)
 	inst.embers:RestartFX(scale, fadeoption)
+	if inst.icedember then
+		inst.embers:SetIced()
+	end
 
 	inst.spawn_embers_task = nil
 end
@@ -206,7 +223,7 @@ local function GetFlameTime(tallflame)
 		or math.random(18, 22) * FRAMES
 end
 
-local function RestartFX(inst, scale, fadeoption, targets, tallflame)
+local function RestartFX(inst, scale, fadeoption, targets, tallflame, icedember)
 	if inst:IsInLimbo() then
 		inst:ReturnToScene()
 	end
@@ -225,6 +242,7 @@ local function RestartFX(inst, scale, fadeoption, targets, tallflame)
 	end
 
 	inst.tallflame = tallflame
+	inst.icedember = icedember
 	inst.scale = scale or 1
 	inst.fadeoption = fadeoption
 	inst.AnimState:SetScale(math.random() < 0.5 and -inst.scale or inst.scale, inst.scale)
@@ -259,6 +277,7 @@ local function ExtendFx(inst, time)
 end
 
 local function ConfigureDamage(inst, default_damage, base_planar_damage)
+	inst.damage_configured = true
 	inst.components.combat:SetDefaultDamage(default_damage)
 	inst.components.planardamage:SetBaseDamage(base_planar_damage)
 end
@@ -485,10 +504,46 @@ local function ember_RestartFX(inst, scale, fadeoption)
 	ember_OnFadeDirty(inst)
 end
 
-local function ember_KillFX(inst)
+local function ember_DoFade(inst)
+	if inst.kill_ember_task ~= nil then
+		inst.kill_ember_task:Cancel()
+		inst.kill_ember_task = nil
+	end
 	if inst.fade:value() < 3 then
 		inst.fade:set(3)
 		ember_OnFadeDirty(inst)
+	end
+end
+
+local function ember_KillFX(inst)
+	if inst.icedember then
+		inst.kill_ember_task = inst:DoTaskInTime(TUNING.ICED_EMBER_BASE_TIME + math.random() * TUNING.ICED_EMBER_VAR_TIME, ember_DoFade)
+	else
+		ember_DoFade(inst)
+	end
+end
+
+local SLIPPERY_DIST = 1
+local SLIPPERY_DIST_SQ = SLIPPERY_DIST * SLIPPERY_DIST
+local function ember_IsSlipperyAtPosition(inst, x, y, z)
+   	if inst.fade:value() > 18 then
+        return false
+    end
+
+	return inst:GetDistanceSqToPoint(x, y, z) <= SLIPPERY_DIST_SQ
+end
+
+local function ember_SlipperyRate(inst, target)
+    return TUNING.ICED_EMBER_SLIPPERY_RATE
+end
+
+local function ember_SetIced(inst)
+	if not inst.icedember then
+		inst.icedember = true
+		inst.AnimState:Show("iced")
+		local slipperyfeettarget = inst:AddComponent("slipperyfeettarget")
+    	slipperyfeettarget:SetIsSlipperyAtPoint(ember_IsSlipperyAtPosition)
+    	slipperyfeettarget:SetSlipperyRate(ember_SlipperyRate)
 	end
 end
 
@@ -504,6 +559,7 @@ local function emberfn()
 	inst.AnimState:PlayAnimation("ember1_ground", true)
 	inst.AnimState:SetSymbolBloom("track")
 	inst.AnimState:SetSymbolLightOverride("track", 0.1)
+	inst.AnimState:Hide("iced")
 	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
 	inst.AnimState:SetLayer(LAYER_BACKGROUND)
 	inst.AnimState:SetSortOrder(3)
@@ -529,6 +585,7 @@ local function emberfn()
 	inst.SetFXOwner = ember_SetFXOwner
 	inst.RestartFX = ember_RestartFX
 	inst.KillFX = ember_KillFX
+	inst.SetIced = ember_SetIced
 
 	ember_RestartFX(inst)
 

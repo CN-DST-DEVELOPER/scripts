@@ -37,7 +37,7 @@ local function oneat(inst, data)
     if self.dominanttrait ~= nil and data ~= nil and data.food ~= nil then
         if data.food.components.edible.foodtype == FOODTYPE.GOODIES then
 			self.dominanttraitlocked = true
-		    Stats.PushMetricsEvent("crittertraits.locked", self.inst.components.follower.leader, {trait=self.dominanttrait})
+		    Stats.PushMetricsEvent("crittertraits.locked", self.inst.components.follower:GetLeader(), {trait=self.dominanttrait})
 
 
             inst.sg.mem.queuethankyou = true
@@ -114,7 +114,7 @@ local function OnTimerDone(self, timer_name)
 end
 
 function CritterTraits:StartTracking()
-	local owner = self.inst.components.follower.leader
+	local owner = self.inst.components.follower:GetLeader()
 
 	-- Events on critter
     self.inst:ListenForEvent("oneat", oneat)
@@ -207,7 +207,7 @@ function CritterTraits:RefreshDominantTrait()
 		metricsdata[k] = v
 	end
 	metricsdata.DOMINANT = tostring(self.dominanttrait)
-    Stats.PushMetricsEvent("crittertrait.dominant", self.inst.components.follower.leader, metricsdata)
+    Stats.PushMetricsEvent("crittertrait.dominant", self.inst.components.follower:GetLeader(), metricsdata)
 
 end
 

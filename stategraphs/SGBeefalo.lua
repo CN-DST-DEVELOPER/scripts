@@ -57,7 +57,7 @@ local events=
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
 			elseif not (	inst.sg:HasAnyStateTag("attack", "electrocute") or
-							CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) --hit dealy only for projectiles
+							CommonHandlers.HitRecoveryDelay(inst, nil, math.huge) --hit delay only for projectiles
 						)
 			then
 				inst.sg:GoToState("hit")

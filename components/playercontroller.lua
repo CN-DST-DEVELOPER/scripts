@@ -5433,6 +5433,7 @@ local CREATURE_INTERACTIONS =
 	[ACTIONS.RUMMAGE] = true,
 	[ACTIONS.MOUNT] = true,
 	[ACTIONS.PICKUP] = true,
+	[ACTIONS.USEITEMON] = true,
 
 	--Webber
 	[ACTIONS.MUTATE_SPIDER] = true,

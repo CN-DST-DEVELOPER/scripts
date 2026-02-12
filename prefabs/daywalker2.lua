@@ -683,7 +683,7 @@ local function OnThiefReset(inst)
 end
 
 local function OnJunkStolen(inst, thief)
-	if not (inst.buried or inst.defated or inst.hostile or inst._thiefdelaytask or inst.sg:HasStateTag("sleeping")) then
+	if not (inst.buried or inst.defeated or inst.hostile or inst._thiefdelaytask or inst.sg:HasStateTag("sleeping")) then
 		inst._thieflevel = inst._thieflevel + 1
 		inst._thiefdelaytask = inst:DoTaskInTime(2, OnThiefDelayOver)
 		inst._thief = thief
@@ -869,7 +869,7 @@ local function MakeFreed(inst)
 end
 
 local function MakeDefeated(inst, force)
-	if not (inst.buried or inst.defated) and (inst.hostile or force) then
+	if not (inst.buried or inst.defeated) and (inst.hostile or force) then
 		inst.defeated = true
 		inst.hostile = false
 		OnThiefReset(inst)

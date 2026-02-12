@@ -108,6 +108,7 @@ function TeamLeader:ValidMember(member)
 		and not (member.components.health ~= nil and member.components.health:IsDead())
 		and not member.components.teamattacker.inteam
 		and member:HasTag("team_"..self.team_type)
+		and (member.components.teamattacker.validmemberfn == nil or member.components.teamattacker.validmemberfn(member, self.inst))
 end
 
 function TeamLeader:DisbandTeam()
@@ -173,10 +174,11 @@ function TeamLeader:OnLostTeammate(member)
 			self.inst:RemoveEventCallback("attacked", member.attackedfn, member)
 			self.inst:RemoveEventCallback("onattackother", member.attackedotherfn, member)
 			self.inst:RemoveEventCallback("onremove", member.deathfn, member)
+			self.inst:RemoveEventCallback("onenterlimbo", member.deathfn, member)
 			member.components.teamattacker.teamleader = nil
 			member.components.teamattacker.order = nil
 			member.components.teamattacker.inteam = false
-			member.components.combat.target = nil
+			member.components.combat:DropTarget()
 		end
 		self.team[member] = nil
 	end

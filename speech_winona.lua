@@ -1204,6 +1204,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Hm. It ain't workin'.",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Now that's a shortcut.",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "I guess them horses ain't ready to show up just yet.",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'll demolish you!",
@@ -2139,6 +2142,7 @@ return{
         CHESSPIECE_YOTS = "Ugh, still makes my skin crawl.",
         CHESSPIECE_WAGBOSS_ROBOT = "Glad this one ain't got no movin' parts.",
         CHESSPIECE_WAGBOSS_LUNAR = "Weirdest thing I ever saw. And I seen a lotta weird stuff.",
+        CHESSPIECE_YOTH = "There were good and bad times with this fella.",
 
         CHESSJUNK1 = "A heap of spare parts.",
         CHESSJUNK2 = "A heap of spare parts.",
@@ -5937,7 +5941,7 @@ return{
 			ABANDONED = "No good to us now.",
         },
 		HERMITHOUSE_ORNAMENT = "Aw, that's sweet.",
-        HERMITHOUSE_LAUNDRY = "Guess it's laundry day.",
+		HERMITHOUSE_LAUNDRY = "Guess it's laundry day.",
 
         PETALS_DRIED = "These are nice and dry.",
         PETALS_EVIL_DRIED = "These are nice and dry.",
@@ -5984,6 +5988,42 @@ return{
             ABANDONED = "Nothin' lasts forever, I suppose.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Pearl's gonna love these.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "It sure drives a hard bargain.", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "So you want the good stuff, huh?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Burnt to a crisp!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "There's more to this pony princess mask.",
+        COSTUME_PRINCESS_BODY = "Hmm. Think it works together with the mask.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "A lil' horse drama, huh?",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Back off, bucko!", -- Generic quote. It's aggressive.
+            FOLLOWING = "It sure knows who's boss.", -- Following the character examining
+            FOLLOWING_OTHER = "Someone else has the reins.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Here's to chargin' in headfirst.",
+        ARMOR_YOTH_KNIGHT = "I'd know that rose anywhere.",
+        HORSESHOE = "Where was this when I needed it?",
+        YOTH_LANCE = "Handy for joustin'... if that's your thing.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "All good things I suppose.", -- Depleted and on the ground
+            HELD = "This'll sure come in handy at night.", -- In the players inventory
+            GENERIC = "Aww, ain't that pleasant?", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Makes you fast as a horse on two feet.",
+        YOTH_CHAIR_ROCKING_ITEM = "Aw ain't that cute.", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

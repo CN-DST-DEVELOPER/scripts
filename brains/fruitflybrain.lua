@@ -15,8 +15,8 @@ local function CanSpawnChild(inst)
 end
 
 local function GetFollowPos(inst)
-    if inst.components.follower and inst.components.follower.leader then
-        return inst.components.follower.leader:GetPosition()
+    if inst.components.follower and inst.components.follower:GetLeader() then
+        return inst.components.follower:GetLeader():GetPosition()
     elseif inst.components.knownlocations then
         return inst.components.knownlocations:GetLocation("home") or inst:GetPosition()
     end
@@ -27,7 +27,7 @@ local function GetLeader(inst)
     if inst.components.leader then
         return inst
     elseif inst.components.follower then
-        return inst.components.follower.leader
+        return inst.components.follower:GetLeader()
     end
 end
 
@@ -70,6 +70,10 @@ local function ShouldTargetPlant(inst, plant)
     return leader == nil or not leader:IsTargetedByOther(inst, plant)
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 local FruitFlyBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -105,7 +109,7 @@ function FruitFlyBrain:OnStart()
             end, "AttackMomentarily", ChaseAndAttack(self.inst)))
 
         table.insert(brain, 4, WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
-            RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)))
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)))
     else
         table.insert(brain, 2, WhileNode(function() return self.inst:CanTargetAndAttack() end, "lacks leader", ChaseAndAttack(self.inst)))
     end

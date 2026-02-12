@@ -151,11 +151,15 @@ local function RoyalUpgrade(inst, silent)
 
     UpdateStats(inst, TUNING.WURT_HEALTH_KINGBONUS, TUNING.WURT_HUNGER_KINGBONUS, TUNING.WURT_SANITY_KINGBONUS)
 
-    if not silent and not inst.royal then
+    if not inst.royal then
         inst.royal = true
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_KINGCREATED"))
-        inst.sg:PushEvent("powerup_wurt")
-        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/transform_to")
+        if not silent then
+            inst.components.talker:Say(GetString(inst, "ANNOUNCE_KINGCREATED"))
+            inst.sg:PushEvent("powerup_wurt")
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/transform_to")
+        else
+            inst.components.skinner:SetSkinMode("powerup", "wurt_stage2")
+        end
     end
 end
 
@@ -169,11 +173,15 @@ local function RoyalDowngrade(inst, silent)
 
     UpdateStats(inst, TUNING.WURT_HEALTH, TUNING.WURT_HUNGER, TUNING.WURT_SANITY)
 
-    if not silent and inst.royal then
+    if inst.royal then
         inst.royal = nil
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_KINGDESTROYED"))
-        inst.sg:PushEvent("powerdown_wurt")
-        inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/transform_from")
+        if not silent then
+            inst.components.talker:Say(GetString(inst, "ANNOUNCE_KINGDESTROYED"))
+            inst.sg:PushEvent("powerdown_wurt")
+            inst.SoundEmitter:PlaySound("dontstarve/characters/wurt/transform_from")
+        else
+            inst.components.skinner:SetSkinMode("normal_skin", "wurt")
+        end
     end
 end
 
@@ -447,7 +455,7 @@ local function OnAttackOther(inst, data)
     local victim = data.target
     if not victim then return end
 
-    if inst.components.skilltreeupdater:IsActivated("wurt_shadow_allegiance_2") and math.random() > TUNING.WURT_TERRAFORMING_SHADOW_PROCCHANCE then
+    if inst.components.skilltreeupdater:IsActivated("wurt_shadow_allegiance_2") and TryLuckRoll(inst, TUNING.WURT_TERRAFORMING_SHADOW_PROCCHANCE, LuckFormulas.ShadowTentacleSpawn) then
         local tile_type = inst:GetCurrentTileType()
         if tile_type == WORLD_TILES.SHADOW_MARSH then
             local pt = victim:GetPosition()
@@ -697,8 +705,7 @@ local function master_postinit(inst)
     inst._wurtloadtask = inst:DoTaskInTime(0, (TheWorld.components.mermkingmanager ~= nil
             and TheWorld.components.mermkingmanager:HasKingAnywhere()
             and RoyalUpgrade)
-        or RoyalDowngrade
-    )
+        or RoyalDowngrade, true)
 end
 
 

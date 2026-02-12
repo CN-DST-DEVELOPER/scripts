@@ -7,6 +7,9 @@ local UIAnim = require "widgets/uianim"
 
 local CraftingMenuIngredients = require "widgets/redux/craftingmenu_ingredients"
 
+--For access to RecipeTile.sSetImageFromRecipe
+local RecipeTile = require("widgets/recipetile")
+
 require "widgets/widgetutil"
 
 local PinSlot = Class(Widget, function(self, owner, craftingmenu, slot_num, pin_data)
@@ -390,17 +393,6 @@ function PinSlot:Refresh()
 			self.recipe_popup:ShowPopup(recipe)
 		end
 
-		local inv_image
-		if self.skin_name ~= nil then
-			inv_image = GetSkinInvIconName(self.skin_name)..".tex"
-		else
-			inv_image = recipe.imagefn ~= nil and recipe.imagefn() or recipe.image
-		end
-		local inv_atlas = GetInventoryItemAtlas(inv_image, true) or recipe:GetAtlas()
-
-		self.item_img:SetTexture(inv_atlas, inv_image or "default.tex", "default.tex")
-		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
-
 		local tint = 1
 
 		if meta.build_state == "buffered" then
@@ -435,23 +427,8 @@ function PinSlot:Refresh()
             self.fgcount:Hide()
 		end
 
-		self.item_img:SetTint(tint, tint, tint, 1)
-
-		if recipe.fxover ~= nil then
-			if self.fxover == nil then
-				self.fxover = self.item_img:AddChild(UIAnim())
-				self.fxover:SetClickable(false)
-				self.fxover:SetScale(.25)
-				self.fxover:GetAnimState():AnimateWhilePaused(false)
-			end
-			self.fxover:GetAnimState():SetBank(recipe.fxover.bank)
-			self.fxover:GetAnimState():SetBuild(recipe.fxover.build)
-			self.fxover:GetAnimState():PlayAnimation(recipe.fxover.anim, true)
-			self.fxover:GetAnimState():SetMultColour(tint, tint, tint, 1)
-		elseif self.fxover ~= nil then
-			self.fxover:Kill()
-			self.fxover = nil
-		end
+		RecipeTile.sSetImageFromRecipe(self.item_img, recipe, self.skin_name, tint)
+		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
 
 		local details_recipe_name, details_skin_name = self.craftingmenu:GetCurrentRecipeName()
 		self.craft_button:SetHelpTextMessage(details_recipe_name ~= self.recipe_name and STRINGS.UI.HUD.SELECT
@@ -469,10 +446,10 @@ function PinSlot:Refresh()
 		self.item_img:SetTexture(atlas, "pinslot_fg_pin.tex")
 		self.item_img:ScaleToSize(is_left and item_size or -item_size, item_size)
 
-		if self.fxover ~= nil then
-			self.fxover:Kill()
-			self.fxover = nil
-		end
+		--Remove layers added by RecipeTile.sSetImageFromRecipe
+		self.item_img:KillAllChildren()
+		self.item_img.layers = nil
+		self.item_img.fxover = nil
 
 		self.craft_button:SetHelpTextMessage(STRINGS.UI.CRAFTING_MENU.PIN)
 	end

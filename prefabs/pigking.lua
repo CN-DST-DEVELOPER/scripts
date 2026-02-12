@@ -108,7 +108,7 @@ local function ontradeforgold(inst, item, giver)
             launchitem(candy, angle)
         end
 
-        if math.random() <= TUNING.HALLOWEEN_PUMPKINCARVER_PIGKING_TRADE_CHANCE then
+        if TryLuckRoll(inst, TUNING.HALLOWEEN_PUMPKINCARVER_PIGKING_TRADE_CHANCE, LuckFormulas.LootDropperChance) then
             local pumpkincarver = SpawnPrefab("pumpkincarver"..math.random(NUM_HALLOWEEN_PUMPKINCARVERS))
             pumpkincarver.Transform:SetPosition(x, y, z)
             launchitem(pumpkincarver, angle)

@@ -26,9 +26,7 @@ local function KeepFaceTargetFn(inst, target)
         inst:IsNear(target, KEEP_FACE_DIST)
 end
 
-local function ShouldRunAway(guy)
-    return (guy:HasTag("character") or guy:HasTag("monster")) and not (guy:HasTag("notarget") or guy:HasTag("playerghost"))
-end
+local HUNTER_PARAMS = { oneoftags = { "character", "monster" }, notags = { "notarget", "playerghost" } }
 
 local function CanMeleeNow(inst)
     local target = inst.components.combat.target
@@ -86,7 +84,7 @@ function Spatbrain:OnStart()
             SequenceNode({
                 ActionNode(function() EquipPhlegm(self.inst) end, "Equip phlegm"),
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME) })),
-        RunAway(self.inst, ShouldRunAway, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+		RunAway(self.inst, HUNTER_PARAMS, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         -- SequenceNode({ -- This makes Spat chase after non-player targets
         --     ActionNode(function() EquipMelee(self.inst) end, "Equip melee"),

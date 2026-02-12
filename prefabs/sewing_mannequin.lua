@@ -35,7 +35,7 @@ end
 --------------------------------------------------------------------------------
 local function onhammered(inst)
     inst.components.lootdropper:DropLoot()
-    local fx = SpawnPrefab("collapse_big")
+    local fx = SpawnPrefab("collapse_small")
     fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
     fx:SetMaterial("wood")
     inst:Remove()
@@ -70,7 +70,10 @@ local function become_inactive(inst)
 end
 
 local function OnActivate(inst, doer)
-    inst:DoTaskInTime(5*FRAMES, become_inactive)
+    if inst.make_inactive_task ~= nil then
+        inst.make_inactive_task:Cancel()
+    end
+    inst.make_inactive_task = inst:DoTaskInTime(5*FRAMES, become_inactive)
 
     if CanSwap(inst, doer) then
         local handswap_success = inst.components.inventory:SwapEquipment(doer, EQUIPSLOTS.HANDS)
@@ -115,8 +118,11 @@ local function onbuilt(inst)
 end
 
 --------------------------------------------------------------------------------
+
 local function onequipped(inst, data)
-    inst.SoundEmitter:PlaySound("stageplay_set/mannequin/swap")
+    if not inst.components.inventory.isloading then
+        inst.SoundEmitter:PlaySound("stageplay_set/mannequin/swap")
+    end
 end
 
 --------------------------------------------------------------------------------
@@ -129,7 +135,6 @@ end
 local function ontalk(inst, data)
     inst.SoundEmitter:PlaySound("stageplay_set/mannequin/speaking")
 end
-
 --------------------------------------------------------------------------------
 local function onsave(inst, data)
     if (inst.components.burnable ~= nil and inst.components.burnable:IsBurning())
@@ -147,6 +152,7 @@ local function onload(inst, data)
 end
 
 --------------------------------------------------------------------------------
+
 local function get_activate_verb()
     return "EQUIPMENTSWAP"
 end
@@ -257,7 +263,6 @@ local function fn()
     inst:ListenForEvent("equip", onequipped)
     inst:ListenForEvent("acting", onacting)
     inst:ListenForEvent("ontalk", ontalk)
-
     -------------------------------------------------------
     inst.OnSave = onsave
     inst.OnLoad = onload

@@ -220,15 +220,13 @@ end
 local function OnVacated(inst, child)
     stopspawning(inst) -- First stop the regular spawning stuff.
     -- Then try your luck!
-    if math.random() < TUNING.RABBITKING_LUCKY_ODDS then -- This is a lot cheaper to roll than finding a close player do it first.
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local player = FindClosestPlayerInRangeSq(x, y, z, TUNING.RABBITKING_TELEPORT_DISTANCE_SQ, true)
+    if player and TryLuckRoll(player, TUNING.RABBITKING_LUCKY_ODDS, LuckFormulas.LuckyRabbitSpawn) then
         local rabbitkingmanager = TheWorld.components.rabbitkingmanager
         if rabbitkingmanager and not rabbitkingmanager:ShouldStopActions() then -- Same with this.
-            local x, y, z = inst.Transform:GetWorldPosition()
-            local player = FindClosestPlayerInRangeSq(x, y, z, TUNING.RABBITKING_TELEPORT_DISTANCE_SQ, true)
-            if player then
-                if rabbitkingmanager:CreateRabbitKingForPlayer(player, child:GetPosition(), "lucky", {home = inst}) then
-                    child:Remove()
-                end
+            if rabbitkingmanager:CreateRabbitKingForPlayer(player, child:GetPosition(), "lucky", {home = inst}) then
+                child:Remove()
             end
         end
     end

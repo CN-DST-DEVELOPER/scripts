@@ -406,7 +406,7 @@ local JUNK_ONEOF_TAGS = { "junk_pile", "_inventoryitem" }
 local JUNK_CANT_TAGS = { "singingshell", "frozen", "vase", "INLIMBO", "heavy" }
 function PearlDecorationScore:IsEntityJunk(ent)
     local furnituredecor = ent.components.furnituredecor
-    if furnituredecor and furnituredecor.on_furniture then
+	if furnituredecor and furnituredecor:IsOnFurniture() then
         return false
     end
 

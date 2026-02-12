@@ -195,7 +195,7 @@ local function RetargetFunction(inst)
 end
 
 local function GetStatus(inst)
-    local has_leader = inst.components.follower.leader ~= nil
+    local has_leader = inst.components.follower:GetLeader() ~= nil
     local broken_horn = inst:HornIsBroken()
     return (has_leader and broken_horn and "BROKENHORN_FOLLOWER") or
             (has_leader and "FOLLOWER") or
@@ -402,7 +402,7 @@ local function OnUpdateSpeed(inst)
         return
     end
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader and leader:IsValid() then
         local leader_platform = leader:GetCurrentPlatform()
         if leader_platform then

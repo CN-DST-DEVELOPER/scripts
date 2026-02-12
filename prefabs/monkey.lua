@@ -154,8 +154,10 @@ local function FindTargetOfInterest(inst)
             local target = targets[randomtarget]
             table.remove(targets, randomtarget)
             --Higher chance to follow if he has bananas
-            if target.components.inventory ~= nil and
-                    math.random() < (target.components.inventory:FindItem(IsBanana) ~= nil and .6 or .15) then
+            local chance = target.components.inventory ~= nil and target.components.inventory:FindItem(IsBanana) ~= nil and
+                TUNING.MONKEY_FOLLOW_PLAYER_WITH_BANANA_CHANCE or
+                TUNING.MONKEY_FOLLOW_PLAYER_CHANCE
+            if TryLuckRoll(target, chance, LuckFormulas.MonkeyFollowPlayer) then
                 SetHarassPlayer(inst, target)
                 return
             end

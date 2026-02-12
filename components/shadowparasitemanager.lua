@@ -344,7 +344,7 @@ function ShadowParasiteManager:OverrideBlobSpawn(player)
         return false -- All creatures are disabled in world settings...
     end
 
-    if self.num_waves > 0 and math.random() <= TUNING.SHADOWTHRALL_PARASITE_BLOBOVERRIDE then
+    if self.num_waves > 0 and TryLuckRoll(player, TUNING.SHADOWTHRALL_PARASITE_BLOBOVERRIDE, LuckFormulas.ParasiteOverrideBlob) then
         self._targetplayers[player] = true
 
         if not next(self._floaters) then

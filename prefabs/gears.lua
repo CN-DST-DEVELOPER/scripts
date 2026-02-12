@@ -3,6 +3,36 @@ local assets =
     Asset("ANIM", "anim/gears.zip"),
 }
 
+local function ResetInUse(inst)
+	inst.components.useabletargeteditem:StopUsingItem()
+end
+
+local function OnUsedOnChess(inst, target, doer)
+	if target.TryBefriendChess and target:TryBefriendChess(doer) then
+		if target.components.health then
+			target.components.health:SetPercent(1)
+		end
+		if target.components.sleeper then
+			target.components.sleeper:WakeUp()
+		end
+		inst.components.stackable:Get():Remove()
+		if inst:IsValid() then
+			--We don't need to lock this item as "inuse"
+			inst:DoStaticTaskInTime(0, ResetInUse)
+		end
+		return true
+	end
+	return false
+end
+
+local function UseableTargetedItem_ValidTarget(inst, target, doer)
+	if not target:HasTag("chess") or target:HasTag("gilded_knight") then
+		return false
+	end
+	local follower = target.replica.follower
+	return follower ~= nil and follower:GetLeader() == nil
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -22,6 +52,8 @@ local function fn()
     inst:AddTag("molebait")
 
     MakeInventoryFloatable(inst, "med", nil, 0.7)
+
+	inst.UseableTargetedItem_ValidTarget = UseableTargetedItem_ValidTarget
 
     inst.entity:SetPristine()
 
@@ -48,6 +80,9 @@ local function fn()
     inst.components.repairer.repairmaterial = MATERIALS.GEARS
     inst.components.repairer.workrepairvalue = TUNING.REPAIR_GEARS_WORK
     inst.components.repairer.healthrepairvalue = TUNING.REPAIR_GEARS_HEALTH
+
+	inst:AddComponent("useabletargeteditem")
+	inst.components.useabletargeteditem:SetOnUseFn(OnUsedOnChess)
 
 	inst:AddComponent("snowmandecor")
 

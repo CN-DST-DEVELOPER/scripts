@@ -294,8 +294,7 @@ function InventoryItem:OnDropped(randomdir, speedmult)
 end
 
 function InventoryItem:DoDropPhysics(x, y, z, randomdir, speedmult)
-
-    self:SetLanded(false, true)
+    self:SetLanded(self.nobounce, true) -- NOTE: nobounce items are on the ground instantenously
 
     if self.inst.Physics ~= nil then
         local heavy = self.inst:HasTag("heavy")

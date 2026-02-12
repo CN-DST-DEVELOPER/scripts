@@ -75,7 +75,7 @@ SGCritterStates.AddIdle = function(states, num_emotes, timeline, idle_anim_fn)
 						local emote_suffix = ((choice <= num_emotes) and tostring(choice) or "cute")
 						inst.sg:GoToState("emote_"..emote_suffix)
 
-						local leader = inst.components.follower and inst.components.follower.leader
+						local leader = inst.components.follower and inst.components.follower:GetLeader()
 						if leader then
 							leader:PushEvent("critter_doemote", { critter = inst })
 						end

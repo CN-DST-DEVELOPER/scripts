@@ -381,6 +381,7 @@ end
 ---------------------------------------------------------------------------------------
 
 local function OnBecameRobot(inst)
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
     --Override with overcharge light values
     inst.Light:Enable(false)
     inst.Light:SetRadius(2)
@@ -600,6 +601,26 @@ end
 
 ----------------------------------------------------------------------------------------
 
+local function OnOverrideRunSpeed(inst)
+    if not inst._runspeedoverridden then
+        inst._runspeedoverridden = true
+        if inst.movespeed_updaterunspeed then
+            inst:movespeed_updaterunspeed()
+        end
+    end
+end
+
+local function OnStopOverrideRunSpeed(inst)
+    if inst._runspeedoverridden then
+        inst._runspeedoverridden = nil
+        if inst.movespeed_updaterunspeed then
+            inst:movespeed_updaterunspeed()
+        end
+    end
+end
+
+----------------------------------------------------------------------------------------
+
 local function common_postinit(inst)
     inst:AddTag("electricdamageimmune")
     --electricdamageimmune is for combat and not lightning strikes
@@ -641,7 +662,6 @@ local function common_postinit(inst)
 end
 
 local function master_postinit(inst)
-    inst.sg.mem.nocorpse = true -- No flesh inside us.
     inst.refusestobowtoroyalty = true
     inst.starting_inventory = start_inv[TheNet:GetServerGameMode()] or start_inv.default
 
@@ -714,6 +734,8 @@ local function master_postinit(inst)
     inst:ListenForEvent("startstarving", OnStartStarving)
     inst:ListenForEvent("stopstarving", OnStopStarving)
     inst:ListenForEvent("timerdone", OnTimerFinished)
+    inst:ListenForEvent("startoverriderunspeed", OnOverrideRunSpeed)
+    inst:ListenForEvent("stopoverriderunspeed", OnStopOverrideRunSpeed)
 
     ----------------------------------------------------------------
     inst.components.playerlightningtarget:SetHitChance(TUNING.WX78_LIGHTNING_TARGET_CHANCE)

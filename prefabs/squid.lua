@@ -70,7 +70,7 @@ local function LaunchProjectile(inst, targetpos)
 end
 
 local function ShouldWakeUp(inst)
-    return DefaultWakeTest(inst) or (inst.components.follower and inst.components.follower.leader and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
+    return DefaultWakeTest(inst) or (inst.components.follower and inst.components.follower:GetLeader() and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
 end
 
 local function ShouldSleep(inst)
@@ -103,7 +103,7 @@ local function OnAttacked(inst, data)
         function(dude)
             return not (dude.components.health ~= nil and dude.components.health:IsDead())
                 and (dude:HasTag("squid"))
-                and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+                and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower:GetLeader() or nil)
         end, 5)
 end
 
@@ -112,7 +112,7 @@ local function OnAttackOther(inst, data)
         function(dude)
             return not (dude.components.health ~= nil and dude.components.health:IsDead())
                 and (dude:HasTag("squid"))
-                and data.target ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+                and data.target ~= (dude.components.follower ~= nil and dude.components.follower:GetLeader() or nil)
         end, 5)
 end
 

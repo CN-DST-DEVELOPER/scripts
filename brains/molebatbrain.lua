@@ -129,6 +129,10 @@ local WANDER_TIMES =
 
 local MAX_CLEAN_ATTEMPT_TIME = 20
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 function MoleBatBrain:OnStart()
     local root = PriorityNode(
     {
@@ -157,9 +161,7 @@ function MoleBatBrain:OnStart()
         WhileNode(function()
                 return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown()
             end, "Dodge",
-            RunAway(self.inst, function()
-                    return self.inst.components.combat.target
-                end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)
         ),
         WhileNode(function() return self.inst._nest_needs_cleaning == true end, "Nest Needs Cleaning Up",
             DoAction(self.inst, CleanUpNest, "Clean Up Nest", true)

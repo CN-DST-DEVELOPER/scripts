@@ -170,7 +170,7 @@ function GingerbreadHunter:GenerateCrumbPoints(origin_pt, amount)
 	return true
 end
 
-function GingerbreadHunter:SpawnCrumbTrail(killtime)
+function GingerbreadHunter:SpawnCrumbTrail(killtime, player)
 
 	local house_positions =
     {
@@ -185,7 +185,7 @@ function GingerbreadHunter:SpawnCrumbTrail(killtime)
 		if i == #self.crumb_pts then
 			if self.hunt_count > MAX_HUNT_COUNT then
 				local num_houses = 0
-				if math.random() > GINGERWARG_CHANCE then
+				if not TryLuckRoll(player, GINGERWARG_CHANCE, LuckFormulas.HuntAlternateBeast) then
 					local house_amount = math.random(GINGERBREADHOUSE_MIN, GINGERBREADHOUSE_MAX)
 					for i = 1, house_amount do
 						local x,y,z = pt:Get()

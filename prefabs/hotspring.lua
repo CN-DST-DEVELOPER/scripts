@@ -186,7 +186,7 @@ end
 
 local function OnGlassedSpringMineFinished(inst, miner)
     inst.components.lootdropper:DropLoot()
-    if math.random() < TUNING.HOTSPRING_GEM_DROP_CHANCE then
+    if TryLuckRoll(miner, TUNING.HOTSPRING_GEM_DROP_CHANCE, LuckFormulas.LootDropperChance) then
         inst.components.lootdropper:SpawnLootPrefab((math.random(2) == 1 and "bluegem") or "redgem")
     end
     RemoveGlass(inst)

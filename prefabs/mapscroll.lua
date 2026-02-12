@@ -56,6 +56,8 @@ local function common_clientfn()
 
     inst:AddTag("mapscroll")
 
+    inst.pickupsound = "paper"
+
     return inst
 end
 

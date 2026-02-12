@@ -1202,6 +1202,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "No?",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Here!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "Neigh machine busy busy?",
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -2089,7 +2092,7 @@ return{
         },
         CHESSPIECE_KNIGHT =
         {
-            GENERIC = "Stone Neigher!",
+            GENERIC = "Stone neighe machine!",
             STRUGGLE = "What's happening?",
         },
         CHESSPIECE_BISHOP =
@@ -2137,6 +2140,7 @@ return{
         CHESSPIECE_YOTS = "Little wiggly",
         CHESSPIECE_WAGBOSS_ROBOT = "Stone robot friend",
         CHESSPIECE_WAGBOSS_LUNAR = "Friend no hurt more",
+        CHESSPIECE_YOTH = "Neigh machine?",
 
         CHESSJUNK1 = "Machine stuff",
         CHESSJUNK2 = "Lots of machine stuff",
@@ -2845,7 +2849,7 @@ return{
 			SCULPTURE = "Fun! Want to do again!",
 			BURNT = "Nooooo!",
    		},
-        SCULPTURE_KNIGHTHEAD = "Hello Neigher!",
+        SCULPTURE_KNIGHTHEAD = "Hello neigh machine!",
 		SCULPTURE_KNIGHTBODY =
 		{
 			COVERED = "Like it!",
@@ -3037,8 +3041,8 @@ return{
 		TRINKET_27 = "Stick? No not stick", --Coat Hanger
 		TRINKET_28 = "Can't play", --Rook
         TRINKET_29 = "Anyone to play with?", --Rook
-        TRINKET_30 = "Little Neigher", --Knight
-        TRINKET_31 = "Little Neigher", --Knight
+        TRINKET_30 = "Little neigh machine", --Knight
+        TRINKET_31 = "Little neigh machine", --Knight
         TRINKET_32 = "Ball!", --Cubic Zirconia Ball
         TRINKET_33 = "Hello? Oh. Not alive", --Spider Ring
         TRINKET_34 = "Where's rest?", --Monkey Paw
@@ -5901,7 +5905,7 @@ return{
 		},
         MERMCORPSE =
 		{
-			GENERIC = "Aw, Glub Glub.",
+			GENERIC = "Aw, Glub Glub",
 			BURNING = "Sorry Glub Glub",
 			REVIVING = "Back but not same Glub Glub",
 		},
@@ -5935,7 +5939,7 @@ return{
 			ABANDONED = "Broken",
         },
 		HERMITHOUSE_ORNAMENT = "Pretty stuff for crabby friend house",
-        HERMITHOUSE_LAUNDRY = "Crabby friend things.",
+		HERMITHOUSE_LAUNDRY = "Crabby friend things",
 
         PETALS_DRIED = "Dry stuff",
         PETALS_EVIL_DRIED = "Dry stuff",
@@ -5982,6 +5986,42 @@ return{
             ABANDONED = "Oh no",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Where put pretty bright?",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Neigh machine full", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What neigh machine want?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Bye neigh machine!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Princess Neigh",
+        COSTUME_PRINCESS_BODY = "Princess dress",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Princess Neigh show",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Neigh machine mad", -- Generic quote. It's aggressive.
+            FOLLOWING = "Nice neigh machine.", -- Following the character examining
+            FOLLOWING_OTHER = "Whose neigh machine?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "Neigh hat",
+        ARMOR_YOTH_KNIGHT = "Neigh suit",
+        HORSESHOE = "What lucky?",
+        YOTH_LANCE = "Run poke stick!",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Why sky light?", -- Depleted and on the ground
+            HELD = "Sky light", -- In the players inventory
+            GENERIC = "Fly sky light!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Make faster friend",
+        YOTH_CHAIR_ROCKING_ITEM = "Rocking friend!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "Friend?",

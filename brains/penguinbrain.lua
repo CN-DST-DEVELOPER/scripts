@@ -426,7 +426,7 @@ function PenguinBrain:OnStart()
                             GetWanderDistFn)),
 
         -- Penguins have leaders?
-        Follow(self.inst, function(inst) return inst.components.follower and inst.components.follower.leader end ,
+        Follow(self.inst, function(inst) return inst.components.follower and inst.components.follower:GetLeader() end ,
                     MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
 
         Wander( self.inst,

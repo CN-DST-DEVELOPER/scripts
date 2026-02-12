@@ -126,7 +126,7 @@ local function OnGraveDiggerUsed(inst, user, target)
         upgradeable:SetStage(1)
 
         for _ = 1, TUNING.WENDYSKILL_GRAVESTONE_DECORATECOUNT do
-            if math.random() >= 0.5 then
+            if TryLuckRoll(user, 0.5, LuckFormulas.LootDropperChance) then
                 local petals = SpawnPrefab("petals")
                 petals.Transform:SetPosition(x, 0, z)
                 Launch(petals, target, 1.5)

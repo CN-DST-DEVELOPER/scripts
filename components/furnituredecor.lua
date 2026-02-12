@@ -29,6 +29,10 @@ function FurnitureDecor:SetEnabled(enabled)
     end
 end
 
+function FurnitureDecor:IsOnFurniture()
+	return self.on_furniture == true
+end
+
 function FurnitureDecor:PutOnFurniture(furniture)
     self.on_furniture = true
     if self.onputonfurniture then

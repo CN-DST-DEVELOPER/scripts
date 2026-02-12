@@ -1,7 +1,5 @@
 require("stategraphs/commonstates")
 
-local easing = require("easing")
-
 local actionhandlers =
 {
     ActionHandler(ACTIONS.EAT, "eat"),
@@ -37,7 +35,7 @@ local function ChooseAttack(inst, target)
     -- Take turns flamethrowering one target, otherwise we all go in the same line potentially and that looks ugly.
     if inst.canflamethrower and not inst.components.timer:TimerExists("flamethrower_cd") and not TargetAlreadyBeingFlameThrowered(inst, target) then
 		inst.sg:GoToState("flamethrower_pre", target)
-    elseif inst:IsNear(target, inst.components.combat:GetHitRange()) then
+    elseif inst:GetDistanceSqToInst(target) <= inst.components.combat:CalcHitRangeSq(target) then
         inst.sg:GoToState("attack", target)
 	end
 end
@@ -76,7 +74,7 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 
 	fx.Transform:SetPosition(x, 0, z)
     fx:ConfigureDamage(TUNING.MUTATEDBUZZARD_FLAMETHROWER_DAMAGE, TUNING.MUTATEDBUZZARD_FLAMETHROWER_PLANAR_DAMAGE)
-	fx:RestartFX(scale, "nofade", targets, true)
+	fx:RestartFX(scale, "nofade", targets, true, true)
 end
 
 local function ShouldDistress(inst) -- Mutated don't distress
@@ -88,14 +86,11 @@ local function GetLunarFlamePuffAnim(sz, ht)
 end
 
 local function FlyAwayToSky(inst)
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
+    local migrationmanager = TheWorld.components.migrationmanager
     local ismutated = inst:HasTag("lunar_aligned")
 
-    if ismutated then
-        if mutatedbirdmanager then
-            mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbuzzard_gestalt", inst, 1)
-        end
-        inst:Remove()
+    if ismutated and migrationmanager then
+        migrationmanager:EnterMigration(MIGRATION_TYPES.MUTATED_BUZZARD_GESTALT, inst)
     elseif inst.components.homeseeker ~= nil then
         inst.components.homeseeker.home.components.childspawner:GoHome(inst)
     else
@@ -106,16 +101,36 @@ end
 
 local events =
 {
-    CommonHandlers.OnSleep(),
+	CommonHandlers.OnSleepEx(),
+	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
-    CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
+
+	EventHandler("attacked", function(inst, data)
+		if inst.components.health and not inst.components.health:IsDead() then
+			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
+				return
+			elseif inst.sg:HasStateTag("stunned") then
+				if inst.sg:HasStateTag("caninterrupt") then
+					inst.sg:GoToState("stun_hit")
+				end
+			elseif not CommonHandlers.HitRecoveryDelay(inst) and
+				(	not inst.sg:HasStateTag("busy") or
+					inst.sg:HasAnyStateTag("caninterrupt", "frozen")
+				)
+			then
+				inst.sg:GoToState("hit")
+			end
+		end
+	end),
 
     EventHandler("doattack", function(inst, data)
         if inst.components.health and not inst.components.health:IsDead() and
 	    	(	not inst.sg:HasStateTag("busy") or
-	    		(inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute"))
+				(inst.sg:HasStateTag("hit") and not inst.sg:HasAnyStateTag("electrocute", "stunned"))
 	    	)
 	    then
             ChooseAttack(inst, data ~= nil and data.target or nil)
@@ -129,7 +144,7 @@ local events =
     end),
 
 	EventHandler("onignite", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute"))
+		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("electrocute", "stunned"))
             and ShouldDistress(inst) then
 			inst.sg:GoToState("distress_pre")
 		end
@@ -175,7 +190,7 @@ local states =
                     inst.AnimState:PlayAnimation(pushanim)
                 end
                 inst.AnimState:PushAnimation("idle", true)
-            else
+            elseif not inst.AnimState:IsCurrentAnimation("idle") then
                 inst.AnimState:PlayAnimation("idle", true)
             end
             inst.sg:SetTimeout(3 + math.random()*1)
@@ -210,7 +225,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.taunt) end)
+            FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.taunt) end)
         },
 
         events=
@@ -228,7 +243,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
+            FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
         },
 
         events=
@@ -260,7 +275,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(FRAMES*0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
+            FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.sounds.squack) end)
         },
 
         events=
@@ -286,7 +301,7 @@ local states =
 
     State{
         name = "glide",
-		tags = { "idle", "flight", "busy", "noelectrocute" },
+		tags = { "idle", "flight", "busy", "noelectrocute", "nosleep" },
         onenter= function(inst)
             inst.AnimState:PlayAnimation("glide", true)
 			inst.DynamicShadow:Enable(false)
@@ -322,10 +337,9 @@ local states =
                 inst.flapSound = nil
             end
 
-            if inst:GetPosition().y > 0 then
-                local pos = inst:GetPosition()
-                pos.y = 0
-                inst.Transform:SetPosition(pos:Get())
+            local x, y, z = inst.Transform:GetWorldPosition()
+            if y > 0 then
+                inst.Transform:SetPosition(x, 0, z)
             end
             inst.components.knownlocations:RememberLocation("landpoint", inst:GetPosition())
         end,
@@ -343,12 +357,12 @@ local states =
 
         timeline =
         {
-            TimeEvent(15*FRAMES, function(inst)
+            FrameEvent(15, function(inst)
                 if inst.sg.statemem.target ~= nil and inst.sg.statemem.target:IsValid() then
                     inst:FacePoint(inst.sg.statemem.target.Transform:GetWorldPosition())
                 end
             end),
-            TimeEvent(27*FRAMES, function(inst)
+            FrameEvent(27, function(inst)
                 inst.SoundEmitter:PlaySound(inst.sounds.attack)
                 local target = inst.sg.statemem.target
 
@@ -392,7 +406,7 @@ local states =
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "canrotate", "noelectrocute" },
+		tags = { "flight", "busy", "canrotate", "noelectrocute", "nosleep" },
         onenter = function(inst)
 			if IsStuck(inst) then
 				inst.sg:GoToState("distress_pre")
@@ -453,7 +467,7 @@ local states =
 
         timeline=
         {
-            TimeEvent(8*FRAMES, function(inst)
+            FrameEvent(8, function(inst)
                 inst.SoundEmitter:PlaySound(inst.sounds.hop)
                 inst.Physics:Stop()
             end),
@@ -477,11 +491,11 @@ local states =
 
         timeline =
         {
-            TimeEvent(15*FRAMES, function(inst)
+            FrameEvent(13, function(inst)
                 inst.components.combat:DoAttack(inst.sg.statemem.target)
                 inst.SoundEmitter:PlaySound(inst.sounds.attack)
             end),
-            TimeEvent(20*FRAMES, function(inst) inst.sg:RemoveStateTag("attack") end),
+            FrameEvent(20, function(inst) inst.sg:RemoveStateTag("attack") end),
         },
 
         events =
@@ -530,31 +544,6 @@ local states =
         {
             CommonHandlers.OnCorpseDeathAnimOver(),
         },
-    },
-
-    State{
-        name = "fall",
-        tags = {"busy"},
-        onenter = function(inst)
-            inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("fall_loop", true)
-			inst.DynamicShadow:Enable(false)
-        end,
-
-        onupdate = function(inst)
-            local pt = Vector3(inst.Transform:GetWorldPosition())
-            if pt.y <= .2 then
-                pt.y = 0
-                inst.Physics:Stop()
-                inst.Physics:Teleport(pt.x,pt.y,pt.z)
-	            inst.DynamicShadow:Enable(true)
-                inst.sg:GoToState("stunned")
-            end
-        end,
-
-		onexit = function(inst)
-			inst.DynamicShadow:Enable(true)
-		end,
     },
 
     -- Mutated states
@@ -725,6 +714,7 @@ local states =
 			FrameEvent(13, function(inst)
                 inst.Physics:SetMotorVelOverride(0, 0, 0)
                 inst.sg:RemoveStateTag("busy")
+                inst.components.locomotor:CheckDrownable()
             end),
 		},
 
@@ -847,6 +837,209 @@ local states =
         }
     },
 
+    State{
+        name = "fall",
+        -- Well, not really 'flying', more so falling with style!
+		tags = { "flight", "busy", "noelectrocute", "nosleep" },
+        onenter = function(inst)
+            inst.Physics:Stop()
+			inst.DynamicShadow:Enable(false)
+
+            inst.sg.statemem.vert = math.random() < .4
+            inst.Transform:SetRotation(math.random(360))
+
+            local anim = inst.sg.statemem.vert and "fall_spiral"
+                or math.random() > .5 and "fall2"
+                or "fall"
+            inst.AnimState:PlayAnimation(anim, true)
+
+            local rot = inst.Transform:GetRotation() * DEGREES
+            ChangeToInventoryItemPhysics(inst, 15, .25)
+            if inst.sg.statemem.vert then
+                inst.Physics:SetVel(math.random() * 4 - 2, math.random() * 6 - 3, math.random() * 4 - 2)
+            else
+                inst.Physics:SetVel(10 * math.cos(rot), math.random() * 6 - 3, 10 * -math.sin(rot))
+            end
+        end,
+
+        onupdate = function(inst)
+            local x, y, z = inst.Transform:GetWorldPosition()
+            if y <= .2 then
+                inst.Physics:Stop()
+                inst.Physics:Teleport(x, 0, z)
+                inst.DynamicShadow:Enable(true)
+
+                --Can't use inventoryitem:TryToSink, not an item!
+                if ShouldEntitySink(inst, true) then
+                    SinkEntity(inst)
+                else
+                    ChangeToCharacterPhysics(inst, 15, .25)
+                    inst.sg:GoToState("fall_to_stun")
+                    inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/ground_hit")
+                end
+            end
+        end,
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+		end,
+    },
+
+	--------------------------------------------------------------------------
+
+	State{
+		name = "fall_to_stun",
+		tags = { "stunned", "busy", "nosleep", "noelectrocute" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("fall_to_stun")
+			inst.sg.mem.stun_endtime = GetTime() + 10 + math.random() * 3
+		end,
+
+		timeline =
+		{
+			FrameEvent(2, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
+			FrameEvent(3, function(inst)
+				inst.sg:AddStateTag("caninterrupt")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("stun_loop")
+				end
+			end),
+		},
+	},
+
+	State{
+		name = "stun_pre",
+		tags = { "stunned", "busy", "nosleep", "noelectrocute" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("stun_pre")
+			inst.sg.mem.stun_endtime = GetTime() + 8 + math.random() * 3
+		end,
+
+		timeline =
+		{
+			FrameEvent(18, function(inst)
+				inst.sg:RemoveStateTag("noelectrocute")
+			end),
+			FrameEvent(19, function(inst)
+				inst.sg:AddStateTag("caninterrupt")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("stun_loop")
+				end
+			end),
+		},
+	},
+
+	State{
+		name = "stun_loop",
+		tags = { "stunned", "busy", "caninterrupt", "nosleep" },
+
+		onenter = function(inst, nohit)
+			if inst.sg.mem.stun_endtime <= GetTime() then
+				inst.sg:GoToState("stun_pst")
+				return
+			end
+			inst.components.locomotor:StopMoving()
+			if not inst.AnimState:IsCurrentAnimation("stun_loop") then
+				inst.AnimState:PlayAnimation("stun_loop", true)
+			end
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+		end,
+
+		ontimeout = function(inst)
+			inst.sg:GoToState("stun_loop")
+		end,
+	},
+
+	State{
+		name = "stun_hit",
+		tags = { "stunned", "busy", "hit", "nosleep" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("stun_hit")
+			--CommonHandlers.UpdateHitRecoveryDelay(inst) --no delay when stunned
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst)
+				if inst.sg.mem.stun_endtime <= GetTime() then
+					inst.sg:GoToState("stun_pst")
+					return
+				end
+				inst.sg:AddStateTag("caninterrupt")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("stun_loop")
+				end
+			end),
+		},
+	},
+
+	State{
+		name = "stun_pst",
+		tags = { "stunned", "busy", "nosleep", "noelectrocute" },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("stun_pst")
+		end,
+
+		timeline =
+		{
+			FrameEvent(22, function(inst)
+				inst.sg:RemoveStateTag("stunned")
+				inst.sg:RemoveStateTag("noelectrocute")
+				inst.sg:AddStateTag("caninterrupt")
+				inst.sg.mem.stun_endtime = nil
+				--V2C: can distress here already ("stunned" removed)
+				--     but lets still wait a few frames for queued distress
+			end),
+			CommonHandlers.OnNoSleepFrameEvent(23, function(inst)
+				if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+					inst.sg:GoToState("distress_pre")
+					return
+				end
+				inst.sg:RemoveStateTag("nosleep")
+			end),
+			FrameEvent(30, function(inst)
+				inst.sg:RemoveStateTag("busy")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+	},
+
     --------------------------------------------------------------------------
 	--Used by "buzzardcorpse"
 
@@ -858,10 +1051,13 @@ local states =
             inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)
 
-            inst.sg.statemem.vert = math.random() < .5
+            inst.sg.statemem.vert = math.random() < .4
             inst.Transform:SetRotation(math.random(360))
 
-            inst.AnimState:PlayAnimation(inst.sg.statemem.vert and "fall_corpse_spiral" or "fall_corpse", true)
+            local anim = inst.sg.statemem.vert and "fall_corpse_spiral"
+                or math.random() > .5 and "fall2_corpse"
+                or "fall_corpse"
+            inst.AnimState:PlayAnimation(anim, true)
 
             local rot = inst.Transform:GetRotation() * DEGREES
             if inst.sg.statemem.vert then
@@ -884,12 +1080,12 @@ local states =
                     inst.Physics:SetVel(math.random(6, 10) * math.cos(rot), 0, math.random(6, 10) * -math.sin(rot))
                 end
 
-                inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
-                inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/ground_hit")
-
                 --Can't use inventoryitem:TryToSink, not an item!
                 if ShouldEntitySink(inst, true) then
-                    inst:DoTaskInTime(0, SinkEntity)
+                    SinkEntity(inst)
+                else
+                    inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
+                    inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/ground_hit")
                 end
             end
         end,
@@ -901,16 +1097,58 @@ local states =
 }
 
 CommonStates.AddCorpseStates(states)
-CommonStates.AddSleepStates(states)
-CommonStates.AddFrozenStates(states)
-CommonStates.AddElectrocuteStates(states, nil, nil,
+CommonStates.AddSleepExStates(states,
 {
+	waketimeline =
+	{
+		CommonHandlers.OnNoSleepFrameEvent(10, function(inst)
+			inst.sg:RemoveStateTag("nosleep")
+			inst.sg:AddStateTag("caninterrupt")
+		end),
+	},
+},
+{
+	onsleep = function(inst)
+		inst.sg:AddStateTag("caninterrupt")
+	end,
+	onsleeping = function(inst)
+		inst.sg:AddStateTag("caninterrupt")
+	end,
+})
+
+CommonStates.AddFrozenStates(states)
+CommonStates.AddElectrocuteStates(states,
+nil, --timeline
+{	--anims
+	loop = function(inst)
+		if inst.sg.lasttags["stunned"] then
+			inst.sg:AddStateTag("stunned")
+			inst.override_combat_fx_height = "low"
+			return "stun_shock_loop"
+		end
+	end,
+	pst = function(inst)
+		if inst.sg.lasttags["stunned"] then
+			inst.sg:AddStateTag("stunned")
+			return "stun_shock_pst"
+		end
+	end,
+},
+{	--fns
+	loop_onenter = function(inst)
+		if inst.sg:HasStateTag("stunned") then
+			--V2C: can change this back since fx is already spawned at this point
+			inst.override_combat_fx_height = nil
+		end
+	end,
 	onanimover = function(inst)
 		if inst.AnimState:AnimDone() then
-			if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+			if inst.sg:HasStateTag("stunned") then
+				inst.sg:GoToState("stun_loop")
+			elseif inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
 				inst.sg:GoToState("distress_pre")
 			else
-				inst.sg:GoToState("flyaway")
+				inst.sg:GoToState("idle")
 			end
 		end
 	end,
@@ -937,5 +1175,8 @@ CommonStates.AddLunarRiftMutationStates(states, nil, nil,
 })
 
 CommonStates.AddInitState(states, "idle")
+
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 return StateGraph("buzzard", states, events, "init", actionhandlers)

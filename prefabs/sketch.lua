@@ -21,8 +21,8 @@ local SKETCHES =
     { item = "chesspiece_anchor",			recipe = "chesspiece_anchor_builder",			image = "chesspiece_anchor_sketch" },
     { item = "chesspiece_moon",				recipe = "chesspiece_moon_builder",				image = "chesspiece_moon_sketch" },
     { item = "chesspiece_carrat",			recipe = "chesspiece_carrat_builder",			image = "chesspiece_carrat_sketch" },
-    { item = "chesspiece_malbatross",		recipe = "chesspiece_malbatross_builder" },
-    { item = "chesspiece_crabking",			recipe = "chesspiece_crabking_builder" },
+    { item = "chesspiece_malbatross",		recipe = "chesspiece_malbatross_builder",       image = "chesspiece_malbatross_sketch", },
+    { item = "chesspiece_crabking",			recipe = "chesspiece_crabking_builder",         image = "chesspiece_crabking_sketch", },
     { item = "chesspiece_toadstool",		recipe = "chesspiece_toadstool_builder" },
     { item = "chesspiece_stalker",			recipe = "chesspiece_stalker_builder" },
     { item = "chesspiece_klaus",			recipe = "chesspiece_klaus_builder" },
@@ -41,12 +41,13 @@ local SKETCHES =
     { item = "chesspiece_warg_mutated",		recipe = "chesspiece_warg_mutated_builder" },
     { item = "chesspiece_bearger_mutated",	recipe = "chesspiece_bearger_mutated_builder" },
     { item = "chesspiece_yotd",				recipe = "chesspiece_yotd_builder",				image = "chesspiece_yotd_sketch" },
-    { item = "chesspiece_sharkboi",         recipe = "chesspiece_sharkboi_builder" },
-    { item = "chesspiece_wormboss",         recipe = "chesspiece_wormboss_builder" },
+    { item = "chesspiece_sharkboi",         recipe = "chesspiece_sharkboi_builder",         image = "chesspiece_sharkboi_sketch" },
+    { item = "chesspiece_wormboss",         recipe = "chesspiece_wormboss_builder",         image = "chesspiece_wormboss_sketch", },
     { item = "chesspiece_daywalker2",       recipe = "chesspiece_daywalker2_builder" },
-    { item = "chesspiece_yots",             recipe = "chesspiece_yots_builder" },
+    { item = "chesspiece_yots",             recipe = "chesspiece_yots_builder",             image = "chesspiece_yots_sketch", },
     { item = "chesspiece_wagboss_robot",    recipe = "chesspiece_wagboss_robot_builder",    image = "chesspiece_wagboss_robot_sketch"},
     { item = "chesspiece_wagboss_lunar",    recipe = "chesspiece_wagboss_lunar_builder",    image = "chesspiece_wagboss_lunar_sketch"},
+    { item = "chesspiece_yoth",             recipe = "chesspiece_yoth_builder",             image = "chesspiece_yoth_sketch"},
 }
 
 local function GetSketchID(item)
@@ -112,6 +113,8 @@ local function fn()
     inst:AddTag("sketch")
 
     inst:SetPrefabName("sketch")
+
+    inst.pickupsound = "paper"
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 

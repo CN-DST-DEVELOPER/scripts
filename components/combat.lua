@@ -62,8 +62,8 @@ local Combat = Class(function(self, inst)
 	--self.shouldrecoilfn = nil
 
 	self.externaldamagemultipliers = SourceModifierList(self.inst) -- damage dealt to others multiplier
-
 	self.externaldamagetakenmultipliers = SourceModifierList(self.inst) -- my damage taken multiplier (post armour reduction)
+    -- self.conditionexternaldamagetakenmultipliers = {} -- extra damage taken on certain conditions (post armour reduction)
 
     self.min_attack_period = 4
     self.onhitfn = nil
@@ -89,6 +89,11 @@ local Combat = Class(function(self, inst)
 				self:DropTarget()
 			end
 		else
+			self:DropTarget()
+		end
+	end
+	self.allycheckcallback = function(target)
+		if self:CanBeAlly(target) then
 			self:DropTarget()
 		end
 	end
@@ -344,10 +349,12 @@ function Combat:StartTrackingTarget(target)
         self.inst:ListenForEvent("enterlimbo", self.losetargetcallback, target)
         self.inst:ListenForEvent("onremove", self.losetargetcallback, target)
 		self.inst:ListenForEvent("transfercombattarget", self.transfertargetcallback, target)
+		self.inst:ListenForEvent("leaderchanged", self.allycheckcallback, target)
     end
 end
 
 function Combat:StopTrackingTarget(target)
+	self.inst:RemoveEventCallback("leaderchanged", self.allycheckcallback, target)
 	self.inst:RemoveEventCallback("transfercombattarget", self.transfertargetcallback, target)
     self.inst:RemoveEventCallback("enterlimbo", self.losetargetcallback, target)
     self.inst:RemoveEventCallback("onremove", self.losetargetcallback, target)
@@ -376,8 +383,9 @@ function Combat:EngageTarget(target)
         if self.keeptargetfn then
             self.inst:StartUpdatingComponent(self)
         end
-        if self.inst.components.follower and self.inst.components.follower.leader == target and self.inst.components.follower.leader.components.leader and not self.inst.components.follower.keepleaderonattacked then
-            self.inst.components.follower.leader.components.leader:RemoveFollower(self.inst)
+        local leader = self.inst.components.follower and self.inst.components.follower:GetLeader()
+        if leader and leader == target and leader.components.leader and not self.inst.components.follower.keepleaderonattacked then
+            leader.components.leader:RemoveFollower(self.inst)
         end
     end
 end
@@ -597,7 +605,6 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
 			end
 			damage, spdamage = self.inst.components.inventory:ApplyDamage(damage, attacker, weapon, spdamage)
         end
-		local damagetypemult = 1
 		if self.inst.components.rideable ~= nil then
 			local saddle = self.inst.components.rideable.saddle
 			if saddle ~= nil then
@@ -606,9 +613,13 @@ function Combat:GetAttacked(attacker, damage, weapon, stimuli, spdamage)
                 end
 			end
 		end
+        local damagetypemult = 1
 		if self.inst.components.damagetyperesist ~= nil then
 			damagetypemult = damagetypemult * self.inst.components.damagetyperesist:GetResist(attacker, weapon)
 		end
+        if self.conditionexternaldamagetakenmultipliers ~= nil then
+            damage = damagetypemult * self:ApplyConditionExternalDamageTakenMultiplier(damage, attacker, weapon)
+        end
 		damage = damage * damagetypemult * self.externaldamagetakenmultipliers:Get()
 		if (damage > 0 or spdamage ~= nil) and not self.inst.components.health:IsInvincible() then
 			if damage > 0 then
@@ -718,12 +729,10 @@ function Combat:StartAttack()
     if self.forcefacing and self.target ~= nil and self.target:IsValid() then
         self.inst:ForceFacePoint(self.target:GetPosition())
     end
-    self.laststartattacktime = GetTime()
+	self:RestartCooldown()
 end
 
-function Combat:CancelAttack()
-    self.laststartattacktime = nil
-end
+Combat.CancelAttack = Combat.ResetCooldown
 
 function Combat:CanTarget(target)
     return self.inst.replica.combat:CanTarget(target)
@@ -1196,6 +1205,28 @@ function Combat:ShouldRecoil(attacker, weapon, damage)
 	return false, damage
 end
 
+function Combat:AddConditionExternalDamageTakenMultiplier(fn)
+    self.conditionexternaldamagetakenmultipliers = self.conditionexternaldamagetakenmultipliers or {}
+    self:RemoveConditionExternalDamageTakenMultiplier(fn)
+    table.insert(self.conditionexternaldamagetakenmultipliers, fn)
+end
+
+function Combat:RemoveConditionExternalDamageTakenMultiplier(fn)
+    if self.conditionexternaldamagetakenmultipliers ~= nil then
+        table.removearrayvalue(self.conditionexternaldamagetakenmultipliers, fn)
+    end
+end
+
+function Combat:ApplyConditionExternalDamageTakenMultiplier(damage, attacker, weapon)
+    local damagetakenmult = 1
+
+    for k, fn in ipairs(self.conditionexternaldamagetakenmultipliers) do
+        damagetakenmult = damagetakenmult * (fn(self.inst, attacker, weapon) or 1)
+    end
+
+    return damage * damagetakenmult
+end
+
 --#V2C: what's this? not used?
 function Combat:GetDamageReflect(target, damage, weapon, stimuli)
     if target.components.rider ~= nil and target.components.rider:IsRiding() then
@@ -1241,6 +1272,10 @@ function Combat:DoAreaAttack(target, range, weapon, validfn, stimuli, excludetag
     end
 
     return hitcount
+end
+
+function Combat:CanBeAlly(guy)
+	return self.inst.replica.combat:CanBeAlly(guy)
 end
 
 function Combat:IsAlly(guy)

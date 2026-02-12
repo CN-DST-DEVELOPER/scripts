@@ -784,6 +784,8 @@ local FISH_DEFS =
 		edible_values = EDIBLE_VALUES_MEDIUM_MEAT,
 
 		dynamic_shadow = SHADOW_MEDIUM,
+
+		luckitem = { luck = TUNING.BLACKCATFISH_LUCK },
 	},
 
 	oceanfish_medium_5 = {

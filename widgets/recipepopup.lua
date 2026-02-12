@@ -9,6 +9,9 @@ local Text = require "widgets/text"
 local IngredientUI = require "widgets/ingredientui"
 local Spinner = require "widgets/spinner"
 
+--For access to RecipeTile.sSetImageFromRecipe
+local RecipeTile = require("widgets/recipetile")
+
 require "widgets/widgetutil"
 require "skinsutils"
 local TechTree = require "techtree"
@@ -284,6 +287,7 @@ function RecipePopup:Refresh()
 
         self.skins_spinner.spinner:SetOptions(self.skins_options)
         local last_skin = Profile:GetLastUsedSkinForItem(recipe.name)
+		RecipeTile.sSetImageFromRecipe(self.skins_spinner.spinner.fgimage, recipe, last_skin)
         if last_skin then
             self.skins_spinner.spinner:SetSelectedIndex(self:GetIndexForSkin(last_skin) or 1)
         end
@@ -508,14 +512,16 @@ end
 function RecipePopup:GetSkinOptions()
     local skin_options = {}
 
-    table.insert(skin_options,
-    {
-        text = STRINGS.UI.CRAFTING.DEFAULT,
-        data = nil,
-        colour = DEFAULT_SKIN_COLOR,
-        new_indicator = false,
-        image = {GetInventoryItemAtlas(self.recipe.product..".tex"), self.recipe.product..".tex", "default.tex"},
-    })
+    if not PREFAB_SKINS_SHOULD_NOT_SELECT[self.recipe.product] then
+        table.insert(skin_options,
+        {
+            text = STRINGS.UI.CRAFTING.DEFAULT,
+            data = nil,
+            colour = DEFAULT_SKIN_COLOR,
+            new_indicator = false,
+            image = self.recipe.layeredimagefn == nil and { GetInventoryItemAtlas(self.recipe.product..".tex"), self.recipe.product..".tex", "default.tex" } or nil,
+        })
+    end
 
     local recipe_timestamp = Profile:GetRecipeTimestamp(self.recipe.product)
     --print(self.recipe.product, "Recipe timestamp is ", recipe_timestamp)
@@ -534,7 +540,7 @@ function RecipePopup:GetSkinOptions()
                 data = nil,
                 colour = colour,
                 new_indicator = new_indicator,
-                image = {GetInventoryItemAtlas(image_name..".tex"), image_name..".tex" or "default.tex", "default.tex"},
+				image = self.recipe.layeredimagefn == nil and { GetInventoryItemAtlas(image_name..".tex"), image_name..".tex" or "default.tex", "default.tex" } or nil,
             })
         end
 
@@ -586,17 +592,21 @@ function RecipePopup:MakeSpinner()
     --spinner_group.new_tag:SetPosition(60, 60)
 
     spinner_group.spinner:SetOnChangedFn(function()
-                                                    local which = spinner_group.spinner:GetSelectedIndex()
-                                                    if which > 1 then
-                                                      if self.skins_options[which].new_indicator or testNewTag then
-                                                        spinner_group.new_tag:Show()
-                                                      else
-                                                        spinner_group.new_tag:Hide()
-                                                      end
-                                                    else
-                                                        spinner_group.new_tag:Hide()
-                                                    end
-                                        end)
+		local which = spinner_group.spinner:GetSelectedIndex()
+		if which > 1 then
+			if self.skins_options[which].new_indicator or testNewTag then
+				spinner_group.new_tag:Show()
+			else
+				spinner_group.new_tag:Hide()
+			end
+		else
+			spinner_group.new_tag:Hide()
+		end
+		RecipeTile.sSetImageFromRecipe(spinner_group.fgimage, self.recipe, spinner_group.GetItem())
+		if spinner_group.fgimage.fxover then
+			spinner_group.fgimage.fxover:GetAnimState():SetTime(0)
+		end
+	end)
 
     spinner_group.GetItem =
         function()

@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Aw! Why didn't it work?",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Wheeeeee!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "Aw, those horses must be doing chores right now.",
+
 	BATTLECRY =
 	{
 		GENERIC = "En garde!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "We can play with this worm!",
         CHESSPIECE_WAGBOSS_ROBOT = "Can we keep it?",
         CHESSPIECE_WAGBOSS_LUNAR = "Yes! Three-legged space spider!",
+        CHESSPIECE_YOTH = "Were we friends?",
 
         CHESSJUNK1 = "A mess of chess.",
         CHESSJUNK2 = "A mess of chess.",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "Aw, it's broken!",
         },
 		HERMITHOUSE_ORNAMENT = "Will there still be room for webs?",
-        HERMITHOUSE_LAUNDRY = "Where should we hide them?",
+		HERMITHOUSE_LAUNDRY = "Where should we hide them?",
 
         PETALS_DRIED = "Did we pick these?",
         PETALS_EVIL_DRIED = "Did we pick these?",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "Awww...",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "We're gonna make the island so pretty!",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Now we wait for our present!", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "We have to give it something first!", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Aww! It's all burnt!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "That's a big party hat!",
+        COSTUME_PRINCESS_BODY = "It must be for parties.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Does it have a happy ending?",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Why are you so naughty?", -- Generic quote. It's aggressive.
+            FOLLOWING = "Follow us to fun!", -- Following the character examining
+            FOLLOWING_OTHER = "Where are you going?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "We can be a horse!",
+        ARMOR_YOTH_KNIGHT = "Ooh, this will keep us safe!",
+        HORSESHOE = "It's lucky!",
+        YOTH_LANCE = "We are supposed to run with this sharp object!",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Aww!", -- Depleted and on the ground
+            HELD = "We have something fun!", -- In the players inventory
+            GENERIC = "Wheeee!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "We'll run fast as a horse!",
+        YOTH_CHAIR_ROCKING_ITEM = "Do we get two turns on it?", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

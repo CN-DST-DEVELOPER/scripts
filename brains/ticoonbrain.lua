@@ -28,19 +28,21 @@ local TicoonBrain = Class(Brain, function(self, inst)
 end)
 
 local function GetLeader(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function WaitForLeader(inst)
-    return inst.components.follower.leader == nil or not inst:IsNear(inst.components.follower.leader, TRACKING_LEADER_START_WAITING_DIST)
+    local leader = GetLeader(inst)
+    return leader == nil or not inst:IsNear(leader, TRACKING_LEADER_START_WAITING_DIST)
 end
 
 local function GetLeaderPos(inst)
-    return inst.components.follower.leader ~= nil and inst.components.follower.leader:GetPosition() or nil
+    local leader = GetLeader(inst)
+    return leader and leader:GetPosition() or nil
 end
 
 local function KeepFaceTargetFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetLeader(inst) == target
 end
 
 local function GetTrackingTarget(inst)

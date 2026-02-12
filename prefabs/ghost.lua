@@ -155,7 +155,7 @@ local function target_test(inst, target, pvp_enabled)
     end
 
     local target_combat_target_leader = (target_combat_target.components.follower ~= nil
-        and target_combat_target.components.follower.leader) or nil
+        and target_combat_target.components.follower:GetLeader()) or nil
     if target_combat_target_leader then
         if (target_combat_target_leader.isplayer and not pvp_enabled) or target_combat_target_leader:HasAnyTag(GUARD_AURA_SAFE_TAGS) then
             return false

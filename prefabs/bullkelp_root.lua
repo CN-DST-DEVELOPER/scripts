@@ -19,16 +19,21 @@ local function onunequip(inst, owner)
     owner.AnimState:Show("ARM_normal")
 end
 
+local LUCKFORMULA_RECIPROCAL = 1
+local function BullKelpSnapChanceAdditive(inst, chance, luck)
+    return luck < 0 and chance * (1 + math.abs(luck))
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
 local function onattack(inst, attacker, target)
 	inst.components.perishable:ReducePercent(math.random()*TUNING.BULLKELP_ROOT_USE_VAR + TUNING.BULLKELP_ROOT_USE)
 
 	local spoilage = inst.components.perishable:GetPercent()
-	local chance = spoilage <= 0 and 1.0
-					or spoilage < 0.02 and 0.3
-					or spoilage < 0.5 and 0.1
+	local chance = spoilage <= 0 and TUNING.BULLKELP_ROOT_SNAP_CHANCES.HIGH
+					or spoilage < 0.02 and TUNING.BULLKELP_ROOT_SNAP_CHANCES.MED
+					or spoilage < 0.5 and TUNING.BULLKELP_ROOT_SNAP_CHANCES.LOW
 					or 0
 
-	if chance > 0 and math.random() <= chance then
+	if chance > 0 and TryLuckRoll(attacker, chance, BullKelpSnapChanceAdditive) then
 		local x, y, z = inst.Transform:GetWorldPosition()
 		local x1, y1, z1 = target.Transform:GetWorldPosition()
 		local angle = -math.atan2(z1 - z, x1 - x)

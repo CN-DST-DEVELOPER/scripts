@@ -141,10 +141,10 @@ local function PanicWhenScared(inst, loseloyaltychance, chatty)
             LoopNode({
                 WaitNode(3),
                 ActionNode(function()
-                    if math.random() < loseloyaltychance and
-                        inst.components.follower ~= nil and
+                    local leader = inst.components.follower ~= nil and inst.components.follower:GetLeader() or nil
+                    if leader ~= nil and
                         inst.components.follower:GetLoyaltyPercent() > 0 and
-                        inst.components.follower:GetLeader() ~= nil then
+                        TryLuckRoll(leader, loseloyaltychance, LuckFormulas.LoseFollowerOnPanic) then
                         inst.components.follower:SetLeader(nil)
                     end
                 end),
@@ -207,23 +207,28 @@ local function FindDeciduousTreeMonster(inst, finddist)
     return FindEntity(inst, finddist / 3, IsDeciduousTreeMonster, CHOP_TAGS)
 end
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
 
 local AssistLeaderDefaults = {
     MINE = {
         Starter = function(inst, leaderdist, finddist)
-            return inst.components.follower.leader ~= nil and
-                    inst.components.follower.leader.sg ~= nil and
-                    inst.components.follower.leader.sg:HasStateTag("mining")
+            local leader = GetLeader(inst)
+            return leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("mining")
         end,
         KeepGoing = function(inst, leaderdist, finddist)
-            return inst.components.follower.leader ~= nil and
-                    inst:IsNear(inst.components.follower.leader, leaderdist)
+            local leader = GetLeader(inst)
+            return leader ~= nil and inst:IsNear(leader, leaderdist)
         end,
         FindNew = function(inst, leaderdist, finddist)
             local target = FindEntity(inst, finddist, nil, MINE_TAGS, MINE_CANT_TAGS)
 
-            if target == nil and inst.components.follower.leader ~= nil then
-                target = FindEntity(inst.components.follower.leader, finddist, nil, MINE_TAGS, MINE_CANT_TAGS)
+            if target == nil then
+                local leader = GetLeader(inst)
+                if leader then
+                    target = FindEntity(leader, finddist, nil, MINE_TAGS, MINE_CANT_TAGS)
+                end
             end
 
             if target ~= nil then
@@ -233,23 +238,29 @@ local AssistLeaderDefaults = {
     },
     CHOP = {
         Starter = function(inst, finddist)
-            return inst.tree_target ~= nil
-                or (inst.components.follower.leader ~= nil and
-                    inst.components.follower.leader.sg ~= nil and
-                    inst.components.follower.leader.sg:HasStateTag("chopping"))
+            if inst.tree_target ~= nil then
+                return true
+            end
+            local leader = GetLeader(inst)
+            return (leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("chopping"))
                 or FindDeciduousTreeMonster(inst, finddist) ~= nil
         end,
         KeepGoing = function(inst, leaderdist, finddist)
-            return inst.tree_target ~= nil
-                or (inst.components.follower.leader ~= nil and
-                    inst:IsNear(inst.components.follower.leader, leaderdist))
+            if inst.tree_target ~= nil then
+                return true
+            end
+            local leader = GetLeader(inst)
+            return (leader ~= nil and inst:IsNear(leader, leaderdist))
                 or FindDeciduousTreeMonster(inst, finddist) ~= nil
         end,
         FindNew = function(inst, leaderdist, finddist)
             local target = FindEntity(inst, finddist, nil, CHOP_TAGS, CHOP_CANT_TAGS)
 
-            if target == nil and inst.components.follower.leader ~= nil then
-                target = FindEntity(inst.components.follower.leader, finddist, nil, CHOP_TAGS, CHOP_CANT_TAGS)
+            if target == nil then
+                local leader = GetLeader(inst)
+                if leader then
+                    target = FindEntity(leader, finddist, nil, CHOP_TAGS, CHOP_CANT_TAGS)
+                end
             end
 
             if target ~= nil then
@@ -344,7 +355,7 @@ local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirs
         return nil
     end
 
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = GetLeader(inst)
     if leader == nil or leader.components.trader == nil then -- Trader component is needed for ACTIONS.GIVEALLTOPLAYER
         return nil
     end
@@ -376,7 +387,7 @@ local function PickUpAction(inst, pickup_range, pickup_range_local, furthestfirs
 end
 
 local function GiveAction(inst)
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = GetLeader(inst)
     local inventory = leader and leader.components.inventory or nil
     local item = inst.components.inventory:GetFirstItemInAnySlot() or inst.components.inventory:GetActiveItem() -- This is intentionally backwards to give the bigger stacks first.
     if leader == nil or inventory == nil or item == nil then
@@ -391,7 +402,7 @@ local function GiveAction(inst)
 end
 
 local function DropAction(inst)
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = GetLeader(inst)
     local item = inst.components.inventory:GetFirstItemInAnySlot()
     if leader == nil or item == nil then
         return nil
@@ -423,10 +434,12 @@ local function NodeAssistLeaderPickUps(self, parameters)
 
 	local give_cond_fn = give_range_sq ~= nil and
 		function()
-			return (give_cond == nil or give_cond())
-				and self.inst.components.follower ~= nil
-				and self.inst.components.follower.leader ~= nil
-				and self.inst.components.follower.leader:GetDistanceSqToPoint(positionoverridefn ~= nil and positionoverridefn(self.inst) or positionoverride or self.inst:GetPosition()) < give_range_sq
+            if give_cond and not give_cond() then
+                return false
+            end
+            
+            local leader = GetLeader(self.inst)
+			return leader ~= nil and leader:GetDistanceSqToPoint(positionoverridefn ~= nil and positionoverridefn(self.inst) or positionoverride or self.inst:GetPosition()) < give_range_sq
 		end
 		or give_cond
 		or AlwaysTrue

@@ -134,6 +134,12 @@ local function DoHit_Thulecite(inst, attacker, target)
 	SpawnShadowTentacle(inst, attacker, target, pt, theta)
 end
 
+local function RollDoHit_Thulecite(inst, attacker, target)
+	if TryLuckRoll(attacker, TUNING.SHADOW_TENTACLE_SLINGSHOTAMMO_CHANCE, LuckFormulas.ShadowTentacleSpawn) then
+		DoHit_Thulecite(inst, attacker, target)
+	end
+end
+
 local function OnHit_Thulecite(inst, attacker, target)
 	if target and target:IsValid() then
 		if inst.magicamplified then
@@ -149,16 +155,14 @@ local function OnHit_Thulecite(inst, attacker, target)
 
 			if #targets <= 0 then
 				--No targets in range, treat same as single target
-				if math.random() < 0.5 then
-					DoHit_Thulecite(inst, attacker, target)
-				end
+				RollDoHit_Thulecite(inst, attacker, target)
 			else
 				--There are multiple targets in range
 				--First, pick main target for one tentacle
 				DoHit_Thulecite(inst, attacker, target)
 
 				local numtospawn = math.floor(#targets / 2)
-				if math.random() < 0.25 then
+				if TryLuckRoll(attacker, TUNING.SHADOW_TENTACLE_SLINGSHOTAMMO_EXTRA_TENTACLE_CHANCE, LuckFormulas.ShadowTentacleSpawn) then
 					numtospawn = numtospawn + 1
 				end
 				for i = 1, numtospawn do
@@ -170,8 +174,8 @@ local function OnHit_Thulecite(inst, attacker, target)
 			local fx = SpawnPrefab("slingshot_aoe_fx")
 			fx.Transform:SetPosition(x, 0, z)
 			fx:SetColorType("shadow")
-		elseif math.random() < 0.5 then
-			DoHit_Thulecite(inst, attacker, target)
+		else
+			RollDoHit_Thulecite(inst, attacker, target)
 		end
 	end
 end
@@ -752,7 +756,7 @@ local function GunpowderStaticTimeout(target)
 end
 
 local function OnPreHit_Gunpowder(inst, attacker, target)
-    inst._crithit = target._slingshot_gunpowder ~= nil and math.random() <= target._slingshot_gunpowder.chance
+    inst._crithit = target._slingshot_gunpowder ~= nil and TryLuckRoll(attacker, target._slingshot_gunpowder.chance, LuckFormulas.CriticalStrike)
 
 	if not inst._crithit then
 		return
@@ -931,10 +935,14 @@ local function OnLanded_Dreadstone(inst) --this is the inv item
 	end
 end
 
+local function DreadstoneRecoverChanceAdditive(inst, chance, luck)
+	return luck > 0 and chance + (luck * 0.25)
+end
+
 local function OnHit_Dreadstone(inst, attacker, target)
 	if target and target:IsValid() then
 		StartFlash(inst, target, 1, 0, 0)
-		if math.random() < TUNING.SLINGSHOT_AMMO_DREADSTONE_RECOVER_CHANCE then
+		if TryLuckRoll(attacker, TUNING.SLINGSHOT_AMMO_DREADSTONE_RECOVER_CHANCE, DreadstoneRecoverChanceAdditive) then
 			local ammo = SpawnPrefab("slingshotammo_dreadstone")
 			LaunchAt(ammo, target, attacker and attacker:IsValid() and attacker or nil, 1, 1, target:GetPhysicsRadius(0), 40)
 			ammo.components.inventoryitem:SetLanded(false, true)

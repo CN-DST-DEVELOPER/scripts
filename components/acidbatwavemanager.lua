@@ -267,7 +267,7 @@ function self:TryToSpawnWaveForPlayer(player, playermetadata, t)
     end
 
     -- Dice roll.
-    if math.random() >= playermetadata.odds_to_spawn_wave then
+    if not TryLuckRoll(player, playermetadata.odds_to_spawn_wave, LuckFormulas.AcidBatWave) then
         return
     end
 

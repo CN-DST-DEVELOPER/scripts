@@ -401,12 +401,14 @@ local function OnMegaFlare(inst, data)
             end
 
             -- SPAWN THEM IN
-            if party_active and spawnpoint and not engaged and math.random() < 0.6 then
-                for k in pairs(inst.data.children) do
-                    local players = FindPlayersInRange(spawnpoint.x,spawnpoint.y,spawnpoint.z, 40)
-                    k.Transform:SetPosition(spawnpoint.x,spawnpoint.y,spawnpoint.z)
-                    k.components.combat:SuggestTarget(players[1])
-                    k:AddTag("flare_summoned")
+            if spawnpoint then
+                local players = FindPlayersInRange(spawnpoint.x,spawnpoint.y,spawnpoint.z, 40)
+                if party_active and not engaged and math.random() <= GetEntitiesLuckChance(players, TUNING.WALRUS_INVESTIGATE_MEGAFLARE_CHANCE, LuckFormulas.MegaFlareEvent) then
+                    for k in pairs(inst.data.children) do
+                        k.Transform:SetPosition(spawnpoint.x,spawnpoint.y,spawnpoint.z)
+                        k.components.combat:SuggestTarget(players[1])
+                        k:AddTag("flare_summoned")
+                    end
                 end
             end
         end

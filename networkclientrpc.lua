@@ -1181,6 +1181,29 @@ local RPC_HANDLERS =
 		end
 	end,
 
+	PredictGallopTrip = function(player, x, z, dir, speed, platform, platform_relative)
+		if not (checknumber(x) and
+				checknumber(z) and
+				checknumber(dir) and
+				optnumber(speed) and
+				optentity(platform) and
+				checkbool(platform_relative))
+		then
+			printinvalid("PredictGallopTrip", player)
+			return
+		end
+		printinvalidplatform("PredictGallopTrip", player, nil, x, z, platform, platform_relative)
+		local x1, z1 = ConvertPlatformRelativePositionToAbsolutePosition(x, z, platform, platform_relative)
+		if x1 then
+			player:PushEventImmediate("predict_gallop_trip", {
+				x = x1,
+				z = z1,
+				dir = dir,
+				speed = speed,
+			})
+		end
+	end,
+
     -- NOTES(JBK): RPC limit is at 128, with 1-127 usable.
 }
 

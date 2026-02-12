@@ -20,11 +20,11 @@ local MAX_DOMINANTTRAIT_PLAYFUL_KEEP_DIST_FROM_OWNER = 9
 local PLAYFUL_OFFSET = 2
 
 local function GetOwner(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function KeepFaceTargetFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetOwner(inst) == target
 end
 
 local function OwnerIsClose(inst)
@@ -41,7 +41,7 @@ local function LoveOwner(inst)
     return owner ~= nil
         and not owner:HasTag("playerghost")
         and (GetTime() - (inst.sg.mem.prevnuzzletime or 0) > TUNING.CRITTER_NUZZLE_DELAY)
-        and math.random() < 0.05
+        and TryLuckRoll(owner, TUNING.CRITTER_NUZZLE_CHANCE, LuckFormulas.CritterNuzzle)
         and BufferedAction(inst, owner, ACTIONS.NUZZLE)
         or nil
 end
@@ -96,7 +96,7 @@ local function _avoidtargetfn(self, target)
         return false
     end
 
-    local owner = self.inst.components.follower.leader
+    local owner = GetOwner(self.inst)
     local owner_combat = owner ~= nil and owner.components.combat or nil
     local target_combat = target.components.combat
     if owner_combat == nil or target_combat == nil then
@@ -163,7 +163,8 @@ end
 
 --- Minigames
 local function WatchingMinigame(inst)
-	return (inst.components.follower.leader ~= nil and inst.components.follower.leader.components.minigame_participator ~= nil) and inst.components.follower.leader.components.minigame_participator:GetMinigame() or nil
+    local owner = GetOwner(inst)
+	return (owner ~= nil and owner.components.minigame_participator ~= nil) and owner.components.minigame_participator:GetMinigame() or nil
 end
 local function WatchingMinigame_MinDist(inst)
 	local minigame = WatchingMinigame(inst)
@@ -194,7 +195,7 @@ function CritterBrain:OnStart()
         }, 0.1)
 
     local root = PriorityNode({
-        WhileNode( function() return self.inst.components.follower.leader end, "Has Owner",
+        WhileNode( function() return GetOwner(self.inst) end, "Has Owner",
             PriorityNode{
 				watch_game,
                 -- Combat Avoidance
@@ -212,7 +213,7 @@ function CritterBrain:OnStart()
                             StandStill(self.inst),
                         },
                     }),
-                Follow(self.inst, function() return self.inst.components.follower.leader end, 0, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+                Follow(self.inst, function() return GetOwner(self.inst) end, 0, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
                 FailIfRunningDecorator(FaceEntity(self.inst, GetOwner, KeepFaceTargetFn)),
                 WhileNode(function() return OwnerIsClose(self.inst) and self.inst:IsAffectionate() end, "Affection",
                     SequenceNode{

@@ -2,7 +2,7 @@ local assets =
 {
     Asset("ANIM", "anim/statue_small.zip"),
     Asset("ANIM", "anim/statue_small_harp_build.zip"),
-    Asset("ANIM", "anim/statue_small_harp_vine_build.zip"),    
+    Asset("ANIM", "anim/statue_small_harp_vine_build.zip"),
     Asset("MINIMAP_IMAGE", "statue_small"),
 }
 
@@ -20,7 +20,7 @@ local prefabs =
     "mask_kinghat",
     "mask_treehat",
     "mask_foolhat",
- 
+
     "costume_doll_body",
     "costume_queen_body",
     "costume_blacksmith_body",
@@ -28,6 +28,10 @@ local prefabs =
     "costume_tree_body",
     "costume_fool_body",
     "costume_king_body",
+
+    -- Year of the Clockwork Knight
+    "costume_princess_body",
+    "mask_princesshat",
 }
 
 SetSharedLootTable( "statue_harp_hedgespawner",
@@ -48,12 +52,19 @@ local COSTUME_ITEMS =
     {"costume_king_body",       "mask_kinghat",         },
     {"costume_tree_body",       "mask_treehat",         },
     {"costume_fool_body",       "mask_foolhat",         },
- }
-local function GetCostumesForHoundDrops()
+}
+local function GetCostumesForHoundDrops(inst)
     -- NOTE: This function actually rearranges the input array,
     -- but we can tolerates that here.
     local costumes = shuffleArray(COSTUME_ITEMS)
-    return {costumes[1][1], costumes[2][1], costumes[1][2], costumes[2][2]}
+    local props = {costumes[1][1], costumes[2][1], costumes[1][2], costumes[2][2]}
+
+    if TheWorld.components.yoth_knightmanager and TheWorld.components.yoth_knightmanager:IsKnightShrineActive() then
+        table.insert(props, "costume_princess_body")
+        table.insert(props, "mask_princesshat")
+    end
+
+    return props
 end
 
 local function SpawnHound(inst, loc, item)
@@ -65,12 +76,13 @@ end
 
 local function SpawnHedgeHounds(inst)
     local pos = inst:GetPosition()
-    local dropped_props = GetCostumesForHoundDrops()
+    local dropped_props = GetCostumesForHoundDrops(inst)
     local radius = 4
     local offset, angle = nil, nil
 
+    local num_props = #dropped_props
     for i, drop in ipairs(dropped_props) do
-        angle = PI * ((2 * i - 1) / 4)
+        angle = PI * ((2 * i - 1) / num_props)
         offset = FindWalkableOffset(pos, angle, radius, nil, false, true)
             or Vector3FromTheta(angle, radius)
         SpawnHound(inst, pos + offset, drop)
@@ -184,8 +196,7 @@ local function fn()
     ----------------------------------------------------------------------------------
     inst:ListenForEvent("trigger_hedge_respawn", starthedgerespawn)
     inst:ListenForEvent("timerdone", OnTimerDone)
-
-    ----------------------------------------------------------------------------------
+    ---------------------------------------------------------------------------------
     inst.OnSave = onsave
     inst.OnLoad = onload
     inst.OnPreLoad = onpreload
@@ -194,6 +205,10 @@ local function fn()
     MakeHauntableWork(inst)
 
     MakeRoseTarget_CreateFuel(inst)
+    ----------------------------------------------------------------------------------
+
+    -- Mods.
+    inst._COSTUME_ITEMS = COSTUME_ITEMS
 
     return inst
 end

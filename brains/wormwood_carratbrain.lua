@@ -20,7 +20,7 @@ local CarratBrain = Class(Brain, function(self, inst)
 end)
 
 local function GetLeader(inst)
-    return inst.components.follower and inst.components.follower:GetLeader() or nil
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetLeaderLocation(inst)
@@ -33,7 +33,7 @@ local function GetLeaderLocation(inst)
 end
 
 local function ShouldRunFromScary(other, inst)
-    local isplayer = other:HasTag("player")
+	local isplayer = other.isplayer
     if isplayer and GetLeader(inst) == other then
         return false
     end

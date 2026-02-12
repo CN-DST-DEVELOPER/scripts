@@ -54,17 +54,23 @@ local function ReturnChildren(inst)
 end
 
 local function OnSpawn(inst, child)
+    local is_asleep = inst:IsAsleep()
+    local y = is_asleep and 0 or 30
     for i, shadow in ipairs(inst.buzzardshadows) do
         local dist = shadow.components.circler.distance
         local angle = shadow.components.circler.angleRad
         local pos = inst:GetPosition()
         local offset = FindWalkableOffset(pos, angle, dist, 8, false)
         if offset ~= nil then
-            child.Transform:SetPosition(pos.x + offset.x, 30, pos.z + offset.z)
+            child.Transform:SetPosition(pos.x + offset.x, y, pos.z + offset.z)
         else
-            child.Transform:SetPosition(pos.x, 30, pos.y)
+            child.Transform:SetPosition(pos.x, y, pos.y)
         end
-        child.sg:GoToState(child:HasTag("creaturecorpse") and "corpse_fall" or "glide")
+        if is_asleep then
+            child.sg:GoToState(child:HasTag("creaturecorpse") and "corpse_idle" or "idle")
+        else
+            child.sg:GoToState(child:HasTag("creaturecorpse") and "corpse_fall" or inst.forcefall and "fall" or "glide")
+        end
         RemoveBuzzardShadow(inst, shadow)
         return
     end
@@ -126,39 +132,58 @@ local function CancelAwakeTasks(inst)
     end
 end
 
+local function TryUpdateShadows(inst)
+    if not inst:IsAsleep() then
+        -- The shadows can still appear during lunar hail
+        if not TheWorld.state.isnight and not TheWorld.state.iswinter then
+            UpdateShadows(inst)
+        end
+    end
+end
+
 local function OnWakeTask(inst)
     inst.waketask = nil
-    if not inst:IsAsleep() then
-        UpdateShadows(inst)
-    end
+    TryUpdateShadows(inst)
 end
 
 local function UpdateAwakeTasks(inst)
     local _worldstate = TheWorld.state
-    if not _worldstate.isnight and not _worldstate.iswinter and not _worldstate.islunarhailing then
+    if not _worldstate.isnight and not _worldstate.iswinter then
         if inst.waketask == nil then
             inst.waketask = inst:DoTaskInTime(.5, OnWakeTask)
         end
-        if inst.foodtask == nil then
+        if inst.foodtask == nil and not _worldstate.islunarhailing then
             inst.foodtask = inst:DoPeriodicTask(math.random(20, 40) * .1, LookForFood)
         end
     end
 end
 
-local function InstantKillBuzzardsWithLunarHail(inst)
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-    if mutatedbirdmanager and TUNING.SPAWN_MUTATED_BUZZARDS_GESTALT then
-        local childspawner = inst.components.childspawner
-        local num_children = childspawner:NumChildren()
-
-        mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbuzzard_gestalt", inst, num_children)
-
-        -- Clear the children
-        childspawner.childreninside = 0
-        for k, child in pairs(childspawner.childrenoutside) do
-            child:Remove()
+local function CreateFlareDetonatedListener(hit_num)
+    return function(inst, data)
+        data.hit_num_buzzards = data.hit_num_buzzards or 0
+        if data.sourcept and inst:GetDistanceSqToPoint(data.sourcept) <= TUNING.BUZZARDSPAWNER_FLARE_HIT_DIST_SQ and data.hit_num_buzzards < hit_num then
+            local buzzard
+            repeat
+                inst.forcefall = true
+                buzzard = inst.components.childspawner:SpawnChild(data.igniter)
+                inst.forcefall = nil
+                if buzzard ~= nil then
+                    buzzard.Transform:OffsetPosition(0, math.random() * 15 - 7.5, 0)
+                    data.hit_num_buzzards = data.hit_num_buzzards + 1
+                end
+            until data.hit_num_buzzards >= hit_num or buzzard == nil
         end
     end
+end
+
+local OnMiniFlareDetonated = CreateFlareDetonatedListener(1)
+local OnMegaFlareDetonated = CreateFlareDetonatedListener(5)
+
+local function RegisterFlareListeners(inst)
+    inst.miniflare_detonated_cb = function(src, data) OnMiniFlareDetonated(inst, data) end
+    inst.megaflare_detonated_cb = function(src, data) OnMegaFlareDetonated(inst, data) end
+    inst:ListenForEvent("miniflare_detonated", inst.miniflare_detonated_cb, TheWorld)
+    inst:ListenForEvent("megaflare_detonated", inst.megaflare_detonated_cb, TheWorld)
 end
 
 local function OnEntitySleep(inst)
@@ -167,14 +192,17 @@ local function OnEntitySleep(inst)
         table.remove(inst.buzzardshadows, i)
     end
     CancelAwakeTasks(inst)
-
-    if TheWorld.state.islunarhailing then
-        InstantKillBuzzardsWithLunarHail(inst)
+    if inst.miniflare_detonated_cb ~= nil then
+        inst:RemoveEventCallback("miniflare_detonated", inst.miniflare_detonated_cb, TheWorld)
+    end
+    if inst.megaflare_detonated_cb ~= nil then
+        inst:RemoveEventCallback("megaflare_detonated", inst.megaflare_detonated_cb, TheWorld)
     end
 end
 
 local function OnEntityWake(inst)
     UpdateAwakeTasks(inst)
+    RegisterFlareListeners(inst)
 end
 
 local function UpdateChildSpawner(inst)
@@ -210,15 +238,20 @@ end
 
 local function OnLunarHailLevel(inst, lunarhaillevel)
     if lunarhaillevel <= inst._drop_buzzards_at_lunar_hail_level then
-        if inst:IsAsleep() then
-            InstantKillBuzzardsWithLunarHail(inst)
-            inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
-        elseif inst.components.childspawner.childreninside > 0 then
+        if inst.components.childspawner.childreninside > 0 then
+            inst.components.childspawner.spawnoffscreen = true -- For if we're off screen.
+
             local corpse = inst.components.childspawner:SpawnChild(nil, "buzzardcorpse")
-            if corpse ~= nil and TUNING.SPAWN_MUTATED_BUZZARDS_GESTALT then
+            if corpse ~= nil then
                 -- state and position is handled in OnSpawn
-                corpse:StartGestaltTimer(5 + math.random() * 6)
+                if TUNING.SPAWN_MUTATED_BUZZARDS_GESTALT then
+                    corpse:StartGestaltTimer(10 + math.random() * 6)
+                else
+                    corpse:StartFadeTimer(12 + math.random() * 6)
+                end
             end
+
+            inst.components.childspawner.spawnoffscreen = false
         else
             inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
         end
@@ -251,6 +284,11 @@ local function SpawnerOnIsWinter(inst, iswinter)
         inst:StopWatchingWorldState("isnight", SpawnerOnIsNight)
         inst:StopWatchingWorldState("islunarhailing", SpawnerOnIsLunarHailing)
 
+        if inst._drop_buzzards_at_lunar_hail_level ~= nil then
+            inst._drop_buzzards_at_lunar_hail_level = nil
+            inst:StopWatchingWorldState("lunarhaillevel", OnLunarHailLevel)
+        end
+
         UpdateChildSpawner(inst)
         ReturnChildren(inst)
         CancelAwakeTasks(inst)
@@ -263,7 +301,7 @@ local function SpawnerOnIsWinter(inst, iswinter)
 end
 
 local function OnAddChild(inst)
-    UpdateShadows(inst)
+    TryUpdateShadows(inst)
     if inst.components.childspawner.numchildrenoutside + inst.components.childspawner.childreninside >= inst.components.childspawner.maxchildren then
         inst.components.childspawner:StopRegen()
     end
@@ -275,6 +313,10 @@ local function SpawnerOnInit(inst)
 
     inst:WatchWorldState("iswinter", SpawnerOnIsWinter)
     SpawnerOnIsWinter(inst, TheWorld.state.iswinter)
+
+    if not inst:IsAsleep() then
+        RegisterFlareListeners(inst)
+    end
 end
 
 local function fn()

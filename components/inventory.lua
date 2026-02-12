@@ -249,9 +249,11 @@ local function CheckMigrationPets(inst, item)
         end
 
         if item.components.migrationpetowner ~= nil then
-            local pet = item.components.migrationpetowner:GetPet()
-            if pet ~= nil then
-                table.insert(inst.migrationpets, pet)
+            local pets = item.components.migrationpetowner:GetAllPets()
+            if pets ~= nil then
+                for _, pet in ipairs(pets) do
+                    table.insert(inst.migrationpets, pet)
+                end
             end
         end
 
@@ -1097,7 +1099,7 @@ function Inventory:Unequip(equipslot, slip, force)
     self.equipslots[equipslot] = nil
     self.inst:PushEvent("unequip", {item=item, eslot=equipslot, slip=slip})
 
-    if self.inst:HasTag("player") and item ~= nil and item.components.setbonus ~= nil then
+    if item ~= nil and item.components.setbonus ~= nil then
         item.components.setbonus:UpdateSetBonus(self, false)
     end
 
@@ -1233,7 +1235,7 @@ function Inventory:Equip(item, old_to_active, no_animation, force_ui_anim)
             ProfileStatsAdd("equip_"..item.prefab)
         end
 
-        if self.inst:HasTag("player") and item.components.setbonus ~= nil then
+        if item.components.setbonus ~= nil then
             item.components.setbonus:UpdateSetBonus(self, true)
         end
 
@@ -1424,7 +1426,7 @@ function Inventory:GetItemsWithTag(tag)
     end
 
     if self.activeitem and self.activeitem:HasTag(tag) then
-        table.insert(items, self.active_item)
+        table.insert(items, self.activeitem)
     end
 
     local overflow = self:GetOverflowContainer()

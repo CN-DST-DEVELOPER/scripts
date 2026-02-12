@@ -190,7 +190,7 @@ fns.ClearBellOwner = function(inst)
 end
 
 fns.GetBeefBellOwner = function(inst)
-    local leader = inst.components.follower:GetLeader()
+    local leader = inst.components.follower.leader -- Getting leader directly special case.
     return (leader ~= nil
         and leader.components.inventoryitem ~= nil
         and leader.components.inventoryitem:GetGrandOwner())
@@ -335,7 +335,7 @@ local function KeepTarget(inst, target)
 end
 
 local function OnNewTarget(inst, data)
-    if data ~= nil and data.target ~= nil and inst.components.follower ~= nil and data.target == inst.components.follower.leader then
+    if data ~= nil and data.target ~= nil and inst.components.follower ~= nil and data.target == inst.components.follower:GetLeader() then
         inst.components.follower:SetLeader(nil)
     end
 end
@@ -897,7 +897,7 @@ end
 local WAKE_TO_FOLLOW_DISTANCE = 15
 local function ShouldWakeUp(inst)
     return DefaultWakeTest(inst)
-        or (inst.components.follower.leader ~= nil
+        or (inst.components.follower:GetLeader() ~= nil
             and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
 end
 
@@ -915,7 +915,7 @@ local function MountSleepTest(inst)
     return not inst.components.rideable:IsBeingRidden()
         and DefaultSleepTest(inst)
         and not inst:HasTag("hitched")
-        and (inst.components.follower.leader == nil
+        and (inst.components.follower:GetLeader() == nil
             or inst.components.follower:IsNearLeader(SLEEP_NEAR_LEADER_DISTANCE))
 end
 

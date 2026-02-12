@@ -107,25 +107,27 @@ local function ReduceCharges(inst)
 end
 
 local function setcharged(inst, instant)
-    inst:AddTag("charged")
-	inst:AddTag("electricdamageimmune")
+    if inst.components.health and not inst.components.health:IsDead() then
+        inst:AddTag("charged")
+	    inst:AddTag("electricdamageimmune")
 
-	if inst.components.electricattacks == nil then
-		inst:AddComponent("electricattacks")
-	end
-	inst.components.electricattacks:AddSource(inst)
+	    if inst.components.electricattacks == nil then
+	    	inst:AddComponent("electricattacks")
+	    end
+	    inst.components.electricattacks:AddSource(inst)
 
-    inst.components.lootdropper:SetChanceLootTable('chargedlightninggoat')
-    inst.AnimState:SetBuild("lightning_goat_shocked_build")
-    inst.AnimState:Show("fx")
-    if not instant then
-        inst.sg:GoToState("shocked")
+        inst.components.lootdropper:SetChanceLootTable('chargedlightninggoat')
+        inst.AnimState:SetBuild("lightning_goat_shocked_build")
+        inst.AnimState:Show("fx")
+        if not instant then
+            inst.sg:GoToState("shocked")
+        end
+        inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+        inst.charged = true
+        inst.chargeleft = 3
+        inst.Light:Enable(true)
+        inst:WatchWorldState("cycles", ReduceCharges)
     end
-    inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-    inst.charged = true
-    inst.chargeleft = 3
-    inst.Light:Enable(true)
-    inst:WatchWorldState("cycles", ReduceCharges)
 end
 
 local function IsChargedGoat(dude)

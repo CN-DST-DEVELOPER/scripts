@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Oh no! It failed!",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "I have arrived at Madame Pearl's!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "I suppose they are otherwise engaged at the moment!",
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "I remember the chewing.",
         CHESSPIECE_WAGBOSS_ROBOT = "The portable version.",
         CHESSPIECE_WAGBOSS_LUNAR = "That was a bad combination.",
+        CHESSPIECE_YOTH = "It was really hot and cold with this one.",
 
         CHESSJUNK1 = "Broken chess pieces?",
         CHESSJUNK2 = "More broken chess pieces?",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "Ah, c'est dommage.",
         },
 		HERMITHOUSE_ORNAMENT = "How quaint!",
-        HERMITHOUSE_LAUNDRY = "Oh dear!",
+		HERMITHOUSE_LAUNDRY = "Oh dear!",
 
         PETALS_DRIED = "A fine ingredient!",
         PETALS_EVIL_DRIED = "A fine ingredient!",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "How sad!",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Madame Pearl could use a dash more light around here.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "That should do!", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What does le cheval require?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Nothing but ashes!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "She looks like someone who gets her way.",
+        COSTUME_PRINCESS_BODY = "Pretty.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "Maman loved a good show.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Mind your manners!", -- Generic quote. It's aggressive.
+            FOLLOWING = "It is part of my crew.", -- Following the character examining
+            FOLLOWING_OTHER = "It follows another.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "A helmet for a brave knight!",
+        ARMOR_YOTH_KNIGHT = "It is the shining armor of a knight!",
+        HORSESHOE = "I could use a little luck.",
+        YOTH_LANCE = "This will make a big shish kebab!",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "What a pity.", -- Depleted and on the ground
+            HELD = "This will set the mood!", -- In the players inventory
+            GENERIC = "Such a warm comforting glow!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "I will be quick as a horse!",
+        YOTH_CHAIR_ROCKING_ITEM = "Aw, it looks like fun!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

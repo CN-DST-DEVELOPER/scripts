@@ -18,23 +18,22 @@ local prefabs =
 
 local DECORATED_GRAVESTONE_EVILFLOWER_TIME = (TUNING.WENDYSKILL_GRAVESTONE_DECORATETIME / TUNING.WENDYSKILL_GRAVESTONE_EVILFLOWERCOUNT)
 
--- Ghosts on a quest (following someone) shouldn't block other ghost spawns!
-local CANTHAVE_GHOST_TAGS = {"questing"}
+local CANTHAVE_GHOST_TAGS = {"questing"} -- Ghosts on a quest (following someone) shouldn't block other ghost spawns!
 local MUSTHAVE_GHOST_TAGS = {"ghostkid"}
 local function on_day_change(inst)
     if #AllPlayers > 0 and (not inst.ghost or not inst.ghost:IsValid()) then
         local ghost_spawn_chance = TUNING.GHOST_GRAVESTONE_CHANCE
         for _, v in ipairs(AllPlayers) do
             if v:HasTag("ghostlyfriend") then
-                ghost_spawn_chance = ghost_spawn_chance + TUNING.GHOST_GRAVESTONE_CHANCE
+                ghost_spawn_chance = ghost_spawn_chance + GetEntityLuckChance(v, TUNING.GHOST_GRAVESTONE_CHANCE, LuckFormulas.LootDropperChance)
 
                 if v.components.skilltreeupdater and v.components.skilltreeupdater:IsActivated("wendy_smallghost_1") then
-                    ghost_spawn_chance = ghost_spawn_chance + TUNING.WENDYSKILL_SMALLGHOST_EXTRACHANCE
+                    ghost_spawn_chance = ghost_spawn_chance + GetEntityLuckChance(v, TUNING.WENDYSKILL_SMALLGHOST_EXTRACHANCE, LuckFormulas.LootDropperChance)
                 end
             end
         end
 
-        if math.random() < ghost_spawn_chance then
+        if math.random() <= ghost_spawn_chance then
             local gx, gy, gz = inst.Transform:GetWorldPosition()
             local nearby_ghosts = TheSim:FindEntities(gx, gy, gz, TUNING.UNIQUE_SMALLGHOST_DISTANCE, MUSTHAVE_GHOST_TAGS, CANTHAVE_GHOST_TAGS)
             if #nearby_ghosts == 0 then
@@ -247,7 +246,6 @@ local function fn()
 
     --
     inst.mound = inst:SpawnChild("mound")
-    inst.mound.ghost_of_a_chance = 0.0
     inst.mound.Transform:SetPosition(unpack(MOUND_POSITION_OFFSET))
 
     --

@@ -129,7 +129,7 @@ local function OnRansacked(inst, doer)
 	if doer ~= nil then
 		for k, child in pairs(inst.components.childspawner.childrenoutside) do
 			if child:IsNear(inst, TUNING.CATCOON_DEN_LEASH_MAX_DIST) then
-				if child.components.follower ~= nil and child.components.follower.leader == doer then
+				if child.components.follower ~= nil and child.components.follower:GetLeader() == doer then
 					child.components.follower:StopFollowing()
 				end
 

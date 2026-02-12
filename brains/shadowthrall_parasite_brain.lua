@@ -19,15 +19,14 @@ local function TestForRemove(inst)
     end
 end
 
-local function FindPlayer(inst)
-    return FindClosestPlayerToInst(inst, PLAYER_CAMERA_SEE_DISTANCE, true)
-end
+local function GetRunAwayTarget(inst)
+	local player = FindClosestPlayerToInst(inst, PLAYER_CAMERA_SEE_DISTANCE, true)
+	if player then
+		return player
+	end
 
-local function FindRift(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-
     local rifts = TheSim:FindEntities(x, 0, z, PLAYER_CAMERA_SEE_DISTANCE, SHADOW_RIFT_PORTAL_MUST_TAGS)
-
     return rifts[1]
 end
 
@@ -43,8 +42,7 @@ function ShadowThrall_Parasite_Brain:OnStart()
     local root = PriorityNode(
     {
         DoAction(self.inst, TestForRemove, "Remove?", true),
-        RunAway(self.inst, function() return FindPlayer(self.inst) end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
-        RunAway(self.inst, function() return FindRift(self.inst)   end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+        RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
     }, .25)
     self.bt = BT(self.inst, root)
 end

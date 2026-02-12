@@ -347,7 +347,7 @@ function SingingInspiration:FindFriendlyTargetsToInspire()
 end
 
 local function HasFriendlyLeader(target, singer, PVP_enabled)
-    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    local target_leader = target.components.follower and target.components.follower:GetLeader()
 
     if target_leader and target_leader.components.inventoryitem then
         target_leader = target_leader.components.inventoryitem:GetGrandOwner()

@@ -10,11 +10,16 @@ local WANDER_TIMING = {minwaittime = 6, randwaittime = 6}
 local MAX_BABYSIT_WANDER = 6
 
 local function GetLeader(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetLeaderPos(inst)
-    return inst.components.follower.leader and inst.components.follower.leader:GetPosition() or nil
+    local leader = GetLeader(inst)
+    if not leader then
+        return nil
+    end
+
+    return leader:GetPosition()
 end
 
 local function DanceParty(inst)
@@ -90,7 +95,7 @@ local function ShouldDanceParty(inst)
 end
 
 local function GetTraderFn(inst)
-	local leader = inst.components.follower ~= nil and inst.components.follower.leader
+	local leader = GetLeader(inst)
 	if leader ~= nil then
 		return inst.components.trader:IsTryingToTradeWithMe(leader) and leader or nil
 	end
@@ -101,13 +106,14 @@ local function KeepTraderFn(inst, target)
 end
 
 local function ShouldWatchMinigame(inst)
-    return inst.components.follower.leader ~= nil
-        and inst.components.follower.leader.components.minigame_participator ~= nil
+    local leader = GetLeader(inst)
+    return leader ~= nil
+        and leader.components.minigame_participator ~= nil
         and (inst.components.combat.target == nil or inst.components.combat.target.components.minigame_participator ~= nil)
 end
 
 local function WatchingMinigame(inst)
-    local leader = inst.components.follower.leader
+    local leader = GetLeader(inst)
 	return (leader ~= nil
         and leader.components.minigame_participator ~= nil
         and leader.components.minigame_participator:GetMinigame())
@@ -157,6 +163,10 @@ local function GetBabysitterPos(inst)
         or nil
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 local PRIORITY_NODE_RATE = 0.25
 function AbigailBrain:OnStart()
 
@@ -200,7 +210,7 @@ function AbigailBrain:OnStart()
     local defensive_mode = WhileNode(function() return self.inst.is_defensive end, "DefensiveMove",
         PriorityNode({
             WhileNode(function() return self.inst:HasTag("gestalt") and self.inst.components.combat.target and( self.inst.components.combat:InCooldown() ) end, "gestalt avoid",
-                RunAway(self.inst, function() return self.inst.components.combat.target end, 7, 9)),
+				RunAway(self.inst, { getfn = GetRunAwayTarget }, 7, 9)),
 
             WhileNode(function() return DefensiveCanFight(self.inst) end, "CanFight",
                 ChaseAndAttack(self.inst, TUNING.ABIGAIL_DEFENSIVE_MAX_CHASE_TIME)),
@@ -212,7 +222,7 @@ function AbigailBrain:OnStart()
 
             play_with_ghosts,
 
-            Follow(self.inst, function() return self.inst.components.follower.leader end,
+            Follow(self.inst, function() return GetLeader(self.inst) end,
                     TUNING.ABIGAIL_DEFENSIVE_MIN_FOLLOW, TUNING.ABIGAIL_DEFENSIVE_MED_FOLLOW, TUNING.ABIGAIL_DEFENSIVE_MAX_FOLLOW, true),
             Wander(self.inst, nil, nil, WANDER_TIMING),
         }, PRIORITY_NODE_RATE)
@@ -221,7 +231,7 @@ function AbigailBrain:OnStart()
     --
     local aggressive_mode = PriorityNode({
         WhileNode(function() return self.inst:HasTag("gestalt") and self.inst.components.combat.target and ( self.inst.components.combat:InCooldown() ) end, "gestalt avoid",
-            RunAway(self.inst, function() return self.inst.components.combat.target end, 7, 9)),
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, 7, 9)),
 
         WhileNode(function() return AggressiveCanFight(self.inst) end, "CanFight",
             ChaseAndAttack(self.inst, TUNING.ABIGAIL_AGGRESSIVE_MAX_CHASE_TIME)),
@@ -234,7 +244,7 @@ function AbigailBrain:OnStart()
 
         play_with_ghosts,
 
-        Follow(self.inst, function() return self.inst.components.follower.leader end,
+        Follow(self.inst, function() return GetLeader(self.inst) end,
                 TUNING.ABIGAIL_AGGRESSIVE_MIN_FOLLOW, TUNING.ABIGAIL_AGGRESSIVE_MED_FOLLOW, TUNING.ABIGAIL_AGGRESSIVE_MAX_FOLLOW, true),
         Wander(self.inst),
     }, PRIORITY_NODE_RATE)

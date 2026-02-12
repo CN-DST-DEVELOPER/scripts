@@ -88,6 +88,7 @@ local function KillShadow(inst)
     if inst._fadeframe:value() > 0 and not inst:IsAsleep() then
         inst:StopWatchingWorldState("iswinter", CircleOnIsWinter)
         inst:StopWatchingWorldState("isnight", CircleOnIsNight)
+        inst:PushEvent("shadowkilled")
         inst._killed = true
         inst._isfadein:set(false)
         inst._fadeframe:set(inst._fadeframe:value())

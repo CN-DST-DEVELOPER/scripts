@@ -262,6 +262,18 @@ local fx =
         end,
     },
     {
+        name = "shadow_puff_solid_large",
+        bank = "sand_puff",
+        build = "sand_puff",
+        anim = "forage_out",
+        sound = "dontstarve/common/deathpoof",
+        transform = Vector3(1.5, 1.5, 1.5),
+        tint = Vector3(0, 0, 0),
+        fn = function(inst)
+            inst.AnimState:SetFinalOffset(2)
+        end,
+    },
+    {
         name = "shadow_puff_large_front",
         bank = "sand_puff",
         build = "sand_puff",
@@ -1536,6 +1548,12 @@ local fx =
         anim = "unwrap",
     },
     {
+        name = "redpouch_yoth_unwrap",
+        bank = "redpouch",
+        build = "redpouch",
+        anim = "unwrap",
+    },
+    {
         name = "yotc_seedpacket_unwrap",
         bank = "bundle",
         build = "bundle",
@@ -1561,12 +1579,6 @@ local fx =
     },
     {
         name = "hermit_bundle_unwrap",
-        bank = "hermit_bundle",
-        build = "hermit_bundle",
-        anim = "unwrap",
-    },
-    {
-        name = "hermit_bundle_shells_unwrap",
         bank = "hermit_bundle",
         build = "hermit_bundle",
         anim = "unwrap",

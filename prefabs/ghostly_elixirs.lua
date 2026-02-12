@@ -94,10 +94,10 @@ local potion_tunings =
 		end,
 		TICK_FN = function(inst, target)
 			local mult = 1
-			if (target.components.follower and
-				target.components.follower.leader and
-				target.components.follower.leader.components.skilltreeupdater and
-				target.components.follower.leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3")) and
+            local leader = target.components.follower:GetLeader()
+			if (leader and
+                leader.components.skilltreeupdater and
+                leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3")) and
 				(TheWorld.components.sisturnregistry and
 				TheWorld.components.sisturnregistry:IsBlossom()) and 
 				not target:HasTag("INLIMBO") then
@@ -129,10 +129,10 @@ local potion_tunings =
 		end,
 		TICK_FN = function(inst, target)
 			local mult = 1
-			if (target.components.follower and
-				target.components.follower.leader and
-				target.components.follower.leader.components.skilltreeupdater and
-				target.components.follower.leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3")) and
+            local leader = target.components.follower:GetLeader()
+			if (leader and
+                leader.components.skilltreeupdater and
+				leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3")) and
 				(TheWorld.components.sisturnregistry and
 				TheWorld.components.sisturnregistry:IsBlossom()) and 
 				not target:HasTag("INLIMBO") then
@@ -287,8 +287,9 @@ local potion_tunings =
 		DURATION = TUNING.GHOSTLYELIXIR_REVIVE_DURATION,
         FLOATER = {"small", 0.1, 0.7},
 		ONAPPLY = function(inst, target)
-			if target.components.follower.leader and target.components.follower.leader.components.ghostlybond then
-				target.components.follower.leader.components.ghostlybond:SetBondLevel(3)
+            local leader = target.components.follower:GetLeader()
+			if leader and leader.components.ghostlybond then
+				leader.components.ghostlybond:SetBondLevel(3)
 			end
 		end,
 		fx = "ghostlyelixir_retaliation_fx",

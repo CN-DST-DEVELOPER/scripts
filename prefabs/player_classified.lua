@@ -1597,6 +1597,9 @@ local function fn()
 	--soakin state (bathingpool) variables
 	inst.bathingpool = net_entity(inst.GUID, "soakin.occupying_bathingpool", "bathingpooldirty")
 
+	--foley sound overrides
+	inst.playinghorseshoesounds = net_bool(inst.GUID, "foley.playinghorseshoesounds")
+
     --Morgue variables
     inst.isdeathbypk = net_bool(inst.GUID, "morgue.isdeathbypk", "morguedirty")
     inst.deathcause = net_string(inst.GUID, "morgue.deathcause")

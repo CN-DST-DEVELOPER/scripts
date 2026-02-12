@@ -260,9 +260,12 @@ end
 
 local function OnMegaFlare(src, data)
     if data.sourcept and TheWorld.Map:IsVisualGroundAtPoint(data.sourcept.x,data.sourcept.y,data.sourcept.z) then
-        if not _activehassler and math.random() < 0.6 and AllowedToAttack({skipcycles = true}) then
+        local players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
+        if not _activehassler and
+            math.random() <= GetEntitiesLuckChance(players, TUNING.DEERCLOPS_MEGAFLARE_SPAWN_CHANCE, LuckFormulas.MegaFlareEvent) and
+            AllowedToAttack({skipcycles = true}) then
             self.inst:DoTaskInTime(5 + (math.random() * 20), function()
-                local players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
+                players = FindPlayersInRange(data.sourcept.x, data.sourcept.y, data.sourcept.z, 35)
                 if #players > 0 then
                     _targetplayer = players[1]
                     _activehassler = ReleaseHassler(players[1])

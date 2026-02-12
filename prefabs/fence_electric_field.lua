@@ -121,21 +121,16 @@ end
 --local GLOBAL_SHOCK_TARGETS = setmetatable({}, { __mode = 'k' })
 local BrainCommon = require("brains/braincommon")
 
-local function CanShockEnt(ent)
-	return not IsEntityElectricImmune(ent) and CanEntityBeElectrocuted(ent)
-		-- Because the above two don't check for nointerrupt, even though they probably should. FIXME
-		and (ent.sg == nil or (not ent.sg:HasAnyStateTag("dead", "nointerrupt", "noelectrocute") or ent.sg:HasStateTag("canelectrocute")))
-end
-
 local function DoCollideShock(other, inst)
 	local t = GetTime()
 	if (inst.targets[other] or -math.huge) < t and
 		other:IsValid() and not other:IsInLimbo()
 	then
-		if not IsEntityDead(other) and CanShockEnt(other) then
+		other:PushEventImmediate("electrocute", { duration=TUNING.ELECTROCUTE_SHORT_DURATION, noburn=true })
+
+		if other.sg and other.sg:HasStateTag("electrocute") then -- Successful
 			ClearForgetTask(other)
 
-			--TODO MORE WHEN WET?
 			if BrainCommon.HasElectricFencePanicTriggerNode(other) and other.panic_electric_field ~= inst then
 				other:PushEvent("shocked_by_new_field", inst)
 
@@ -143,7 +138,6 @@ local function DoCollideShock(other, inst)
 				other:ListenForEvent("onremove", ObjectNonPermanence, inst) --Just in case?
 			end
 
-			other:PushEventImmediate("electrocute", {duration=TUNING.ELECTROCUTE_SHORT_DURATION, noburn=true})
 			other.forget_field_task = other:DoTaskInTime(TUNING.ELECTRIC_FIELD_MOB_PANICTIME, ObjectNonPermanence)
 		end
 
@@ -156,20 +150,20 @@ end
 -- NOTE(Omar): A little trick!
 -- Collision callbacks still run even if Physics:SetCollides is false
 -- And physics are gonna be a bit more reliable than our old detection
-local function OnCollisionCallback(inst, other,
-	world_position_on_a_x, world_position_on_a_y, world_position_on_a_z,
-	world_position_on_b_x, world_position_on_b_y, world_position_on_b_z,
-	world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z,
-	lifetime_in_frames)
+local function OnCollisionCallback(inst, other)
+	-- world_position_on_a_x, world_position_on_a_y, world_position_on_a_z,
+	-- world_position_on_b_x, world_position_on_b_y, world_position_on_b_z,
+	-- world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z,
+	-- lifetime_in_frames)
 
 	if not (other ~= nil and other:IsValid() and inst:IsValid()) then
         return
     end
 
 	if not other.do_collide_shock_task then
-		if other.components.locomotor and CanShockEnt(other) and (inst.targets[other] or -math.huge) < GetTime() then
-			other.components.locomotor:Stop()
-		end
+		-- if other.components.locomotor and CanShockEnt(other) and (inst.targets[other] or -math.huge) < GetTime() then
+		-- 	other.components.locomotor:Stop()
+		-- end
 
 		other.do_collide_shock_task = other:DoTaskInTime(0, DoCollideShock, inst) -- Next frame for physics safety
 	end

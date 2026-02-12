@@ -157,7 +157,7 @@ local function OnReelingIn(inst, doer)
                 and inst.components.homeseeker.home ~= nil
                 and inst.components.homeseeker.home:IsValid()
                 and inst.components.homeseeker.home.prefab == "oceanfish_shoalspawner" then
-            TheWorld:PushEvent("ms_shoalfishhooked", inst.components.homeseeker.home)
+            TheWorld:PushEvent("ms_shoalfishhooked_redux", { fisher = doer, fish_shoal = inst.components.homeseeker.home } )
         end
 	end
 end
@@ -467,6 +467,10 @@ local function inv_common(fish_def)
 		inst:AddTag("HASHEATER") --(from heater component) added to pristine state for optimization
 	end
 
+	if fish_def.luckitem ~= nil then
+		inst:AddTag(fish_def.luckitem.luck > 0 and "luckyitem" or "unluckyitem")
+	end
+
 	inst.no_wet_prefix = true
 
     inst.entity:SetPristine()
@@ -552,6 +556,11 @@ local function inv_common(fish_def)
 
 		inst:ListenForEvent("onputininventory", topocket)
 		inst:ListenForEvent("ondropped", toground)
+	end
+
+	if fish_def.luckitem ~= nil then
+		local luckitem = inst:AddComponent("luckitem")
+    	luckitem:SetLuck(fish_def.luckitem.luck)
 	end
 
 	MakeHauntableLaunchAndPerish(inst)

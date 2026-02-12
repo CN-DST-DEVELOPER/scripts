@@ -603,6 +603,10 @@ local function shouldrun(inst)
     return inst.components.combat.target ~= nil and inst.components.timer:TimerExists("hit")
 end
 
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
+end
+
 function PowderMonkeyBrain:OnStart()
 
     local root = PriorityNode(
@@ -622,7 +626,7 @@ function PowderMonkeyBrain:OnStart()
             DoAction(self.inst, DoAbandon, "abandon", true )),
 
         WhileNode(function() return shouldrun(self.inst) end, "Should run",
-            RunAway(self.inst, function(guy) return self.inst.components.combat.target and self.inst.components.combat.target == guy or nil end, SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true)),
+			RunAway(self.inst, { getfn = GetRunAwayTarget }, SEE_PLAYER_DIST, STOP_RUN_DIST, nil, true)),
 
         -- if has a combat target fight it, unless in cooldown or has the order to retreat and not on their own boat.
         WhileNode(function() return shouldattack(self.inst) end, "Should attack",

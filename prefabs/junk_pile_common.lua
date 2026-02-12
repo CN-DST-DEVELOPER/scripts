@@ -37,7 +37,7 @@ for _, item in ipairs(LOOT.ITEMS) do
 end
 
 local function SpawnJunkLoot(inst, digger, nopickup)
-    if math.random() <= CRITTER_SPAWN_CHANCE then
+    if TryLuckRoll(digger, CRITTER_SPAWN_CHANCE, LuckFormulas.ChildSpawnerRareChild) then
         local choice = weighted_random_choice(WEIGHTED_CRITTER_TABLE)
 
         local enabled = choice.enabled_tuning and TUNING[choice.enabled_tuning]

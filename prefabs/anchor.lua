@@ -17,7 +17,7 @@ local item_assets =
 local prefabs =
 {
     "collapse_small",
-	"anchor_item", -- deprecated but kept for existing worlds and mods
+	"anchor_item",
 }
 
 local function on_hammered(inst, hammerer)

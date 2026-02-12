@@ -1,3 +1,6 @@
+--V2C: -hunterfn is used with FindEntities
+--     -gethunterfn just returns the hunter
+
 RunAway = Class(BehaviourNode, function(self, inst, hunterparams, see_dist, safe_dist, fn, runhome, fix_overhang, walk_instead, safe_point_fn)
     BehaviourNode._ctor(self, "RunAway")
     self.safe_dist = safe_dist
@@ -6,6 +9,7 @@ RunAway = Class(BehaviourNode, function(self, inst, hunterparams, see_dist, safe
         self.huntertags = { hunterparams }
         self.hunternotags = { "NOCLICK" }
     elseif type(hunterparams) == "table" then
+		self.gethunterfn = hunterparams.getfn
         self.hunterfn = hunterparams.fn
         self.huntertags = hunterparams.tags
         self.hunternotags = hunterparams.notags
@@ -25,8 +29,6 @@ end)
 function RunAway:__tostring()
     return string.format("RUNAWAY %f from: %s", self.safe_dist, tostring(self.hunter))
 end
-
-
 
 function RunAway:GetRunAngle(pt, hp, sp)
     if self.avoid_angle ~= nil then
@@ -115,7 +117,12 @@ end
 
 function RunAway:Visit()
     if self.status == READY then
-        if self.hunterseeequipped then
+		if self.gethunterfn then
+			self.hunter = self.gethunterfn(self.inst)
+			if self.hunter and not (self.hunter:IsValid() and self.inst:IsNear(self.hunter, self.see_dist)) then
+				self.hunter = nil
+			end
+		elseif self.hunterseeequipped then
             self.hunter = nil
             local x, y, z = self.inst.Transform:GetWorldPosition()
             local ents = TheSim:FindEntities(x, y, z, self.see_dist, self.huntertags, self.hunternotags, self.hunteroneoftags)
@@ -123,7 +130,7 @@ function RunAway:Visit()
                 if ent ~= self.inst and (self.hunterfn == nil or self.hunterfn(ent, self.inst)) then
                     if ent.entity:IsVisible() or ent.components.equippable and ent.components.equippable:IsEquipped() then
                         local owner = ent.components.inventoryitem and ent.components.inventoryitem:GetGrandOwner() or nil
-                        local leader = self.inst.components.follower and self.inst.components.follower:GetLeader() or nil
+                        local leader = self.inst.components.follower and self.inst.components.follower:GetLeader()
                         if owner == nil or leader == nil or owner ~= leader then
                             self.hunter = ent
                             break

@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Well that was a waste of time.",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "How efficient.",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "The knights must be preoccupied. Hardly an excuse, if you ask me.",
+
 	BATTLECRY =
 	{
 		GENERIC = "You ruffian! I'll clean your clock!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "And I just managed to forget you.",
         CHESSPIECE_WAGBOSS_ROBOT = "Do we really need a reminder of this?",
         CHESSPIECE_WAGBOSS_LUNAR = "Can't we just leave this monstrosity in the past?",
+        CHESSPIECE_YOTH = "I have mixed emotions about this one.",
 
         CHESSJUNK1 = "I don't see much in the way of proper clockwork in there.",
         CHESSJUNK2 = "I have a suspicion these were held together with more magic than craftsmanship.",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "I'm afraid it's beyond repair.",
         },
 		HERMITHOUSE_ORNAMENT = "Rather charming.",
-        HERMITHOUSE_LAUNDRY = "When's the last time I did laundry?",
+		HERMITHOUSE_LAUNDRY = "When's the last time I did laundry?",
 
         PETALS_DRIED = "Smells lovely.",
         PETALS_EVIL_DRIED = "Smells lovely.",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "Oh botheration, what a mess.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "I think she'll be rather pleased with this.",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Satisfied?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "What does it want now?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "That's the end of that.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "She has an attitude about her.",
+        COSTUME_PRINCESS_BODY = "A rather fancy outfit for a horse.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "It was something about horses.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "What happened to chivalry?", -- Generic quote. It's aggressive.
+            FOLLOWING = "A loyal horse.", -- Following the character examining
+            FOLLOWING_OTHER = "Who do you serve?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "There's a time to be brave.",
+        ARMOR_YOTH_KNIGHT = "This should offer some protection.",
+        HORSESHOE = "A little luck never hurt.",
+        YOTH_LANCE = "Rather old fashioned.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "It's time ran out.", -- Depleted and on the ground
+            HELD = "I should use it at nightfall.", -- In the players inventory
+            GENERIC = "There's something calming about it.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "If galloping saves me time, then call me Nellie.",
+        YOTH_CHAIR_ROCKING_ITEM = "Riding a horse that goes nowhere? And yet...", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

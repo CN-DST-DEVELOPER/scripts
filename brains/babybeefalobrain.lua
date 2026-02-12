@@ -29,12 +29,10 @@ function BabyBeefaloBrain:OnStart()
 		BrainCommon.PanicTrigger(self.inst),
         BrainCommon.ElectricFencePanicTrigger(self.inst),
         RunAway(self.inst, {tags={"character"}, fn=NonMountedPlayer}, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
-        Follow(self.inst, function() return (self.inst.components.follower ~= nil and
-                                            self.inst.components.follower.leader ~= nil and
-                                            self.inst.components.follower.leader:GetCurrentPlatform() == self.inst:GetCurrentPlatform() and
-                                            self.inst.components.follower.leader) or
-                                            nil
-                            end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+        Follow(self.inst, function()
+                local leader = self.inst.components.follower and self.inst.components.follower:GetLeader()
+                return (leader ~= nil and leader:GetCurrentPlatform() == self.inst:GetCurrentPlatform() and leader) or nil
+            end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("herd") end, WANDER_DIST)
     }, .25)
 

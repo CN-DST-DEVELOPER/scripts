@@ -159,7 +159,7 @@ local states = {
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("mutate")
             
-            local owner = inst.components.follower and inst.components.follower.leader or nil
+            local owner = inst.components.follower and inst.components.follower:GetLeader()
             if owner and owner.components.petleash then
                 owner.components.petleash:DetachPet(inst)
             end

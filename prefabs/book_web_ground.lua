@@ -9,7 +9,7 @@ local SLOWDOWN_CANT_TAGS = { "player", "flying", "playerghost", "INLIMBO" }
 
 local function OnUpdate(inst, x, y, z)
     for i, v in ipairs(TheSim:FindEntities(x, y, z, TUNING.BOOK_WEB_GROUND_RADIUS, SLOWDOWN_MUST_TAGS, SLOWDOWN_CANT_TAGS)) do
-        local is_follower = v.components.follower ~= nil and v.components.follower.leader ~= nil and v.components.follower.leader:HasTag("player")
+        local is_follower = v.components.follower ~= nil and v.components.follower:GetLeader() ~= nil and v.components.follower:GetLeader():HasTag("player")
         if v.components.locomotor ~= nil and not is_follower then
             v.components.locomotor:PushTempGroundSpeedMultiplier(TUNING.BOOK_WEB_GROUND_SPEED_PENALTY, WORLD_TILES.MUD)
         end

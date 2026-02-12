@@ -157,7 +157,7 @@ local function OnGetItemFromPlayer(inst, giver, item)
                         v.components.combat:SetTarget(nil)
                     elseif giver.components.leader ~= nil and
                         v.components.follower ~= nil and
-                        v.components.follower.leader == nil then
+                        v.components.follower:GetLeader() == nil then
                         if not playedfriendsfx then
                             giver:PushEvent("makefriend")
                             playedfriendsfx = true
@@ -196,8 +196,8 @@ local function OnRefuseItem(inst, item)
 end
 
 local function HasFriendlyLeader(inst, target)
-    local leader = inst.components.follower.leader
-    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    local target_leader = target.components.follower and target.components.follower:GetLeader()
 
     if leader ~= nil and target_leader ~= nil then
 
@@ -236,11 +236,12 @@ local function FindTarget(inst, radius)
             inst,
             SpringCombatMod(radius),
             function(guy)
+                local leader = inst.components.follower and inst.components.follower:GetLeader()
                 return (not inst.bedazzled and (not guy:HasTag("monster") or guy:HasTag("player")))
                     and inst.components.combat:CanTarget(guy)
-                    and not (inst.components.follower ~= nil and inst.components.follower.leader == guy)
+                    and not (leader and leader == guy)
                     and not HasFriendlyLeader(inst, guy)
-                    and not (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player")
+                    and not (leader and leader:HasTag("player")
                         and guy:HasTag("player") and not TheNet:GetPVPEnabled())
             end,
             TARGET_MUST_TAGS,
@@ -263,7 +264,7 @@ local function keeptargetfn(inst, target)
         and target.components.health ~= nil
         and not target.components.health:IsDead()
         and not (inst.components.follower ~= nil and
-                (inst.components.follower.leader == target or inst.components.follower:IsLeaderSame(target)))
+                (inst.components.follower:GetLeader() == target or inst.components.follower:IsLeaderSame(target)))
 end
 
 local function BasicWakeCheck(inst)
@@ -292,7 +293,7 @@ local function DoReturn(inst)
     if home ~= nil and
         home.components.childspawner ~= nil and
         not (inst.components.follower ~= nil and
-            inst.components.follower.leader ~= nil) then
+            inst.components.follower:GetLeader() ~= nil) then
         home.components.childspawner:GoHome(inst)
     end
 end
@@ -344,7 +345,7 @@ local function OnAttacked(inst, data)
                 local should_share = dude:HasTag("spider")
                     and not dude.components.health:IsDead()
                     and dude.components.follower ~= nil
-                    and dude.components.follower.leader == inst.components.follower.leader
+                    and dude.components.follower:GetLeader() == inst.components.follower:GetLeader()
 
                 if should_share and dude.defensive and not dude.no_targeting then
                     dude.defensive = false
@@ -368,7 +369,7 @@ local function OnStartLeashing(inst, data)
     inst.components.inventoryitem.canbepickedup = true
 
     if inst.recipe then
-        local leader = inst.components.follower.leader
+        local leader = inst.components.follower and inst.components.follower:GetLeader()
         if leader.components.builder and not leader.components.builder:KnowsRecipe(inst.recipe) and leader.components.builder:CanLearn(inst.recipe) then
             leader.components.builder:UnlockRecipe(inst.recipe)
         end
@@ -408,14 +409,14 @@ local function OnGoToSleep(inst)
 end
 
 local function OnWakeUp(inst)
-    if inst.components.follower.leader == nil then
+    if inst.components.follower:GetLeader() == nil then
         inst.components.inventoryitem.canbepickedup = false
     end
 end
 
 local function CalcSanityAura(inst, observer)
     if observer:HasTag("spiderwhisperer") or inst.bedazzled or
-    (inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("spiderwhisperer")) then
+    (inst.components.follower:GetLeader() ~= nil and inst.components.follower:GetLeader():HasTag("spiderwhisperer")) then
         return 0
     end
 
@@ -508,7 +509,7 @@ local function DoHeal(inst)
     SpawnHealFx(inst, "spider_heal_fx", scale)
 
     local other_spiders = GetOtherSpiders(inst, TUNING.SPIDER_HEALING_RADIUS, {"spider", "spiderwhisperer", "spiderqueen"})
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
 
     for i, spider in ipairs(other_spiders) do
         local target = inst.components.combat.target
@@ -927,6 +928,7 @@ local function create_dropper()
 end
 
 local function spider_moon_common_init(inst)
+    inst.AnimState:OverrideSymbol("web", "spider_white", "web")
     inst.Transform:SetScale(1.25, 1.25, 1.25)
     inst:AddTag("lunar_aligned")
     inst:AddTag("soulless") -- no wortox souls

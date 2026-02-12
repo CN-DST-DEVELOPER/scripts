@@ -44,7 +44,7 @@ local function band_update( inst )
         local x,y,z = owner.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, TUNING.ONEMANBAND_RANGE, nil, FOLLOWER_CANT_TAGS, FOLLOWER_ONEOF_TAGS)
         for k,v in pairs(ents) do
-            if v.components.follower and not v.components.follower.leader and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
+            if v.components.follower and not v.components.follower:GetLeader() and not owner.components.leader:IsFollower(v) and owner.components.leader.numfollowers < 10 then
                 if v:HasTag("merm") then
                     if is_merm_valid(owner, v) then
                         if v:HasTag("mermguard") then
@@ -87,7 +87,7 @@ local function band_update( inst )
         local x,y,z = inst.Transform:GetWorldPosition()
         local ents = TheSim:FindEntities(x,y,z, TUNING.ONEMANBAND_RANGE, HAUNTEDFOLLOWER_MUST_TAGS, FOLLOWER_CANT_TAGS)
         for k,v in pairs(ents) do
-            if v.components.follower and not v.components.follower.leader  and not inst.components.leader:IsFollower(v) and inst.components.leader.numfollowers < 10 then
+            if v.components.follower and not v.components.follower:GetLeader() and not inst.components.leader:IsFollower(v) and inst.components.leader.numfollowers < 10 then
                 inst.components.leader:AddFollower(v)
                 --owner.components.sanity:DoDelta(-TUNING.SANITY_MED)
             end

@@ -592,18 +592,22 @@ function Tune(overrides)
         KNIGHT_DAMAGE = 40,
         KNIGHT_HEALTH = 300 * 3, -- harder for multiplayer
         KNIGHT_ATTACK_PERIOD = 2,
+		KNIGHT_ATTACK_RANGE = 2.5,
+		KNIGHT_HIT_RANGE = 2.75,
         KNIGHT_WALK_SPEED = 5,
         KNIGHT_TARGET_DIST = 10,
 		KNIGHT_DODGE_HIT_RECOVERY = 2,
 
         BISHOP_DAMAGE = 40,
+		BISHOP_INSULATED_DAMAGE_MULT = 0.5,
         BISHOP_HEALTH = 300 * 3, -- harder for multiplayer
         BISHOP_ATTACK_PERIOD = 4,
-        BISHOP_ATTACK_DIST = 6,
+		BISHOP_ATTACK_DIST = 8,
         BISHOP_WALK_SPEED = 5,
         BISHOP_TARGET_DIST = 12,
 
-        ROOK_DAMAGE = 45,
+		ROOK_DAMAGE = 90,
+		ROOK_DAMAGE_PLAYER_PERCENT = 0.5,
         ROOK_HEALTH = 300 * 3, -- harder for multiplayer
         ROOK_ATTACK_PERIOD = 2,
         ROOK_WALK_SPEED = 5,
@@ -1350,6 +1354,11 @@ function Tune(overrides)
 
             WORMSHRINE = TechTree.Create({
                 WORMOFFERING = 3,
+                PERDOFFERING = 1,
+            }),
+
+            KNIGHTSHRINE = TechTree.Create({
+                KNIGHTOFFERING = 3,
                 PERDOFFERING = 1,
             }),
 
@@ -3605,6 +3614,9 @@ function Tune(overrides)
 
 		WINTERS_FEAST_OVEN_BASE_COOK_TIME = night_time*.3333,
 
+        WINTERS_FEAST_BASIC_ORNAMENT_DROP_CHANCE = 0.005,
+        WINTERS_FEAST_WINTER_FOOD_DROP_CHANCE = 0.20,
+
         FIRECRACKERS_STARTLE_RANGE = 10,
         REDLANTERN_LIGHTTIME = total_day_time * 12,
         REDLANTERN_RAIN_RATE = .25,
@@ -4620,6 +4632,7 @@ function Tune(overrides)
         WEREMOOSE_FIGHTING_DRAIN_TIME_MULTIPLIER1 = 10,
         WEREMOOSE_FIGHTING_DRAIN_TIME_DURATION = 6, --time for fighting mults to wear off
         WEREMOOSE_RUN_SPEED = 5.4, --x0.9 speed
+        WEREMOOSE_TACKLE_SPEED = 12,
         WEREMOOSE_ABSORPTION = .9,
         WEREMOOSE_DAMAGE = wilson_attack * 1.75,
 
@@ -8852,11 +8865,11 @@ function Tune(overrides)
 
         RIFT_BIRD_MIGRATE_TIME_MOONPHASE_FACTOR =
         {
-            ["new"] = 1 / (5 / 3), -- 1.667
-            ["quarter"] = 1 / (4 / 3), -- 1.334
+            ["new"] = 0.6,
+            ["quarter"] = 0.75,
             ["half"] = 1,
-            ["threequarter"] = 1 / 0.5, -- 2x
-            ["full"] = 1 / 0.25, -- 4x
+            ["threequarter"] = 1.25,
+            ["full"] = 1.5,
         },
 
         RIFT_BIRD_MIGRATE_TIME_NON_NIGHT_FACTOR = 1 / 1.5,
@@ -8868,15 +8881,27 @@ function Tune(overrides)
         MUTATEDBUZZARD_ENTER_MIGRATION_ON_SLEEP_TIME = 20,
         MUTATEDBUZZARD_MAX_TARGET_COUNT = 3, -- 3 buzzards can share a target, the rest should EAT!
 
-        MUTATEDBUZZARD_FLAMETHROWER_DAMAGE = 20,
-        MUTATEDBUZZARD_FLAMETHROWER_PLANAR_DAMAGE = 15,
+        MUTATEDBUZZARD_FLAMETHROWER_DAMAGE = 15,
+        MUTATEDBUZZARD_FLAMETHROWER_PLANAR_DAMAGE = 10,
 
-        -- Kill buzzards in the hail level between 27 and 32
-        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = 27,
-        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = 5,
+        MUTATEDBUZZARD_MEGAFLARE_NODE_WEIGHT = 10,
+        MUTATEDBUZZARD_MEGAFLARE_TIME = total_day_time,
 
-        TALL_FLAMEWALL_BASE_TIME = 12,
-        TALL_FLAMEWALL_VAR_TIME = 3,
+        MUTATEDBUZZARD_DEATHATTRACTION_TIME = total_day_time * 0.5,
+        MUTATEDBUZZARD_DEATHATTRACTION_WEIGHT = 0.25,
+
+        -- Kill buzzards in the hail level between 20 and 35
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_BASE = 20,
+        BUZZARDSPAWNER_KILL_BUZZARDS_LUNAR_HAIL_VAR = 15,
+
+        BUZZARDSPAWNER_FLARE_HIT_DIST_SQ = 25 * 25,
+
+        TALL_FLAMEWALL_BASE_TIME = 2.5,
+        TALL_FLAMEWALL_VAR_TIME = 0.5,
+
+        ICED_EMBER_BASE_TIME = 11,
+        ICED_EMBER_VAR_TIME = 1,
+        ICED_EMBER_SLIPPERY_RATE = 20,
 
         SPAWN_MOON_PENGULLS = true,
         SPAWN_MUTATED_HOUNDS = true,
@@ -9043,6 +9068,162 @@ function Tune(overrides)
         SPAWN_WINTERSURPRISE = true,
 
 		RETURN_ITEM_TO_FEEDER_RANGE = 4,
+
+        -- Year of the Clockwork Knight
+
+        YOTH_CHARLIE_STAGE_RESET_TIME = total_day_time*2,
+        YOTH_CHARLIE_STAGE_RESET_TIME_VARIABLE = total_day_time*1,
+
+        YOTH_KNIGHT_ATTACK_PERIOD = 2,
+        YOTH_KNIGHT_DAMAGE = 40,
+        YOTH_KNIGHT_HEALTH = 300 * 3, -- harder for multiplayer
+		YOTH_KNIGHT_JOUST_RANGE = { min = 6, max = 14 },
+        YOTH_KNIGHT_WALK_SPEED = 5,
+		YOTH_KNIGHT_JOUST_SPEED = 8,
+        YOTH_KNIGHT_TARGET_DIST = 20,
+        YOTH_KNIGHT_TIME_TO_FLEE = 2,
+        YOTH_KNIGHT_FLEE_RADIUS = ENTITY_POPOUT_RADIUS / 2,
+        YOTH_KNIGHT_MAX_CHASE_TIME = 5,
+        -- the knights armor
+        YOTH_KNIGHT_DAMAGE_TAKEN_MULT_PLAYER = 0.8,
+        YOTH_KNIGHT_DAMAGE_TAKEN_MULT = 0.15,
+
+        YOTH_PRINCESS_SUMMON_COOLDOWN = total_day_time * 3,
+
+        YOTH_LANCE_ATTACK_DAMAGE = wilson_attack * 1.5,
+        YOTH_LANCE_CHARGE_DAMAGE = wilson_attack * 2,
+        YOTH_LANCE_USES = 200,
+        YOTH_LANCE_JOUST_SPEED = 10,
+        YOTH_LANCE_LENGTH = 2,-- Matched up to art.
+        YOTH_LANCE_RUNANIM_LOOP_COUNT = 2, -- Number of run cycles to go through.
+
+        ARMOR_YOTH_KNIGHTHAT = wilson_health*6*multiplayer_armor_durability_modifier,
+        ARMOR_YOTH_KNIGHTHAT_ABSORPTION = .9*multiplayer_armor_absorption_modifier,
+
+        ARMOR_YOTH_KNIGHT = wilson_health*8*multiplayer_armor_durability_modifier,
+        ARMOR_YOTH_KNIGHT_ABSORPTION = .9*multiplayer_armor_absorption_modifier,
+
+        MASK_PRINCESSHAT = wilson_health*1*multiplayer_armor_durability_modifier,
+        MASK_PRINCESSHAT_ABSORPTION = .6*multiplayer_armor_absorption_modifier,
+
+        COSTUME_PRINCESS_BODY = wilson_health*1*multiplayer_armor_durability_modifier,
+        COSTUME_PRINCESS_BODY_ABSORPTION = .6*multiplayer_armor_absorption_modifier,
+
+        YOTH_HECKLER_SHRINE_LEAVE_BASE = 15,
+        YOTH_HECKLER_SHRINE_LEAVE_VARIANCE = 10,
+
+        YOTH_HECKLER_SHRINE_RETURN_BASE = total_day_time,
+        YOTH_HECKLER_SHRINE_RETURN_VARIANCE = seg_time * 2,
+
+        WES_LUCK = -1,
+        YOTH_PRINCESS_SETBONUS_LUCK = -1,
+        YOTH_KNIGHT_SETBONUS_LUCK = 0.2,
+        YOTH_KNIGHT_SETBONUS_EVENT_LUCK = 1, -- 1 luck value when the event is active
+        HORSESHOE_LUCK = 0.05,
+        HORSESHOE_SETBONUS_LUCK = 0.10, -- The amount of luck from horseshoe when we have the yoth knight setbonus
+        HORSESHOE_EVENT_LUCK_MULTIPLIER = 3, -- Extra luck when the event is active.
+        BLACKCATFISH_LUCK = -0.25,
+
+        FLOATINGLANTERN_LEVELS = { 12, 9, 6, 2 }, -- These are the target heights.
+        FLOATINGLANTERN_DURATION = total_day_time * 2,
+
+        YOTH_KNIGHTSTICK_PERISHTIME = 6 * total_day_time,
+        YOTH_KNIGHTSTICK_PERISHTIME_ON_SLIP = -(6 * total_day_time * 0.01), -- 1%
+        YOTH_KNIGHTSTICK_PERISHTIME_ON_COLLIDE = -(6 * total_day_time * 0.02), -- 2%
+        YOTH_KNIGHTSTICK_SPEED_BONUS_PER_GALLOP = 0.09, -- additive, 30 gallops to get to max speed.
+        YOTH_KNIGHTSTICK_MAX_GALLOPS = 30,
+        YOTH_KNIGHTSTICK_TIME_TO_GALLOP = 0.6,
+        YOTH_KNIGHTSTICK_GALLOP_HUNGER_RATE_MULT = 1.33,
+        YOTH_KNIGHTSTICK_MAX_STRESS_ROTATION = 60,
+        YOTH_KNIGHTSTICK_TRACK_ROTATION_TIME = 15 * FRAMES,
+        YOTH_KNIGHTSTICK_TRACK_ROTATION_MIN = 2,
+        YOTH_KNIGHTSTICK_BASE_SPEED = 0.9, -- WILSON_RUN_SPEED * 1.15 = 6.9, 6.9 - 6 = 0.9
+        YOTH_KNIGHTSTICK_MAX_SPEED = 6 * 2, -- WILSON_RUN_SPEED * 2
+        YOTH_KNIGHTSTICK_WORK_COLLIDE = 0.05,
+
+        FLOATINGLANTERN_RAIN_RATE = 1.5,
+        FLOATINGLANTERN_LUNARHAIL_RATE = 35, -- Shred that paper!
+        FLOATINGLANTERN_OUT_OF_BOUNDS_RATE = 100, -- Shoo! be destroyed quick if we're out of bounds!
+
+		CLOCKWORK_HEALTH_REGEN_DELAY = 6, --seconds
+		CLOCKWORK_HEALTH_REGEN_PERIOD = 3,
+		CLOCKWORK_HEALTH_REGEN = 15,
+
+        -- Lots of old content's values pulled to tuning for luck.
+        SHADOW_TENTACLE_RUINS_BAT_CHANCE = 0.2,
+        SHADOW_TENTACLE_SLINGSHOTAMMO_CHANCE = 0.5,
+        SHADOW_TENTACLE_SLINGSHOTAMMO_EXTRA_TENTACLE_CHANCE = 0.25,
+
+        PLAYER_DROP_WET_TOOL_CHANCE_MAX = 0.15,
+
+        GHOSTLYELIXIR_EXTRA1_CHANCE = 0.4,
+        GHOSTLYELIXIR_EXTRA2_CHANCE = 0.1,
+
+        CARNIVAL_CROWKID_TOSS_REWARD_CHANCE = 0.25,
+
+        CRITTER_NUZZLE_CHANCE = 0.05,
+
+        LUNARHAIL_MUTATE_BIRD_CHANCE = 0.25, -- regular mutation
+
+        DEERCLOPS_MEGAFLARE_SPAWN_CHANCE = 0.6,
+        PIRATERAID_MEGAFLARE_SPAWN_CHANCE = 0.6,
+
+        BEARGER_MULTISHED_CHANCE = 0.2,
+
+        FEED_BIRD_POOP_CHANCE = 0.33,
+
+        BIRD_DROP_SEEDS_CHANCE_ONEYEAR = 0.8,
+        BIRD_DROP_SEEDS_CHANCE_PASTONEYEAR = 0.6,
+        BIRD_DROP_ITEM_BASE_CHANCE = 0.35,
+
+        BULLKELP_ROOT_SNAP_CHANCES =
+        {
+            HIGH = 1.0,
+            MED = 0.3,
+            LOW = 0.1,
+        },
+
+        CARNIVAL_SEEDPACKET_EXTRA_SEED_CHANCE = 0.1,
+
+        CHESSJUNK_SPAWNSCION_CHANCE = 0.1,
+
+        FARMPLANT_SPAWN_FRUITFLY_ON_WEED_CHANCE = 0.05,
+
+        SPAWN_GINGERDEADPIG_CHANCE = 0.3, -- Also comes with an extra winter feast fuel
+
+        DROP_SHADOWTHRALL_MASKHAT_CHANCE = 0.3,
+
+        MAGIC_PROTOTYPER_MAXWELL_SPAWN_RABBIT_CHANCE = 0.25,
+        MAGIC_PROTOTYPER_SPAWN_RABBIT_CHANCE = 0.1,
+
+        MALBATROSS_SPAWNFEATHER_ONATTACKED_CHANCE = 0.05,
+
+        MARBLESHRUB_MED_MARBLEBEAN_CHANCE = 0.75,
+        MARBLESHRUB_TALL_MARBLEBEAN_CHANCE = 0.5,
+
+        OASISLAKE_WETPOUCH_CHANCE = 0.6,
+
+        SHARKBOI_GIVE_WINTERLIGHTORNAMENT_CHANCE = 0.4,
+
+        SPIDERQUEEN_SPAWN_BETTER_SPIDER_CHANCE = 0.45, -- spider warrior or spider healer
+        SPIDERQUEEN_SPAWN_SPIDER_WARRIOR_CHANCE = 0.5,
+
+        STATUERUINS_SPAWN_NIGHTMARE_CHANCE = 0.3,
+
+        WALRUS_INVESTIGATE_MEGAFLARE_CHANCE = 0.6,
+
+        ALTERGUARDIAN_SPAWN_LARGE_GESTALT_PROJECTILE_CHANCE = 0.4,
+
+        BRIGHTMARE_SPAWN_INC_CHANCES =
+        {
+            HIGH = 0.4,
+            MED = 0.3,
+            LOW = 0.2,
+        },
+
+        MONKEY_FOLLOW_PLAYER_CHANCE = 0.15,
+        MONKEY_FOLLOW_PLAYER_WITH_BANANA_CHANCE = 0.6,
+        --
     }
 
     TUNING_MODIFIERS = {}

@@ -524,7 +524,7 @@ local function chop_down_tree(inst, chopper)
             elseif chopper:HasTag("woodcutter") then
                 chance = chance * TUNING.WOODCUTTER_LEIF_CHANCE_MOD
             end
-            if math.random() < chance then
+            if TryLuckRoll(chopper, chance, LuckFormulas.SpawnLeif) then
                 for k = 1, (days_survived <= 30 and 1) or math.random(days_survived <= 80 and 2 or 3) do
                     local target = FindEntity(inst, TUNING.LEIF_MAXSPAWNDIST, find_leif_spawn_target, LEIFTARGET_MUST_TAGS, LEIFTARGET_CANT_TAGS)
                     if target ~= nil then

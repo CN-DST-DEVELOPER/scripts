@@ -325,6 +325,7 @@ local function DoActualRez(inst, source, item)
     inst:Show()
 
     inst:SetStateGraph("SGwilson")
+    inst.sg.mem.nocorpse = not TheSim:HasPlayerSkeletons()
 
     inst.Physics:Teleport(x, y, z)
 
@@ -1131,6 +1132,130 @@ local function CommandWheelAllowsGameplay(inst, enable)
 end
 
 --------------------------------------------------------------------------
+-- Jousting.
+
+local function OnStartJoust(inst)
+    if inst.sg.mem.jousttrailtask then
+        inst.sg.mem.jousttrailtask:Cancel()
+        inst.sg.mem.jousttrailtask = nil
+    end
+
+    inst.sg.mem.jousttrailtask = inst:DoPeriodicTask(0, function(inst, data)
+        if data.delay > 0 then
+            data.delay = data.delay - 1
+        else
+            data.delay = math.random(4, 6)
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local angle = inst.Transform:GetRotation() * DEGREES
+            local fx = SpawnPrefab("plant_dug_small_fx")
+            fx.Transform:SetPosition(x - math.cos(angle), 0, z + math.sin(angle))
+            if math.random() < .5 then
+                fx.AnimState:SetScale(-1, 1)
+            end
+            local scale = .5 + math.random() * .3
+            fx.Transform:SetScale(scale, scale, scale)
+        end
+    end,
+    nil,
+    { delay = 0 })
+
+    return true
+end
+
+local function OnEndJoust(inst)
+    if inst.sg.mem.jousttrailtask then
+        inst.sg.mem.jousttrailtask:Cancel()
+        inst.sg.mem.jousttrailtask = nil
+    end
+end
+
+--------------------------------------------------------------------------
+-- Gallop state updates shared by client & server
+
+local function TryGallopTripUpdate(inst)
+	local rot = inst.Transform:GetRotation()
+	local lastrot = inst.sg.statemem.lastrotation or rot
+	inst.sg.statemem.lastrotation = rot
+
+	local rotation_tracker = inst.sg.statemem.rotation_tracker
+	local t = GetTime()
+	local j = 1
+	for i, v in ipairs(rotation_tracker) do -- Clear old entries
+		if v.t + TUNING.YOTH_KNIGHTSTICK_TRACK_ROTATION_TIME > t then
+			--keep all remaining entries only
+			if i == 1 then
+				j = #rotation_tracker + 1
+			else
+				for i = i, #rotation_tracker do
+					rotation_tracker[j] = rotation_tracker[i]
+					j = j + 1
+				end
+			end
+			break
+		end
+	end
+	for i = j, #rotation_tracker do
+		rotation_tracker[i] = nil
+	end
+
+	local diff = ReduceAngle(lastrot - rot)
+	if math.abs(diff) > TUNING.YOTH_KNIGHTSTICK_TRACK_ROTATION_MIN then
+		table.insert(rotation_tracker, { t = t, rot = diff })
+	end
+
+	local stressrotation = 0
+	for _, v in ipairs(rotation_tracker) do
+		stressrotation = stressrotation + v.rot
+	end
+	return math.abs(stressrotation) > TUNING.YOTH_KNIGHTSTICK_MAX_STRESS_ROTATION
+end
+
+--------------------------------------------------------------------------
+--[[Footstep and Foley sound overrides]]
+--  Needs to be client-safe.
+--  return true to block default sounds.
+--  You can also play sounds here AND return false to layer with default sounds.
+
+local function _can_use_sound(inst, soundpath)
+	if soundpath == nil then
+		return false
+	end
+	--Some player states already have horseshoe sounds baked in, so we do not want to double play it.
+	if soundpath == "dontstarve/movement/run_horseshoes" then
+		return not (inst.player_classified and (inst.player_classified.predict_horseshoesounds or inst.player_classified.playinghorseshoesounds:value()))
+	end
+	return true
+end
+
+local function FootstepOverrideFn(inst, volume, ispredicted)
+	local skin_sfx = CLOTHING_SFX[inst.AnimState and inst.AnimState:GetSymbolOverride("foot")]
+	if skin_sfx then
+		if _can_use_sound(inst, skin_sfx.footstep_layered) then
+			inst.SoundEmitter:PlaySound(skin_sfx.footstep_layered, nil, volume or 1, ispredicted)
+		end
+		if _can_use_sound(inst, skin_sfx.footstep_override) then
+			inst.SoundEmitter:PlaySound(skin_sfx.footstep_override, nil, volume or 1, ispredicted)
+			return true
+		end
+	end
+	return false
+end
+
+local function FoleyOverrideFn(inst, volume, ispredicted)
+	local skin_sfx --= CLOTHING_SFX[???]
+	if skin_sfx then
+		if _can_use_sound(inst, skin_sfx.foley_layered) then
+			inst.SoundEmitter:PlaySound(skin_sfx.foley_layered, nil, volume or 1, ispredicted)
+		end
+		if _can_use_sound(inst, skin_sfx.foley_override) then
+			inst.SoundEmitter:PlaySound(skin_sfx.foley_override, nil, volume or 1, ispredicted)
+			return true
+		end
+	end
+	return false
+end
+
+--------------------------------------------------------------------------
 
 return
 {
@@ -1175,4 +1300,9 @@ return
     MapRevealable_OnIconCreatedFn = MapRevealable_OnIconCreatedFn,
     EnableTargetLocking			= EnableTargetLocking,
 	CommandWheelAllowsGameplay	= CommandWheelAllowsGameplay,
+    OnStartJoust                = OnStartJoust,
+    OnEndJoust                  = OnEndJoust,
+	TryGallopTripUpdate			= TryGallopTripUpdate,
+	FootstepOverrideFn			= FootstepOverrideFn,
+	FoleyOverrideFn				= FoleyOverrideFn,
 }

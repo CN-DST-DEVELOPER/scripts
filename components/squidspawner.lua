@@ -87,7 +87,7 @@ local function testforsquid(forcesquid)
             max = moonphase_max
         end
 
-        if forcesquid or (squidcount < max and math.random() < chance) then
+        if forcesquid or (squidcount < max and TryLuckRoll(scrambled[1], chance, LuckFormulas.SquidHerdSpawn)) then
             local herd = SpawnPrefab("squidherd")
             local num = math.random(2, moonphase_max)
             for _=1,num do

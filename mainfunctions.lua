@@ -400,13 +400,13 @@ function PrefabExists(name)
     return Prefabs[name] ~= nil
 end
 
-function SpawnPrefab(name, skin, skin_id, creator)
+function SpawnPrefab(name, skin, skin_id, creator, skin_custom)
     name = string.sub(name, string.find(name, "[^/]*$"))
     if skin and not IsItemId(skin) then
         print("Unknown skin", skin)
 		skin = nil
     end
-    local guid = TheSim:SpawnPrefab(name, skin, skin_id, creator)
+    local guid = TheSim:SpawnPrefab(name, skin, skin_id, creator, skin_custom)
     return Ents[guid]
 end
 
@@ -2449,8 +2449,8 @@ function CreateRepeatedSoundVolumeReduction(repeat_time, lowered_volume_percent)
     end
 end
 
---if fired in the last 0.25 seconds, reduce the volume to 75%
-ClickMouseoverSoundReduction = CreateRepeatedSoundVolumeReduction(0.25, 0.75)
+ClickMouseoverSoundReduction = CreateRepeatedSoundVolumeReduction(0.25, 0.75) --if fired in the last 0.25 seconds, reduce the volume to 75%
+LuckSoundReduction = CreateRepeatedSoundVolumeReduction(0.75, 0.50) --if fired in the last 0.5 seconds, reduce the volume to 50%
 
 local currently_displaying = nil
 function DisplayAntiAddictionNotification( notification )

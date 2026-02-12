@@ -318,7 +318,7 @@ local function OnTalk_Bunnyman(inst)
     inst.SoundEmitter:PlaySound("dontstarve/creatures/bunnyman/idle_med")
 end
 local function NormalLeaderRetargetFn(inst)
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     return leader and leader.components.combat.target or nil
 end
 local function NormalKeepTargetFn(inst, target)

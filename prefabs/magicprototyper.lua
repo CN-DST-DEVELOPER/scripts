@@ -22,8 +22,9 @@ local function onhit(inst, worker)
     end
 end
 
-local function spawnrabbits(inst)
-    if not inst:HasTag("burnt") and math.random() <= 0.1 then
+local function spawnrabbits(inst, doer)
+    local rabbit_chance = doer:HasTag("magician") and TUNING.MAGIC_PROTOTYPER_MAXWELL_SPAWN_RABBIT_CHANCE or TUNING.MAGIC_PROTOTYPER_SPAWN_RABBIT_CHANCE
+    if not inst:HasTag("burnt") and TryLuckRoll(doer, rabbit_chance, LuckFormulas.LootDropperChance) then
         SpawnPrefab("rabbit").Transform:SetPosition(inst.Transform:GetWorldPosition())
     end
 end
@@ -40,9 +41,9 @@ local function onload(inst, data)
     end
 end
 
-local function doonact(inst, soundprefix, onact)
+local function doonact(inst, soundprefix, onact, doer)
     if onact ~= nil then
-        onact(inst)
+        onact(inst, doer)
     end
     if inst._activecount > 1 then
         inst._activecount = inst._activecount - 1
@@ -106,7 +107,7 @@ local function createmachine(level, name, soundprefix, sounddelay, techtree, mer
         end
     end
 
-    local function onactivate(inst)
+    local function onactivate(inst, doer)
         if not inst:HasTag("burnt") then
             inst.AnimState:PlayAnimation("use")
             inst.AnimState:PushAnimation("idle", false)
@@ -114,7 +115,7 @@ local function createmachine(level, name, soundprefix, sounddelay, techtree, mer
                 inst.SoundEmitter:PlaySound("dontstarve/common/researchmachine_"..soundprefix.."_run", "sound")
             end
             inst._activecount = inst._activecount + 1
-            inst:DoTaskInTime(1.5, doonact, soundprefix, onact)
+            inst:DoTaskInTime(1.5, doonact, soundprefix, onact, doer)
             if inst._activetask ~= nil then
                 inst._activetask:Cancel()
             end

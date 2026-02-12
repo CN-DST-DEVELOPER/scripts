@@ -15,7 +15,7 @@ local FruitDragonBrain = Class(Brain, function(self, inst)
 end)
 
 local function GetLeader(inst)
-    return inst.components.follower and inst.components.follower:GetLeader() or nil
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetLeaderLocation(inst)

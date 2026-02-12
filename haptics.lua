@@ -165,15 +165,15 @@ HapticEffects =
 	{ event="dontstarve/impacts/impact_shadowcloth_armour_sharp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
 		
 	-- food
-	{ event="dontstarve/wilson/cook", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },			
-	{ event="dontstarve/wilson/eat", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/wilson/cook", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },			
+	{ event="dontstarve/wilson/eat", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- crafting
 	{ event="dontstarve/wilson/make_trap", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 		
 	-- attacking things
 	{ event="dontstarve/wilson/attack_whoosh", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
-	{ event="dontstarve/wilson/attack_weapon", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/wilson/attack_weapon", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	{ event="dontstarve/wilson/attack_icestaff", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="dontstarve/wilson/attack_firestaff", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="dontstarve/wilson/attack_nightsword", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
@@ -224,7 +224,9 @@ HapticEffects =
 	{ event="dontstarve/common/dropGeneric", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },			
 	{ event="turnoftides/common/together/moon_glass/mine", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="turnoftides/common/together/moon_glass/break", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="rifts6/rock_tree/chop_normal", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve_DLC001/common/iceboulder_hit", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve_DLC001/common/iceboulder_smash", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="rifts6/rock_tree/chop_normal", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
 	
 	-- fishing
 	{ event="dontstarve/common/fishingpole_linebreak", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
@@ -619,6 +621,16 @@ HapticEffects =
 	{ event="rifts6/rock_pillar/wobble_lp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	{ event="rifts6/rock_pillar/fall", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	-- Rifts6 effects end   ----------------------------------------------------------------------------------------------------------------------
+	
+	-- Winter 2025 effects start -----------------------------------------------------------------------------------------------------------------
+	{ event="hookline_2/common/hotspring/use", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
+	{ event="hookline_2/hermitcrab_shell_teleport/use", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	-- Winter 2025 effects end -------------------------------------------------------------------------------------------------------------------
+	
+	-- Year of the Clockwork Knight effects start -----------------------------------------------------------------------------------------------------------------
+	{ event="dontstarve/movement/run_horseshoes", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },		
+	{ event="yoth_2026/fanfare/announce", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	-- Year of the Clockwork Knight effects end -------------------------------------------------------------------------------------------------------------------
 }
 
 return HapticEffects

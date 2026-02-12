@@ -4,35 +4,20 @@ require "behaviours/doaction"
 local BrainCommon = require("brains/braincommon")
 
 local MAX_WANDER_DIST = 20
-local START_RUN_DIST = 3
-local STOP_RUN_DIST = 5
 local MAX_CHASE_TIME = 10
 local MAX_CHASE_DIST = 30
-local SEE_TARGET_DIST = 20
 local SEE_FOOD_DIST = 10
-local RUN_AWAY_DIST = 6
-local STOP_RUN_AWAY_DIST = 8
 
 local FINDFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
-
-local function FindFoodAction(inst)
-	local target = FindEntity(inst, SEE_FOOD_DIST,
-		function(item)
-			return inst.components.eater:CanEat(item) and item:IsOnValidGround()
-		end,
-		nil,
-		FINDFOOD_CANT_TAGS)
-    if target then
-        return BufferedAction(inst, target, ACTIONS.EAT)
-    end
+local function IsFoodValid(item, inst)
+    return inst.components.eater:CanEat(item)
+        and item:IsOnPassablePoint()
 end
 
-local function GoHomeAction(inst)
-    if not inst.components.follower.leader and
-       inst.components.homeseeker and
-       inst.components.homeseeker.home and
-       inst.components.homeseeker.home:IsValid() then
-        return BufferedAction(inst, inst.components.homeseeker.home, ACTIONS.GOHOME)
+local function FindFoodAction(inst)
+	local target = FindEntity(inst, SEE_FOOD_DIST, IsFoodValid, nil, FINDFOOD_CANT_TAGS, inst.components.eater:GetEdibleTags())
+    if target then
+        return BufferedAction(inst, target, ACTIONS.EAT)
     end
 end
 

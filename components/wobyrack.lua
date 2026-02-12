@@ -8,7 +8,7 @@ local WobyRack = Class(DryingRack, function(self, inst)
 end)
 
 function WobyRack:_dbg_print(...)
-	print("WobyRack:", ...)
+	--print("WobyRack:", ...)
 end
 
 return WobyRack

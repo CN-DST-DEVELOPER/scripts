@@ -16,7 +16,7 @@ local MAX_CHASE_TIME = 10
 local MAX_CHASE_DIST = 30
 
 local function GetLeader(inst)
-    return inst.components.follower.leader
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 local function GetLeaderPos(inst)
     local leader = GetLeader(inst)

@@ -60,9 +60,30 @@ local function CancelSitterAnimOver(inst)
 	end
 end
 
+local ROCKING_ANIMS = { "rocking", "rocking_smile", "rocking_hat" }
+local function IsSitterRockingPre(inst, sitter)
+	for i, v in ipairs(ROCKING_ANIMS) do
+		if sitter.AnimState:IsCurrentAnimation(v.."_pre") then
+			return true
+		end
+	end
+
+	return false
+end
+
+local function IsSitterRockingLoop(inst, sitter)
+	for i, v in ipairs(ROCKING_ANIMS) do
+		if sitter.AnimState:IsCurrentAnimation(v.."_loop") then
+			return true
+		end
+	end
+
+	return false
+end
+
 local function OnSyncChairRocking(inst, sitter)
 	if inst.components.sittable:IsOccupiedBy(sitter) then
-		if sitter.AnimState:IsCurrentAnimation("rocking_pre") then
+		if IsSitterRockingPre(inst, sitter) then
 			_PlayAnimation(inst, "rocking_pre")
 			local t = sitter.AnimState:GetCurrentAnimationTime()
 			local len = inst.AnimState:GetCurrentAnimationLength()
@@ -74,7 +95,7 @@ local function OnSyncChairRocking(inst, sitter)
 				_AnimSetTime(inst, t - len)
 			end
 			CancelSitterAnimOver(inst)
-		elseif sitter.AnimState:IsCurrentAnimation("rocking_loop") then
+		elseif IsSitterRockingLoop(inst, sitter) then
 			_PlayAnimation(inst, "rocking_loop", true)
 			_AnimSetTime(inst, sitter.AnimState:GetCurrentAnimationTime())
 			CancelSitterAnimOver(inst)
@@ -88,7 +109,10 @@ local function OnSyncChairRocking(inst, sitter)
 			if sitter.AnimState:IsCurrentAnimation("sit_loop_pre") then
 				_PlayAnimation(inst, "rocking_pst")
 				_PushAnimation(inst, "idle", false)
-			elseif inst.AnimState:IsCurrentAnimation("rocking_loop") or inst.AnimState:IsCurrentAnimation("rocking_pre") then
+			elseif inst.AnimState:IsCurrentAnimation("rocking_pre") or
+				inst.AnimState:IsCurrentAnimation("rocking_loop") or
+				sitter.AnimState:IsCurrentAnimation("sit_item_out") or
+				sitter.AnimState:IsCurrentAnimation("sit_item_hat") then
 				_PlayAnimation(inst, "idle")
 			end
 			if sitter ~= inst._onsitteranimover_sitter then
@@ -144,7 +168,7 @@ local function OnLoad(inst, data)
 	end
 end
 
-local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_radius, burnable, inspection_override)
+local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_radius, burnable, inspection_override, kitdata)
 	local assets =
 	{
 		Asset("ANIM", "anim/"..build..".zip"),
@@ -153,8 +177,9 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		table.insert(assets, Asset("ANIM", "anim/"..bank..".zip"))
 	end
 
-	local _prefabs = prefabs
+	local _prefabs = shallowcopy(prefabs)
 
+	local placername = name.."_placer"
 	local isrocking = string.sub(name, -8) == "_rocking"
 
 	if hasback then
@@ -202,9 +227,21 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		end
 
 		table.insert(ret, Prefab(name.."_back", backfn, assets))
-
-		_prefabs = shallowcopy(prefabs)
 		table.insert(_prefabs, name.."_back")
+	end
+
+	if kitdata then
+		local tags = {}
+		local burnable_data = kitdata.fuelvalue ~= nil and { fuelvalue = kitdata.fuelvalue } or nil
+		local deployable_data =
+		{
+			deployspacing = kitdata.deployspacing or DEPLOYSPACING.DEFAULT,
+			common_postinit = function(inst)
+				inst.overridedeployplacername = placername
+			end,
+		}
+		table.insert(ret, MakeDeployableKitItem(name.."_item", name, bank, build, "kit", assets, kitdata.floatable_data, tags, burnable_data, deployable_data))
+		table.insert(_prefabs, name.."_item")
 	end
 
 	local function fn()
@@ -231,6 +268,9 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 		if isrocking then
 			inst:AddTag("limited_chair")
 			inst:AddTag("rocking_chair")
+			if name == "yoth_chair_rocking" then
+				inst:AddTag("yeehaw")
+			end
 		else
 			inst:AddTag("faced_chair")
 			inst:AddTag("rotatableobject")
@@ -297,7 +337,7 @@ local function AddChair(ret, name, bank, build, facings, hasback, deploy_smart_r
 	end
 
 	table.insert(ret, Prefab(name, fn, assets, _prefabs))
-	table.insert(ret, MakePlacer(name.."_placer", bank, build, "idle", nil, nil, nil, nil, 15, "four"))
+	table.insert(ret, MakePlacer(placername, bank, build, "idle", nil, nil, nil, nil, 15, "four"))
 end
 
 local ret = {}
@@ -306,11 +346,12 @@ local ret = {}
 --      -in up-facing it would be layered in front.
 --      -for rocking chairs, this is used for the front layer arm of the chair.
 --
---       ret,	name,					bank,					build,			  facings,	back,	dep_r,	burn,	inspection_override
-AddChair(ret,	"wood_chair",			"wood_chair",			"wood_chair_chair",		4,	true,	0.875,	true,	"WOOD_CHAIR"	)
-AddChair(ret,	"wood_stool",			"wood_stool",			"wood_stool",			0,	false,	0.875,	true,	"WOOD_CHAIR"	)
-AddChair(ret,	"stone_chair",			"wood_chair",			"stone_chair",			4,	true,	0.875,	false,	"STONE_CHAIR"	)
-AddChair(ret,	"stone_stool",			"wood_stool",			"stone_chair_stool",	4,	false,	0.875,	false,	"STONE_CHAIR"	)
-AddChair(ret,	"hermit_chair_rocking",	"hermit_chair_rocking",	"hermit_chair_rocking",	0,	true,	1,		true,	"WOOD_CHAIR"	)
+--       ret,	name,					bank,					build,			  facings,	back,	dep_r,	burn,	inspection_override,	kit data
+AddChair(ret,	"wood_chair",			"wood_chair",			"wood_chair_chair",		4,	true,	0.875,	true,	"WOOD_CHAIR",			nil	)
+AddChair(ret,	"wood_stool",			"wood_stool",			"wood_stool",			0,	false,	0.875,	true,	"WOOD_CHAIR",			nil	)
+AddChair(ret,	"stone_chair",			"wood_chair",			"stone_chair",			4,	true,	0.875,	false,	"STONE_CHAIR",			nil	)
+AddChair(ret,	"stone_stool",			"wood_stool",			"stone_chair_stool",	4,	false,	0.875,	false,	"STONE_CHAIR", 			nil	)
+AddChair(ret,	"hermit_chair_rocking",	"hermit_chair_rocking",	"hermit_chair_rocking",	0,	true,	1,		true,	"WOOD_CHAIR",			nil	)
+AddChair(ret,	"yoth_chair_rocking",	"yoth_chair_rocking",	"yoth_chair_rocking",	0,	true,	1,		true,	"WOOD_CHAIR",			{ deployspacing = DEPLOYSPACING.DEFAULT, fuelvalue = TUNING.LARGE_FUEL, floatable_data = {}, }	)
 
 return unpack(ret)

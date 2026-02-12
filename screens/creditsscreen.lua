@@ -223,12 +223,11 @@ end
 function CreditsScreen:ShowNextPage()
     local page = self.pages[self.page_order_idx]
 
-    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/creditpage_flip", "flippage")
+    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/creditpage_flip")
 
     self.worldanim:Show()
     self.worldanim:GetAnimState():SetBuild(page.build)
-    self.worldanim:GetAnimState():SetBank(page.bank)
-    self.worldanim:GetAnimState():PlayAnimation(page.anim)
+	self.worldanim:GetAnimState():SetBankAndPlayAnimation(page.bank, page.anim)
 
     if page.title then
         self.titletext:Show()

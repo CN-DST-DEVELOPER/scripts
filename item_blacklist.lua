@@ -44,6 +44,7 @@ ITEM_DISPLAY_BLACKLIST =
 	boat_grass_pirate_item = true,
 	boat_nautical_item = true,
 	boat_pirate_skin_item = true,
+	boat_tesla_item = true,
 	boat_wagstaff_item = true,
 	bundlewrap_cawnival = true,
 	bundlewrap_gothic = true,
@@ -150,6 +151,7 @@ ITEM_DISPLAY_BLACKLIST =
 	lunarmoth_bright_builder = true,
 	mast_crabking_alt_item = true,
 	mast_crabking_item = true,
+	mast_malbatross_tesla_item = true,
 	mast_malbatross_wagstaff_item = true,
 	mast_nautical_item = true,
 	mast_pirate_item = true,
@@ -265,6 +267,7 @@ ITEM_DISPLAY_BLACKLIST =
 	stagehand_dragonfly = true,
 	stagehand_vintage = true,
 	steeringwheel_nautical_item = true,
+	steeringwheel_tesla_item = true,
 	steeringwheel_wagstaff_item = true,
 	tornado_crow = true,
 	treasurechest_upgraded_ancient = true,
@@ -288,6 +291,7 @@ ITEM_DISPLAY_BLACKLIST =
 	walkingplank_grass_pirate = true,
 	walkingplank_nautical = true,
 	walkingplank_pirate_skin = true,
+	walkingplank_tesla = true,
 	walkingplank_wagstaff = true,
 	wall_dreadstone_relicitem = true,
 	wall_hay_cornitem = true,
@@ -404,5 +408,9 @@ SKINS_EVENTLOCK =
 	hermithouse_yule = "winters_feast",
 	meatrack_hermit_multi_yule = "winters_feast",
 	meatrack_hermit_yule = "winters_feast",
+}
+
+UNLOCKABLE_SKINS =
+{
 }
 

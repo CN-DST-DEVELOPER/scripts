@@ -202,13 +202,13 @@ local function KeepTargetFn(inst, target)
 	        and target.components.health
 	        and not target.components.health:IsDead()
 	        and not (inst.components.follower and inst.components.follower:IsLeaderSame(target))
-	        and not (inst.components.follower and inst.components.follower.leader == target))
+	        and not (inst.components.follower and inst.components.follower:GetLeader() == target))
 	else
 	    return (target
 	    	and target.components.combat
 	        and target.components.health
 	        and not target.components.health:IsDead()
-	        and not (inst.components.follower and inst.components.follower.leader == target))
+	        and not (inst.components.follower and inst.components.follower:GetLeader() == target))
 	end
 end
 
@@ -220,7 +220,7 @@ local function RetargetFn(inst)
         function(guy)
         	if guy:HasTag("catcoon") then
         		return 	not (inst.components.follower and inst.components.follower:IsLeaderSame(guy))
-        				and not (inst.components.follower and guy.components.follower and inst.components.follower.leader == nil and guy.components.follower.leader == nil)
+        				and not (inst.components.follower and guy.components.follower and inst.components.follower:GetLeader() == nil and guy.components.follower:GetLeader() == nil)
         				and guy.components.health
 	            		and not guy.components.health:IsDead()
 	            		and inst.components.combat:CanTarget(guy)
@@ -229,7 +229,7 @@ local function RetargetFn(inst)
 	            		and guy.components.health
 	            		and not guy.components.health:IsDead()
 	            		and inst.components.combat:CanTarget(guy)
-	            		and not (inst.components.follower and inst.components.follower.leader ~= nil and guy:HasTag("abigail")))
+	            		and not (inst.components.follower and inst.components.follower:GetLeader() ~= nil and guy:HasTag("abigail")))
             			and not (inst.components.follower and inst.components.follower:IsLeaderSame(guy))
 	            	or 	(guy:HasTag("cattoyairborne")
             			and not (inst.components.follower and inst.components.follower:IsLeaderSame(guy)))
@@ -239,7 +239,7 @@ local function RetargetFn(inst)
 end
 
 local function SleepTest(inst)
-	if ( inst.components.follower and inst.components.follower.leader )
+	if ( inst.components.follower and inst.components.follower:GetLeader() )
 		or ( inst.components.combat and inst.components.combat.target )
 		or inst.components.playerprox:IsPlayerClose()
 		or TheWorld.state.israining and inst.components.rainimmunity == nil then
@@ -263,7 +263,7 @@ local function WakeTest(inst)
 end
 
 local function PickRandomGift(inst, tier)
-	local table = (inst.components.follower and inst.components.follower.leader) and
+	local table = (inst.components.follower and inst.components.follower:GetLeader()) and
 		friendGiftPrefabs or neutralGiftPrefabs
 	-- Neutral and friend tables aren't the same size. Make sure we're in valid range in case loyalty gets added/expired while retching.
 	if tier > #table then tier = #table end

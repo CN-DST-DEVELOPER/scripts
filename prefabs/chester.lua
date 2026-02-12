@@ -444,9 +444,9 @@ local function MorphShadowChester(inst)
 		SwitchToShadowContainerProxy(inst)
 	end
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower.leader -- Getting leader directly special case.
     if leader ~= nil then
-        inst.components.follower.leader:MorphShadowEyebone()
+        leader:MorphShadowEyebone()
     end
 
 	inst.sg.mem.isshadow = true
@@ -464,9 +464,9 @@ local function MorphSnowChester(inst)
 
 	SwitchToContainer(inst)
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower.leader -- Getting leader directly special case.
     if leader ~= nil then
-        inst.components.follower.leader:MorphSnowEyebone()
+        leader:MorphSnowEyebone()
     end
 
 	inst.sg.mem.isshadow = nil
@@ -484,9 +484,9 @@ local function MorphNormalChester(inst)
 
 	SwitchToContainer(inst)
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower.leader -- Getting leader directly special case.
     if leader ~= nil then
-        inst.components.follower.leader:MorphNormalEyebone()
+        leader:MorphNormalEyebone()
     end
 
 	inst.sg.mem.isshadow = nil

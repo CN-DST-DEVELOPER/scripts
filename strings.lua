@@ -48,6 +48,14 @@ STRINGS =
 {
 	PSN = "PlayStation™Network",
 
+    SYSTEM_NAMES = 
+    {
+        PS5 = "PlayStation®5",
+        PS4 = "PlayStation®4",
+        XB1 = "Xbox One",
+        SWITCH = "Nintendo Switch",
+    },
+
     CHARACTER_NAMES =
     {
         wilson = "Wilson P. Higgsbury",
@@ -691,6 +699,7 @@ STRINGS =
             SHADOW_BEEF_BELL = "Bind",
 			SLINGSHOTMODKIT = "Mod",
 			WAGDRONE_PARTS = "Repair",
+			GEARS = "Give",
         },
         STOPUSINGITEM =
         {
@@ -1129,6 +1138,9 @@ STRINGS =
 		-- Winter 2025
 		SOAKIN = "Soak In",
         TRANSFER_CRITTER = "Transfer Ownership",
+
+        -- Year of the Clockwork Knight
+        JOUST = "Charge",
     },
 
 	WOBY_COMMANDS =
@@ -2429,6 +2441,7 @@ STRINGS =
         CHESSPIECE_YOTS = "Gilded Depths Worm Figure",
         CHESSPIECE_WAGBOSS_ROBOT = "W.A.R.B.O.T. Figure",
         CHESSPIECE_WAGBOSS_LUNAR = "Celestial Scion Figure",
+        CHESSPIECE_YOTH = "Gilded Knight Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2474,6 +2487,7 @@ STRINGS =
         CHESSPIECE_YOTS_BUILDER = "Gilded Depths Worm Figure",
         CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "W.A.R.B.O.T. Figure",
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "Celestial Scion Figure",
+        CHESSPIECE_YOTH_BUILDER = "Gilded Knight's Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2496,6 +2510,7 @@ STRINGS =
         CHESSPIECE_YOTS_SKETCH = "Gilded Depths Worm Figure Sketch",
         CHESSPIECE_WAGBOSS_ROBOT_SKETCH = "W.A.R.B.O.T. Figure Sketch",
         CHESSPIECE_WAGBOSS_LUNAR_SKETCH = "Celestial Scion Figure Sketch",
+        CHESSPIECE_YOTH_SKETCH = "Gilded Knight Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -4475,6 +4490,33 @@ STRINGS =
         HERMITCRAB_LIGHTPOST = "Pearl's Light Post",
         HERMITCRAB_LIGHTPOST_ABANDONED = "Seaside Spoils",
         HERMITCRAB_LIGHTPOST_ITEM = "Pearl's Light Post Kit",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE = "Clockwork Knight Shrine",
+        FLOATINGLANTERN = "Sky Lantern",
+        YOTH_KNIGHTSTICK = "Shtick Horse",
+
+        YOTH_CHAIR_ROCKING = "Rocking Mare",
+        YOTH_CHAIR_ROCKING_ITEM = "Rocking Mare Kit",
+
+        KNIGHT_YOTH = "Gilded Knight", -- Used for death announce
+
+        KNIGHT_YOTH_CONQUEST = "Pascal",
+        KNIGHT_YOTH_WAR = "Warren",
+        KNIGHT_YOTH_FAMINE = "Fermin",
+        KNIGHT_YOTH_DEATH = "Desdemona",
+
+        YOTH_KNIGHTHAT = "Gilded Knight's Helmet",
+        ARMOR_YOTH_KNIGHT = "Gilded Knight's Chest Plate",
+
+        MASK_PRINCESSHAT = "Princess Mask",
+        COSTUME_PRINCESS_BODY = "Princess Costume",
+
+        HORSESHOE = "Lucky Horseshoe",
+        YOTH_LANCE = "Joust-a-Dash", 
+
+        PLAYBILL_THE_PRINCESS_YOTH = "My Knights Four and I\nA Stage Play",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -4920,6 +4962,7 @@ STRINGS =
         CHESSPIECE_YOTS_BUILDER = "A reminder of a lucky worm encounter.",
         CHESSPIECE_WAGBOSS_ROBOT_BUILDER = "The automation.",
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "The abomination.",
+        CHESSPIECE_YOTH_BUILDER = "Shining armor included.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -4933,6 +4976,7 @@ STRINGS =
         CHESSPIECE_MANRABBIT_SKETCH = "A sculpture sketch of a playful Bunnyman.",
         CHESSPIECE_YOTD_SKETCH = "A sculpture sketch of a Dragonfly boat race Start Tower.",
         CHESSPIECE_YOTS_SKETCH = "A sculpture sketch of a Gilded Depths Worm.",
+        CHESSPIECE_YOTH_SKETCH = "A sculpture sketch of a Gilded Knight",
 
         CRITTER_GLOMLING_BUILDER = "Befriend a bouncy Glomglom.",
         CRITTER_DRAGONLING_BUILDER = "Befriend a noble Broodling.",
@@ -5665,6 +5709,13 @@ STRINGS =
 		HERMIT_CHAIR_ROCKING = "Have a seat, you'll be drifting away in no time.",
 
         HERMITCRAB_LIGHTPOST = "Set the mood for a seaside sanctuary!",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE = "Make offerings to the whirring Clockwork Knight",
+        FLOATINGLANTERN = "Cast a comforting warm glow from above.",
+        YOTH_KNIGHTSTICK = "Horse around.",
+        YOTH_CHAIR_ROCKING_ITEM = "Take a ride and enjoy going nowhere.",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -8662,7 +8713,9 @@ STRINGS.UI =
 		NEEDSWINTERS_FEAST = "Available during Winter's Feast!",
         NEEDSYOTD = "Available during Year of the Dragonfly!",
         NEEDSYOTS = "Available during Year of the Depths Worm!",
+        NEEDSYOTH = "Available during Year of the Clockwork Knight!",
 
+        NEEDSSHRINE = "Make an offering at any Lunar New Year Shrine!", -- For the generic recipes available for any lunar new year.
         NEEDSPERDSHRINE = "Make an offering at the Gobbler Shrine!",
         NEEDSWARGSHRINE = "Make an offering at the Varg Shrine!",
         NEEDSPIGSHRINE = "Make an offering at the Pig Shrine!",
@@ -8672,6 +8725,8 @@ STRINGS.UI =
         NEEDSRABBITSHRINE = "Make an offering at the Bunnyman Shrine!",
         NEEDSDRAGONSHRINE = "Make an offering at the Dragonfly Shrine",
         NEEDSWORMSHRINE = "Make an offering at the Depths Worm Shrine!",
+        NEEDSKNIGHTSHRINE = "Make an offering at the Clockwork Knight Shrine!",
+
         NEEDSMADSCIENCE = "Brew at the Mad Scientist Lab!",
 		NEEDSWINTERSFEASTCOOKING = "Cook this festive meal in the Masonry Oven!",
         NEEDSCARNIVAL_PRIZESHOP = "Purchase at the Cawnival's Prize Booth!",
@@ -8791,6 +8846,8 @@ STRINGS.UI =
             "Kent Reimer",
             "Garnet (G50) Syberg-Olsen",
             "Omar Al-Saadi",
+            "Elaine Chen",
+            "Nathan Bosia",
         },
 
         ALTGAMES =
@@ -8809,6 +8866,25 @@ STRINGS.UI =
         EXTRA_THANKS_2 = "Pieter Wycoff\nMatthew Nickerson\nAnna Sweet",
         SONY_THANKS = "Shane Bettenhausen\nAdam Boyes\nBrian Silva\nNick Suttner\nAlessandro Bovenzi",
         XB1_THANKS = "Rick Ryan\nVictor Castano\nAngela Savarese\nNick Bodenham",
+        NX_THANKS = "Kristen Lynch\nTed Regulski",
+
+        SONY = 
+        {
+            NAMES = 
+            {
+                "Shane Bettenhausen",
+                "Adam Boyes",
+                "Brian Silva", 
+                "Nick Suttner",
+            },
+
+            NAMES2 = 
+            {
+                "Alessandro Bovenzi", 
+                "Alice Liang", 
+                "Andrew Wong",
+            },
+        },
 
         BLIT =
         {
@@ -8862,6 +8938,88 @@ STRINGS.UI =
                 "Norman Fong",
         	},
         },
+
+        SKYMAP = 
+        {
+            TITLE = "%s port by Skymap Games",
+            NAMES =
+            {
+                "Daniel Bourke",
+                "Collin Desmond",
+                "Neal Laurenza",
+                "Jeremy Quinn",
+            },
+            NAMES2 =
+            {
+                "CJ Schiller",
+                "Robert Smith",
+                "Herman Lejter",
+                "James Kilian",
+            },
+            NAMES3 =
+            {
+                "Cameron McQuade",
+                "Karyn Kilian",
+                "Evan Shuey",
+                "Holly Marcella Blooflat",
+            },
+            NAMES4 =
+            {
+                "Jane Quigley",
+                "Marcus Carbone",
+                "Dave Carrigg",
+                "Joseph Owen",
+            },
+            PS5_NAMES =
+            {
+                "Josh LaFrance",
+                "Evan Shuey",
+                "Neal Laurenza",
+                "Dave Carrigg",
+                "Daniel Bourke",
+            },
+            PS5_NAMES2 =
+            {
+                "Preston Peek",
+                "Randy Condon",
+                "Herman Lejter",
+                "Karyn Kilian",
+            },
+        },
+
+        HUWIZ = 
+        {
+            TITLE = "%s QA by HUWIZ QA/UX",
+            NAMES =
+            {
+                "Alexandre Do Rego",
+                "Carolljo Maher",
+                "Frédérik Macchabée",
+                "Gabriel Levac",
+            },
+            NAMES2 =
+            {
+                "Jason Smith Murk",
+                "Kariane Lacharité",
+                "Kevin Proulx",
+                "Louis St-Denis",
+            },
+            NAMES3 =
+            {
+                "Nicolas Lefebvre",
+                "Roxanne Gingras",
+                "Sébastien Chamard",
+                "Thibault Armando",
+            },
+            NAMES4 =
+            {
+                "Alexandre Caron",
+                "Michael Frouin",
+                "Jeanne Dion",
+                "Maxime Landry Lamy",
+            }
+        },
+
         THANKS = "And a very special thanks to all our supporters who braved the challenge of the \"Early-Access\nBeta\". You are too numerous to name - our amazing moderators, the wonderful artists, musicians,\nlivestreamers, to all who made a Let's Play video and everybody who chimed in to let us know\nexactly what you think. Your encouragement, passion and support has been amazing.\n\nDon't Starve Together is truly a better game because of all of you.",
 
         FMOD = "FMOD Sound System,\nCopyright Firelight Technologies",
@@ -11120,7 +11278,8 @@ STRINGS.UI =
 		YEAR_OF_THE_CATCOON = "Year of the Catcoon",
         YEAR_OF_THE_BUNNYMAN = "Year of the Bunnyman",
         YEAR_OF_THE_DRAGONFLY = "Year of the Dragonfly",
-        YEAR_OF_THE_SNAKE = "Year of the Depths Worm",        
+        YEAR_OF_THE_SNAKE = "Year of the Depths Worm",
+        YEAR_OF_THE_KNIGHT = "Year of the Clockwork Knight",
 
         PREFABSWAPS = "Changing Resources",
         PREFABSWAPS_START = "Starting Resource Variety",
@@ -11621,6 +11780,8 @@ STRINGS.UI =
 		HIDDEN_NAME = "This server name has been filtered",
         HIDDEN_NAME_LISTING = "This server name has been filtered",
 		HIDDEN_DESCRIPTION = "*****",
+		BLOCKED_WORLD = "Blocked World",
+		CREATED_BY = "Created by:"
     },
 
 	DEMOOVERDIALOG =
@@ -16146,7 +16307,56 @@ STRINGS.HECKLERS_OFF_SCRIPT = {
     "It's all gone wrong!"
 }
 
+STRINGS.HECKLERS_YOTH =
+{
+    SHRINE_ARRIVE = -- Arrives to land on the shrine
+    {
+        "Here we go!",
+        "Were you all just waiting for me?",
+        "Hiya, chump!",
+    },
+
+    SHRINE_IDLE = -- Idle when on the shrine
+    {
+        "Do something already!",
+        "What now?",
+        "Whatdya got?",
+    },
+
+    SHRINE_USE = -- When you trade something from the shrine
+    {
+        "There's a sucker born every minute!",
+        "Hope it was worth it!",
+    },
+
+    SHRINE_GIVE_PLAYBILL = -- Drops the play bill for the player
+    {
+        "Here's my bill!",
+    },
+
+    SHRINE_LEAVE = -- Flys away from the shrine.
+    {
+        "Boring!",
+    },
+
+    SHRINE_LEAVE_PLAY = -- Flys away from the shrine to catch a play.
+    {
+        "That's my cue!",
+    },
+
+    SHRINE_BURN = -- Shrine is ignited and heckler flys away.
+    {
+        "Bunch of ashes!",
+    },
+
+    SHRINE_HIT = -- Shrine is getting hammered and heckler flys away
+    {
+        "Was it something I said? HA HA HA HA!",
+    },
+}
+
 STRINGS.CAST = {
+    -- The Doll
     DOLL = "The Doll",
     DOLL_BROKEN = "The Broken Doll",
     DOLL_REPAIRED = "The Shattered Doll",
@@ -16156,14 +16366,16 @@ STRINGS.CAST = {
     MIRROR = "The Mirror",
     FOOL = "The Fool",
     TREE = "The Tree",
-    --
+    -- The Veil
     SAGE = "The Sage",
     HALFWIT = "The Halfwit",
     TOADY = "The Toady",
-    --
+    -- The Vault
     VISIONIST = "The Visionist",
     ARTIFICER = "The Artificer",
     ELYTRA = "Elytra",
+    -- Year of the Clockwork Knight (The Princess)
+    PRINCESS = "The Princess",
 }
 
 STRINGS.PLAYS = {
@@ -16181,6 +16393,7 @@ STRINGS.PLAYS = {
     },
     THEVEIL = "The Pall",
     THEVAULT = "A Task Complete",
+    THEPRINCESS = "My Knights Four and I", -- Year of the Clockwork Knight
 }
 
 STRINGS.ARCHIVE_RUNE_STATUE = {

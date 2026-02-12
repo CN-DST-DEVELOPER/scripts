@@ -360,18 +360,16 @@ local function SpawnDefenders(inst, attacker)
                             (TUNING.SPAWN_SPIDER_WARRIORS and k <= num_warriors and not inst:HasTag("bedazzled")) and 
                             "spider_warrior" or "spider"
 
-                local spider = inst.components.childspawner:SpawnChild()
+                local spider = inst.components.childspawner:SpawnChild(attacker)
                 if spider ~= nil and attacker ~= nil and spider.components.combat ~= nil then
-                    spider.components.combat:SetTarget(attacker)
                     spider.components.combat:BlankOutAttacks(1.5 + math.random() * 2)
                 end
             end
 
             inst.components.childspawner.childname = "spider"
             if not inst:HasTag("bedazzled") then
-            local emergencyspider = inst.components.childspawner:TrySpawnEmergencyChild()
+            local emergencyspider = inst.components.childspawner:TrySpawnEmergencyChild(attacker)
             if emergencyspider ~= nil then
-                emergencyspider.components.combat:SetTarget(attacker)
                 emergencyspider.components.combat:BlankOutAttacks(1.5 + math.random() * 2)
             end
         end

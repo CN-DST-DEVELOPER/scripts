@@ -38,7 +38,8 @@ local function KeepFaceTargetFn(inst, target)
 end
 
 local function ShouldGoHome(inst)
-    if inst.components.follower ~= nil and inst.components.follower.leader ~= nil then
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    if leader then
         return false
     end
     local homePos = inst.components.knownlocations:GetLocation("home")
@@ -51,6 +52,10 @@ local function ShouldRoll(inst)
             inst:PushEvent("rollattack")
         end
     end
+end
+
+local function GetRunAwayTarget(inst)
+	return inst.components.combat.target
 end
 
 function CentipedeBrain:OnStart()
@@ -68,11 +73,11 @@ function CentipedeBrain:OnStart()
                             "AttackMomentarily",
                             ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST)),
                 WhileNode(function() return self.inst.components.combat.target ~= nil and self.inst.components.combat:InCooldown() end, "Dodge",
-                    RunAway(self.inst, function() return self.inst.components.combat.target end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
+					RunAway(self.inst, { getfn = GetRunAwayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
                 WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
                     DoAction(self.inst, GoHomeAction, "Go Home", true)),
 
-                Follow(self.inst, function() return self.inst.components.follower ~= nil and self.inst.components.follower.leader or nil end,
+                Follow(self.inst, function() return self.inst.components.follower ~= nil and self.inst.components.follower:GetLeader() or nil end,
                     5, 7, 12),
 
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),

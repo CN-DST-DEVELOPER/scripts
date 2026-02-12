@@ -19,11 +19,11 @@ local KITTEN_SCALE = 0.7
 
 
 local function ShouldWakeUp(inst)
-	return DefaultWakeTest(inst) or (inst.components.follower.leader ~= nil and not inst.components.follower:IsNearLeader(SLEEP_NEAR_LEADER_DISTANCE))
+	return DefaultWakeTest(inst) or (inst.components.follower:GetLeader() ~= nil and not inst.components.follower:IsNearLeader(SLEEP_NEAR_LEADER_DISTANCE))
 end
 
 local function ShouldSleep(inst)
-	return DefaultSleepTest(inst) and (inst.components.follower.leader == nil or inst.components.follower:IsNearLeader(SLEEP_NEAR_LEADER_DISTANCE))
+	return DefaultSleepTest(inst) and (inst.components.follower:GetLeader() == nil or inst.components.follower:IsNearLeader(SLEEP_NEAR_LEADER_DISTANCE))
 end
 
 -------------------------------------------------------------------------------
@@ -131,7 +131,7 @@ local function OnPetted(inst, data)
 	if doer and doer.components.leader ~= nil then
 		inst.components.sleeper:WakeUp()
 
-		if inst.components.follower.leader ~= doer then
+		if inst.components.follower:GetLeader() ~= doer then
 			doer:PushEvent("makefriend")
 			doer.components.leader:AddFollower(inst)
 		end

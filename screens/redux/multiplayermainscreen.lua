@@ -297,6 +297,10 @@ local function MakeYOTRBanner(self, banner_root, uianim)
 	_MakeGenericBanner(uianim, "dst_menu_yotr")
 end
 
+local function MakeYOTHBanner(self, banner_root, uianim)
+    _MakeGenericBanner(uianim, "dst_menu_yoth")
+end
+
 --------------------------------------------------------------------------
 --Event banners
 
@@ -364,6 +368,8 @@ function MakeBanner(self)
 		--REMINDER: Check MakeBannerFront as well!
 		--
 		MakeHallowedNightsBanner(self, banner_root, uianim)
+    elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTH) then
+        MakeYOTHBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
 		MakeYOTSBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTD) then

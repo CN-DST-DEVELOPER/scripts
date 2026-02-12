@@ -56,10 +56,11 @@ local function SpawnMosquitos(inst, attacker)
             mosquito.Physics:Teleport(x + dist * math.cos(angle), 0, z + dist * math.sin(angle))
 
             if mosquito.components.combat ~= nil then
+                local leader = mosquito.components.follower and mosquito.components.follower:GetLeader()
                 for _, target in ipairs(targets) do
                     if mosquito.components.combat:CanTarget(target) and
                         not mosquito.components.combat:IsAlly(target) and
-                        (not mosquito.components.follower.leader or not mosquito.components.follower.leader.components.combat:IsAlly(target) ) and                     
+                        (not leader or not leader.components.combat or not leader.components.combat:IsAlly(target)) and                     
                         (target.components.inventory == nil or not target.components.inventory:FindItem(IsMosquitoMusk)) then
                         mosquito.components.combat:SuggestTarget(target)
 

@@ -25,13 +25,13 @@ for k, _ in pairs(chance_loot) do
 	table.insert(prefabs, k)
 end
 
-local function onfinishcallback(inst)
+local function onfinishcallback(inst, worker)
     local x, y, z = inst.Transform:GetWorldPosition()
 
     SpawnPrefab("dirt_puff").Transform:SetPosition(x, y, z)
     inst:Remove()
 
-	if math.random() < TUNING.FARM_SOIL_DEBRIS_LOOT_CHANCE then
+    if TryLuckRoll(worker, TUNING.FARM_SOIL_DEBRIS_LOOT_CHANCE, LuckFormulas.LootDropperChance) then
         inst.components.lootdropper:SpawnLootPrefab(weighted_random_choice(chance_loot))
     end
 end

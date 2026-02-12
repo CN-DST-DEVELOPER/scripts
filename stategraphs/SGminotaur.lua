@@ -168,7 +168,7 @@ local states =
             inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/scuff")
             inst.SoundEmitter:PlaySound("ancientguardian_rework/minotaur2/voice")
             inst.AnimState:PlayAnimation("atk_pre")
-            inst.AnimState:PlayAnimation("paw_loop", true)
+			inst.AnimState:PushAnimation("paw_loop")
             inst.sg:SetTimeout(1.5)
             inst.chargecount = 0
         end,

@@ -11,8 +11,13 @@ end)
 
 -----------------------------------------------------------------------------------------
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function GetLeaderPosition(inst)
-    return (inst.components.follower and inst.components.follower.leader and inst.components.follower.leader:GetPosition())
+    local leader = GetLeader(inst)
+    return (leader and leader:GetPosition())
         or inst:GetPosition()
 end
 
@@ -23,7 +28,7 @@ local function ReturnToPlayerAfterFinishedScan(inst)
         return nil
     end
 
-    local leader = (inst.components.follower ~= nil and inst.components.follower.leader)
+    local leader = GetLeader(inst)
     if not leader then
         inst:OnReturnedAfterSuccessfulScan()
         return
@@ -31,8 +36,9 @@ local function ReturnToPlayerAfterFinishedScan(inst)
 
     local flyto_position = nil
     local offset = nil
-    if inst.components.follower ~= nil and inst.components.follower.leader ~= nil then
-        flyto_position = inst.components.follower.leader:GetPosition()
+    local leader = GetLeader(inst)
+    if leader then
+        flyto_position = leader:GetPosition()
         local angle_to_leader = inst:GetAngleToPoint(flyto_position:Get())
         offset = FindWalkableOffset(flyto_position, angle_to_leader, 1.0)
     else

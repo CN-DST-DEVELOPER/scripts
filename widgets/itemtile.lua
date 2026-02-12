@@ -12,12 +12,17 @@ local function DoInspected(invitem, tried)
     end
 end
 
+--NOTE: keep in sync with RecipeTile.sSetImageFromRecipe
 local function SetImageFromItem(im, item)
 	if item.layeredinvimagefn then
 		local layers = item.layeredinvimagefn(item)
 		if layers and #layers > 0 then
 			local row = layers[1]
 			im:SetTexture(row.atlas or GetInventoryItemAtlas(row.image), row.image)
+			if row.offset then
+				print("WARNING: offset not supported on layer 1 of layered icon.  Item = "..tostring(item))
+				assert(BRANCH ~= "dev")
+			end
 
             local j = 1
 
@@ -31,13 +36,16 @@ local function SetImageFromItem(im, item)
 					if w then
 						w:SetTexture(row.atlas or GetInventoryItemAtlas(row.image), row.image)
 					else
-						im.layers[j] = im:AddChild(Image(row.atlas or GetInventoryItemAtlas(row.image), row.image))
+						w = im:AddChild(Image(row.atlas or GetInventoryItemAtlas(row.image), row.image))
 						if usecc then
-							im.layers[j]:SetEffect("shaders/ui_cc.ksh")
+							w:SetEffect("shaders/ui_cc.ksh")
 						end
+						im.layers[j] = w
 					end
 					if row.offset then
-						im.layers[j]:SetPosition(row.offset)
+						w:SetPosition(row.offset)
+					else
+						w:SetPosition(0, 0, 0)
 					end
 					j = j + 1
 				end
@@ -843,6 +851,23 @@ function ItemTile:HandleBuffFX(invitem, fromchanged, data)
                     if TheFocalPoint then
                         TheFocalPoint.SoundEmitter:PlaySound("winter2025/dessicant/use")
                     end
+                end)
+            end
+        end
+    elseif invitem:HasAnyTag("luckyitem", "unluckyitem", "luckysource", "unluckysource") and data then
+        if (data.effect == "playluckyfx" and invitem:HasAnyTag("luckyitem", "luckysource"))
+            or (data.effect == "playunluckyfx" and invitem:HasAnyTag("unluckyitem", "unluckysource")) then
+            if self.playluckyfx == nil then
+                self.playluckyfx = self.image:AddChild(UIAnim())
+                local ref = self.playluckyfx
+                ref:GetAnimState():SetBank("inventory_fx_luck")
+                ref:GetAnimState():SetBuild("inventory_fx_luck")
+                ref:GetAnimState():PlayAnimation(data.effect == "playluckyfx" and "lucky" or "unlucky", false)
+                ref:GetAnimState():AnimateWhilePaused(true)
+                ref:SetClickable(false)
+                ref.inst:ListenForEvent("animover", function()
+                    self.playluckyfx = nil
+                    ref:Kill()
                 end)
             end
         end

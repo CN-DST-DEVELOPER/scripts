@@ -328,6 +328,9 @@ function MainScreen:Quit()
 end
 
 function MainScreen:OnHostButton()
+    if TheInventory:HasSupportForOfflineSkins() and not TheInventory:HasDownloadedInventory() then
+        TheInventory:ForceLoadOfflineCache() -- This can set HasDownloadedInventory and only does things if TheInventory:HasSupportForOfflineSkins() returns true.
+    end
     CacheCurrentVanityItems(self.profile)
     ShardSaveGameIndex:LoadSlotEnabledServerMods()
     KnownModIndex:Save()

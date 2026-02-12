@@ -90,8 +90,9 @@ local function do_mutate(inst)
         local x,y,z = inst.Transform:GetWorldPosition()
         new_spider.Transform:SetPosition(x,y,z)
 
-        if inst.components.follower.leader ~= nil then
-            new_spider.components.follower:SetLeader(inst.components.follower.leader)
+        local leader = inst.components.follower and inst.components.follower:GetLeader()
+        if leader then
+            new_spider.components.follower:SetLeader(leader)
         end
 
         if inst.components.combat:HasTarget() then

@@ -311,6 +311,11 @@ local function OnSave(inst, data)
             end
         end
 
+        if inst.components.lootdropper then
+            local lucky_user = inst.components.lootdropper:GetLuckyUser()
+            data.luck_num = lucky_user and GetEntityLuck(lucky_user) or 0
+        end
+
     else
         if inst.createnewchunktask ~= nil   then
             data.new_chunk_pos = SerializePosition(inst.createnewchunktask._target_pt)
@@ -399,7 +404,7 @@ local function OnLoadPostPass(inst, newents, data)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
                 GenerateLoot(inst, pos)
-                if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+                if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() <= GetLuckChance(data.luck_num or 0, LUCY_NUGGET_CHANCE, LuckFormulas.LootDropperChance) then
                     GenerateLoot(inst, pos, "lucky_goldnugget")
                 end
             end
@@ -886,10 +891,11 @@ local function Segment_OnAnimOver(inst)
 
     elseif inst.AnimState:IsCurrentAnimation("segment_death") then
         inst.AnimState:PlayAnimation("segment_death_pst")
+        local lucky_user = inst.worm ~= nil and inst.worm.components.lootdropper:GetLuckyUser()
         GenerateLoot(inst)
         GenerateLoot(inst)
         GenerateLoot(inst)
-        if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and math.random() < LUCY_NUGGET_CHANCE then
+        if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) and TryLuckRoll(lucky_user, LUCY_NUGGET_CHANCE, LuckFormulas.LootDropperChance) then
             GenerateLoot(inst,nil,"lucky_goldnugget")
         end
     elseif inst.AnimState:IsCurrentAnimation("segment_death_pst") then

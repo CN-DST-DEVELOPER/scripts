@@ -164,6 +164,12 @@ local function RefreshHoneyState(inst)
     SetHoneyLevel(inst, CalcHoneyLevel(inst.components.workable.workleft))
 end
 
+local LUCKFORMULA_RECIPROCAL = .33
+local function SpawnBeequeenChanceMult(inst, chance, luck)
+    return luck < 0 and chance * (1 + math.abs(luck))
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
+
 local function OnWorked(inst, worker, workleft)
     if not inst.components.workable.workable then
         return
@@ -185,7 +191,7 @@ local function OnWorked(inst, worker, workleft)
 
         if TUNING.BEEQUEEN_SPAWN_WORK_THRESHOLD > 0 then
             local spawnchance = workleft < TUNING.BEEQUEEN_SPAWN_WORK_THRESHOLD and math.min(.8, 1 - workleft / TUNING.BEEQUEEN_SPAWN_WORK_THRESHOLD) or 0
-            if math.random() < spawnchance then
+            if TryLuckRoll(worker, spawnchance, SpawnBeequeenChanceMult) then
                 inst.components.workable:SetWorkable(false)
                 SetHoneyLevel(inst, 0)
                 local x, y, z = worker.Transform:GetWorldPosition()

@@ -13,12 +13,11 @@ local MAX_WANDER_DIST = 3
 local FIND_FOOD_ACTION_DIST = 12
 
 local function GetOwner(inst)
-    local leader = inst.components.follower.leader
-    local owner = leader ~= nil and leader.components.inventoryitem ~= nil and leader.components.inventoryitem:GetGrandOwner() or nil
-    if owner ~= nil and owner:HasTag("pocketdimension_container") then
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    if leader ~= nil and leader:HasTag("pocketdimension_container") then
         return nil
     end
-    return owner
+    return leader
 end
 
 local GetFaceTargetFn = GetOwner
@@ -86,7 +85,7 @@ local function LoveOwner(inst)
     return owner ~= nil
         and owner:HasTag("player")
         and inst.components.hunger:GetPercent() > 0.5
-        and math.random() < 0.5
+        and TryLuckRoll(owner, TUNING.CRITTER_NUZZLE_CHANCE, LuckFormulas.CritterNuzzle)
         and BufferedAction(inst, owner, ACTIONS.NUZZLE)
         or nil
 end

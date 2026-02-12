@@ -66,6 +66,7 @@ local function onfuelchange(newsection, oldsection, inst)
     else
         if not inst.components.burnable:IsBurning() then
             updatefuelrate(inst)
+            inst.components.burnable:Ignite()
         end
         inst.AnimState:PlayAnimation("idle")
         inst.components.burnable:SetFXLevel(newsection, inst.components.fueled:GetSectionPercent())
@@ -192,8 +193,6 @@ local function fn()
     inst.components.inspectable.getstatus = getstatus
 
     --------------------
-
-    inst.components.burnable:Ignite()
     inst:ListenForEvent("onbuilt", onbuilt)
 
     inst:AddComponent("hauntable")

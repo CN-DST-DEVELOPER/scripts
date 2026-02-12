@@ -140,7 +140,7 @@ local function SpawnCorpseForPlayer(player, reschedule)
         reschedule(player)
 
         if corpse then --This was a scheduled spawn not the event spawn so put a fade on it (or mutate it!)
-            if CanLunarPreRiftMutateFromCorpse(inst) or math.random() < 0.25 then
+            if CanLunarPreRiftMutateFromCorpse(corpse) or TryLuckRoll(player, TUNING.LUNARHAIL_MUTATE_BIRD_CHANCE, LuckFormulas.PreRiftMutation) then
                 corpse:SetNonGestaltCorpse()
             else
                 corpse:StartFadeTimer(GetRandomMinMax(_corpse_fade_min_time, _corpse_fade_max_time))
@@ -214,11 +214,7 @@ local function ToggleUpdate(force)
 end
 
 local function GetMutatedBirdSpawnChance(spawnpoint) --High chance at first then lowers
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-    return (
-        mutatedbirdmanager and mutatedbirdmanager:GetPopulationForNodeAtPoint("mutatedbird", spawnpoint.x, spawnpoint.z) > 0
-        and inst.components.timer:TimerExists(HAIL_EVENT_TIMERS.POST_HAIL)
-    )   and (1 - GetPostHailEasingMult()) * 0.6 or 0
+    return inst.components.timer:TimerExists(HAIL_EVENT_TIMERS.POST_HAIL) and (1 - GetPostHailEasingMult()) * 0.6 or 0
 end
 
 local SCARECROW_TAGS = { "scarecrow" }
@@ -261,13 +257,6 @@ end
 
 local function AutoRemoveTarget(inst, target)
     if _birds[target] ~= nil and target:IsAsleep() then
-        if target:HasTag("bird_mutant_rift") then
-            local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-            if mutatedbirdmanager then
-                mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", target, 1)
-            end
-        end
-
         target:Remove()
     end
 end
@@ -288,9 +277,9 @@ local function OnLunarBirdEvent(inst)
             local corpse = SpawnCorpseForPlayer(player)
             if corpse then
                 corpse_spawned = true
-                if mutate and CanLunarRiftMutateFromCorpse(inst) then
+                if mutate or CanLunarRiftMutateFromCorpse(corpse) then
                     corpse:StartGestaltTimer(GetRandomMinMax(_corpse_gestalt_min_time, _corpse_gestalt_max_time))
-                elseif CanLunarPreRiftMutateFromCorpse(inst) or math.random() < 0.25 then
+                elseif CanLunarPreRiftMutateFromCorpse(corpse) or TryLuckRoll(player, TUNING.LUNARHAIL_MUTATE_BIRD_CHANCE, LuckFormulas.PreRiftMutation) then
                     corpse:SetNonGestaltCorpse()
                 else
                     corpse:StartFadeTimer(GetRandomMinMax(_corpse_fade_min_time, _corpse_fade_max_time))
@@ -570,18 +559,7 @@ function self:SpawnBird(spawnpoint, ignorebait)
         end
     end
 
-    if not found_bait then
-        if bird:HasTag("bird_mutant_rift") then
-            
-        end
-    end
-
     bird.Physics:Teleport(spawnpoint:Get())
-
-    -- We chose a bright beaked to spawn, so let's remove one from the node.
-    if prefab == "mutatedbird" then
-        TheWorld.components.mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", bird, -1)
-    end
 
     return bird
 end

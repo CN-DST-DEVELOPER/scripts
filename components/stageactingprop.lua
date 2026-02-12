@@ -238,6 +238,7 @@ local function remove_progress_tags(inst)
 end
 
 function StageActingProp:EndPerformance(doer)
+	self.inst:PushEvent("play_ended")
     if self.onperformanceended ~= nil then
         self.onperformanceended(self.inst, doer, self.script, self.cast)
     end
@@ -382,7 +383,7 @@ function StageActingProp:DoLines()
         end
     end
 
-    self.inst:PushEvent("play_performed", { next = script_data.next, error = self.performance_problem })
+    self.inst:PushEvent("play_performed", { next = script_data.next, error = self.performance_problem, skip_hound_spawn = script_data.skip_hound_spawn or nil })
 
     if script_data.next then
         self:FinishAct(script_data.next)

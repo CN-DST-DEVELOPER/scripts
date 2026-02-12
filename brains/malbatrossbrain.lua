@@ -261,7 +261,7 @@ function MalbatrossBrain:OnStart()
 
                 DoAction(self.inst, ShouldLeaveLand, "leave the land"),
 
-                RunAway(self.inst, function() return CheckForFleeAndDive(self.inst) end, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
+				RunAway(self.inst, { getfn = CheckForFleeAndDive }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST),
 
                 FaceEntity(self.inst, GetCombatFaceTargetFn, KeepCombatFaceTargetFn),
 

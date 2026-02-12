@@ -47,12 +47,16 @@ local function InvestigateAction(inst)
     return investigatePos ~= nil and BufferedAction(inst, nil, ACTIONS.INVESTIGATE, nil, investigatePos, nil, 1) or nil
 end
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function GetFaceTargetFn(inst)
-    return inst.components.follower.leader
+    return GetLeader(inst)
 end
 
 local function KeepFaceTargetFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetLeader(inst) == target
 end
 
 local function fish_target_valid_on_action(ba)
@@ -121,7 +125,7 @@ function SpiderWaterBrain:OnStart()
 			BrainCommon.PanicTrigger(self.inst),
             BrainCommon.ElectricFencePanicTrigger(self.inst),
             IfNode(function()
-                    return not self.inst.bedazzled and self.inst.components.follower.leader == nil
+                    return not self.inst.bedazzled and GetLeader(self.inst) == nil
                 end, "AttackWall",
                 AttackWall(self.inst)
             ),
@@ -129,7 +133,7 @@ function SpiderWaterBrain:OnStart()
 
             IfNode(function() return self.inst.defensive end, "DefensiveFollow",
                 Follow(self.inst, function()
-                        return self.inst.components.follower.leader
+                        return GetLeader(self.inst)
                     end,
                     DEF_MIN_FOLLOW_DIST, DEF_TARGET_FOLLOW_DIST, DEF_MAX_FOLLOW_DIST
                 )
@@ -140,14 +144,14 @@ function SpiderWaterBrain:OnStart()
                     DoAction(self.inst, EatFishAction, "Try Eating A Fish", nil, 15),
                     DoAction(self.inst, EatFoodAction, "Try Eating Food", nil, 15),
                     Follow(self.inst, function()
-                            return self.inst.components.follower.leader
+                            return GetLeader(self.inst)
                         end,
                         AGG_MIN_FOLLOW_DIST, AGG_TARGET_FOLLOW_DIST, AGG_MAX_FOLLOW_DIST
                     )
                 }, 1.0)
             ),
 
-            IfNode(function() return self.inst.components.follower.leader ~= nil end, "HasLeader",
+            IfNode(function() return GetLeader(self.inst) ~= nil end, "HasLeader",
                 FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn)
             ),
 

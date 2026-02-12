@@ -7,7 +7,8 @@ local HUNGRY_PERISH_PERCENT = 0.5 -- matches stale tag
 local STARVING_PERISH_PERCENT = 0.2 -- matches spoiked tag
 
 local function IsLeaderSleeping(inst)
-    return inst.components.follower.leader and inst.components.follower.leader:HasTag("sleeping")
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    return leader and leader:HasTag("sleeping")
 end
 
 local function ShouldWakeUp(inst)

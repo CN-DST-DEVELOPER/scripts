@@ -175,7 +175,7 @@ for prefabname, data in pairs(treasure_templates) do
 	end
 end
 
-local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn)
+local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn, doer)
 	local prefab = overrideprefab or weighted_random_choice(weighted_treasure_prefabs)
 
 	local treasure = SpawnPrefab(prefab)
@@ -221,15 +221,13 @@ local function GenerateTreasure(pt, overrideprefab, spawn_as_empty, postfn)
 			end
 
 			if _container ~= nil and not _container:IsFull() then
-				if math.random() <= math.clamp(
-					TheWorld.state.cycles * TUNING.ANCIENT_TREE_SEED_CHANCE_RATE, TUNING.ANCIENT_TREE_SEED_MIN_CHANCE, TUNING.ANCIENT_TREE_SEED_MAX_CHANCE
-				) then
+				local ancienttreeseed_chance = math.clamp(TheWorld.state.cycles * TUNING.ANCIENT_TREE_SEED_CHANCE_RATE, TUNING.ANCIENT_TREE_SEED_MIN_CHANCE, TUNING.ANCIENT_TREE_SEED_MAX_CHANCE)
+				if TryLuckRoll(doer, ancienttreeseed_chance, LuckFormulas.AncientTreeSeedTreasure) then
 					_container:GiveItem(SpawnPrefab("ancienttree_seed"))
 				end
 
-				if math.random() < TRINKET_CHANCE and not _container:IsFull() then
+				if TryLuckRoll(doer, TRINKET_CHANCE, LuckFormulas.LootDropperChance) and not _container:IsFull() then
 					local trinket = SpawnPrefab(trinkets[math.random(#trinkets)])
-
 					_container:GiveItem(trinket)
 				end
 			end

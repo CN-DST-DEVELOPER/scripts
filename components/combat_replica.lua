@@ -89,6 +89,11 @@ function Combat:GetAttackRangeWithWeapon()
         or self._attackrange:value()
 end
 
+function Combat:GetWeaponAttackRange()
+    local weapon = self:GetWeapon()
+    return weapon and weapon.replica.inventoryitem:AttackRange() or 0
+end
+
 function Combat:GetWeapon()
     if self.inst.components.combat ~= nil then
         return self.inst.components.combat:GetWeapon()
@@ -314,34 +319,46 @@ function Combat:CanTarget(target)
         and (rider == nil or (not rider:IsRiding() or (not rider:GetMount():HasTag("peacefulmount") or is_ranged_weapon)))
 end
 
-function Combat:IsAlly(guy)
+function Combat:CanBeAlly(guy)
     if guy:HasTag("alwayshostile") then
         return false
     end
 
-    if guy == self.inst or
-        (self.inst.replica.follower ~= nil and guy == self.inst.replica.follower:GetLeader()) then
-        --It's me! or it's my leader
-        return true
+    if guy == self.inst then
+        return true -- It's me.
     end
 
-    local follower = guy.replica.follower
-    local leader = follower ~= nil and follower:GetLeader() or nil
-    --It's my follower
-    --or I'm a player and it's a companion (or following another player in non PVP)
-    --unless it's attacking me
-    return self.inst == leader
-		or (    self.inst.isplayer and
-                (   guy:HasTag("companion") or
-                    (   leader ~= nil and
-                        not TheNet:GetPVPEnabled() and
-						leader.isplayer
-                    )
-                ) and
-                (   guy.replica.combat == nil or
-                    guy.replica.combat:GetTarget() ~= self.inst
+    local myleader = self.inst.replica.follower and self.inst.replica.follower:GetLeader()
+    if myleader and guy == myleader then
+        return true -- It's my leader.
+    end
+
+    local theirleader = guy.replica.follower and guy.replica.follower:GetLeader()
+    if self.inst == theirleader then
+        return true -- It's my follower.
+    end
+
+    if myleader and myleader == theirleader then
+        return true -- Same leader we should be friends.
+    end
+
+    --I'm a player and it's a companion (or following another player in non PVP)
+    return self.inst.isplayer and
+            (   guy:HasTag("companion") or
+                (   theirleader ~= nil and
+                    not TheNet:GetPVPEnabled() and
+                    theirleader.isplayer
                 )
-            )
+			)
+            or false
+end
+
+function Combat:IsAlly(guy)
+	if not self:CanBeAlly(guy) then
+		return false
+	end
+	local guy_combat = guy.replica.combat
+	return guy_combat == nil or guy_combat:GetTarget() ~= self.inst
 end
 
 function Combat:TargetHasFriendlyLeader(target)
@@ -402,7 +419,7 @@ function Combat:CanBeAttacked(attacker)
                     local leader = follower:GetLeader()
                     if leader ~= nil and
                         leader ~= self._target:value() and
-						leader.isplayer then
+						leader.isplayer and not attacker:HasTag("alwayshostile") then
                         local combat = attacker.replica.combat
                         if combat ~= nil and combat:GetTarget() ~= self.inst then
                             --Follower check
@@ -411,8 +428,6 @@ function Combat:CanBeAttacked(attacker)
                     end
                 end
             end
-        --elseif self.inst:HasAllTags("buzzard", "lunar_aligned") and attacker:HasTag("lunar_aligned") then
-        --    return false
         end
 
 		sanity = attacker.replica.sanity

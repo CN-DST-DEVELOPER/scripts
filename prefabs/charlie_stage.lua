@@ -1,11 +1,13 @@
 local assets =
 {
     Asset("ANIM", "anim/charlie_stage.zip"),
+    Asset("ANIM", "anim/charlie_stage_yoth.zip"),
 }
 
 local postassets =
 {
     Asset("ANIM", "anim/charlie_curtains.zip"),
+    Asset("ANIM", "anim/charlie_curtains_yoth.zip"),
     Asset("MINIMAP_IMAGE", "charlie_stage_post"),
 }
 
@@ -29,6 +31,15 @@ local prefabs =
     "playbill_the_veil",
     "playbill_the_vault",
     "sewing_mannequin",
+    "shadow_puff_solid",
+
+    -- Year of the Clockwork Knight
+
+    "playbill_the_princess_yoth",
+    "knight_yoth",
+    "costume_princess_body",
+    "mask_princesshat",
+    "redpouch_yoth_small",
 }
 
 local function StagePlay_ActiveFn(params, parent, best_dist_sq)
@@ -127,10 +138,10 @@ end
 
 --------------------------------------------------------------------------------
 
-local function spawnhound(inst, reward, theta)
+local function spawnhound(inst, reward, theta, overrideradius)
     local pos = inst:GetPosition()
 
-    local radius = 10
+    local radius = overrideradius or 10
     local offset = FindWalkableOffset(pos, theta, radius, nil, false, true)
         or Vector3FromTheta(theta, radius)
 
@@ -150,15 +161,25 @@ local REWARDPOOL = {
     {name = "tailor", "tophat", "sewing_kit", "grass_umbrella"},
 }
 
+local function GetPropDisableTime(inst)
+    if IsSpecialEventActive(SPECIAL_EVENTS.YOTH) then
+        return TUNING.YOTH_CHARLIE_STAGE_RESET_TIME + ( math.random() * TUNING.YOTH_CHARLIE_STAGE_RESET_TIME_VARIABLE )
+    end
+
+    return TUNING.CHARLIE_STAGE_RESET_TIME + ( math.random()* TUNING.CHARLIE_STAGE_RESET_TIME_VARIABLE )
+end
+
 local function OnPlayPerformed(inst, data)
     if not data.next and not data.error then
-        local REWARDS = inst._rewardpool[math.random(1, #inst._rewardpool)]
-        local theta = math.random() * TWOPI
-        for _, reward in ipairs(REWARDS) do -- NOTES(JBK): Keep this ipairs because rewards metadata is being stored in the table.
-            inst:DoTaskInTime(1 + (math.random()*2), spawnhound, reward, theta)
-            theta = theta + PI/6
+        if not data.skip_hound_spawn then
+            local REWARDS = inst._rewardpool[math.random(1, #inst._rewardpool)]
+            local theta = math.random() * TWOPI
+            for _, reward in ipairs(REWARDS) do -- NOTES(JBK): Keep this ipairs because rewards metadata is being stored in the table.
+                inst:DoTaskInTime(1 + (math.random()*2), spawnhound, reward, theta)
+                theta = theta + PI/6
+            end
         end
-        inst.components.stageactingprop:DisableProp(TUNING.CHARLIE_STAGE_RESET_TIME + (math.random()* TUNING.CHARLIE_STAGE_RESET_TIME_VARIABLE ))
+        inst.components.stageactingprop:DisableProp(GetPropDisableTime(inst))
     end
 end
 
@@ -224,23 +245,27 @@ local function spawn_stage_prefab(inst, angle, dist, prefab)
     return prefab_instance
 end
 
-local function spawndollmannequin(inst, angle, dist)
-    local mannequin = spawn_stage_prefab(inst, angle, dist, "sewing_mannequin")
+local function config_mannequin(mannequin, maskprefab, bodyprefab)
     local mannequin_pos = mannequin:GetPosition()
 
-    local dollmask = SpawnPrefab("mask_dollhat")
-    dollmask.Transform:SetPosition(mannequin_pos.x, 0, mannequin_pos.z)
+    local mask = SpawnPrefab(maskprefab)
+    mask.Transform:SetPosition(mannequin_pos.x, 0, mannequin_pos.z)
 
-    local dollbody = SpawnPrefab("costume_doll_body")
-    dollbody.Transform:SetPosition(mannequin_pos.x, 0, mannequin_pos.z)
+    local body = SpawnPrefab(bodyprefab)
+    body.Transform:SetPosition(mannequin_pos.x, 0, mannequin_pos.z)
 
     if mannequin.components.inventory then
-        mannequin.components.inventory:Equip(dollmask)
-        mannequin.components.inventory:Equip(dollbody)
+        mannequin.components.inventory:Equip(mask)
+        mannequin.components.inventory:Equip(body)
     else
-        Launch(dollmask, mannequin, 1)
-        Launch(dollbody, mannequin, 1)
+        Launch(mask, mannequin, 1)
+        Launch(body, mannequin, 1)
     end
+end
+local function spawndollmannequin(inst, angle, dist)
+    local mannequin = spawn_stage_prefab(inst, angle, dist, "sewing_mannequin")
+    config_mannequin(mannequin, "mask_dollhat", "costume_doll_body")
+    return mannequin
 end
 
 --------------------------------------------------------------------------------
@@ -352,14 +377,36 @@ local function on_stage_sleep(inst)
     end
 end
 
+local function reset_playerprox(inst) -- Small Hack to get the player prox running constantly.
+    inst.components.playerprox.closeplayers = {}
+    inst.components.playerprox.isclose = false
+end
+
+local TIMER_NAMES =
+{
+    SPAWN_PRINCESS_HAT = "spawn_princess_hat",
+    SPAWN_PRINCESS_BODY = "spawn_princess_body",
+    POUCH_HOUND1 = "pouch_hound1",
+    POUCH_HOUND2 = "pouch_hound2",
+    POUCH_HOUND3 = "pouch_hound3",
+}
+
+local MASQUE_HATS =
+{
+    ["mask_toadyhat"] = true,
+    ["mask_sagehat"] = true,
+    ["mask_halfwithat"] = true,
+}
 local PLAYBILL_MUST = {"playbill"}
 local function onplayernear(inst, player)
+    if inst.reset_prox_task ~= nil then
+        inst.reset_prox_task:Cancel()
+    end
+    inst.reset_prox_task = inst:DoTaskInTime(0, reset_playerprox)
+
     local hat = player.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
     if hat then
-        if hat.prefab == "mask_toadyhat" or 
-            hat.prefab == "mask_sagehat" or 
-            hat.prefab == "mask_halfwithat" then
-
+        if MASQUE_HATS[hat.prefab] then
             local x,y,z = inst.Transform:GetWorldPosition()
             local playbills = TheSim:FindEntities(x, y, z, 20, PLAYBILL_MUST)
             for i=#playbills,1, -1 do
@@ -376,9 +423,56 @@ local function onplayernear(inst, player)
                 local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
                 newplaybill.Transform:SetPosition(x+offset.x,y,z+offset.z)
                 local fx = SpawnPrefab("shadow_puff_solid")
-                fx.Transform:SetPosition(x+offset.x,y,z+offset.z)
+                fx.Transform:SetPosition(x+offset.x, y, z+offset.z)
             end
         end
+    end
+
+    if TheWorld.components.yoth_knightmanager and TheWorld.components.yoth_knightmanager:IsKnightShrineActive() then
+        local playbill_exists = false
+
+        local x, y, z = inst.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, 20)
+        local function ItemExists(v, prefab)
+            return v.prefab == prefab or (v.prefab == "hedgehound" and v.hedgeitem == prefab)
+        end
+        for i, v in ipairs(ents) do
+            if v ~= inst then
+                if ItemExists(v, "playbill_the_princess_yoth") then
+                    playbill_exists = true
+                    break
+                end
+            end
+        end
+
+        if not playbill_exists and (not inst.delay_princess_playbill_check or GetTime() > inst.delay_princess_playbill_check)  then
+            inst.delay_princess_playbill_check = GetTime() + 2
+            inst:DoTaskInTime(math.random()*2, spawnhound, "playbill_the_princess_yoth", -PI/4 - PI, 7.25)
+        end
+
+        if not inst.spawned_princess_costume then
+            inst.spawned_princess_costume = true
+            -- Timer component to ensure save/load since this can only occur once.
+            inst.components.timer:StartTimer(TIMER_NAMES.SPAWN_PRINCESS_HAT, 2 + math.random() * 2)
+            inst.components.timer:StartTimer(TIMER_NAMES.SPAWN_PRINCESS_BODY, 2 + math.random() * 2)
+            for i = 1, 3 do
+                inst.components.timer:StartTimer(TIMER_NAMES["POUCH_HOUND"..i], 2 + math.random() * 2.5)
+            end
+        end
+    end
+end
+
+local function OnTimerDone(inst, data)
+    if data.name == TIMER_NAMES.SPAWN_PRINCESS_HAT then
+        spawnhound(inst, "mask_princesshat", -PI/6 - PI)
+    elseif data.name == TIMER_NAMES.SPAWN_PRINCESS_BODY then
+        spawnhound(inst, "costume_princess_body", -PI/3 - PI)
+    elseif data.name == TIMER_NAMES.POUCH_HOUND1 then
+        spawnhound(inst, "redpouch_yoth_small", -PI/5 - PI, 11.25)
+    elseif data.name == TIMER_NAMES.POUCH_HOUND2 then
+        spawnhound(inst, "redpouch_yoth_small", -PI/4 - PI, 11.75)
+    elseif data.name == TIMER_NAMES.POUCH_HOUND3 then
+        spawnhound(inst, "redpouch_yoth_small", -PI/3.25 - PI, 11.25)
     end
 end
 
@@ -390,7 +484,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("charlie_stage")
-    inst.AnimState:SetBuild("charlie_Stage")
+    inst.AnimState:SetBuild(IsSpecialEventActive(SPECIAL_EVENTS.YOTH) and "charlie_stage_yoth" or "charlie_stage")
     inst.AnimState:PlayAnimation("idle")
 
     inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
@@ -453,10 +547,16 @@ end
 
 local function onsave(inst,data)
     data.loaded = true
+    data.spawned_princess_costume = inst.spawned_princess_costume
 end
 local function onload(inst,data)
-    if data and data.loaded then
-        inst.loaded = data.loaded
+    if data then
+        if data.loaded then
+            inst.loaded = data.loaded
+        end
+        if data.spawned_princess_costume then
+            inst.spawned_princess_costume = data.spawned_princess_costume
+        end
     end
 end
 
@@ -470,7 +570,7 @@ local function postfn()
     inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("charlie_curtains")
-    inst.AnimState:SetBuild("charlie_curtains")
+    inst.AnimState:SetBuild(IsSpecialEventActive(SPECIAL_EVENTS.YOTH) and "charlie_curtains_yoth" or "charlie_curtains")
     inst.AnimState:PlayAnimation("idle_open")
 
     inst.MiniMapEntity:SetIcon("charlie_stage_post.png")
@@ -511,10 +611,12 @@ local function postfn()
 
     inst:AddComponent("entitytracker")
 
-    inst:AddComponent("playerprox")
-    inst.components.playerprox:SetDist(8,10)
-    inst.components.playerprox:SetOnPlayerNear(onplayernear)
+    inst:AddComponent("timer")
 
+    local playerprox = inst:AddComponent("playerprox")
+    playerprox:SetDist(8, 10)
+    playerprox:SetOnPlayerNear(onplayernear)
+    playerprox:SetTargetMode(playerprox.TargetModes.AllPlayers)
 
     inst:SetStateGraph("SGcharlie_stage_post")
 
@@ -528,7 +630,11 @@ local function postfn()
 
     inst._ushers = {}
     inst._rewardpool = REWARDPOOL -- NOTES(JBK): Useful for mods.
+
     inst:ListenForEvent("play_performed", OnPlayPerformed)
+    inst:ListenForEvent("timerdone", OnTimerDone)
+
+    TheWorld:PushEvent("ms_register_charlie_stage", inst)
 
     inst:DoTaskInTime(0, setup)
 
@@ -546,6 +652,7 @@ local function seatfn()
 
     inst:AddTag("DECOR")
     inst:AddTag("NOCLICK")
+    inst:AddTag("charlie_seat")
 
     inst.AnimState:SetBank("charlie_seat")
     inst.AnimState:SetBuild("charlie_seat")

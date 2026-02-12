@@ -74,8 +74,8 @@ local function ShouldRunAway(inst)
     return inst.components.combat.target ~= nil and inst.components.combat:InCooldown()
 end
 
-local function GetRunawayTarget(target, inst)
-    return inst.components.combat.target == target
+local function GetRunawayTarget(inst)
+	return inst.components.combat.target
 end
 
 -------------------------------------------------------------------------------------------------------------
@@ -94,10 +94,12 @@ function MosquitoBrain:OnStart()
         BrainCommon.ElectricFencePanicTrigger(self.inst),
         Follow(self.inst, GetLeader, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         Leash(self.inst, GetNoLeaderHomePos, MAX_LEASH_DIST, MAX_WANDER_DIST),
-        WhileNode(function() return ShouldChaseAndAttack(self.inst) end, "AttackMomentarily", ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)) ),
+		WhileNode(function() return ShouldChaseAndAttack(self.inst) end, "AttackMomentarily",
+			ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST))),
         WhileNode(function() return ShouldGoHome(self.inst) end, "ShouldGoHome",
-            DoAction(self.inst, GoHomeAction, "go home", true )),
-        WhileNode( function() return ShouldRunAway(self.inst) end, "Dodge", RunAway(self.inst, GetRunawayTarget, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST) ),
+			DoAction(self.inst, GoHomeAction, "go home", true)),
+		WhileNode(function() return ShouldRunAway(self.inst) end, "Dodge",
+			RunAway(self.inst, { getfn = GetRunawayTarget }, RUN_AWAY_DIST, STOP_RUN_AWAY_DIST)),
         Wander(self.inst, WanderTarget, MAX_WANDER_DIST, WANDERTIMES)
     }, .25)
 

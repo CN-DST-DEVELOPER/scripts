@@ -55,7 +55,7 @@ local function SpawnFishSchool(inst)
         local theta = math.random() * TWOPI
         local spawn_offset = Vector3(math.cos(theta) * FISH_SPAWN_MAX_OFFSET, 0, math.sin(theta) * FISH_SPAWN_MAX_OFFSET)
 
-        local num_fish_spawned = TheWorld.components.schoolspawner:SpawnSchool(Vector3(x, y, z), nil, spawn_offset)
+        local num_fish_spawned = TheWorld.components.schoolspawner:SpawnSchool(Vector3(x, y, z), inst.thrower, spawn_offset)
         if num_fish_spawned == nil or num_fish_spawned == 0 then
             retry = true
         end
@@ -102,6 +102,10 @@ local function SpawnChumPieces(inst)
             piece:ListenForEvent("onremove", OnPieceRemoved)
         end
     end
+end
+
+local function SetThrower(inst, thrower)
+    inst.thrower = thrower
 end
 
 local function OnSave(inst, data)
@@ -157,6 +161,7 @@ local function fn()
     inst._remaining_fish_spawn_attempts = FISH_SPAWN_ATTEMPTS
 
     inst._spawn_chum_piece_fn = SpawnChumPieces
+    inst.SetThrower = SetThrower
 
     inst._chumpieces = {}
     inst._num_chumpieces = 0

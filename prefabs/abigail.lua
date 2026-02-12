@@ -125,12 +125,12 @@ local COMBAT_MUSTONEOF_TAGS_DEFENSIVE = { "monster", "prey" }
 local COMBAT_TARGET_DSQ = TUNING.ABIGAIL_COMBAT_TARGET_DISTANCE * TUNING.ABIGAIL_COMBAT_TARGET_DISTANCE
 
 local function HasFriendlyLeader(inst, target, PVP_enabled)
-    local leader = (inst.components.follower ~= nil and inst.components.follower.leader) or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if not leader then
         return false
     end
 
-    local target_leader = (target.components.follower ~= nil) and target.components.follower.leader or nil
+    local target_leader = target.components.follower and target.components.follower:GetLeader()
 
     if target_leader and target_leader.components.inventoryitem then
         target_leader = target_leader.components.inventoryitem:GetGrandOwner()
@@ -284,11 +284,11 @@ local function auratest(inst, target, can_initiate)
         return false
     end
 
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader ~= nil
         and (leader == target
             or (target.components.follower ~= nil and
-                target.components.follower.leader == leader)) then
+                target.components.follower:GetLeader() == leader)) then
         return false
     end
 
@@ -308,8 +308,8 @@ local function auratest(inst, target, can_initiate)
 
     local ismonster = target:HasTag("monster")
     if ismonster and not TheNet:GetPVPEnabled() and
-       ((target.components.follower and target.components.follower.leader ~= nil and
-         target.components.follower.leader:HasTag("player")) or target.bedazzled) then
+       ((target.components.follower and target.components.follower:GetLeader() ~= nil and
+         target.components.follower:GetLeader():HasTag("player")) or target.bedazzled) then
         return false
     end
 
@@ -638,11 +638,10 @@ local function DoShadowBurstBuff(inst, stack)
 end
 
 local function calcabigailmaxhealthbonus(inst)
-    local follower = inst.components.follower
-
-    return (follower ~= nil and follower.leader ~= nil
-        and follower.leader.components.skilltreeupdater ~= nil
-        and follower.leader.components.skilltreeupdater:IsActivated("wendy_sisturn_4")
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    return (leader
+        and leader.components.skilltreeupdater ~= nil
+        and leader.components.skilltreeupdater:IsActivated("wendy_sisturn_4")
         and TUNING.SKILLS.WENDY.SISTURN_3_MAX_HEALTH_BOOST + TUNING.SKILLS.WENDY.SISTURN_3_MAX_HEALTH_BOOST
     ) or TUNING.SKILLS.WENDY.SISTURN_3_MAX_HEALTH_BOOST
 end
@@ -783,10 +782,8 @@ local function updatehealingbuffs(inst)
 
         local blossoms = TheWorld.components.sisturnregistry and 
                          TheWorld.components.sisturnregistry:IsBlossom() or nil
-        local skilled = inst.components.follower and 
-                        inst.components.follower.leader and 
-                        inst.components.follower.leader.components.skilltreeupdater and 
-                        inst.components.follower.leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3") or nil
+        local leader = inst.components.follower and inst.components.follower:GetLeader()
+        local skilled = leader and leader.components.skilltreeupdater and leader.components.skilltreeupdater:IsActivated("wendy_sisturn_3")
 
         local inworld = not inst:HasTag("INLIMBO") and (inst.sg and not inst.sg:HasStateTag("dissipate") ) or nil
 

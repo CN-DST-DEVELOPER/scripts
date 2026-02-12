@@ -376,7 +376,7 @@ end
 
 local function Initialize(inst)
     inst.inittask = nil
-    inst:AddWares(inst.WARES.STARTER[1])
+    inst:AddWares(inst.WARES.STARTER[math.random(#inst.WARES.STARTER)])
     inst:RerollWares()
     inst:TryToCreateWorldRoute()
 end

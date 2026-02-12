@@ -13,6 +13,7 @@ local FireFX = Class(function(self, inst)
     self.lightsound = nil
     self.extinguishsound = nil
     --self.extinguishsoundtest = nil
+    --self.offset_fxlight_position = nil
 
     self.light = SpawnPrefab("firefx_light")
     self.light.entity:SetParent(self.inst.entity)
@@ -40,6 +41,9 @@ function FireFX:AttachLightTo(target)
             self.light.entity:SetParent(target.entity)
         else
             self.light.entity:SetParent(self.inst.entity)
+        end
+        if self.offset_fxlight_position then
+            self.light.Transform:SetPosition(self.offset_fxlight_position:Get())
         end
     end
 end
@@ -101,7 +105,7 @@ function FireFX:SetLevel(lev, immediate, controlled_burn)
         else
             self.inst.AnimState:PlayAnimation(self.controlled_burn and params.pre_controlled_burn or params.pre)
             self.inst.AnimState:PushAnimation(self.controlled_burn and params.anim_controlled_burn or params.anim, true)
-        end        
+        end
 
         self.current_radius = self:GetLevelRadius(self.level)
         self.light.Light:Enable(true)
@@ -148,6 +152,10 @@ function FireFX:Extinguish(fast)
             return true
         end
     end
+end
+
+function FireFX:SetFxLightOffsetPosition(off)
+    self.offset_fxlight_position = off
 end
 
 function FireFX:OnEntitySleep()

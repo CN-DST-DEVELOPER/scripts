@@ -99,8 +99,13 @@ local function HasValidHome(inst)
         and not home:HasTag("burnt")
 end
 
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
+
 local function GoHomeAction(inst)
-    if not inst.components.follower.leader and
+    local leader = GetLeader(inst)
+    if not leader and
             not inst.components.combat.target and
             HasValidHome(inst) then
         return BufferedAction(inst, inst.components.homeseeker.home, ACTIONS.GOHOME)
@@ -116,10 +121,6 @@ local function IsHomeOnFire(inst)
         and inst:GetDistanceSqToInst(homeseeker.home) < SEE_BURNING_HOME_DIST_SQ
 end
 
-local function GetLeader(inst)
-    return inst.components.follower.leader
-end
-
 local function GetHomePos(inst)
     return HasValidHome(inst) and inst.components.homeseeker:GetHomePos()
 end
@@ -133,7 +134,7 @@ local function GetNoLeaderHomePos(inst)
 end
 
 local function FindNearbyScarer(inst)
-    local leader = inst.components.follower and inst.components.follower:GetLeader() or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, SEE_SCARER_DIST, SCARER_MUST_TAGS)
     for _, ent in ipairs(ents) do

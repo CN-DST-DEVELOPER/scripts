@@ -77,7 +77,7 @@ local function MakeTea(data)
 
     local nochill = data.nochill or nil
 
-    local foodtype = data.foodtype or FOODTYPE.VEGGIE
+    local foodtype = data.foodtype or FOODTYPE.GOODIES
 
     local function OnEaten(inst, eater)
         if data.buff ~= nil then

@@ -152,7 +152,7 @@ local function ShouldAcceptItem(inst, item)
         (   --accept food, but not too many carrots for loyalty!
             inst.components.eater:CanEat(item) and
             (   (item.prefab ~= "carrot" and item.prefab ~= "carrot_cooked") or
-                inst.components.follower.leader == nil or
+                inst.components.follower:GetLeader() == nil or
                 inst.components.follower:GetLoyaltyPercent() <= .9
             )
         )
@@ -275,7 +275,7 @@ local function battlecry(combatcmp, target)
 end
 
 local function GetStatus(inst)
-    return inst.components.follower.leader ~= nil and "FOLLOWER" or nil
+    return inst.components.follower:GetLeader() ~= nil and "FOLLOWER" or nil
 end
 
 local function LootSetupFunction(lootdropper)
@@ -283,7 +283,7 @@ local function LootSetupFunction(lootdropper)
 	if IsForcedNightmare(lootdropper.inst) then
 		-- forced beard lord
 		lootdropper:SetLoot(forced_beardlordloot)
-	elseif IsCrazyGuy(guy ~= nil and guy.components.follower ~= nil and guy.components.follower.leader or guy) then
+	elseif IsCrazyGuy(guy ~= nil and guy.components.follower ~= nil and guy.components.follower:GetLeader() or guy) then
         -- beard lord
         lootdropper:SetLoot(beardlordloot)
     else

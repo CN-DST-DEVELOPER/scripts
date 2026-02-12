@@ -96,6 +96,10 @@ function self:IsMaxReached()
     return #_corpses >= MAX_CORPSES
 end
 
+function self:AnyCorpseExists()
+    return next(_corpses) ~= nil
+end
+
 function self:OnUpdate(dt)
     if check_corpses_cooldown <= 0 then
         -- Persist up to this many corpses

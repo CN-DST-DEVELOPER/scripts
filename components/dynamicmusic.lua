@@ -160,6 +160,11 @@ local TRIGGERED_DANGER_MUSIC =
 		"dontstarve/music/music_cavepuzzle",
 	},
 
+    knight_yoth =
+    {
+        "dontstarve/music/music_epicfight_yothknights",
+    },
+
     default =
     {
         "dontstarve/music/music_epicfight_ruins",

@@ -23,7 +23,10 @@ local function OnHit(inst, attacker, target)
         SpawnPrefab("chum").Transform:SetPosition(x, y, z)
     else
         SpawnPrefab("splash_green").Transform:SetPosition(x, y, z)
-        SpawnPrefab("chum_aoe").Transform:SetPosition(x, y, z)
+
+        local chumaoe = SpawnPrefab("chum_aoe")
+        chumaoe.Transform:SetPosition(x, y, z)
+        chumaoe:SetThrower(attacker)
     end
 
     inst:Remove()

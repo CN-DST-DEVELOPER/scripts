@@ -66,7 +66,7 @@ function LunarPlant_Tentacle_Weapon:OnAttack(owner, attack_data)
 
     local target = attack_data.target
 
-    if target and target:IsValid() and math.random() < self.spawn_chance then
+    if target and target:IsValid() and TryLuckRoll(owner, self.spawn_chance, LuckFormulas.ShadowTentacleSpawn) then
         local pt = target:GetPosition()
 
         local offset = FindWalkableOffset(pt, TWOPI * math.random(), 2, 3, false, true, NoHoles, false, true)

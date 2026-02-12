@@ -1,5 +1,6 @@
 require("stategraphs/commonstates")
 local easing = require("easing")
+local PlayerCommonExtensions = require("prefabs/player_common_extensions")
 
 local TIMEOUT = 2
 
@@ -27,7 +28,9 @@ end
 
 local function DoFoleySounds(inst)
     DoEquipmentFoleySounds(inst)
-    if inst.foleysound ~= nil then
+	if inst.foleyoverridefn and inst:foleyoverridefn(nil, true) then
+		return
+	elseif inst.foleysound then
         inst.SoundEmitter:PlaySound(inst.foleysound, nil, nil, true)
     end
 end
@@ -197,6 +200,13 @@ local function ConfigureRunState(inst)
     else
         inst.sg.statemem.normal = true
         inst.sg.statemem.normalwonkey = inst:HasTag("wonkey") or nil
+        inst.sg.statemem.normalgalloping = inst.replica.inventory:EquipHasTag("gallopstick") or nil
+
+		if not inst.sg.statemem.normalgalloping then
+			inst.sg.mem.gallop_lastrotation = nil
+			inst.sg.mem.gallop_rotation_tracker = nil
+			inst.sg.mem.gallop_tripped = nil
+		end
     end
 end
 
@@ -221,6 +231,15 @@ local function ClearCachedServerState(inst)
 	if inst.player_classified ~= nil then
 		inst.player_classified.currentstate:set_local(0)
 	end
+end
+
+local function GetRockingChairStateAnim(inst, chair)
+    if chair:HasTag("yeehaw") then
+        local hat = inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HEAD)
+        return hat ~= nil and not hat:HasTag("fullhelm_hat") and "rocking_hat" or "rocking_smile"
+    end
+
+    return "rocking"
 end
 
 local actionhandlers =
@@ -705,6 +724,7 @@ local actionhandlers =
 				or "dolongaction"
 		end),
     ActionHandler(ACTIONS.TACKLE, "tackle_pre"),
+    ActionHandler(ACTIONS.JOUST, "joust_pre"),
     ActionHandler(ACTIONS.HALLOWEENMOONMUTATE, "give"),
 
     --Quagmire
@@ -769,13 +789,13 @@ local actionhandlers =
             return
                 action.invobject ~= nil and action.invobject:HasTag("waxspray") and "spray_wax"
                 or "dolongaction"
-        end
-    ),
+		end),
 
     ActionHandler(ACTIONS.USEITEMON, function(inst, action)
 		return (action.invobject == nil and "dolongaction")
 			or (action.invobject:HasTag("bell") and "use_beef_bell")
 			or (action.invobject:HasTag("slingshotmodkit") and "openslingshotmods")
+			or (action.invobject.prefab == "gears" and "give") --befriend chess
 			or "dolongaction"
     end),
 
@@ -1066,7 +1086,17 @@ local states =
 			--goose footsteps should always be light
 			inst.sg.mem.footsteps = (inst.sg.statemem.goose or inst.sg.statemem.goosegroggy) and 4 or 0
 
-			if inst.sg.statemem.normalwonkey then
+            if inst.sg.statemem.normalgalloping then
+                if inst.components.locomotor:GetTimeMoving() >= TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
+					inst.sg:GoToState("run_gallop", { --resuming after brief stop from changing directions, or resuming prediction after running into obstacle
+						lastrotation = inst.sg.mem.gallop_lastrotation,
+						rotation_tracker = inst.sg.mem.gallop_rotation_tracker,
+						tripped = inst.sg.mem.gallop_tripped,
+					})
+					return
+				end
+				inst.sg.mem.gallop_tripped = nil
+			elseif inst.sg.statemem.normalwonkey then
 				if inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
 					inst.sg:GoToState("run_monkey") --resuming after brief stop from changing directions
 					return
@@ -1191,7 +1221,13 @@ local states =
         end,
 
         onupdate = function(inst)
-			if inst.sg.statemem.normalwonkey then
+            if inst.sg.statemem.normalgalloping then
+                if inst.components.locomotor:GetTimeMoving() >= TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
+					inst.sg:GoToState("run_gallop_start")
+					return
+				end
+				inst.sg.mem.gallop_tripped = nil
+			elseif inst.sg.statemem.normalwonkey then
 				if inst.components.locomotor:GetTimeMoving() >= TUNING.WONKEY_TIME_TO_RUN then
 					inst.sg:GoToState("run_monkey_start")
 					return
@@ -1482,7 +1518,13 @@ local states =
 			elseif anim == "run_woby" and inst.sg.lasttags and inst.sg.lasttags["sprint_woby"] then
 				anim = "sprint_woby"
 				inst.SoundEmitter:PlaySound("dontstarve/characters/walter/woby/big/chuff", nil, nil, true)
-			end
+            elseif anim == "run" and inst.sg.lasttags and inst.sg.lasttags["monkey"] then
+                anim = "run_monkey"
+                inst.sg.statemem.monkeyrunning = true
+                inst.Transform:SetPredictedSixFaced()
+            elseif anim == "run" and inst.sg.lasttags and inst.sg.lasttags["galloping"] then
+                anim = "run_gallop"
+            end
 			inst.AnimState:PlayAnimation(anim.."_pst")
 
             if inst.sg.statemem.moose or inst.sg.statemem.moosegroggy then
@@ -1509,8 +1551,13 @@ local states =
                 end
             end),
         },
-    },
 
+        onexit = function(inst)
+            if inst.sg.statemem.monkeyrunning then
+                inst.Transform:ClearPredictedFacingModel()
+            end
+        end,
+    },
 
     State{
         name = "run_monkey_start",
@@ -1591,10 +1638,10 @@ local states =
 
         timeline =
         {
-            TimeEvent(4*FRAMES, function(inst) PlayFootstep(inst, 0.5) end),
-            TimeEvent(5*FRAMES, function(inst) PlayFootstep(inst, 0.5) DoFoleySounds(inst) end),
-            TimeEvent(10*FRAMES, function(inst) PlayFootstep(inst, 0.5) end),
-            TimeEvent(11*FRAMES, function(inst) PlayFootstep(inst, 0.5) end),
+            TimeEvent(4*FRAMES, function(inst) PlayFootstep(inst, 0.5, true) end),
+            TimeEvent(5*FRAMES, function(inst) PlayFootstep(inst, 0.5, true) DoFoleySounds(inst) end),
+            TimeEvent(10*FRAMES, function(inst) PlayFootstep(inst, 0.5, true) end),
+            TimeEvent(11*FRAMES, function(inst) PlayFootstep(inst, 0.5, true) end),
         },
 
         onupdate = function(inst)
@@ -1809,6 +1856,191 @@ local states =
 			end
 		end,
 	},
+
+    State{
+        name = "run_gallop_start",
+        tags = { "moving", "running", "canrotate", "galloping" },
+
+        onenter = function(inst)
+            ConfigureRunState(inst)
+            if not inst.sg.statemem.normalgalloping then
+                inst.sg:GoToState("run")
+                return
+            end
+            inst.components.locomotor:RunForward()
+            inst.AnimState:PlayAnimation("run_gallop_pre")
+        end,
+
+        onupdate = function(inst)
+            if inst.components.locomotor:GetTimeMoving() < TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
+                inst.sg:GoToState("run")
+            end
+        end,
+
+        events =
+        {
+            EventHandler("unequip", function(inst, data)
+				if data and data.eslot == EQUIPSLOTS.HANDS and data.item and data.item:HasTag("gallopstick") then
+                    inst.components.locomotor:OverrideMoveTimer(0) -- So that we can't just change our direction, then re-equip the stick for max speed. You cheat!
+				end
+			end),
+            EventHandler("gogglevision", function(inst, data)
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("stormlevel", function(inst, data)
+                if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
+            EventHandler("carefulwalking", function(inst, data)
+                if data.careful then
+                    inst.sg:GoToState("run")
+                end
+            end),
+            EventHandler("animover", function(inst)
+                inst.sg:GoToState("run_gallop")
+            end),
+        },
+    },
+
+    State{
+        name = "run_gallop",
+		tags = { "moving", "running", "canrotate", "galloping", "gallop_predict_run" --[[for hunger drain arrow]]},
+
+        onenter = function(inst, data)
+            ConfigureRunState(inst)
+            if not inst.sg.statemem.normalgalloping then
+                inst.sg:GoToState("run")
+                return
+            end
+
+			inst.sg.statemem.lastrotation = data and data.lastrotation or inst.Transform:GetRotation()
+			inst.sg.statemem.rotation_tracker = data and data.rotation_tracker or {}
+			inst.sg.statemem.tripped = data and data.tripped
+
+            if not inst.AnimState:IsCurrentAnimation("run_gallop_loop") then
+                inst.AnimState:PlayAnimation("run_gallop_loop", true)
+            end
+
+            local time_moving = inst.components.locomotor:GetTimeMoving()
+            local gallopcount = time_moving > TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP and
+                math.min(TUNING.YOTH_KNIGHTSTICK_MAX_GALLOPS, math.floor((time_moving - TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP) / inst.AnimState:GetCurrentAnimationLength()))
+                or 0
+
+            local speed_multiplier = inst.components.locomotor:GetSpeedMultiplier()
+            local max_gallop_speed = math.max(0, TUNING.YOTH_KNIGHTSTICK_MAX_SPEED - (TUNING.WILSON_RUN_SPEED * speed_multiplier)) / speed_multiplier
+            local additive_speed_boost = math.min(max_gallop_speed, TUNING.YOTH_KNIGHTSTICK_BASE_SPEED + gallopcount * TUNING.YOTH_KNIGHTSTICK_SPEED_BONUS_PER_GALLOP)
+            inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + additive_speed_boost
+
+			if not inst.sg.statemem.tripped then
+				inst.components.locomotor:RunForward()
+			end
+            inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+            --
+			if inst.player_classified then
+				inst.player_classified.predict_horseshoesounds = true
+			end
+            inst.SoundEmitter:PlaySound("dontstarve/movement/run_horseshoes", nil, nil, true)
+            PlayFootstep(inst, 0.5, true)
+        end,
+
+        timeline =
+        {
+            FrameEvent(6, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve/movement/run_horseshoes", nil, nil, true)
+                PlayFootstep(inst, 0.5, true)
+                DoFoleySounds(inst)
+            end),
+            FrameEvent(8, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve/movement/run_horseshoes", nil, nil, true)
+                PlayFootstep(inst, 0.5, true)
+            end),
+            FrameEvent(14, function(inst)
+                inst.SoundEmitter:PlaySound("dontstarve/movement/run_horseshoes", nil, nil, true)
+                PlayFootstep(inst, 0.5, true)
+                DoFoleySounds(inst)
+            end),
+        },
+
+        onupdate = function(inst)
+            if inst.components.locomotor:GetTimeMoving() < TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP then
+                inst.sg:GoToState("run")
+                return
+            end
+
+			if inst.sg.statemem.tripped then
+				return
+			elseif PlayerCommonExtensions.TryGallopTripUpdate(inst) then -- Stress from rotation
+				inst.sg.statemem.tripped = true
+				local speed = inst.Physics:GetMotorSpeed()
+				local x, _, z = inst.Transform:GetWorldPosition()
+				local platform
+				platform, x, z = inst.components.playercontroller:GetPlatformRelativePosition(x, z)
+				SendRPCToServer(RPC.PredictGallopTrip, x, z, inst.Transform:GetRotation(), speed > 0 and speed or nil, platform, platform ~= nil)
+				inst.Physics:Stop()
+				return
+			end
+
+            inst.components.locomotor:RunForward()
+        end,
+
+        events =
+        {
+            EventHandler("unequip", function(inst, data)
+				if data and data.eslot == EQUIPSLOTS.HANDS and data.item and data.item:HasTag("gallopstick") then
+                    inst.components.locomotor:OverrideMoveTimer(0) -- So that we can't just change our direction, then re-equip the stick for max speed. You cheat!
+				end
+			end),
+            EventHandler("gogglevision", function(inst, data)
+				if not data.enabled and inst:IsInAnyStormOrCloud() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("stormlevel", function(inst, data)
+                if data.level >= TUNING.SANDSTORM_FULL_LEVEL and not inst.components.playervision:HasGoggleVision() then
+                    inst.sg:GoToState("run")
+                end
+            end),
+			EventHandler("miasmalevel", function(inst, data)
+				if data.level >= 1 and not inst.components.playervision:HasGoggleVision() then
+					inst.sg:GoToState("run")
+				end
+			end),
+            EventHandler("carefulwalking", function(inst, data)
+                if data.careful then
+                    inst.sg:GoToState("run")
+                end
+            end),
+        },
+
+        ontimeout = function(inst)
+            inst.sg.statemem.galloping = true
+			inst.sg:GoToState("run_gallop", {
+				lastrotation = inst.sg.statemem.lastrotation,
+				rotation_tracker = inst.sg.statemem.rotation_tracker,
+				tripped = inst.sg.statemem.tripped,
+			})
+        end,
+
+        onexit = function(inst)
+            if not inst.sg.statemem.galloping then
+                inst.components.locomotor.predictrunspeed = nil
+				inst.sg.mem.gallop_lastrotation = inst.sg.statemem.lastrotation
+				inst.sg.mem.gallop_rotation_tracker = inst.sg.statemem.rotation_tracker
+				inst.sg.mem.gallop_tripped = inst.sg.statemem.tripped
+				if inst.player_classified then
+					inst.player_classified.predict_horseshoesounds = nil
+				end
+            end
+        end,
+    },
 
     State{
         name = "previewaction",
@@ -3007,6 +3239,11 @@ local states =
             elseif equip ~= nil and equip:HasTag("jab") then
                 inst.AnimState:PlayAnimation("spearjab_pre")
                 inst.AnimState:PushAnimation("spearjab_lag", false)
+            elseif equip ~= nil and equip:HasTag("lancejab") then
+                inst.sg.statemem.predictedfacing = true
+                inst.Transform:SetPredictedEightFaced()
+                inst.AnimState:PlayAnimation("lancejab_pre")
+                inst.AnimState:PushAnimation("lancejab_lag", false)
             elseif equip ~= nil and
                 equip.replica.inventoryitem ~= nil and
                 equip.replica.inventoryitem:IsWeapon() and
@@ -3051,6 +3288,12 @@ local states =
         ontimeout = function(inst)
             inst:ClearBufferedAction()
             inst.sg:GoToState("idle")
+        end,
+
+        onexit = function(inst)
+            if inst.sg.statemem.predictedfacing then
+                inst.Transform:ClearPredictedFacingModel()
+            end
         end,
     },
 
@@ -4503,6 +4746,15 @@ local states =
                 if cooldown > 0 then
                     cooldown = math.max(cooldown, 21 * FRAMES)
                 end
+            elseif equip ~= nil and equip:HasTag("lancejab") then
+                inst.sg.statemem.predictedfacing = true
+                inst.Transform:SetPredictedEightFaced()
+                inst.AnimState:PlayAnimation("lancejab_pre")
+                inst.AnimState:PushAnimation("lancejab", false)
+                inst.SoundEmitter:PlaySound("dontstarve/wilson/attack_whoosh", nil, nil, true)
+                if cooldown > 0 then
+                    cooldown = math.max(cooldown, 21 * FRAMES)
+                end
             elseif equip ~= nil and
                 equip.replica.inventoryitem ~= nil and
                 equip.replica.inventoryitem:IsWeapon() and
@@ -4683,6 +4935,9 @@ local states =
         onexit = function(inst)
 			if inst.sg:HasStateTag("abouttoattack") then
                 inst.replica.combat:CancelAttack()
+            end
+            if inst.sg.statemem.predictedfacing then
+                inst.Transform:ClearPredictedFacingModel()
             end
         end,
     },
@@ -5671,6 +5926,40 @@ local states =
     },
 
     State{
+        name = "joust_pre",
+        tags = { "busy" },
+		server_states = { "joust_pre", "joust_start", "joust" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.Transform:SetPredictedEightFaced()
+			inst.AnimState:PlayAnimation("lancecharge_lag_pre")
+            inst.AnimState:PushAnimation("lancecharge_lag", false)
+            inst:PerformPreviewBufferedAction()
+            inst.sg:SetTimeout(TIMEOUT)
+        end,
+
+        onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+                if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+                end
+            elseif inst.bufferedaction == nil then
+                inst.sg:GoToState("idle")
+            end
+        end,
+
+        ontimeout = function(inst)
+            inst:ClearBufferedAction()
+            inst.sg:GoToState("idle")
+        end,
+
+        onexit = function(inst)
+            inst.Transform:ClearPredictedFacingModel()
+        end,
+    },
+
+    State{
         name = "tackle_pre",
         tags = { "busy" },
 		server_states = { "tackle_pre", "tackle_start", "tackle" },
@@ -6412,11 +6701,12 @@ local states =
 				local rockingchair = FindEntity(inst, 0.01, nil, { "rocking_chair" }, { "cansit", "burnt" })
 				if rockingchair then
 					if rockingchair.AnimState:IsCurrentAnimation("rocking_pre") then
-						inst.AnimState:PlayAnimation("rocking_pre")
+                        local anim = GetRockingChairStateAnim(inst, rockingchair)
+						inst.AnimState:PlayAnimation(anim.."_pre")
 						inst.AnimState:SetTime(rockingchair.AnimState:GetCurrentAnimationTime())
-						inst.AnimState:PushAnimation("rocking_loop")
+						inst.AnimState:PushAnimation(anim.."_loop")
 					elseif rockingchair.AnimState:IsCurrentAnimation("rocking_loop") then
-						inst.AnimState:PlayAnimation("rocking_loop", true)
+						inst.AnimState:PlayAnimation(GetRockingChairStateAnim(inst, rockingchair).."_loop", true)
 						inst.AnimState:SetTime(rockingchair.AnimState:GetCurrentAnimationTime())
 					else
 						inst.AnimState:PlayAnimation("sit"..tostring(math.random(2)).."_loop", true)
@@ -6700,7 +6990,7 @@ local states =
 		onupdate = function(inst)
 			if inst.sg:ServerStateMatches() then
 				if inst.entity:FlattenMovementPrediction() then
-					if inst.player_classified.currentstate:value() == inst.sg.statemem.run_stop_hash then
+					if inst.player_classified and inst.player_classified.currentstate:value() == inst.sg.statemem.run_stop_hash then
 						return
 					end
 					inst.sg:GoToState("idle", "noanim")

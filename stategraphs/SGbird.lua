@@ -24,11 +24,6 @@ local function PlayShardFx(inst, target)
 end
 
 local function FlyAwayToSky(inst)
-    local mutatedbirdmanager = TheWorld.components.mutatedbirdmanager
-    if inst:HasTag("bird_mutant_rift") and mutatedbirdmanager then
-        mutatedbirdmanager:FillMigrationTaskAtInst("mutatedbird", inst, 1)
-    end
-    --
     inst:Remove()
 end
 
@@ -596,12 +591,12 @@ local states =
                     inst.Physics:SetVel(math.random(6, 10) * math.cos(rot), 0, math.random(6, 10) * -math.sin(rot))
                 end
 
-                inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
-                inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/body_land")
-
                 --Can't use inventoryitem:TryToSink, not an item!
                 if ShouldEntitySink(inst, true) then
-                    inst:DoTaskInTime(0, SinkEntity)
+                    SinkEntity(inst)
+                else
+                    inst.sg:GoToState("corpse_idle", "fall_corpse_to_idle")
+                    inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_crow/body_land")
                 end
             end
         end,

@@ -33,6 +33,18 @@ local thevault_prefabs = {
     "marionette_disappear_fx",
 }
 
+local theprincess_assets =
+{
+	Asset("ANIM", "anim/playbill.zip"),
+    Asset("ANIM", "anim/playbill_princess_yoth.zip"),
+    Asset("INV_IMAGE", "playbill_princess_yoth"),
+}
+
+local theprincess_prefabs = {
+    "marionette_appear_fx",
+    "marionette_disappear_fx",
+}
+
 local function makeplay(name, _assets, prefabs, data)
     local build = data and data.build or "playbill"
     local lectern_book_build = data and data.lectern_book_build or nil
@@ -111,4 +123,6 @@ end
 
 return makeplay("the_doll", thedoll_assets, thedoll_prefabs),
         makeplay("the_veil", thepall_assets, thepall_prefabs, { build = "playbill_void", lectern_book_build = "charlie_lectern_void" }),
-        makeplay("the_vault", thevault_assets, thevault_prefabs, { build = "playbill_ancient", lectern_book_build = "charlie_lectern_ancient", noburn = true})
+        makeplay("the_vault", thevault_assets, thevault_prefabs, { build = "playbill_ancient", lectern_book_build = "charlie_lectern_ancient", noburn = true}),
+        -- Year of the Clockwork Knight
+        makeplay("the_princess_yoth", theprincess_assets, theprincess_prefabs, { build = "playbill_princess_yoth", lectern_book_build = "charlie_lectern_princess" })

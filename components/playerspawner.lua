@@ -244,10 +244,15 @@ function self:SpawnAtLocation(inst, player, x, y, z, isloading)
             x, y, z = GetMigrationPortalLocation(player, player.migration)
             for i, v in ipairs(player.migrationpets) do
                 if v:IsValid() then
+                    local ox, oy, oz = 0, 0, 0
+                    local migrationpetsoverrider = v.components.migrationpetsoverrider
+                    if migrationpetsoverrider then
+                        ox, oy, oz = migrationpetsoverrider:GetOffsetFrom(x, y, z)
+                    end
                     if v.Physics ~= nil then
-                        v.Physics:Teleport(x, y, z)
+                        v.Physics:Teleport(x + ox, y + oy, z + oz)
                     elseif v.Transform ~= nil then
-                        v.Transform:SetPosition(x, y, z)
+                        v.Transform:SetPosition(x + ox, y + oy, z + oz)
                     end
                 end
             end

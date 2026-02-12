@@ -83,7 +83,7 @@ local function SetHeadAlpha(inst, a)
 end
 
 local function OnDespawn(inst)
-    local owner = inst.components.follower and inst.components.follower.leader or nil
+    local owner = inst.components.follower and inst.components.follower:GetLeader()
     if owner and owner.components.petleash then
         owner.components.petleash:DetachPet(inst)
     end
@@ -148,7 +148,7 @@ local function Client_CalcTransparencyRating(inst, observer)
 end
 
 local function KeepTarget(inst, target)
-    if target == inst.components.follower.leader then
+    if target == inst.components.follower:GetLeader() then
         return true
     end
 
@@ -165,7 +165,7 @@ end
 
 local function Retarget(inst)
     if inst.components.combat.target == nil then
-        return inst.components.follower.leader
+        return inst.components.follower:GetLeader()
     end
 
     return nil
@@ -186,7 +186,7 @@ end
 
 local function OnAttacked(inst, data)
     inst._times_hit_since_last_teleport = inst._times_hit_since_last_teleport + 1
-    if data.attacker and data.attacker ~= inst.components.follower.leader then
+    if data.attacker and data.attacker ~= inst.components.follower:GetLeader() then
         inst.components.combat:SetTarget(data.attacker)
         inst.components.combat:ShareTarget(data.attacker, 30, CanShareTargetFn, 1)
     end
@@ -321,6 +321,16 @@ local function TryAttack_Far(inst)
     return true
 end
 
+local function OffsetFromFn(inst, x, y, z)
+    local pos = Vector3(x, y, z)
+    for r = TUNING.GESTALT_EVOLVED_CLOSE_RANGE + 1, TUNING.GESTALT_EVOLVED_MID_RANGE - 1 do
+        local offset = FindWalkableOffset(pos, math.random() * TWOPI, r, 12, false, false, NoHoles)
+        if offset then
+            return offset.x, offset.y, offset.z
+        end
+    end
+    return 0, 0, 0
+end
 
 local function OnSave(inst, data)
     data.petcount = inst._petcount
@@ -455,6 +465,9 @@ local function fn()
     follower:KeepLeaderOnAttacked()
     follower.keepleaderduringminigame = true
     follower.neverexpire = true
+
+    local migrationpetsoverrider = inst:AddComponent("migrationpetsoverrider")
+    migrationpetsoverrider:SetOffsetFromFn(OffsetFromFn)
 
     inst:SetStateGraph("SGgestalt_guard_evolved")
     inst:SetBrain(brain)

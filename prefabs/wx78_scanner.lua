@@ -254,7 +254,7 @@ end
 ---------------------------------------------------------------------------------------------------
 
 local function scanner_owner_fn(inst)
-    return (inst.components.follower ~= nil and inst.components.follower.leader) or nil
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function scanner_loop_fn(inst, target)
@@ -316,7 +316,7 @@ local function OnUpdateScanCheck(inst, dt)
 
     local target = inst.components.entitytracker:GetEntity("scantarget")
     if target ~= nil then
-        local owner = inst.components.follower.leader
+        local owner = inst.components.follower and inst.components.follower:GetLeader()
         if owner == nil or not target:IsValid() or target:HasTag("INLIMBO") or
                 (target.components.health ~= nil and target.components.health:IsDead()) or
                 (   owner.components.dataanalyzer:GetData(target.prefab) <= 0 and
@@ -374,7 +374,7 @@ local function TryFindTarget(inst)
         return nil
     end
 
-    local owner = inst.components.follower.leader
+    local owner = inst.components.follower and inst.components.follower:GetLeader()
     if not owner then
         return nil
     end
@@ -604,8 +604,8 @@ local function on_scanner_timer_done(inst, data)
 end
 
 local function CanDoerActivate(inst, doer)
-    return inst.components.follower == nil or inst.components.follower.leader == nil
-        or inst.components.follower.leader == doer
+    return inst.components.follower == nil or inst.components.follower:GetLeader() == nil
+        or inst.components.follower:GetLeader() == doer
 end
 
 local function OnActivateFn(inst)
@@ -633,8 +633,8 @@ end
 local function IsInRangeOfPlayer(inst)
     local DISTANCE = TUNING.WX78_SCANNER_PLAYER_PROX
 
-    if inst.components.follower == nil or inst.components.follower.leader == nil or
-            inst:GetDistanceSqToInst(inst.components.follower.leader) < DISTANCE*DISTANCE then
+    if inst.components.follower == nil or inst.components.follower:GetLeader() == nil or
+            inst:GetDistanceSqToInst(inst.components.follower:GetLeader()) < DISTANCE*DISTANCE then
         return true
     else
         if inst.components.entitytracker:GetEntity("scantarget") then
@@ -646,7 +646,7 @@ local function IsInRangeOfPlayer(inst)
 end
 
 local function SpawnData(inst)
-    local owner = inst.components.follower.leader
+    local owner = inst.components.follower and inst.components.follower:GetLeader()
     if owner and owner.components.dataanalyzer then
         local amount = owner.components.dataanalyzer:SpendData(inst._scanned_prefab)
 

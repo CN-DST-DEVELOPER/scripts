@@ -410,8 +410,24 @@ end
 local function SetStatsLevel(inst, level)
     --V2C: setting .runspeed does not stack with mount speed
     local mult = Remap(level, 0, 3, 1, 1.2)
-    inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED * mult
+    if not inst._runspeedoverridden then
+        inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED * mult
+    end
     inst.components.hunger:SetRate(TUNING.WILSON_HUNGER_RATE * mult)
+end
+
+local function OnOverrideRunSpeed(inst)
+    if not inst._runspeedoverridden then
+        inst._runspeedoverridden = true
+        inst:UpdateBloomStage()
+    end
+end
+
+local function OnStopOverrideRunSpeed(inst)
+    if inst._runspeedoverridden then
+        inst._runspeedoverridden = nil
+        inst:UpdateBloomStage()
+    end
 end
 
 local function SetUserFlagLevel(inst, level)
@@ -589,6 +605,7 @@ local function OnBecameGhost(inst)
 end
 
 local function OnRespawnedFromGhost(inst)
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
     if TheWorld.state.isspring then
         inst.components.bloomness:Fertilize()
     end
@@ -786,8 +803,6 @@ local function master_postinit(inst)
 
     inst.components.health.fire_damage_scale = TUNING.WORMWOOD_FIRE_DAMAGE
 
-    inst.sg.mem.nocorpse = true -- No flesh inside us.
-
     inst.plantbonuses = {}
     inst.plantpenalties = {}
     inst.components.sanity.custom_rate_fn = SanityRateFn
@@ -855,6 +870,8 @@ local function master_postinit(inst)
     inst:ListenForEvent("ms_respawnedfromghost", OnRespawnedFromGhost)
 	inst:ListenForEvent("ms_playerreroll", RemoveWormwoodPets)
 	inst:ListenForEvent("death", RemoveWormwoodPets)
+    inst:ListenForEvent("startoverriderunspeed", OnOverrideRunSpeed)
+    inst:ListenForEvent("stopoverriderunspeed", OnStopOverrideRunSpeed)
     inst:WatchWorldState("season", OnSeasonChange)
     WatchWorldPlants(inst)
 

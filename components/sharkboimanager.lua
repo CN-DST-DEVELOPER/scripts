@@ -469,7 +469,7 @@ self.OnPlayerFishingTick = function(inst)
         oddsoverride = TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH / 4
     end
 
-    if math.random() < (oddsoverride or TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH) then
+    if TryLuckRoll(inst, oddsoverride or TUNING.ICEFISHING_HOLE_ODDS_TO_HOOK_FISH, LuckFormulas.SharkBoiSpawn) then
         local rod = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
         rod = (rod ~= nil and rod.components.oceanfishingrod ~= nil) and rod or nil
         local target = rod ~= nil and rod.components.oceanfishingrod.target or nil

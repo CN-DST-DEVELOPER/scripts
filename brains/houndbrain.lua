@@ -39,7 +39,7 @@ local function EatFoodAction(inst)
 end
 
 local function GetLeader(inst)
-    return inst.components.follower ~= nil and inst.components.follower.leader or nil
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetHome(inst)

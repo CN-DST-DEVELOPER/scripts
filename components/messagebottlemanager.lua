@@ -207,7 +207,7 @@ function self:UseMessageBottle(bottle, doer, is_not_from_hermit)
 			pos, reason = gettreasurepos(doer)
 
 			if pos and pos.x ~= nil then
-				local treasure = messagebottletreasures.GenerateTreasure(pos)
+				local treasure = messagebottletreasures.GenerateTreasure(pos, nil, nil, nil, doer)
 				treasure.Transform:SetPosition(pos.x, pos.y, pos.z)
 				treasure:ListenForEvent("on_submerge", AddMinimapMarker)
 			end

@@ -35,7 +35,7 @@ local function NoHoles(pt)
 end
 
 local function onattack(inst, owner, target)
-    if math.random() < 0.2 then
+    if TryLuckRoll(owner, TUNING.SHADOW_TENTACLE_RUINS_BAT_CHANCE, LuckFormulas.ShadowTentacleSpawn) then
         local pt
         if target ~= nil and target:IsValid() then
             pt = target:GetPosition()

@@ -335,7 +335,7 @@ function InspectaclesParticipant:CreateNewAndOrShowCurrentGame()
         self:SetCurrentGame(gameid, posx, posz)
 
         local skilltreeupdater = self.inst.components.skilltreeupdater
-        self.upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_wagstaff_2") and math.random() < TUNING.SKILLS.WINONA.INSPECTACLES_UPGRADE_CHANCE or nil
+        self.upgraded = skilltreeupdater and skilltreeupdater:IsActivated("winona_wagstaff_2") and TryLuckRoll(self.inst, TUNING.SKILLS.WINONA.INSPECTACLES_UPGRADE_CHANCE, LuckFormulas.InspectablesUpgradedBox) or nil
     end
 
     self:UpdateBox()

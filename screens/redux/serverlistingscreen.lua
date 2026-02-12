@@ -442,7 +442,7 @@ function ServerListingScreen:Join(warnedOffline, warnedLanguage, warnedPaused)
                                 })
             self.last_focus = TheFrontEnd:GetFocusWidget()
             TheFrontEnd:PushScreen(confirm_offline_popup)
-        elseif IsConsole() and not warnedLanguage and self.view_online and self.event_id == "" and self.selected_server.tags:split(",")[1] ~= STRINGS.PRETRANSLATED.LANGUAGES[LOC.GetLanguage()]:lower() then
+        elseif IsConsole() and not warnedLanguage and self.view_online and self.event_id == "" and self.selected_server.tags:split(",")[2] ~= STRINGS.PRETRANSLATED.LANGUAGES[LOC.GetLanguage()]:lower() then
             local confirm_language_popup = PopupDialogScreen(STRINGS.UI.SERVERLISTINGSCREEN.SERVER_LANGUAGE_WARNING_TITLE, STRINGS.UI.SERVERLISTINGSCREEN.SERVER_LANGUAGE_WARNING_BODY,
                                 {
                                     {text=STRINGS.UI.SERVERLISTINGSCREEN.OK, cb = function()

@@ -75,11 +75,12 @@ local function BabyCount(inst)
 end
 
 local function MakeBaby(inst)
+    local target = inst.components.combat.target
     local angle = (inst.Transform:GetRotation() + 180) * DEGREES
-    
+
     local prefab = "spider"
-    if inst.components.combat:HasTarget() and math.random() < 0.45 then
-        prefab = math.random() > 0.5 and "spider_warrior" or "spider_healer"
+    if target ~= nil and TryLuckRoll(target, TUNING.SPIDERQUEEN_SPAWN_BETTER_SPIDER_CHANCE, LuckFormulas.SpiderQueenBetterSpider) then
+        prefab = math.random() <= TUNING.SPIDERQUEEN_SPAWN_SPIDER_WARRIOR_CHANCE and "spider_warrior" or "spider_healer"
     end
 
     local spider = inst.components.lootdropper:SpawnLootPrefab(prefab)
@@ -89,8 +90,8 @@ local function MakeBaby(inst)
         spider.Transform:SetPosition(x + rad * math.cos(angle), 0, z - rad * math.sin(angle))
         spider.sg:GoToState("taunt")
         inst.components.leader:AddFollower(spider)
-        if inst.components.combat.target ~= nil then
-            spider.components.combat:SetTarget(inst.components.combat.target)
+        if target ~= nil then
+            spider.components.combat:SetTarget(target)
         end
     end
 end

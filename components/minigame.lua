@@ -95,7 +95,7 @@ function Minigame:DoActivePulse()
 	if self.spectator_dist and self.spectator_dist > 0 then
 		local spectators = TheSim:FindEntities(x, y, z, self.spectator_dist, nil, SPECTATOR_CANT_TAGS, SPECTATOR_ONEOF_TAGS)
 		for _, spectator in ipairs(spectators) do
-			if spectator.components.follower == nil or spectator.components.follower.leader == nil then
+			if spectator.components.follower == nil or spectator.components.follower:GetLeader() == nil then
 				self:AddSpectator(spectator)
 			end
 		end

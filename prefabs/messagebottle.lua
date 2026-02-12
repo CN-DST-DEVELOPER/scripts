@@ -83,7 +83,7 @@ local function onplayerfinishedreadingnote(player)
 	player:RemoveEventCallback("animover", onplayerfinishedreadingnote)
 end
 
-local function ShouldForceMapReveal(inst)
+local function ShouldForceMapReveal(inst, doer)
 	local hermit = TheWorld.components.messagebottlemanager ~= nil and TheWorld.components.messagebottlemanager:GetHermitCrab() or nil
 
 	if hermit == nil or not hermit.pearlgiven then
@@ -119,7 +119,7 @@ local function prereveal(inst, doer)
 
 	if TheWorld.components.messagebottlemanager ~= nil then
 		if (TheWorld.components.messagebottlemanager:GetPlayerHasUsedABottle(doer) or TheWorld.components.messagebottlemanager:GetPlayerHasFoundHermit(doer))
-			and math.random() < TUNING.MESSAGEBOTTLE_NOTE_CHANCE then
+			and TryLuckRoll(doer, TUNING.MESSAGEBOTTLE_NOTE_CHANCE, LuckFormulas.MessageBottleContainsNote) then
 
 			bottle_contains_note = true
 		end

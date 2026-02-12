@@ -24,7 +24,7 @@ local function FindFoodAction(inst)
 end
 
 local function GoHomeAction(inst)
-    if not inst.components.follower.leader and
+    if not inst.components.follower:GetLeader() and
        inst.components.homeseeker and
        inst.components.homeseeker.home and
        inst.components.homeseeker.home:IsValid() then

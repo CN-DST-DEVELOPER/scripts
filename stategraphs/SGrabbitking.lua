@@ -177,7 +177,7 @@ local states = {
                 local hitradius = inst:GetPhysicsRadius(0) + TUNING.RABBITKING_ABILITY_DROPKICK_HITRADIUS
                 local ents = TheSim:FindEntities(x, y, z, hitradius + MAX_PHYSICS_RADIUS, DROPKICK_MUSTHAVE_TAGS, DROPKICK_CANT_TAGS, DROPKICK_ONEOF_TAGS)
                 for _, ent in ipairs(ents) do
-                    if ent ~= inst and ent:IsValid() and (ent.components.follower == nil or ent.components.follower.leader ~= inst) and not (ent.components.health ~= nil and ent.components.health:IsDead()) then
+                    if ent ~= inst and ent:IsValid() and (ent.components.follower == nil or ent.components.follower:GetLeader() ~= inst) and not (ent.components.health ~= nil and ent.components.health:IsDead()) then
                         local range = hitradius + ent:GetPhysicsRadius(0)
                         if ent:GetDistanceSqToPoint(x, y, z) < range * range and DoKnockback(inst, ent) then
                             inst.components.combat:DoAttack(ent)

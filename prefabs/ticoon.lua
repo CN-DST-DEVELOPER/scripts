@@ -27,7 +27,7 @@ local TRACKING_LEADER_LEASH_DIST = 14
 
 local function OnAttacked(inst, data)
 	if data ~= nil and data.attacker ~= nil then
-		if inst.components.follower.leader == data.attacker then
+		if inst.components.follower:GetLeader() == data.attacker then
 			inst.components.follower:StopFollowing()
 			inst.components.questowner:AbandonQuest()
 		end
@@ -53,7 +53,7 @@ local function on_lost_leader(inst)
 			end
 
 			inst.lost_leader_removal = inst:DoTaskInTime(120, function() 		-- allow enough time for the clients to reconnect
-				if inst.components.follower.leader == nil then 
+				if inst.components.follower:GetLeader() == nil then 
 					inst.components.questowner:AbandonQuest()
 				end
 			end)
@@ -66,7 +66,7 @@ local function hidingspot_onremove(inst, hidingspot, data)
 
 	inst.status_str = "SUCCESS"
 
-	local leader = inst.components.follower.leader
+	local leader = inst.components.follower and inst.components.follower:GetLeader()
 	if leader ~= nil then
 		if (data == nil or data.finder ~= leader) then
 			inst.status_str = "LOST_TRACK"
@@ -144,7 +144,7 @@ local function on_abandon_quest(inst)
 		inst.components.entitytracker:ForgetEntity("tracking") 
 	end
 
-	local leader = inst.components.follower.leader
+	local leader = inst.components.follower and inst.components.follower:GetLeader()
 	if leader ~= nil then
 		if leader.components.talker ~= nil then
 			leader.components.talker:Say(GetString(leader, (inst.components.health ~= nil and inst.components.health:IsDead()) and "ANNOUNCE_TICOON_DEAD" or "ANNOUNCE_TICOON_ABANDONED"))
@@ -162,7 +162,7 @@ end
 local function on_complete_quest(inst)
 	inst.status_str = "NEARBY"
 
-	local leader = inst.components.follower.leader
+	local leader = inst.components.follower and inst.components.follower:GetLeader()
 	if leader ~= nil then
 		if leader.components.talker ~= nil then
 			leader.components.talker:Say(GetString(leader, "ANNOUNCE_TICOON_NEAR_KITCOON"))
@@ -174,7 +174,7 @@ end
 
 -------------------------------------------------------------------------------
 local function IsLeaderSleeping(inst)
-    return inst.components.follower.leader and inst.components.follower.leader:HasTag("sleeping")
+    return inst.components.follower:GetLeader() and inst.components.follower:GetLeader():HasTag("sleeping")
 end
 
 local function ShouldWakeUp(inst)
@@ -188,7 +188,7 @@ end
 -------------------------------------------------------------------------------
 
 local function GetStatus(inst, viewer)
-	return (inst.status_str == "TRACKING" and inst.components.follower.leader ~= viewer) and "TRACKING_NOT_MINE" or inst.status_str
+	return (inst.status_str == "TRACKING" and inst.components.follower:GetLeader() ~= viewer) and "TRACKING_NOT_MINE" or inst.status_str
 end
 
 local function OnEntitySleep(inst)

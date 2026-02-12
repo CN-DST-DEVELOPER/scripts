@@ -61,6 +61,7 @@ local function fn()
 
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
+    inst.pickupsound = "paper"
 
     inst.entity:SetPristine()
 

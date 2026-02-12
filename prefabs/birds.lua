@@ -89,15 +89,15 @@ local function SpawnPrefabChooser(inst)
         if oldestplayer <= TheWorld.state.autumnlength then
             return ChooseSeeds()
         elseif oldestplayer <= year then
-            return math.random() <= 0.8 and ChooseSeeds() or nil
+            return math.random() <= GetEntitiesLuckChance(players, TUNING.BIRD_DROP_SEEDS_CHANCE_ONEYEAR, LuckFormulas.BirdDropItem) and ChooseSeeds() or nil
         else
-            return math.random() <= 0.6 and ChooseSeeds() or nil
+            return math.random() <= GetEntitiesLuckChance(players, TUNING.BIRD_DROP_SEEDS_CHANCE_PASTONEYEAR, LuckFormulas.BirdDropItem) and ChooseSeeds() or nil
         end
     end
 
     -- Lower chance for older players to get item
     return oldestplayer >= 0
-        and math.random() < .35 - oldestplayer * .1
+        and math.random() <= GetEntitiesLuckChance(players, TUNING.BIRD_DROP_ITEM_BASE_CHANCE - oldestplayer * .1, LuckFormulas.BirdDropItem)
         and ChooseItem()
         or ChooseSeeds()
 end

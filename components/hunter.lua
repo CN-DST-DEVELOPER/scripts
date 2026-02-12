@@ -243,7 +243,7 @@ local function GetNextSpawnAngle(pt, direction, radius)
     return GetRunAngle(pt, start_angle, radius)
 end
 
-local function StartDirt(hunt, position)
+local function StartDirt(hunt, position, player)
     RemoveDirt(hunt)
 
     local pt = position
@@ -252,7 +252,7 @@ local function StartDirt(hunt, position)
 
     if ShouldDoHuntedWargTrack() then
         hunt.monster_track_num = 0
-    elseif math.random() <= GetAlternateBeastChance(hunt) then
+    elseif TryLuckRoll(player, GetAlternateBeastChance(hunt), LuckFormulas.HuntAlternateBeast) then
         hunt.monster_track_num = math.random(math.floor(hunt.numtrackstospawn / 2), hunt.numtrackstospawn - 2)
     else
         hunt.monster_track_num = nil
@@ -353,7 +353,7 @@ OnUpdateHunt = function(inst, hunt)
         local player = eligiblePlayers[math.random(1,#eligiblePlayers)]
         --print("Start hunt for player",player)
         local position = player:GetPosition()
-        StartDirt(hunt, position)
+        StartDirt(hunt, position, player)
     else
         -- if no player near enough, then give up this hunt and start a new one
         local x, y, z = hunt.lastdirt.Transform:GetWorldPosition()

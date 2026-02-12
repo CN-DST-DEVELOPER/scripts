@@ -154,8 +154,10 @@ local function UpdateTargets(inst, p1, p2, pv, targets)
 							inst.components.combat:SetDefaultDamage(TUNING.WAGDRONE_LASERWIRE_DAMAGE)
 						else
 							inst.components.combat:DoAttack(v, nil, nil, "electric")
-							v:PushEventImmediate("electrocute") -- (NOTE): Don't add electric tag to laserwire, or it counts as a fork attack! we dont want that!
 						end
+						--V2C: "electrocute" immediately with no data to prevent forking from "electric" stimuli attack.
+						--NOTE: players (e.g. wx) still have electrocute state even if "electricdamageimmune"
+						v:PushEventImmediate("electrocute")
 					end
 					targets[v] = t + SHOCK_COOLDOWN
 				end

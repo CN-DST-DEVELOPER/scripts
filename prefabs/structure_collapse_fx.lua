@@ -39,6 +39,7 @@ local function playfx(proxy, anim)
     inst.AnimState:SetBank("collapse")
     inst.AnimState:SetBuild("structure_collapse_fx")
     inst.AnimState:PlayAnimation(anim)
+	inst.AnimState:SetFinalOffset(3)
 
     local material = MATERIAL_NAMES[proxy.material:value()]
     if material ~= "none" then

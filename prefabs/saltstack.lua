@@ -263,9 +263,7 @@ local function fn()
         return inst
     end
 
-
     inst.scrapbook_anim = "full"
-
     inst.scrapbook_bank  = "salt_pillar2"
     inst.scrapbook_build = "salt_pillar2"
 
@@ -286,7 +284,6 @@ local function fn()
     inst.components.lootdropper.y_speed_variance = 4
     inst.components.lootdropper.spawn_loot_inside_prefab = true
 
-
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
     inst.components.workable:SetWorkLeft(TUNING.SALTSTACK_WORK_REQUIRED)
@@ -304,7 +301,6 @@ local function fn()
     inst.components.worldsettingstimer:AddTimer("growth", maxtime, TUNING.SALTSTACK_GROWTH_ENABLED and TUNING.REGROWTH_TIME_MULTIPLIER > 0)
     inst:ListenForEvent("timerdone", ontimerdonefn)
 
-
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatusfn
 
@@ -312,7 +308,9 @@ local function fn()
 
     inst:ListenForEvent("on_collide", OnCollide)
 
-    if not POPULATING then -- Used for variety in debug spawned saltstacks
+	if CREATING_SCRAPBOOK_DATA then
+		SetupStack(inst, 2)
+	elseif not POPULATING then -- Used for variety in debug spawned saltstacks
         SetupStack(inst)
     end
 

@@ -12,6 +12,7 @@ local prefabs =
     "batcorpse",
 }
 
+local BrainCommon = require("brains/braincommon")
 local brain = require "brains/batbrain"
 
 SetSharedLootTable("bat",
@@ -28,32 +29,34 @@ SetSharedLootTable("bat_acidinfused",
     {"nitre",      0.2},
 })
 
-local SLEEP_DIST_FROMHOME = 1
-local SLEEP_DIST_FROMTHREAT = 20
-local MAX_CHASEAWAY_DIST = 80
 local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 40
 
+local function IsValidMember(inst)
+    return not BrainCommon.ShouldTriggerPanic(inst) and not BrainCommon.ShouldAvoidElectricFence(inst)
+        and not (inst.components.burnable and inst.components.burnable:IsBurning())
+end
+local function CanMakeOrJoinTeam(inst, attacker)
+    return IsValidMember(inst)
+end
 local function MakeTeam(inst, attacker)
     local leader = SpawnPrefab("teamleader")
     leader.components.teamleader:SetUp(attacker, inst)
     leader.components.teamleader:BroadcastDistress(inst)
 end
 
-local RETARGET_CANT_TAGS = {"bat"}
-local RETARGET_ONEOF_TAGS = {"character", "monster"}
+local RETARGET_CANT_TAGS = { "bat" }
+local RETARGET_ONEOF_TAGS = { "character", "monster" }
+local function IsValidTarget(guy, inst)
+    inst.components.combat:CanTarget(guy)
+end
+
 local function Retarget(inst)
     local ta = inst.components.teamattacker
 
-    local newtarget = FindEntity(inst, TUNING.BAT_TARGET_DIST, function(guy)
-            return inst.components.combat:CanTarget(guy)
-        end,
-        nil,
-        RETARGET_CANT_TAGS,
-        RETARGET_ONEOF_TAGS
-    )
+    local newtarget = FindEntity(inst, TUNING.BAT_TARGET_DIST, IsValidTarget, nil, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS )
 
-    if newtarget and not ta.inteam and not ta:SearchForTeam() then
+    if newtarget and not ta.inteam and CanMakeOrJoinTeam(inst, newtarget) and not ta:SearchForTeam() then
         MakeTeam(inst, newtarget)
     end
 
@@ -77,7 +80,7 @@ local function OnAttacked(inst, data)
 		return
 	end
 
-    if not inst.components.teamattacker.inteam and not inst.components.teamattacker:SearchForTeam() then
+    if not inst.components.teamattacker.inteam and CanMakeOrJoinTeam(inst, data.attacker) and not inst.components.teamattacker:SearchForTeam() then
         MakeTeam(inst, data.attacker)
     elseif inst.components.teamattacker.teamleader then
         inst.components.teamattacker.teamleader:BroadcastDistress(inst)   --Ask for  help!
@@ -267,6 +270,7 @@ local function fn()
     MakeMediumFreezableCharacter(inst, "bat_body")
 
     local teamattacker = inst:AddComponent("teamattacker")
+    teamattacker:SetValidMemberFn(IsValidMember)
     teamattacker.team_type = "bat"
 
     inst:ListenForEvent("attacked", OnAttacked)

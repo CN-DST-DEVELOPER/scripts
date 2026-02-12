@@ -292,7 +292,7 @@ local function OnPicked(inst, doer)
         soil:PushEvent("breaksoil")
     end
 
-    if not inst.is_oversized and inst:HasTag("farm_plant_killjoy") and math.random() < 0.05 then
+    if not inst.is_oversized and inst:HasTag("farm_plant_killjoy") and math.random() <= TUNING.FARMPLANT_SPAWN_FRUITFLY_ON_WEED_CHANCE then
         local fruitfly = SpawnPrefab("fruitfly")
         fruitfly.Transform:SetPosition(x, y, z)
     end

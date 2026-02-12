@@ -24,13 +24,13 @@ local function shouldhit(inst, target)
 
 	-- other player's and their followers
 	if inst.spider_leader_isplayer and not TheNet:GetPVPEnabled()
-		and (target:HasTag("player") or (target.components.follower ~= nil and target.components.follower.leader ~= nil and target.components.follower.leader:HasTag("player"))) then
+		and (target:HasTag("player") or (target.components.follower ~= nil and target.components.follower:GetLeader() ~= nil and target.components.follower:GetLeader():HasTag("player"))) then
 		return false
 	end
 
 	-- if the spider has a leader, check if the target is on the same team
     if inst.spider_leader ~= nil then
-        return not (inst.spider_leader == target or (target.components.follower ~= nil and target.components.follower.leader == inst.spider_leader))
+        return not (inst.spider_leader == target or (target.components.follower ~= nil and target.components.follower:GetLeader() == inst.spider_leader))
     end
 
 	return not target:HasTag("spider_moon")
@@ -94,7 +94,7 @@ end
 
 local function SetOwner(inst, spider)
 	inst.spider = spider
-	inst.spider_leader = spider.components.follower ~= nil and spider.components.follower.leader or nil
+	inst.spider_leader = spider.components.follower and spider.components.follower:GetLeader()
 	inst.spider_leader_isplayer = inst.spider_leader ~= nil and inst.spider_leader:HasTag("player")
 end
 

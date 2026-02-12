@@ -2,6 +2,9 @@ local assets =
 {
     Asset("ANIM", "anim/stagehand.zip"),
     Asset("ANIM", "anim/stagehand_sts.zip"),
+
+    -- Year of the Clockwork Knight
+    Asset("ANIM", "anim/stagehand_yoth_princess.zip"),
 }
 
 local armassets =
@@ -186,7 +189,7 @@ local function fn()
     inst.Physics:SetCapsule(0.5, 1.0)
 
     inst.AnimState:SetBank("stagehand")
-    inst.AnimState:SetBuild("stagehand_sts")
+    inst.AnimState:SetBuild(IsSpecialEventActive(SPECIAL_EVENTS.YOTH) and "stagehand_yoth_princess" or "stagehand_sts")
     inst.AnimState:PlayAnimation("idle")
 
     inst.AnimState:OverrideSymbol("dark_spew", "stagehand", "dark_spew")

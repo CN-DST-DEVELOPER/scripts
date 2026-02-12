@@ -32,7 +32,7 @@ local function closetoleader(inst)
     if inst.sg:HasStateTag("busy") then
         return nil
     end
-    local leader = inst.components.follower and inst.components.follower.leader or nil
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader and leader:GetDistanceSqToInst(inst) < TUNING.POLLY_ROGERS_RANGE * TUNING.POLLY_ROGERS_RANGE then
         return true
     end
@@ -66,7 +66,7 @@ local NearbyPointsOffsets = {
 }
 
 local function FindNearbyOceanPos(inst)
-    local leaderorself = inst.components.follower and inst.components.follower.leader or inst
+    local leaderorself = inst.components.follower and inst.components.follower:GetLeader() or inst
 
     local x, y, z = leaderorself.Transform:GetWorldPosition()
     local x1, y1, z1 = inst.Transform:GetWorldPosition()
@@ -131,7 +131,7 @@ function PollyRogerBrain:OnStart()
                 ),
                 WhileNode( function() return closetoleader(self.inst) end, "Stayclose", BrainCommon.NodeAssistLeaderPickUps(self, pickupparams)),
                 Follow(self.inst, function()
-                    local leader = self.inst.components.follower and self.inst.components.follower.leader or nil
+                    local leader = self.inst.components.follower and self.inst.components.follower:GetLeader()
                     if self.inst.prefab == "salty_dog" then
                         if nearbyoceanpoint and leader and leader:GetDistanceSqToPoint(nearbyoceanpoint:Get()) < MAX_SALT_IDLE_DIST_SQ then
                             return nil

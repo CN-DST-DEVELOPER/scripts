@@ -105,8 +105,9 @@ end
 
 local function SetForcedBeardlingLoot(lootdropper)
 	if not lootdropper.inst._fixedloot then
+        local lucky_user = lootdropper:GetLuckyUser()
 		lootdropper:SetLoot(forced_beardlingloot)
-		if math.random() < .5 then
+		if TryLuckRoll(lucky_user, .5, LuckFormulas.LootDropperChance) then
 			lootdropper:AddRandomLoot("beardhair", .5)
 			lootdropper:AddRandomLoot("monstermeat", 1)
 			lootdropper.numrandomloot = 1
@@ -283,7 +284,7 @@ local function LootSetupFunction(lootdropper)
     local guy = lootdropper.inst.causeofdeath
 	if IsForcedNightmare(lootdropper.inst) then
 		SetForcedBeardlingLoot(lootdropper)
-	elseif IsCrazyGuy(guy ~= nil and guy.components.follower ~= nil and guy.components.follower.leader or guy) then
+	elseif IsCrazyGuy(guy ~= nil and guy.components.follower ~= nil and guy.components.follower:GetLeader() or guy) then
         SetBeardlingLoot(lootdropper)
     else
         SetRabbitLoot(lootdropper)

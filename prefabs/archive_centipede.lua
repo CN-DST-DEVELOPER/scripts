@@ -134,11 +134,11 @@ local RETARGET_CANT_TAGS = { "INLIMBO" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 local function Retarget(inst)
     local homePos = inst.components.knownlocations:GetLocation("home")
-    local myLeader = inst.components.follower ~= nil and inst.components.follower.leader or nil
+    local myLeader = inst.components.follower and inst.components.follower:GetLeader()
 
     return not (homePos ~= nil and
                 inst:GetDistanceSqToPoint(homePos:Get()) >= TUNING.ARCHIVE_CENTIPEDE.TARGET_DIST * TUNING.ARCHIVE_CENTIPEDE.TARGET_DIST and
-                (inst.components.follower == nil or inst.components.follower.leader == nil))
+                (inst.components.follower == nil or inst.components.follower:GetLeader() == nil))
         and FindEntity(
             inst,
             TUNING.ARCHIVE_CENTIPEDE.TARGET_DIST,
@@ -149,7 +149,7 @@ local function Retarget(inst)
                 if myLeader ~= nil and myLeader:HasTag("player") and guy:HasTag("player") then
                     return false  -- don't automatically attack other players, wait for the leader's insturctions
                 end
-                local theirLeader = guy.components.follower ~= nil and guy.components.follower.leader or nil
+                local theirLeader = guy.components.follower and guy.components.follower:GetLeader()
                 local bothFollowingSamePlayer = myLeader ~= nil and myLeader == theirLeader and myLeader:HasTag("player")
                 return not bothFollowingSamePlayer
                     and not (guy:HasTag("archive_centipede") and theirLeader == nil)
@@ -164,7 +164,7 @@ end
 
 local function KeepTarget(inst, target)
     local homePos = inst.components.knownlocations:GetLocation("home")
-    return (inst.components.follower ~= nil and inst.components.follower.leader ~= nil)
+    return (inst.components.follower ~= nil and inst.components.follower:GetLeader() ~= nil)
         or (homePos ~= nil and target:GetDistanceSqToPoint(homePos:Get()) < MAX_CHASEAWAY_DIST_SQ)
 end
 

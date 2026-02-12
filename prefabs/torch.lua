@@ -204,7 +204,7 @@ end
 
 local function onattack(weapon, attacker, target)
     --target may be killed or removed in combat damage phase
-    if target ~= nil and target:IsValid() and target.components.burnable ~= nil and (math.random() < TUNING.TORCH_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability or attacker.components.skilltreeupdater:IsActivated("willow_controlled_burn_1")) then
+    if target ~= nil and target:IsValid() and target.components.burnable ~= nil and (TryLuckRoll(attacker, TUNING.TORCH_ATTACK_IGNITE_PERCENT * target.components.burnable.flammability, LuckFormulas.LighterIgniteOnAttack) or attacker.components.skilltreeupdater:IsActivated("willow_controlled_burn_1")) then
         target.components.burnable:Ignite(nil, attacker)
     end
 end

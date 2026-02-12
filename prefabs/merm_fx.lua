@@ -26,7 +26,7 @@ local function OnUpdateThorns(inst)
 
                 local damage = PlayerDamageMod(potential_target, inst.damage, TUNING.MERM_LUNAR_THORN_PLAYERDAMAGEPERCENT)
                 if inst.owner ~= nil then
-                    local leader = inst.owner.components.follower and inst.owner.components.follower.leader
+                    local leader = inst.owner.components.follower and inst.owner.components.follower:GetLeader()
                     if inst.owner.components.combat ~= nil and
                         inst.owner.components.combat:CanTarget(potential_target) and
                         not inst.owner.components.combat:IsAlly(potential_target) and

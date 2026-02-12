@@ -623,7 +623,8 @@ local states =
         {
             EventHandler("animover", function(inst)
                 if not inst.sg.statemem.norepeat and math.random() < .333 then
-                    inst.sg:GoToState("taunt", inst.components.follower.leader ~= nil and inst.components.follower.leader:HasTag("player"))
+                    local leader = inst.components.follower and inst.components.follower:GetLeader()
+                    inst.sg:GoToState("taunt", leader ~= nil and leader:HasTag("player"))
                 else
                     inst.sg:GoToState("idle")
                 end
@@ -669,11 +670,10 @@ local states =
                 elseif inst.sg.statemem.count > 0 then
                     inst.sg:GoToState("howl", {count= inst.sg.statemem.count > 1 and inst.sg.statemem.count - 1 or -1})
                 elseif inst.sg.statemem.count == 0 and math.random() < 0.333 then
+                    local leader = inst.components.follower and inst.components.follower:GetLeader()
                     inst.sg:GoToState("howl", {
-                        count = (inst.components.follower.leader ~= nil
-                            and inst.components.follower.leader:HasTag("player")
-                            and -1) or 0
-                        })
+                        count = (leader ~= nil and leader:HasTag("player") and -1) or 0,
+                    })
                 else
                     inst.sg:GoToState("idle")
                 end
@@ -912,7 +912,7 @@ local states =
             MakeStatue(inst)
             inst.Transform:SetSixFaced()
             inst.AnimState:PlayAnimation("statue_pre")
-            local leader = inst.components.follower.leader
+            local leader = inst.components.follower and inst.components.follower:GetLeader()
             if leader ~= nil then
                 inst.Transform:SetRotation(leader.Transform:GetRotation())
             end

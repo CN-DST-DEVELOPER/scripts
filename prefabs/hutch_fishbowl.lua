@@ -94,7 +94,7 @@ local function RebindHutch(inst, hutch)
         FishAlive(inst)
         inst:ListenForEvent("death", function() StartRespawn(inst, TUNING.HUTCH_RESPAWN_TIME) end, hutch)
 
-        if hutch.components.follower.leader ~= inst then
+        if hutch.components.follower.leader ~= inst then -- Getting leader directly special case.
             hutch.components.follower:SetLeader(inst)
         end
         return true

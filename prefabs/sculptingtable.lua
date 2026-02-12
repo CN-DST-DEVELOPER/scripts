@@ -116,10 +116,12 @@ local function giveitem(inst, itemname)
 
     inst.components.prototyper.trees.SCULPTING = CalcSculptingTech(itemname)
 
-    if string.find(inst.components.pickable.product, "rook")
-        or string.find(inst.components.pickable.product, "bishop")
-        or string.find(inst.components.pickable.product, "knight") then
-
+	if not string.find(inst.components.pickable.product, "moonglass") and
+		(	string.find(inst.components.pickable.product, "rook") or
+			string.find(inst.components.pickable.product, "bishop") or
+			string.find(inst.components.pickable.product, "knight")
+		)
+	then
         inst:AddTag("chess_moonevent")
     end
 end
@@ -257,7 +259,7 @@ local function DoChessMoonEventKnockOff(inst)
 end
 
 local function CheckChessMoonEventKnockOff(inst)
-    if TheWorld.state.isnewmoon then
+	if TheWorld.state.isfullmoon or TheWorld.state.isnewmoon then
         DoChessMoonEventKnockOff(inst)
     end
 end
@@ -351,6 +353,7 @@ local function fn()
     if not TheWorld:HasTag("cave") then
         inst.OnEntityWake = CheckChessMoonEventKnockOff
         inst.OnEntitySleep = CheckChessMoonEventKnockOff
+		inst:WatchWorldState("isfullmoon", CheckChessMoonEventKnockOff)
         inst:WatchWorldState("isnewmoon", CheckChessMoonEventKnockOff)
 
         inst:ListenForEvent("shadowchessroar", DoChessMoonEventKnockOff)

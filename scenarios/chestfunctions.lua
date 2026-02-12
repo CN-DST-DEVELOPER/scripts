@@ -62,8 +62,14 @@ local function InitializeChestTrap(inst, scenariorunner, openfn, chance)
 
 end
 
+local LUCKFORMULA_RECIPROCAL = .75
+local function ChestTrapChanceMult(inst, chance, luck)
+    return luck < 0 and chance * (1 + math.abs(luck) * .5)
+        or luck > 0 and chance * (LUCKFORMULA_RECIPROCAL / (LUCKFORMULA_RECIPROCAL + luck))
+end
 local function OnOpenChestTrap(inst, openfn, scenariorunner, data, chance)
-	if math.random() <= (chance or .66) then
+	local player = data.player
+	if TryLuckRoll(player, chance or .66, ChestTrapChanceMult) then
 		local talkabouttrap = function(inst, txt)
 			if inst.components.talker then  -- Apparently inst can be Deerclops, and Deerclops has no talker
 				inst.components.talker:Say(txt)
@@ -86,7 +92,6 @@ local function OnOpenChestTrap(inst, openfn, scenariorunner, data, chance)
 
 		openfn(inst, scenariorunner, data)
 			--get the player, and get him to say oops
-		local player = data.player
 		if player then
 			player:DoTaskInTime(1, talkabouttrap, GetString(player, "ANNOUNCE_TRAP_WENT_OFF"))
 		end

@@ -1240,6 +1240,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Aw, it didn't work!",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "We're here, Wobes!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "They must be too busy to come now, Woby girl.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -2175,6 +2178,7 @@ return{
         CHESSPIECE_YOTS = "The carving still looks slithery!",
         CHESSPIECE_WAGBOSS_ROBOT = "My very own model robot!",
         CHESSPIECE_WAGBOSS_LUNAR = "Like a robot possessed!",
+        CHESSPIECE_YOTH = "It's a chess piece of a chess piece!",
 
         CHESSJUNK1 = "I don't think they're going to get up anytime soon.",
         CHESSJUNK2 = "I don't think they're going to get up anytime soon.",
@@ -5973,7 +5977,7 @@ return{
 			ABANDONED = "I don't know if we can fix this, Woby...",
         },
 		HERMITHOUSE_ORNAMENT = "I remember making these at camp!",
-        HERMITHOUSE_LAUNDRY = "I love laundry day!",
+		HERMITHOUSE_LAUNDRY = "I love laundry day!",
 
         PETALS_DRIED = "Dried perfectly!",
         PETALS_EVIL_DRIED = "Dried perfectly!",
@@ -6020,6 +6024,42 @@ return{
             ABANDONED = "Aw, I don't think we can fix that.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "C'mon, Woby! Let's lighten this place up a bit!",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Don't look it in the mouth, Woby!", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "We need to gift the gift horse something first!", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Now that's a dark horse!", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Her Royal High-neighs!",
+        COSTUME_PRINCESS_BODY = "Someone ponied up for this outfit.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "It's a real dog and pony show without the dog, Woby!",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Whoa, fella!", -- Generic quote. It's aggressive.
+            FOLLOWING = "Woby, look! We're friends!", -- Following the character examining
+            FOLLOWING_OTHER = "Ooh, they follow the princess!", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "I need to practice my gallop!",
+        ARMOR_YOTH_KNIGHT = "Now I'm really stallion!",
+        HORSESHOE = "Woby, you'll always be my good luck charm!",
+        YOTH_LANCE = "It's joust perfect, Woby! Get it?",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "Aw, it was nice while it lasted.", -- Depleted and on the ground
+            HELD = "Should we brighten the mood, Wobes?", -- In the players inventory
+            GENERIC = "Look up, Woby!", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "That's some serious horse power!",
+        YOTH_CHAIR_ROCKING_ITEM = "I always wanted a rocking horse!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

@@ -41,6 +41,8 @@ local UseableTargetedItem = Class(function(self, inst)
     self.useabletargetprefab = nil
 	--self.useablemounted = nil
 
+	--NOTE: can also configure with this fn on CLIENTS: inst.UseableTargetedItem_ValidTarget
+
     --self.onusefn = nil
     --self.onstopusefn = nil
 end,
@@ -104,7 +106,7 @@ function UseableTargetedItem:StartUsingItem(target, doer)
         usesuccess = true
     end
 
-    if usesuccess then
+	if usesuccess and self.inst:IsValid() then
         self.inuse_targeted = true
     end
 

@@ -30,11 +30,22 @@ function ChaseAndRam:OnAttackOther(target)
     self.startruntime = nil -- reset max chase time timer
 end
 
+function ChaseAndRam:AreDifferentPlatforms(inst, target)
+    if self.inst.components.embarker ~= nil then -- Check embarker instead because rook changes whether it can platform hop or not
+        return inst:GetCurrentPlatform() ~= target:GetCurrentPlatform()
+    end
+    return false
+end
+
 function ChaseAndRam:Visit()
     local combat = self.inst.components.combat
     if self.status == READY then
         if combat.target ~= nil and combat.target.entity:IsValid() then
-            self.inst.components.locomotor:Stop()
+			--V2C: Removed the Stop() here because it causes a stutter for rook when
+			--     switching from RunAway to ChaseAndRam while in the running state.
+			--     BattleCry() doesn't always trigger anything.
+			--     Also, "taunt" state should be the one doing the Stop().
+			--self.inst.components.locomotor:Stop()
             self.inst.components.combat:BattleCry()
             self.startruntime = GetTime()
             self.numattacks = 0
@@ -79,11 +90,26 @@ function ChaseAndRam:Visit()
                 self.ram_vector = (hp-pt):GetNormalized()
             end
 
+            local on_different_platforms = self:AreDifferentPlatforms(self.inst, combat.target)
             local offset_angle = math.abs(angle - math.abs(self.ram_angle))
-            if offset_angle <= 60 then
+
+            if on_different_platforms then
+                if self.inst.sg:HasStateTag("running") then
+                    self.inst.components.locomotor:Stop()
+                    self.status = FAILED
+                    self.ram_vector = nil
+                    if self.inst.sg:HasStateTag("canrotate") then
+                        self.inst:FacePoint(hp)
+                    end
+                end
+                self.inst:RemoveTag("ChaseAndRam")
+                self.inst.components.locomotor:GoToPoint(hp, nil, false)
+            end
+
+            if offset_angle <= 60 and not on_different_platforms then
                 --Running action. This is the actual "Ram"
                 self.inst.components.locomotor:RunInDirection(self.ram_angle)
-            elseif offset_angle > 60 and (dsq >= (self.give_up_dist * self.give_up_dist)) then
+            elseif (offset_angle > 60 and (dsq >= (self.give_up_dist * self.give_up_dist) or self.inst:GetCurrentPlatform() ~= nil)) then
                 --You have run past your target. Stop!
                 self.inst.components.locomotor:Stop()
                 self.status = FAILED
@@ -95,7 +121,7 @@ function ChaseAndRam:Visit()
                 self.inst:RemoveTag("ChaseAndRam")
             end
 
-            if self.inst.sg ~= nil and not self.inst.sg:HasStateTag("atk_pre") and combat:TryAttack() then
+            if self.inst.sg ~= nil and not self.inst.sg:HasStateTag("atk_pre") and not on_different_platforms and combat:TryAttack() then
                 -- If you're not still in the telegraphing stage then try to attack.
                 self.inst:RemoveTag("ChaseAndRam")
             elseif self.startruntime == nil then
@@ -113,7 +139,9 @@ function ChaseAndRam:Visit()
                 self.status = FAILED
                 self.ram_vector = nil
                 self.inst.components.locomotor:Stop()
-                self.inst.components.combat:ForceAttack()
+                if not on_different_platforms then
+                    self.inst.components.combat:ForceAttack()
+                end
                 self.inst:RemoveTag("ChaseAndRam")
                 return
             end

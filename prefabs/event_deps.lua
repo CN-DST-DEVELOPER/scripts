@@ -248,6 +248,18 @@ local SPECIAL_EVENT_DEPS =
         },
     },
 
+    [SPECIAL_EVENTS.YOTH] =
+    {
+        frontend =
+        {
+            assets =
+            {
+                Asset("ANIM", "anim/dst_menu_yoth.zip"),
+                Asset("SOUND", "sound/music_frontend_yoth2026.fsb"),
+            },
+        },
+    },
+
     [SPECIAL_EVENTS.NONE] =
     {
         frontend =

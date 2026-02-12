@@ -150,7 +150,11 @@ local NO_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO" }
 local FREEZABLE_TAGS = { "freezable" }
 
 local function ShouldWakeUp(inst)
-    return DefaultWakeTest(inst) or (inst.components.follower and inst.components.follower.leader and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
+    if DefaultWakeTest(inst) then
+        return true
+    end
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
+    return leader and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE)
 end
 
 local function ShouldSleep(inst)
@@ -174,7 +178,7 @@ local function IsValidTarget(guy, inst)
         return false
     end
     --
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     return guy ~= leader and inst.components.combat:CanTarget(guy)
 end
 
@@ -182,7 +186,7 @@ local function retargetfn(inst)
     if inst.sg:HasStateTag("statue") then
         return
     end
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     if leader ~= nil and leader.sg ~= nil and leader.sg:HasStateTag("statue") then
         return
     end
@@ -199,7 +203,7 @@ local function KeepTarget(inst, target)
     if inst.sg:HasStateTag("statue") then
         return false
     end
-    local leader = inst.components.follower.leader
+    local leader = inst.components.follower and inst.components.follower:GetLeader()
     local playerleader = leader ~= nil and leader:HasTag("player")
     local ispet = inst:HasTag("pet_hound")
     return (leader == nil or
@@ -242,7 +246,7 @@ local function OnAttacked(inst, data)
         function(dude)
             return not (dude.components.health ~= nil and dude.components.health:IsDead())
                 and (dude:HasTag("hound") or dude:HasTag("houndfriend"))
-                and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+                and data.attacker ~= (dude.components.follower ~= nil and dude.components.follower:GetLeader() or nil)
         end, 5)
 end
 
@@ -251,7 +255,7 @@ local function OnAttackOther(inst, data)
         function(dude)
             return not (dude.components.health ~= nil and dude.components.health:IsDead())
                 and (dude:HasTag("hound") or dude:HasTag("houndfriend"))
-                and data.target ~= (dude.components.follower ~= nil and dude.components.follower.leader or nil)
+                and data.target ~= (dude.components.follower ~= nil and dude.components.follower:GetLeader() or nil)
         end, 5)
 end
 
@@ -880,13 +884,13 @@ local hedge_scrapbook_deps =
 }
 
 local function fnhedge()
-    local inst = fncommon("hound", "hound_hedge_ocean", nil, nil, nil, {amphibious = true})
+    local inst = fncommon("hound", "hound_hedge_ocean", nil, nil, "hedge", {amphibious = true})
 
     inst.death_shatter = true
 
     if not TheWorld.ismastersim then
         return inst
-    end 
+    end
 
 	inst.scrapbook_deps = hedge_scrapbook_deps
 

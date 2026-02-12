@@ -206,7 +206,7 @@ local states =
                 inst.sg:SetTimeout(math.random()*2 + 2)
             end
 
-            if inst:IsLightGreaterThan(1.0) and not inst.bedazzled and not (inst.components.follower and inst.components.follower.leader ~= nil) then
+            if inst:IsLightGreaterThan(1.0) and not inst.bedazzled and not (inst.components.follower and inst.components.follower:GetLeader()) then
                 inst.AnimState:PlayAnimation("cower" )
                 inst.AnimState:PushAnimation("cower_loop", true)
             elseif start_anim then
@@ -624,8 +624,9 @@ local states =
                         local x,y,z = inst.Transform:GetWorldPosition()
                         new_spider.Transform:SetPosition(x,y,z)
 
-                        if inst.components.follower.leader ~= nil then
-                            new_spider.components.follower:SetLeader(inst.components.follower.leader)
+                        local leader = inst.components.follower and inst.components.follower:GetLeader()
+                        if leader then
+                            new_spider.components.follower:SetLeader(leader)
                         elseif inst.mutator_giver ~= nil then
                             new_spider.components.follower:SetLeader(inst.mutator_giver)
                         end

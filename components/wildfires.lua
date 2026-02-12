@@ -74,7 +74,7 @@ end
 local function LightFireForPlayer(player, rescheduleFn)
     _scheduledtasks[player] = nil
 
-    if math.random() <= _chance and
+    if TryLuckRoll(player, _chance, LuckFormulas.WildFireIgnition) and
         not (_world.components.sandstorms ~= nil and
             _world.components.sandstorms:IsInSandstorm(player)) then
         local x, y, z = player.Transform:GetWorldPosition()

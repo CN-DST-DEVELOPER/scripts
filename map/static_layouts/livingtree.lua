@@ -18,7 +18,7 @@ return {
       margin = 0,
       image = "../../../../tools/tiled/dont_starve/tiles.png",
       imagewidth = 512,
-      imageheight = 384,
+      imageheight = 512,
       properties = {},
       tiles = {}
     }
@@ -302,17 +302,6 @@ return {
           shape = "rectangle",
           x = 18,
           y = 215,
-          width = 0,
-          height = 0,
-          visible = true,
-          properties = {}
-        },
-        {
-          name = "",
-          type = "evergreen",
-          shape = "rectangle",
-          x = 23,
-          y = 112,
           width = 0,
           height = 0,
           visible = true,

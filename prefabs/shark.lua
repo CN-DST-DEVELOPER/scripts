@@ -62,7 +62,7 @@ local sounds = {
 }
 
 local function ShouldWakeUp(inst)
-    return DefaultWakeTest(inst) or (inst.components.follower and inst.components.follower.leader and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
+    return DefaultWakeTest(inst) or (inst.components.follower and inst.components.follower:GetLeader() and not inst.components.follower:IsNearLeader(WAKE_TO_FOLLOW_DISTANCE))
 end
 
 local function ShouldSleep(inst)

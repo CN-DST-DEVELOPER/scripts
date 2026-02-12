@@ -17,6 +17,7 @@ local TeamAttacker = Class(function(self, inst)
 	--self.formationpos = nil
 	--self.order = nil
     --self.ignoreformation = nil
+	--self.validmemberfn = nil
 	self.searchradius = 50
 	self.leashdistance = 70
 	self.inst:StartUpdatingComponent(self)
@@ -80,6 +81,10 @@ end
 
 function TeamAttacker:GetOrders()
     return self.orders
+end
+
+function TeamAttacker:SetValidMemberFn(fn)
+	self.validmemberfn = fn
 end
 
 function TeamAttacker:OnUpdate(dt)

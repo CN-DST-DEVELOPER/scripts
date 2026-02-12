@@ -15,7 +15,46 @@ end
 
 local DefaultRangeCheck = MakeRangeCheckFn(4)
 
-local function PhysicsPaddedRangeCheck(doer, target)
+local function PickRangeCheck(doer, target)
+    if target == nil then
+        return
+    end
+    local extrarange = 0
+    if doer.replica.combat then
+        if target:HasAnyTag("jostlepick", "jostlerummage", "jostlesearch") then
+            extrarange = doer.replica.combat:GetWeaponAttackRange()
+        end
+    end
+    local target_x, target_y, target_z = target.Transform:GetWorldPosition()
+    local doer_x, doer_y, doer_z = doer.Transform:GetWorldPosition()
+    local target_r = target:GetPhysicsRadius(0) + 4 + extrarange
+    local dst = distsq(target_x, target_z, doer_x, doer_z)
+    return dst <= target_r * target_r
+end
+
+local function ExtraPickRange(doer, dest, bufferedaction)
+    local extrarange = 0
+    if bufferedaction then
+        if bufferedaction.target then
+            if doer.replica.combat then
+                if bufferedaction.target:HasAnyTag("jostlepick", "jostlerummage", "jostlesearch") then
+                    extrarange = doer.replica.combat:GetWeaponAttackRange()
+                end
+            end
+        end
+    end
+	if dest ~= nil then
+		local target_x, target_y, target_z = dest:GetPoint()
+
+		local is_on_water = TheWorld.Map:IsOceanTileAtPoint(target_x, 0, target_z) and not TheWorld.Map:IsPassableAtPoint(target_x, 0, target_z)
+		if is_on_water then
+			return 0.75 + extrarange
+		end
+	end
+    return 0 + extrarange
+end
+
+local function PhysicsPaddedRangeCheck(doer, target) -- Currently unused.
     if target == nil then
         return
     end
@@ -169,9 +208,9 @@ local function ExtraDropDist(doer, dest, bufferedaction)
 
         local invobject = bufferedaction and bufferedaction.invobject or nil
 
-        -- Extra drop dist to items that collide with doer.
+        -- Extra drop dist to items that collide with doer, or explicitly set it (use_physics_radius_for_extra_drop_dist).
         if invobject ~= nil and doer ~= nil and invobject.Physics ~= nil and doer.Physics ~= nil then
-            if not checkbit(invobject.Physics:GetCollisionMask(), doer.Physics:GetCollisionGroup()) then
+            if not invobject.use_physics_radius_for_extra_drop_dist and not checkbit(invobject.Physics:GetCollisionMask(), doer.Physics:GetCollisionGroup()) then
                 return 0
             end
 
@@ -194,7 +233,7 @@ end
 -- This should probably be more encompassing, but let's just fix up this action for now.
 local function ExtraHealRange(doer, dest, bufferedaction)
     local target = bufferedaction and bufferedaction.target or nil
-    if target then
+    if target and target.Physics then
         local phys_rad_delta = target:GetPhysicsRadius(0) - target.Physics:GetRadius()
         if phys_rad_delta < 0 then
             return math.abs(phys_rad_delta)
@@ -262,6 +301,7 @@ Action = Class(function(self, data, instant, rmb, distance, ghost_valid, ghost_e
     self.rangecheckfn = self.canforce ~= nil and data.rangecheckfn or nil
     self.mod_name = nil
 	self.silent_fail = data.silent_fail or nil
+	self.silent_generic_fail = data.silent_generic_fail or nil
 
     --new params, only supported by passing via data field
     self.paused_valid = data.paused_valid or false
@@ -301,7 +341,7 @@ ACTIONS =
 	CHOP = Action({ distance=1.75, invalid_hold_action=true }),
 	ATTACK = Action({priority=2, canforce=true, mount_valid=true, invalid_hold_action=true }), -- No custom range check, attack already handles that
 	EAT = Action({ mount_valid=true, floating_valid=true }),
-    PICK = Action({ canforce=true, rangecheckfn=PhysicsPaddedRangeCheck, extra_arrive_dist=ExtraPickupRange, mount_valid = true }),
+    PICK = Action({ canforce=true, rangecheckfn=PickRangeCheck, extra_arrive_dist=ExtraPickRange, mount_valid = true }),
     PICKUP = Action({ priority=1, extra_arrive_dist=ExtraPickupRange, mount_valid=true }),
 	MINE = Action({ invalid_hold_action=true }),
 	DIG = Action({ rmb=true, invalid_hold_action=true }),
@@ -643,6 +683,9 @@ ACTIONS =
 	-- Winter 2025
 	SOAKIN = Action({ invalid_hold_action = true }),
     TRANSFER_CRITTER = Action({ invalid_hold_action = true }),
+
+    -- Year of the Clockwork Knight
+    JOUST = Action({ rmb=true, distance=math.huge, invalid_hold_action = true, silent_generic_fail = true,}),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -809,9 +852,11 @@ ACTIONS.PICKUP.fn = function(act)
 			return false, "NO_HEAVY_LIFTING"
         end
 
-        if (act.target:HasTag("spider") and act.doer:HasTag("spiderwhisperer")) and
-           (act.target.components.follower.leader ~= nil and act.target.components.follower.leader ~= act.doer) then
-            return false, "NOTMINE_SPIDER"
+        if act.target:HasTag("spider") and act.doer:HasTag("spiderwhisperer") then
+            local leader = act.target.components.follower:GetLeader()
+            if leader ~= nil and leader ~= act.doer then
+                return false, "NOTMINE_SPIDER"
+            end
         end
         if act.target.components.curseditem and not act.target.components.curseditem:checkplayersinventoryforspace(act.doer) then
             return false, "FULL_OF_CURSES"
@@ -6432,11 +6477,30 @@ ACTIONS.TRANSFER_CRITTER.fn = function(act)
         end
 
         act.doer.components.petleash:DetachPet(act.target)
-        hermitcrab.components.petleash:AttachPet(act.target)
-        act.target.components.crittertraits:OnPet(act.doer)
+        local success = hermitcrab.components.petleash:AttachPet(act.target)
+        if success then
+            act.target.components.crittertraits:OnPet(act.doer)
+            hermitcrab:PushEvent("adopted_critter", { critter = act.target })
+            return true
+        else
+            act.doer.components.petleash:AttachPet(act.target)
+            return false
+        end
+    end
+end
 
-        hermitcrab:PushEvent("adopted_critter", { critter = act.target })
-
-        return true
+ACTIONS.JOUST.fn = function(act)
+    if act.doer and act.invobject then
+        local joustuser = act.doer.components.joustuser
+        if not joustuser then
+            return
+        end
+        if not act.invobject.components.joustsource then
+            return
+        end
+        if act.invobject.components.itemmimic then
+            return false, "ITEMMIMIC"
+        end
+        return joustuser:CanJoust()
     end
 end

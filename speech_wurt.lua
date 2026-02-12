@@ -1198,6 +1198,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "Florp! Still here!",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Again!",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "Springy Ironfolk too busy? Florp!",
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -2133,6 +2136,7 @@ return{
         CHESSPIECE_YOTS = "Cute little worm.",
         CHESSPIECE_WAGBOSS_ROBOT = "Little big Ironfolk.",
         CHESSPIECE_WAGBOSS_LUNAR = "Moon stuff made big Ironfolk bad.",
+        CHESSPIECE_YOTH = "Where spring now, springy Ironfolk?",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -5931,7 +5935,7 @@ return{
 			ABANDONED = "Crabby lady need new one.",
         },
 		HERMITHOUSE_ORNAMENT = "Just for crabby lady!",
-        HERMITHOUSE_LAUNDRY = "Play prank on crabby lady?",
+		HERMITHOUSE_LAUNDRY = "Play prank on crabby lady?",
 
         PETALS_DRIED = "Dried bits not yummy.",
         PETALS_EVIL_DRIED = "Dried bits not yummy.",
@@ -5978,6 +5982,42 @@ return{
             ABANDONED = "Too bad, glurgh.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Me put!",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "Gimme.", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "Florp! What you want?", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "Burnt. Useless.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "Me already princess.",
+        COSTUME_PRINCESS_BODY = "Okay me try.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "What show about? Princess?",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Bad springy Ironfolk.", -- Generic quote. It's aggressive.
+            FOLLOWING = "Follow me, springy Ironfolk!", -- Following the character examining
+            FOLLOWING_OTHER = "Not my springy Ironfolk.", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "So? Me have two horns.",
+        ARMOR_YOTH_KNIGHT = "Nice Ironfolk shirt.",
+        HORSESHOE = "Me best at luck, glurph.",
+        YOTH_LANCE = "Me use save princess? But me princess. Glurph?",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "What glowy problem?", -- Depleted and on the ground
+            HELD = "Glowy all mine.", -- In the players inventory
+            GENERIC = "Flort? What make glowy fly?", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Me fastest.",
+        YOTH_CHAIR_ROCKING_ITEM = "Me build, me rock. Glurph!", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "What that?",

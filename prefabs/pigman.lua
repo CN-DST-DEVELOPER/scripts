@@ -47,7 +47,7 @@ end
 local function CalcSanityAura(inst, observer)
     return (inst.prefab == "moonpig" and -TUNING.SANITYAURA_LARGE)
         or (inst.components.werebeast ~= nil and inst.components.werebeast:IsInWereState() and -TUNING.SANITYAURA_LARGE)
-        or (inst.components.follower ~= nil and inst.components.follower.leader == observer and TUNING.SANITYAURA_SMALL)
+        or (inst.components.follower ~= nil and inst.components.follower:GetLeader() == observer and TUNING.SANITYAURA_SMALL)
         or 0
 end
 
@@ -57,7 +57,7 @@ local function ShouldAcceptItem(inst, item)
     elseif inst.components.eater:CanEat(item) then
         local foodtype = item.components.edible.foodtype
         if foodtype == FOODTYPE.MEAT or foodtype == FOODTYPE.HORRIBLE then
-            return inst.components.follower.leader == nil or inst.components.follower:GetLoyaltyPercent() <= TUNING.PIG_FULL_LOYALTY_PERCENT
+            return inst.components.follower:GetLeader() == nil or inst.components.follower:GetLoyaltyPercent() <= TUNING.PIG_FULL_LOYALTY_PERCENT
         elseif foodtype == FOODTYPE.VEGGIE or foodtype == FOODTYPE.RAW then
             local last_eat_time = inst.components.eater:TimeSinceLastEating()
             return (last_eat_time == nil or
@@ -220,7 +220,7 @@ local function NormalRetargetFn(inst)
     end
 
 	local exclude_tags = { "playerghost", "INLIMBO" , "NPC_contestant" }
-	if inst.components.follower.leader ~= nil then
+	if inst.components.follower:GetLeader() ~= nil then
 		table.insert(exclude_tags, "abigail")
 	end
 	if inst.components.minigame_spectator ~= nil then
@@ -255,7 +255,7 @@ end
 local CAMPFIRE_TAGS = { "campfire", "fire" }
 local function NormalShouldSleep(inst)
     return DefaultSleepTest(inst)
-        and (inst.components.follower == nil or inst.components.follower.leader == nil
+        and (inst.components.follower == nil or inst.components.follower:GetLeader() == nil
             or (FindEntity(inst, 6, nil, CAMPFIRE_TAGS) ~= nil and inst:IsInLight()))
 end
 
@@ -540,7 +540,7 @@ end
 local function GetStatus(inst)
     return (inst:HasTag("werepig") and "WEREPIG")
         or (inst:HasTag("guard") and "GUARD")
-        or (inst.components.follower.leader ~= nil and "FOLLOWER")
+        or (inst.components.follower:GetLeader() ~= nil and "FOLLOWER")
         or nil
 end
 

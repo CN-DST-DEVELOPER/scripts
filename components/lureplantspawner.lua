@@ -136,7 +136,7 @@ local function SpawnLurePlantForPlayer(playerinst, playerdata, reschedule)
     if not _worldstate.iswinter then
 
         local chance = 1/#_activeplayers
-        local should_spawn = math.random() < chance
+        local should_spawn = TryLuckRoll(playerinst, chance, LuckFormulas.LureplantChanceSpawn)
         local loc = FindSpawnLocationInTrail(playerdata.trail) or FindSpawnLocation(playerinst.Transform:GetWorldPosition())
         if loc ~= nil and should_spawn then
             local plant = SpawnPrefab("lureplant")

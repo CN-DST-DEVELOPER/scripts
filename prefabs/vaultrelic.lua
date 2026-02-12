@@ -190,6 +190,7 @@ local function _makeitem(name, anim, vase)
 		end
 
 		MakeInventoryPhysics(inst)
+		MakeInventoryFloatable(inst, "small", 0.16, 0.95)
 
 		inst.AnimState:SetBank("statue_vault")
 		inst.AnimState:SetBuild("statue_vault")

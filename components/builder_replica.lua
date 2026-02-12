@@ -276,9 +276,21 @@ function Builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
         return self.inst.components.builder:KnowsRecipe(recipe, ignore_tempbonus, cached_tech_trees)
     elseif self.classified ~= nil then
         if recipe ~= nil then
-			if self.classified.isfreebuildmode:value() then
+			if self.classified.isfreebuildmode:value() and not PREFAB_SKINS_SHOULD_NOT_SELECT[recipe.product] then
 				return true
 			end
+
+            if recipe.unlocks_from_skin and self.inst == ThePlayer then
+                local prefabskins = PREFAB_SKINS[recipe.product]
+                if prefabskins ~= nil then
+                    local unlockableskins = TheInventory:GetUnlockableItems()
+                    for _, skin in ipairs(prefabskins) do
+                        if unlockableskins[skin] then
+                            return true
+                        end
+                    end
+                end
+            end
 
 			--the following builder_tag/skill checks are require due to character swapping
 			if (recipe.builder_tag and not self.inst:HasTag(recipe.builder_tag)) or

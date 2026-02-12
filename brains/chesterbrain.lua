@@ -9,13 +9,15 @@ local TARGET_FOLLOW_DIST = 6
 
 local MAX_WANDER_DIST = 3
 
-
+local function GetLeader(inst)
+    return inst.components.follower and inst.components.follower:GetLeader()
+end
 local function GetFaceTargetFn(inst)
-    return inst.components.follower.leader
+    return GetLeader(inst)
 end
 
 local function KeepFaceTargetFn(inst, target)
-    return inst.components.follower.leader == target
+    return GetLeader(inst) == target
 end
 
 
@@ -29,7 +31,7 @@ function ChesterBrain:OnStart()
     PriorityNode({
 		BrainCommon.PanicTrigger(self.inst),
         BrainCommon.ElectricFencePanicTrigger(self.inst),
-        Follow(self.inst, function() return self.inst.components.follower.leader end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
+        Follow(self.inst, function() return GetLeader(self.inst) end, MIN_FOLLOW_DIST, TARGET_FOLLOW_DIST, MAX_FOLLOW_DIST),
         FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn),
         Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
 

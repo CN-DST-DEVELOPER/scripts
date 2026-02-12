@@ -121,6 +121,8 @@ local function song_fn(songdata, prefabname)
 
     inst.songdata = songdata
 
+    inst.pickupsound = "paper"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

@@ -192,8 +192,8 @@ local function OnLoad(inst, data)
     inst.regrowth = data == nil or data.regrowth ~= false
 end
 
-local function GetFish(inst)
-    return math.random() < 0.6 and "wetpouch" or "pondfish"
+local function GetFish(inst, fisherman)
+    return TryLuckRoll(fisherman, TUNING.OASISLAKE_WETPOUCH_CHANCE, LuckFormulas.LootDropperChance) and "wetpouch" or "pondfish"
 end
 
 local function fn()

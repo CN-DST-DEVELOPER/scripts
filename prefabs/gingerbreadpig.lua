@@ -52,19 +52,22 @@ local function StartDroppingCrumbs(inst)
     inst.crumb_task = inst:DoPeriodicTask(CRUMB_SPAWN_PERIOD, function() DropCrumb(inst) end)
 end
 
-local function OnPlayerNear(inst)
+local function OnPlayerNear(inst, player)
     inst.sg:PushEvent("onplayernear")
     inst.chased = true
+    inst.player_chased_by = player
 end
 
 local function OnPlayerFar(inst)
     if inst.chased_by_player then
         inst.chased_by_player = false
         if TheWorld.components.gingerbreadhunter and TheWorld.components.gingerbreadhunter:GenerateCrumbPoints(inst:GetPosition(), 5) then
-            TheWorld.components.gingerbreadhunter:SpawnCrumbTrail(GetTaskRemaining(inst.killtask) or (1.5 * TUNING.TOTAL_DAY_TIME))
+            local player = inst.player_chased_by and inst.player_chased_by:IsValid() and inst.player_chased_by or nil
+            TheWorld.components.gingerbreadhunter:SpawnCrumbTrail(GetTaskRemaining(inst.killtask) or (1.5 * TUNING.TOTAL_DAY_TIME), player)
             ReplacePrefab(inst, "crumbs")
         end
     end
+    inst.player_chased_by = nil
 end
 
 local function ShouldSleep(inst)

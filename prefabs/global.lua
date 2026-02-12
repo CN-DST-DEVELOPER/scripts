@@ -171,6 +171,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/winter2025.fev"),
     Asset("FILE", "sound/winter2025.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/yoth_2026.fev"),
+    Asset("FILE", "sound/yoth_2026.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods

@@ -168,15 +168,19 @@ local function on_ignite_over(inst)
     end)
 
 
-    TheWorld:PushEvent("megaflare_detonated",{sourcept = Vector3(inst.Transform:GetWorldPosition()), pt=Vector3(fx, fy, fz)})
+    inst.flare_igniter = inst.flare_igniter ~= nil and inst.flare_igniter:IsValid() and inst.flare_igniter or nil
+    TheWorld:PushEvent("megaflare_detonated",{sourcept = Vector3(inst.Transform:GetWorldPosition()), pt=Vector3(fx, fy, fz), igniter = inst.flare_igniter})
 
     inst:Remove()
 end
 
-local function on_ignite(inst)
+local function on_ignite(inst, source, doer)
     -- We've been set off; we shouldn't save anymore.
     inst.persists = false
     inst.entity:SetCanSleep(false)
+
+    -- doer could actually be source, yuck!
+    inst.flare_igniter = doer or source or nil
 
     inst.AnimState:PlayAnimation("fire")
     inst:ListenForEvent("animover", on_ignite_over)

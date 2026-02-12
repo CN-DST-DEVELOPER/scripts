@@ -5254,7 +5254,7 @@ local states =
 
 CommonStates.AddSimpleState(states, "refuse", "idle_loop", { "busy" })
 CommonStates.AddSimpleActionState(states, "pickup", "pickup", 10 * FRAMES, { "busy" })
-CommonStates.AddElectrocuteStates(states)
+CommonStates.AddElectrocuteStates(states, nil, { loop = "hermitcrab_shock_loop", pst = "hermitcrab_shock_pst" })
 CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "hit"})
 CommonStates.AddVoidFallStates(states, {voiddrop = "hit"})
 

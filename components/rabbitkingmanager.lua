@@ -304,7 +304,10 @@ function self:RemoveRabbitKing(rabbitking)
 end
 function self:TryForceRabbitKing_Internal(rabbitking) -- Used from c_spawn or other debug commands.
     if self.pendingplayerload then -- Reschedule if there are pending loads to keep trying until it is done loading.
-        self.inst:DoTaskInTime(0, function() self:TryForceRabbitKing_Internal(rabbitking) end)
+		--V2C: -put the task on rabbitking if it's untracked
+		--     -rabbitking can be removed b4 the task runs
+		--     -self (aka rabbitkingmanager) should never be removed
+		rabbitking:DoTaskInTime(0, function() self:TryForceRabbitKing_Internal(rabbitking) end)
         return
     end
 

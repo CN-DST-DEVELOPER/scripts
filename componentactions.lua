@@ -1637,7 +1637,7 @@ local COMPONENT_ACTIONS =
                     if target:HasTag("repairable_"..v) then
                         if (inst:HasTag("work_"..v) and target:HasTag("workrepairable"))
                             or (inst:HasTag("health_"..v) and target:HasTag("healthrepairable"))
-                            or (inst:HasTag("freshen_"..v) and (target:HasTag("fresh") or target:HasTag("stale") or target:HasTag("spoiled")))
+							or (inst:HasTag("freshen_"..v) and (target:HasAnyTag("fresh", "stale", "spoiled")))
                             or (inst:HasTag("finiteuses_"..v) and target:HasTag("finiteusesrepairable")) then
                             table.insert(actions, ACTIONS.REPAIR)
                         end
@@ -2033,6 +2033,12 @@ local COMPONENT_ACTIONS =
 			end
         end,
 
+        joustsource = function(inst, doer, pos, actions, right, target)
+            if right and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) and TheWorld.Map:IsAboveGroundAtPoint(pos:Get()) then
+                table.insert(actions, ACTIONS.JOUST)
+            end
+        end,
+
         inventoryitem = function(inst, doer, pos, actions, right, target)
 			if not right then
 				local inventoryitem = inst.replica.inventoryitem
@@ -2243,6 +2249,12 @@ local COMPONENT_ACTIONS =
         gravedigger = function(inst, doer, target, actions, right)
             if right and target:HasTag("gravediggable") and doer:HasTag("gravedigger_user") then
                 table.insert(actions, ACTIONS.GRAVEDIG)
+            end
+        end,
+
+        joustsource = function(inst, doer, target, actions, right)
+            if right and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) then
+                table.insert(actions, ACTIONS.JOUST)
             end
         end,
 

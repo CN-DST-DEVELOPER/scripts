@@ -191,7 +191,7 @@ local function OnPicked(inst, picker)
 		local loot = weighted_random_choice(weighted_loot)
 		SpawnPrefab(loot).Transform:SetPosition(x, y, z)
 	end
-	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and math.random() < TUNING.HALLOWEEN_ORNAMENT_FLOTSAM_CHANCE then
+	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and TryLuckRoll(picker, TUNING.HALLOWEEN_ORNAMENT_FLOTSAM_CHANCE, LuckFormulas.LootDropperChance) then
 		SpawnPrefab("halloween_ornament_"..tostring(math.random(NUM_HALLOWEEN_ORNAMENTS))).Transform:SetPosition(x, y, z)
 	end
 

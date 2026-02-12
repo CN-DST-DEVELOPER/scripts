@@ -40,7 +40,7 @@ local function KeepFaceTargetFn(inst, target)
 end
 
 local function GetLeader(inst)
-    return inst.components.follower ~= nil and inst.components.follower.leader or nil
+    return inst.components.follower and inst.components.follower:GetLeader()
 end
 
 local function GetNoLeaderFollowTarget(inst)
@@ -53,13 +53,11 @@ local function GetHome(inst)
     return inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
 end
 
-local function ShouldRunAway(guy)
-    return not (guy:HasTag("walrus") or
-                guy:HasTag("hound") or
-                guy:HasTag("notarget"))
-        and (guy:HasTag("character") or
-            guy:HasTag("monster"))
-end
+local HUNTER_PARAMS =
+{
+	oneoftags = { "character", "monster" },
+	notags = { "walrus", "hound", "notarget" },
+}
 
 local EATFOOD_MUST_TAGS = { "edible_MEAT" }
 local EATFOOD_CANT_TAGS = { "INLIMBO", "outofreach" }
@@ -127,7 +125,7 @@ function WalrusBrain:OnStart()
 
         Leash(self.inst, GetNoLeaderLeashPos, LEASH_MAX_DIST, LEASH_RETURN_DIST),
 
-        RunAway(self.inst, ShouldRunAway, RUN_START_DIST, RUN_STOP_DIST),
+		RunAway(self.inst, HUNTER_PARAMS, RUN_START_DIST, RUN_STOP_DIST),
         WhileNode(function() return ShouldGoHomeScared(self.inst) end, "ShouldGoHomeScared", DoAction(self.inst, GoHomeAction, "Go Home Scared", true)),
 
         Follow(self.inst, GetLeader, MIN_FOLLOW_LEADER, TARGET_FOLLOW_LEADER, MAX_FOLLOW_LEADER, false),

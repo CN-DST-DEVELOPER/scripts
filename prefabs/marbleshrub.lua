@@ -15,8 +15,8 @@ local prefabs =
 }
 
 local NUM_BUILDS = 3
-
 local NUM_GROWTH_STAGES = 3
+
 local statedata =
 {
 	{
@@ -37,7 +37,9 @@ local statedata =
 		growanim    = "grow_short_to_normal",
 		growsound   = "dontstarve/common/together/marble_shrub/grow",
 		workleft    = TUNING.MARBLESHRUB_MINE_NORMAL,
-		loot        = function() return math.random() < 0.75 and {"marble"} or {"marble", "marblebean"} end,
+		loot        = function(worker)
+			return TryLuckRoll(worker, TUNING.MARBLESHRUB_MED_MARBLEBEAN_CHANCE, LuckFormulas.LootDropperChance) and {"marble"} or {"marble", "marblebean"}
+		end,
 	},
 	{
         name		= "tall",
@@ -47,7 +49,9 @@ local statedata =
 		growanim    = "grow_normal_to_tall",
 		growsound   = "dontstarve/common/together/marble_shrub/grow",
 		workleft    = TUNING.MARBLESHRUB_MINE_TALL,
-		loot        = function() return {"marble", math.random() < 0.5 and "marble" or "marblebean"} end,
+		loot        = function(worker)
+			return {"marble", TryLuckRoll(worker, TUNING.MARBLESHRUB_TALL_MARBLEBEAN_CHANCE, LuckFormulas.LootDropperChance) and "marble" or "marblebean"}
+		end,
 	},
 }
 
@@ -105,7 +109,8 @@ local function GrowFromSeed(inst)
 end
 
 local function lootsetfn(lootdropper)
-	local loot = lootdropper.inst.statedata.loot()
+	local worker = lootdropper:GetLuckyUser()
+	local loot = lootdropper.inst.statedata.loot(worker)
     lootdropper:SetLoot(loot)
 end
 

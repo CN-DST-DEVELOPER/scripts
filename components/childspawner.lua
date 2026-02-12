@@ -514,12 +514,12 @@ local function WeightedTotal(choices)
     return total
 end
 
-function ChildSpawner:GetChildPrefab(overridedefaultprefab, isemergency)
-    if self.rarechild ~= nil and math.random() < self.rarechildchance then
+function ChildSpawner:GetChildPrefab(overridedefaultprefab, isemergency, target)
+    if self.rarechild ~= nil and TryLuckRoll(target, self.rarechildchance, LuckFormulas.ChildSpawnerRareChild) then
         return self.rarechild
     end
 
-    if self.otherchildreninside ~= nil and math.random() < WeightedTotal(self.otherchildreninside) / self.childreninside then
+    if self.otherchildreninside ~= nil and TryLuckRoll(target, WeightedTotal(self.otherchildreninside) / self.childreninside, LuckFormulas.ChildSpawnerOtherChild) then
         local childchoice = weighted_random_choice(self.otherchildreninside)
         self.otherchildreninside[childchoice] = self.otherchildreninside[childchoice] - 1
         return childchoice
@@ -551,7 +551,7 @@ function ChildSpawner:DoSpawnChild(target, prefab, radius, isemergency)
         return
     end
 
-    prefab = FunctionOrValue(self:GetChildPrefab(prefab), self.inst, isemergency)
+    prefab = FunctionOrValue(self:GetChildPrefab(prefab, isemergency, target), self.inst, isemergency, target)
 
     if prefab and prefab ~= "" then
         local child = SpawnPrefab(prefab)

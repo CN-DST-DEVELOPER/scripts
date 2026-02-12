@@ -1202,6 +1202,9 @@ return{
     ANNOUNCE_HERMITCRAB_SHELL_BADTELEPORTPOINT = "I'm still here...",
     ANNOUNCE_HERMITCRAB_SHELL_ARRIVE = "Here we are.",
 
+    -- Year of the Clockwork Knight
+    ANNOUNCE_YOTH_ONCOOLDOWN = "The knights must not be ready to return yet.",
+
 	BATTLECRY =
 	{
 		GENERIC = "Death will find you!",
@@ -2137,6 +2140,7 @@ return{
         CHESSPIECE_YOTS = "How curious, the things we choose to commemorate.",
         CHESSPIECE_WAGBOSS_ROBOT = "It was built to bring death.",
         CHESSPIECE_WAGBOSS_LUNAR = "This doesn't capture its pain.",
+        CHESSPIECE_YOTH = "Not quite the fairy tale version.",
 
         CHESSJUNK1 = "Cold, dead artificial life.",
         CHESSJUNK2 = "Cold, dead artificial life.",
@@ -5935,7 +5939,7 @@ return{
 			ABANDONED = "Broken and abandoned.",
         },
 		HERMITHOUSE_ORNAMENT = "It's pleasant.",
-        HERMITHOUSE_LAUNDRY = "Chores keep the mind occupied.",
+		HERMITHOUSE_LAUNDRY = "Chores keep the mind occupied.",
 
         PETALS_DRIED = "I like how they smell.",
         PETALS_EVIL_DRIED = "I like how they smell.",
@@ -5982,6 +5986,42 @@ return{
             ABANDONED = "The light could not last.",
         },
         HERMITCRAB_LIGHTPOST_ITEM = "Where should you go?",
+
+        -- Year of the Clockwork Knight
+
+        YOTH_KNIGHTSHRINE =
+        {
+            GENERIC = "I wonder what I'll get?", -- Has an offering of either gears, wires or doodad.
+            EMPTY = "An offering must be made.", -- No offering. Character should hint at it wanting an offering.
+            BURNT = "What a pity.", -- Burnt.
+        },
+
+        MASK_PRINCESSHAT = "There's a lonliness in her expression.",
+        COSTUME_PRINCESS_BODY = "So pretty.",
+
+        PLAYBILL_THE_PRINCESS_YOTH = "I do love horses.",
+
+        KNIGHT_YOTH =
+        {
+            GENERIC = "Brutes, all of you!", -- Generic quote. It's aggressive.
+            FOLLOWING = "How loyal you are.", -- Following the character examining
+            FOLLOWING_OTHER = "Whom do you serve, dear knight?", -- Following another character or mannequin
+        },
+
+        YOTH_KNIGHTHAT = "One may become the knight and save themselves.",
+        ARMOR_YOTH_KNIGHT = "It's beautiful armor.",
+        HORSESHOE = "Will it make a difference for me?",
+        YOTH_LANCE = "Death rides at its tip.",
+
+        FLOATINGLANTERN =
+        {
+            DEFLATED = "I knew it couldn't last.", -- Depleted and on the ground
+            HELD = "I should save this for when it's darkest.", -- In the players inventory
+            GENERIC = "It does lift my spirits... a little.", -- Floating in the sky!
+        },
+
+        YOTH_KNIGHTSTICK = "Hmm. It does look kind of fun.",
+        YOTH_CHAIR_ROCKING_ITEM = "Ah, the innocence of childhood.", -- The chair itself uses WOOD_CHAIR inspect states.
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

@@ -38,10 +38,10 @@ end
 local GNARWAIL_SPAWN_RADIUS = 10
 local GNARWAIL_TIMING = {8, 10} -- min 8, max 10
 local GNARWAIL_TAGS = { "gnarwail" }
-local function testforgnarwail(comp, spawnpoint, chancemodifier)
+local function testforgnarwail(comp, spawnpoint, chancemodifier, player)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.GNARWAIL_TEST_RADIUS, GNARWAIL_TAGS)
     local spawnchance = TUNING.GNARWAIL_SPAWN_CHANCE * (chancemodifier or 1)
-    if #ents < 2 and math.random() < spawnchance then
+    if #ents < 2 and TryLuckRoll(player, spawnchance, LuckFormulas.SpecialSchoolSpawn) then
         local offset = FindSwimmableOffset(spawnpoint, math.random()*TWOPI, GNARWAIL_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(GNARWAIL_TIMING[1], GNARWAIL_TIMING[2]), function()
@@ -62,10 +62,10 @@ end
 local SHARK_SPAWN_RADIUS = 20
 local SHARK_TIMING = {8, 10} -- min 8, max 10
 local SHARK_TAGS = { "shark" }
-local function testforshark(comp, spawnpoint, chancemodifier)
+local function testforshark(comp, spawnpoint, chancemodifier, player)
     local ents = TheSim:FindEntities(spawnpoint.x, spawnpoint.y, spawnpoint.z, TUNING.SHARK_TEST_RADIUS, SHARK_TAGS)
     local spawnchance = TUNING.SHARK_SPAWN_CHANCE * (chancemodifier or 1)
-    if #ents < 2 and math.random() < spawnchance then
+    if #ents < 2 and TryLuckRoll(player, spawnchance, LuckFormulas.SpecialSchoolSpawn) then
         local offset = FindSwimmableOffset(spawnpoint, math.random()*TWOPI, SHARK_SPAWN_RADIUS)
         if offset then
             comp.inst:DoTaskInTime(GetRandomMinMax(SHARK_TIMING[1], SHARK_TIMING[2]), function()
@@ -162,7 +162,7 @@ function self:ShouldSpawnANewSchoolForPlayer(player)
 
 	if percent_ocean > TUNING.SCHOOL_SPAWNER_FISH_OCEAN_PERCENT then
 		local num_school_spawn_blockers = #TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.SCHOOL_SPAWNER_FISH_CHECK_RADIUS, FISHSCHOOLSPAWNBLOCKER_TAGS)
-		if math.random() < 1 - num_school_spawn_blockers * TUNING.SCHOOL_SPAWNER_BLOCKER_MOD then
+		if TryLuckRoll(player, 1 - num_school_spawn_blockers * TUNING.SCHOOL_SPAWNER_BLOCKER_MOD, LuckFormulas.SchoolSpawn) then
 			local num_fish = #TheSim:FindEntities(pt.x, pt.y, pt.z, TUNING.SCHOOL_SPAWNER_FISH_CHECK_RADIUS, FISHABLE_MUST_TAGS)
 			local r = math.random()
 			return num_fish == 0 and (r < percent_ocean)
@@ -248,8 +248,8 @@ function self:SpawnSchool(spawnpoint, target, override_spawn_offset)
         local tile_at_spawnpoint = TheWorld.Map:GetTileAtPoint(spawnpoint:Get())
         if tile_at_spawnpoint == WORLD_TILES.OCEAN_SWELL or tile_at_spawnpoint == WORLD_TILES.OCEAN_ROUGH then
             local oceantrawlerchancemodifier = GetOceanTrawlerChanceModifier(spawnpoint)
-            testforgnarwail(self, spawnpoint, oceantrawlerchancemodifier)
-            testforshark(self, spawnpoint, oceantrawlerchancemodifier)
+            testforgnarwail(self, spawnpoint, oceantrawlerchancemodifier, target)
+            testforshark(self, spawnpoint, oceantrawlerchancemodifier, target)
         end
 	else
 		herd:Remove()

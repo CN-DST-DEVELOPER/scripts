@@ -72,7 +72,7 @@ local function SpawnGlommer(inst)
     local offset = FindWalkableOffset(Vector3(x, y, z), math.random() * TWOPI, 35, 12, true)
     local glommer = SpawnPrefab("glommer")
     if glommer ~= nil then
-        if glommer.components.follower.leader ~= inst then
+        if glommer.components.follower.leader ~= inst then -- Getting leader directly special case.
             glommer.components.follower:SetLeader(inst)
         end
         glommer.Physics:Teleport(offset ~= nil and offset.x + x or x, 0, offset ~= nil and offset.z + z or z)
@@ -157,7 +157,7 @@ end
 
 local function OnPicked(inst, picker, loot)
     local glommer = TheSim:FindFirstEntityWithTag("glommer")
-    if glommer ~= nil and glommer.components.follower.leader ~= loot then
+    if glommer ~= nil and glommer.components.follower:GetLeader() ~= loot then
         glommer.components.follower:StopFollowing()
         glommer.components.follower:SetLeader(loot)
     end

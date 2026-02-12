@@ -16,6 +16,8 @@ local function fn()
     inst.AnimState:SetBank("wax_paper")
     inst.AnimState:PlayAnimation("idle")
 
+    inst.pickupsound = "paper"
+
     MakeInventoryFloatable(inst, "med", nil, 0.75)
 
     inst.entity:SetPristine()

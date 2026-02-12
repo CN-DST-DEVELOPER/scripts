@@ -250,6 +250,8 @@ local function fn()
 
     inst:AddTag("light")
 
+    inst.no_wet_prefix = true
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

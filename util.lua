@@ -720,18 +720,15 @@ end
 
 -------------------------MEMREPORT
 
-
+local function weighted_total(choices)
+    local total = 0
+    for choice, weight in pairs(choices) do
+        total = total + weight
+    end
+    return total
+end
 
 function weighted_random_choice(choices)
-
-    local function weighted_total(choices)
-        local total = 0
-        for choice, weight in pairs(choices) do
-            total = total + weight
-        end
-        return total
-    end
-
     local threshold = math.random() * weighted_total(choices)
 
     local last_choice
@@ -745,15 +742,6 @@ function weighted_random_choice(choices)
 end
 
 function weighted_random_choices(choices, num_choices)
-
-    local function weighted_total(choices)
-        local total = 0
-        for choice, weight in pairs(choices) do
-            total = total + weight
-        end
-        return total
-    end
-
 	local picks = {}
 	for i = 1, num_choices do
 	    local pick

@@ -159,7 +159,7 @@ function SpellCaster:CanCast(doer, target, pos)
         else
             local can_cast, cast_fail_reason = true, nil
             if self.can_cast_fn ~= nil then
-                can_cast, cast_fail_reason = self.can_cast_fn(doer, nil, pos)
+                can_cast, cast_fail_reason = self.can_cast_fn(doer, nil, pos, self.inst)
             end
 
             if not can_cast then
@@ -194,7 +194,7 @@ function SpellCaster:CanCast(doer, target, pos)
                 )) or
                 (self.canonlyuseonworkable and target.components.workable ~= nil and target.components.workable:CanBeWorked() and IsWorkAction(target.components.workable:GetWorkAction())) or
                 (self.canonlyuseoncombat and doer.components.combat ~= nil and doer.components.combat:CanTarget(target)) or
-                (self.can_cast_fn ~= nil and self.can_cast_fn(doer, target, pos))
+                (self.can_cast_fn ~= nil and self.can_cast_fn(doer, target, pos, self.inst))
             )
     end
 end
