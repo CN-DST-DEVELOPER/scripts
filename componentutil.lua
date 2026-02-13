@@ -1445,12 +1445,11 @@ function MakeComponentAnInventoryItemSource(cmp, owner)
     end
     local function storeincontainer(inst, container)
         if container ~= nil and container.components.container ~= nil then
-            inst:ListenForEvent("onputininventory", self.itemsource_oncontainerownerchanged, container)
-            inst:ListenForEvent("ondropped", self.itemsource_oncontainerownerchanged, container)
-            inst:ListenForEvent("onremove", self.itemsource_oncontainerremoved, container)
             self.itemsource_container = container
+            inst:ListenForEvent("onputininventory", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:ListenForEvent("ondropped", self.itemsource_oncontainerownerchanged, self.itemsource_container)
+            inst:ListenForEvent("onremove", self.itemsource_oncontainerremoved, self.itemsource_container)
         end
-        removeowner()
     end
     local function unstore(inst)
         if self.itemsource_container ~= nil then
@@ -1504,7 +1503,7 @@ function RemoveComponentInventoryItemSource(cmp, owner)
     self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket, owner)
     self.inst:RemoveEventCallback("ondropped", self.itemsource_toground, owner)
     self.inst:RemoveEventCallback("onremove", self.itemsource_onremove, owner)
-    self.itemsource_toground(self.inst)
+    self.itemsource_toground(owner)
     self.itemsource_topocket = nil
     self.itemsource_toground = nil
     self.itemsource_onremove = nil

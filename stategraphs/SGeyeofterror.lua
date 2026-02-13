@@ -457,6 +457,12 @@ local states =
 					end
                 end
 
+				if inst.sg.currentstate.name ~= "mouthcharge_loop" then
+					--OnCollide attack resulted in us leaving this state already.
+					--e.g. Hit something that electrocutes us.
+					return
+				end
+
                 inst.sg.statemem.collisiontime = COLLIDE_TIME
             end
             inst.sg.statemem.collisiontime = inst.sg.statemem.collisiontime - dt

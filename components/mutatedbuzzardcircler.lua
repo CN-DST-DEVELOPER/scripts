@@ -38,12 +38,14 @@ local function CreateFlareDetonatedListener(hit_num)
 
             inst:DoTaskInTime(.2 + math.random() * .8, function()
                 local buzzard = inst.buzzard
-                TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
-                buzzard.Transform:SetPosition(x, y, z)
-                buzzard.sg:GoToState("fall")
-                buzzard.shouldGoAway = nil
+                if buzzard then
+                    TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+                    buzzard.Transform:SetPosition(x, y, z)
+                    buzzard.sg:GoToState("fall")
+                    buzzard.shouldGoAway = nil
 
-                inst:KillShadow()
+                    inst:KillShadow()
+                end
             end)
 
             data.hit_num_buzzards = data.hit_num_buzzards + 1
@@ -204,18 +206,20 @@ function MutatedBuzzardCircler:LandOnCorpse(corpse)
         local sx, sz = pos.x + offset.x, pos.z + offset.z
         if not TheWorld.Map:IsOceanAtPoint(sx, 0, sz) then
             local buzzard = self.inst.buzzard
-            self._migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
-            buzzard.Transform:SetPosition(sx, 30, sz)
-            buzzard:ForceFacePoint(pos.x, pos.y, pos.z)
-            buzzard.sg:GoToState("glide")
-            buzzard.shouldGoAway = nil
+            if buzzard then
+                self._migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+                buzzard.Transform:SetPosition(sx, 30, sz)
+                buzzard:ForceFacePoint(pos.x, pos.y, pos.z)
+                buzzard.sg:GoToState("glide")
+                buzzard.shouldGoAway = nil
 
-            buzzard:DoTaskInTime(0, buzzard.SetOwnCorpse, corpse) -- One tick delay for brain to initialize
+                buzzard:DoTaskInTime(0, buzzard.SetOwnCorpse, corpse) -- One tick delay for brain to initialize
 
-            self.inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/flock_squawk")
-            self.inst:KillShadow()
-            self:Stop()
-            return true
+                self.inst.SoundEmitter:PlaySound("lunarhail_event/creatures/lunar_buzzard/flock_squawk")
+                self.inst:KillShadow()
+                self:Stop()
+                return true
+            end
         end
     end
 
@@ -237,12 +241,14 @@ function MutatedBuzzardCircler:DropBuzzard()
     local corpse = SpawnPrefab("buzzardcorpse")
     corpse.Transform:SetPosition(x, y, z)
     corpse.sg:GoToState("corpse_fall")
-    corpse.AnimState:SetBuild(buzzard.AnimState:GetBuild())
     corpse:StartFadeTimer(10 + math.random() * 5)
 
     -- Bye bye!
-    TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
-    buzzard:Remove()
+    if buzzard then
+        corpse.AnimState:SetBuild(buzzard.AnimState:GetBuild())
+        TheWorld.components.migrationmanager:RemoveEntityFromPopulationGroup(buzzard)
+        buzzard:Remove()
+    end
 
     self.inst:KillShadow()
     self:Stop()

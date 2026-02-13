@@ -769,12 +769,13 @@ local function TryGallopCollideUpdate(inst)
 
     -- Do collision effects
     if target ~= nil then
+        local gallop_speedboost = inst.sg.statemem.gallop_speedboost -- we could be knocked out of the state from these event callbacks, so cache any statemems
         target:PushEvent("attacked", { attacker = inst, damage = 0 })
         target:PushEventImmediate("knockback", {
 			knocker = inst,
             forcelanded = true,
 			radius = targetdist,
-			strengthmult = 0.15 + (inst.sg.statemem.gallop_speedboost / (TUNING.WILSON_RUN_SPEED * 2)),
+			strengthmult = 0.15 + (gallop_speedboost / (TUNING.WILSON_RUN_SPEED * 2)),
 		})
         local workaction = target.components.workable ~= nil and target.components.workable:GetWorkAction() or nil
         if workaction and not GALLOP_NO_WORK_ACTIONS[workaction] then
@@ -792,7 +793,7 @@ local function TryGallopCollideUpdate(inst)
 		    	knocker = target,
                 forcelanded = true,
 		    	radius = targetdist, --data ~= nil and data.radius or physradius + 1,
-		    	strengthmult = 0.25 + (inst.sg.statemem.gallop_speedboost / (TUNING.WILSON_RUN_SPEED * 0.5)),
+		    	strengthmult = 0.25 + (gallop_speedboost / (TUNING.WILSON_RUN_SPEED * 0.5)),
 		    })
         end
 

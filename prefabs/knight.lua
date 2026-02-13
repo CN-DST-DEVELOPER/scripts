@@ -230,19 +230,23 @@ local HORSEMEN =
     },
 }
 
-local function YOTH_SetHorsemanOfTheAporkalypse(inst, type) -- Teehee!
-    assert(HORSEMEN[type])
-    inst.horseman_type = type
+local function YOTH_SetHorsemanOfTheAporkalypse(inst, typename) -- Teehee!
+	if inst.horseman_type ~= typename then
+		local data = HORSEMEN[inst.horseman_type]
+		if data and data.overridebuild then
+			inst.AnimState:ClearOverrideBuild(data.overridebuild)
+		end
 
-    local data = HORSEMEN[type]
+		inst.horseman_type = typename
 
-    if data.name then
-        inst.components.named:SetName(data.name)
-    end
-
-    if data.overridebuild then
-        inst.AnimState:AddOverrideBuild(data.overridebuild)
-    end
+		local data = HORSEMEN[typename]
+		if data.name then
+			inst.components.named:SetName(data.name)
+		end
+		if data.overridebuild then
+			inst.AnimState:AddOverrideBuild(data.overridebuild)
+		end
+	end
 end
 
 local function YOTH_GetStatus(inst, viewer)
@@ -588,6 +592,9 @@ local function YOTH_master_postinit(inst)
 
     inst:ListenForEvent("loot_prefab_spawned", YOTH_OnLootPrefabSpawned)
     inst.SetHorsemanOfTheAporkalypse = YOTH_SetHorsemanOfTheAporkalypse -- Teehee!
+
+	--*Should* be ok without named configuration.
+	--inst:SetHorsemanOfTheAporkalypse(YOTH_HORSE_NAMES[math.random(#YOTH_HORSE_NAMES)])
 
     inst:ListenForEvent("attacked", YOTH_OnAttacked)
 

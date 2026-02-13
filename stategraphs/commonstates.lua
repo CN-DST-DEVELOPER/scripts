@@ -244,6 +244,7 @@ local function try_goto_electrocute_state(inst, data, state, statedata, ongotost
 					attackdata = data,
 					duration = data.duration,
 					noburn = data.noburn,
+					numforks = data.numforks, --pass 0 (not nil) for no forking
 				}
 			) or data
 		elseif inst.sg:HasState("hit") then
@@ -328,6 +329,7 @@ local function try_electrocute_onevent(inst, data, state, statedata, ongotostate
 		--      so we actually CAN'T check the tag here, or it will break players' behaviour.
 		and not inst.sg.mem.noelectrocute
 		and (not inst.sg:HasAnyStateTag("dead", "nointerrupt", "noelectrocute") or inst.sg:HasStateTag("canelectrocute"))
+		and not (data and data.attacker and not data.noresist and electrocute_recovery_delay(inst))
 		and try_goto_electrocute_state(inst, data, state, statedata, ongotostatefn)
 end
 

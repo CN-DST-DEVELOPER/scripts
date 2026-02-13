@@ -444,6 +444,12 @@ end
 function self:MigratePopulationToNextNode(migration_data, population)
     migration_data = type(migration_data) == "string" and _migrationtypes[migration_data] or migration_data -- support pass migrator type
 
+    -- We have no migration path, this can happen in a disconnected node. So just retry the timer I guess.
+    if #population.data.migration_path <= 0 then
+        population.data.migrate_timer = migration_data.GetMigrateTime()
+        return
+    end
+
     local next_node = table.remove(population.data.migration_path, 1)
     table.insert(population.data.recently_visited_nodes, population.data.current_node)
     population.data.current_node = next_node

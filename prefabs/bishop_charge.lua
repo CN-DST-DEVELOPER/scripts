@@ -191,7 +191,7 @@ local function OnUpdate(inst, dt)
 					end
 					--V2C: "electrocute" immediately with no data to prevent forking from "electric" stimuli attack.
 					--NOTE: players (e.g. wx) still have electrocute state even if "electricdamageimmune"
-					v:PushEventImmediate("electrocute")
+					v:PushEventImmediate("electrocute", { attacker = combat.inst, stimuli = "electric", numforks = 0 })
 					inst.targets[v] = true
 				end
 			end

@@ -157,6 +157,8 @@ local function GetKnightAtFormationIndex(inst, index)
 			nextindex = nextindex + 1
 		end
 	end
+	--backup, in case horseman_type is nil (save/load corruption, or shenanigans)
+	return inst
 end
 
 local function NoPlayersOrHoles(pt)

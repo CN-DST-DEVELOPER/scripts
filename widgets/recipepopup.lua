@@ -602,9 +602,9 @@ function RecipePopup:MakeSpinner()
 		else
 			spinner_group.new_tag:Hide()
 		end
-		RecipeTile.sSetImageFromRecipe(spinner_group.fgimage, self.recipe, spinner_group.GetItem())
-		if spinner_group.fgimage.fxover then
-			spinner_group.fgimage.fxover:GetAnimState():SetTime(0)
+		RecipeTile.sSetImageFromRecipe(spinner_group.spinner.fgimage, self.recipe, spinner_group.GetItem())
+		if spinner_group.spinner.fgimage.fxover then
+			spinner_group.spinner.fgimage.fxover:GetAnimState():SetTime(0)
 		end
 	end)
 

@@ -95,12 +95,34 @@ local function RegisterBuzzardShadow(shadow)
     inst:ListenForEvent("shadowkilled", UnregisterBuzzardShadow, shadow)
 end
 
+local buzzard_OnRemove
+local shadow_OnRemove
+
+shadow_OnRemove = function(shadow)
+    local buzzard = shadow.buzzard
+    if buzzard then
+        buzzard:RemoveEventCallback("onremove", buzzard_OnRemove)
+        buzzard.shadow = nil
+    end
+end
+
+buzzard_OnRemove = function(buzzard)
+    local shadow = buzzard.shadow
+    if shadow then
+        shadow:RemoveEventCallback("onremove", shadow_OnRemove)
+        shadow.shadow = nil
+    end
+end
+
 local function SpawnBuzzardShadow(player, buzzard)
     local shadow = SpawnPrefab("circlingbuzzard_lunar")
     shadow.components.mutatedbuzzardcircler:SetCircleTarget(player)
     shadow.components.mutatedbuzzardcircler:Start()
     buzzard.shadow = shadow
     shadow.buzzard = buzzard
+
+    shadow:ListenForEvent("onremove", shadow_OnRemove)
+    buzzard:ListenForEvent("onremove", buzzard_OnRemove)
     --
     RegisterBuzzardShadow(shadow)
 end
