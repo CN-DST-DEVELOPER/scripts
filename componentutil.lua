@@ -1797,6 +1797,7 @@ LuckFormulas =
     DeciduousMonsterSpawn = CommonChanceUnluckMultAndLuckHyperbolic(6),
     DecreaseSanityMonsterPopulation = CommonChanceUnluckHyperbolicAndLuckMult(-2, 1),
     DropWetTool = CommonChanceUnluckMultAndLuckHyperbolic(.5, 1),
+    FruitFlyOnPickedWeed = CommonChanceUnluckMultAndLuckHyperbolic(2, 1),
     GrassGekkoMorph = CommonChanceUnluckMultAndLuckHyperbolic(4, .5),
     HuntAlternateBeast = CommonChanceUnluckMultAndLuckHyperbolic(3, 0.5),
     IncreaseSanityMonsterPopulation = CommonChanceUnluckMultAndLuckHyperbolic(3),

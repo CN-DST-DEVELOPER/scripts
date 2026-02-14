@@ -61,7 +61,7 @@ local function SpawnScionAtXZ(x, z, friendly, style, player, repairerid, repaire
 		if friendly then
 			if scion.TryBefriendChess and not scion:TryBefriendChess(player) then
 				for i, v in ipairs(FindPlayersInRangeSortedByDistance(x, 0, z, 20, true)) do
-					if scion.TryBefriendChess(v) then
+					if scion:TryBefriendChess(v) then
 						break
 					end
 				end
