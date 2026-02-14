@@ -1,6 +1,12 @@
 local clockwork_common = require("prefabs/clockwork_common")
 require("stategraphs/commonstates")
 
+local function CanQuickStartRun(inst)
+	return (inst.sg.mem.lastrunhit or 0) + inst.components.combat.min_attack_period < GetTime()
+end
+
+local MAX_RUN_CANCELS = 3
+
 local events=
 {
     CommonHandlers.OnHop(),
@@ -45,7 +51,13 @@ local events=
 			end
 		elseif not is_moving then
 			--starting
-			inst.sg:GoToState(should_run and ((inst.sg.mem.runcancels or 0) >= 3 and "run" or "run_start") or "walk_start")
+			if not should_run then
+				inst.sg:GoToState("walk_start")
+			elseif (inst.sg.mem.runcancels or 0) >= MAX_RUN_CANCELS and CanQuickStartRun(inst) then
+				inst.sg:GoToState("run")
+			else
+				inst.sg:GoToState("run_start")
+			end
 		elseif not is_running then
 			if should_run then
 				--changing from walk to run
@@ -81,7 +93,8 @@ local function DoRamAOE(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local rot = inst.Transform:GetRotation()
 	local range = inst.components.combat:GetHitRange()
-	local hit = false
+	local hitany = false
+	local hittarget = false
 	local t = GetTime()
 
 	inst.components.combat.ignorehitrange = true
@@ -101,8 +114,9 @@ local function DoRamAOE(inst)
 			then
 				if not guy:HasTag("smashable") then
 					inst.recentlycharged[guy] = t
+					hitany = true
+					hittarget = hittarget or inst.components.combat:TargetIs(guy)
 					inst.components.combat:DoAttack(guy)
-					hit = true
 				elseif guy.components.health then
 					guy.components.health:Kill()
 				end
@@ -110,7 +124,7 @@ local function DoRamAOE(inst)
 		end)
 	inst.components.combat.ignorehitrange = false
 
-	return hit
+	return hitany, hittarget
 end
 
 local states=
@@ -153,7 +167,7 @@ local states=
                 inst.AnimState:PlayAnimation("atk_pre")
 				inst.AnimState:PushAnimation("paw_loop")
                 inst.sg:SetTimeout(1)
-				if (inst.sg.mem.runcancels or 0) < 3 then
+				if (inst.sg.mem.runcancels or 0) < MAX_RUN_CANCELS then
 					inst.sg:AddStateTag("caninterrupt")
 				end
 
@@ -207,7 +221,7 @@ local states=
 				else
 					inst.SoundEmitter:PlaySound(inst.soundpath.."charge_LP", "charge")
 					inst.sg:AddStateTag("busy")
-					if (inst.sg.mem.runcancels or 0 < 3) then
+					if (inst.sg.mem.runcancels or 0) < MAX_RUN_CANCELS then
 						inst.sg:AddStateTag("caninterrupt")
 					end
 					for k in pairs(inst.recentlycharged) do
@@ -216,8 +230,15 @@ local states=
 					inst:PushEvent("attackstart")
 				end
 
-				if DoRamAOE(inst) then
-					inst.SoundEmitter:PlaySound(inst.soundpath.."explo")
+				inst.sg.statemem.canaoe = inst.sg.lasttags["running"]
+
+				if inst.sg.statemem.canaoe then
+					local hitany, hittarget = DoRamAOE(inst)
+					if hitany then
+						inst.sg.statemem.hittarget = hittarget
+						inst.sg.mem.lastrunhit = GetTime() --track hits since combat does not go on cooldown here
+						inst.SoundEmitter:PlaySound(inst.soundpath.."explo")
+					end
 				end
             end,
 
@@ -225,8 +246,11 @@ local states=
 				if inst:IsAsleep() then
 					inst.sg:GoToState("idle")
 					return
-				elseif dt > 0 then
-					if DoRamAOE(inst) then
+				elseif dt > 0 and inst.sg.statemem.canaoe then
+					local hitany, hittarget = DoRamAOE(inst)
+					if hitany then
+						inst.sg.statemem.hittarget = hittarget
+						inst.sg.mem.lastrunhit = GetTime() --track hits since combat does not go on cooldown here
 						inst.SoundEmitter:PlaySound(inst.soundpath.."explo")
 					end
 				end
@@ -251,6 +275,9 @@ local states=
 
 			onexit = function(inst)
 				if not inst.sg.statemem.running then
+					if inst.sg.statemem.hittarget then
+						inst.components.combat:RestartCooldown()
+					end
 					inst.components.locomotor:SetAllowPlatformHopping(true)
 					--inst.hit_recovery = nil
 					inst.components.locomotor.pusheventwithdirection = false
@@ -452,7 +479,7 @@ local states=
 			FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.soundpath.."hurt") end),
 			FrameEvent(7, function(inst)
 				local target = inst.sg.statemem.doattack
-				if target and target:IsValid() then
+				if target and target:IsValid() and CanQuickStartRun(inst) then
 					inst:ForceFacePoint(target.Transform:GetWorldPosition())
 					inst.sg:GoToState("run", true)
 					return
@@ -468,7 +495,7 @@ local states=
 				local target = data and data.target or inst.components.combat.target
 				if inst.sg:HasStateTag("busy") then
 					inst.sg.statemem.doattack = target
-				elseif target and target:IsValid() then
+				elseif target and target:IsValid() and CanQuickStartRun(inst) then
 					inst:ForceFacePoint(target.Transform:GetWorldPosition())
 					inst.sg:GoToState("run", true)
 				end
@@ -499,6 +526,7 @@ local states=
 			FrameEvent(12, function(inst)
 				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
+				clockwork_common.sgTrySetBefriendable(inst)
 			end),
 		},
 
@@ -506,10 +534,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -529,6 +560,7 @@ local states=
 			FrameEvent(7, function(inst)
 				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
+				clockwork_common.sgTrySetBefriendable(inst)
 			end),
 		},
 
@@ -536,19 +568,23 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
 		name = "stun_loop",
 		tags = { "stunned", "busy", "caninterrupt", "nosleep" },
 
-		onenter = function(inst, nohit)
+		onenter = function(inst)
 			inst.components.locomotor:StopMoving()
 			inst.AnimState:PlayAnimation("stun_loop")
+			clockwork_common.sgTrySetBefriendable(inst)
 		end,
 
 		timeline =
@@ -566,10 +602,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_pst")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -579,6 +618,7 @@ local states=
 		onenter = function(inst)
 			inst.components.locomotor:StopMoving()
 			inst.AnimState:PlayAnimation("stun_hit")
+			clockwork_common.sgTrySetBefriendable(inst)
 			inst.sg.mem.stunhits = inst.sg.mem.stunhits + 1
 			CommonHandlers.UpdateHitRecoveryDelay(inst)
 		end,
@@ -588,6 +628,7 @@ local states=
 			FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.soundpath.."hurt") end),
 			FrameEvent(7, function(inst)
 				if inst.sg.mem.stunhits >= 4 then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_pst")
 					return
 				end
@@ -599,10 +640,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -616,6 +660,7 @@ local states=
 			if inst.sg.mem.stunhits < 4 then
 				inst.sg:AddStateTag("caninterrupt")
 			end
+			clockwork_common.sgTrySetBefriendable(inst)
 		end,
 
 		timeline =
@@ -627,6 +672,7 @@ local states=
 			FrameEvent(9, function(inst)
 				inst.sg:RemoveStateTag("stunned")
 				inst.sg.mem.stunhits = nil
+				clockwork_common.sgTryClearBefriendable(inst)
 			end),
 			FrameEvent(24, function(inst) inst.SoundEmitter:PlaySound(inst.effortsound) end),
 			CommonHandlers.OnNoSleepFrameEvent(25, function(inst)
@@ -646,6 +692,8 @@ local states=
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 }
 
@@ -739,18 +787,37 @@ CommonStates.AddElectrocuteStates(states,
 {	--fns
 	loop_onenter = function(inst)
 		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTrySetBefriendable(inst)
+
 			--V2C: can change this back since fx is already spawned at this point
 			inst.override_combat_fx_height = nil
 		end
 	end,
+	loop_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") and not inst.sg.statemem.not_interrupted then
+			clockwork_common.sgTryClearBefriendable(inst)
+		end
+	end,
 	pst_onenter = function(inst)
-		if not inst.sg:HasStateTag("stunned") then
+		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTrySetBefriendable(inst)
+		else
 			inst.sg:GoToState("shock_to_stun")
+		end
+	end,
+	pst_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTryClearBefriendable(inst)
 		end
 	end,
 	onanimover = function(inst)
 		if inst.AnimState:AnimDone() then
-			inst.sg:GoToState(inst.sg:HasStateTag("stunned") and "stun_loop" or "idle")
+			if inst.sg:HasStateTag("stunned") then
+				inst.sg.statemem.keepbefriendable = true
+				inst.sg:GoToState("stun_loop")
+			else
+				inst.sg:GoToState("idle")
+			end
 		end
 	end,
 })

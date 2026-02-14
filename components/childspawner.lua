@@ -659,9 +659,9 @@ function ChildSpawner:UpdateMaxEmergencyCommit()
     self.maxemergencycommit = RoundBiasedDown(#ents * self.emergencychildrenperplayer)
 end
 
-function ChildSpawner:TrySpawnEmergencyChild()
+function ChildSpawner:TrySpawnEmergencyChild(target)
     self:UpdateMaxEmergencyCommit()
-    return self:SpawnEmergencyChild()
+    return self:SpawnEmergencyChild(target)
 end
 
 -- Should be called internally.

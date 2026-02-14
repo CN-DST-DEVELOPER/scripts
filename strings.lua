@@ -699,7 +699,7 @@ STRINGS =
             SHADOW_BEEF_BELL = "Bind",
 			SLINGSHOTMODKIT = "Mod",
 			WAGDRONE_PARTS = "Repair",
-			GEARS = "Give",
+			GEARS = "Repair",
         },
         STOPUSINGITEM =
         {

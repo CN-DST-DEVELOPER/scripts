@@ -172,6 +172,9 @@ local events =
 			end
 		end
 	end),
+
+	-- Corpse handlers
+	CommonHandlers.OnCorpseChomped(),
 }
 
 local function IsStuck(inst)

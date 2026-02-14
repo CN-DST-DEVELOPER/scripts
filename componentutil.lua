@@ -1745,10 +1745,10 @@ local function CommonChanceUnluckMultAndLuckHyperbolic(reciprocal, mult)
     end
 end
 
-local function CommonChanceLuckHyperbolic(mult_max, asymptote, subtract)
+local function CommonChanceLuckHyperbolic(mult_max, reciprocal, subtract)
     subtract = subtract or 0
     return function(inst, chance, luck)
-        return luck > 0 and chance * (mult_max - asymptote / ( asymptote + (luck - subtract) ))
+        return luck > 0 and chance * (mult_max - reciprocal / ( reciprocal + (luck - subtract) ))
     end
 end
 
@@ -1792,7 +1792,7 @@ LuckFormulas =
     ChessJunkSpawnClockwork = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
     ChildSpawnerOtherChild = CommonChanceUnluckMultAndLuckHyperbolic(6),
     ChildSpawnerRareChild = CommonChanceUnluckMultAndLuckHyperbolic(4),
-    CriticalStrike = CommonChanceLuckAdditive(.5),
+    CriticalStrike = CommonChanceLuckAdditive(.15),
     CritterNuzzle = CommonChanceUnluckHyperbolicAndLuckMult(0.5),
     DeciduousMonsterSpawn = CommonChanceUnluckMultAndLuckHyperbolic(6),
     DecreaseSanityMonsterPopulation = CommonChanceUnluckHyperbolicAndLuckMult(-2, 1),
@@ -1816,10 +1816,10 @@ LuckFormulas =
     PirateRaidsSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5, .5),
     PreRiftMutation = CommonChanceUnluckMultAndLuckHyperbolic(2),
     ResidueUpgradeFuel = CommonChanceLuckHyperbolic(2, 4),
-    RuinsHatProc = CommonChanceLuckAdditive(.33),
+    RuinsHatProc = CommonChanceLuckAdditive(.1),
     RuinsNightmare = CommonChanceUnluckMultAndLuckHyperbolic(2),
     RiftPossession = CommonChanceUnluckMultAndLuckHyperbolic(3),
-    SchoolSpawn = CommonChanceLuckAdditive(0.5),
+    SchoolSpawn = CommonChanceLuckAdditive(0.25),
     ShadowRiftQuaker = CommonChanceUnluckMultAndLuckHyperbolic(8),
     ShadowTentacleSpawn = CommonChanceLuckAdditive(0.2),
     SharkBoiSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2),
@@ -1831,6 +1831,16 @@ LuckFormulas =
     SquidHerdSpawn = CommonChanceUnluckMultAndLuckHyperbolic(5),
     TerrorbeakSpawn = CommonChanceUnluckMultAndLuckHyperbolic(2, .5),
     WildFireIgnition = CommonChanceLuckHyperbolicLower(2), -- Don't have unluckiness affect this, it affects other players really badly
+
+    LightningStrike = function(inst, chance, luck)
+        if inst:HasTag("electricdamageimmune") then -- Lightning is good for Wx.
+            local reciprocal = -1
+            return luck < 0 and chance * (reciprocal / (reciprocal + luck) + .5) * TWOTHIRDS
+                or luck > 0 and chance * (1 + math.abs(luck))
+        end
+
+        return CommonChanceUnluckMultAndLuckHyperbolic(4)(inst, chance, luck)
+    end,
 
     SpawnPerd = function(inst, chance, luck)
         -- Make gobblers spawn more often with luck during their year

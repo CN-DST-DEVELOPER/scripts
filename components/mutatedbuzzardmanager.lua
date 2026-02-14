@@ -110,7 +110,7 @@ buzzard_OnRemove = function(buzzard)
     local shadow = buzzard.shadow
     if shadow then
         shadow:RemoveEventCallback("onremove", shadow_OnRemove)
-        shadow.shadow = nil
+        shadow.buzzard = nil
     end
 end
 
@@ -134,8 +134,8 @@ end
 
 local function GetRandomPlayerInNode(node)
     local players = {}
-    for player, playernode in pairs(_migrationmanager:GetPlayerLocationList()) do
-        if playernode == node then
+    for player, data in pairs(_migrationmanager:GetPlayerMigrationData()) do
+        if data.migration_node and data.migration_node == node then
             table.insert(players, player)
         end
     end
@@ -495,10 +495,11 @@ function self:OnUpdate(dt)
     end
 
     -- Send buzzards
-    for player, node in pairs(_migrationmanager:GetPlayerLocationList()) do
+    for player, data in pairs(_migrationmanager:GetPlayerMigrationData()) do
+        local node = data.migration_node
         if _activeplayers[player].population_uid then
 
-            local invalid_uid = false
+            local invalid_uid = node == nil
             local population = _migrationmanager:GetPopulationGroup(_activeplayers[player].population_uid)
             if population then
                 if population.data.current_node ~= node then
@@ -521,7 +522,7 @@ function self:OnUpdate(dt)
                 self:ClearPopulationTracking(player)
             end
 
-        else
+        elseif node then
 
             local population_uid = _migrationmanager:GetFirstPopulationGroupInNode(MIGRATION_TYPES.MUTATED_BUZZARD_GESTALT, node, FilterPopulationFn)
             if population_uid then

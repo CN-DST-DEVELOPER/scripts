@@ -368,12 +368,12 @@ local function SpawnDefenders(inst, attacker)
 
             inst.components.childspawner.childname = "spider"
             if not inst:HasTag("bedazzled") then
-            local emergencyspider = inst.components.childspawner:TrySpawnEmergencyChild(attacker)
-            if emergencyspider ~= nil then
-                emergencyspider.components.combat:BlankOutAttacks(1.5 + math.random() * 2)
+                local emergencyspider = inst.components.childspawner:TrySpawnEmergencyChild(attacker)
+                if emergencyspider ~= nil then
+                    emergencyspider.components.combat:BlankOutAttacks(1.5 + math.random() * 2)
+                end
             end
         end
-    end
     end
 end
 

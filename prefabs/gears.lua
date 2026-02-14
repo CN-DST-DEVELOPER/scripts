@@ -26,7 +26,7 @@ local function OnUsedOnChess(inst, target, doer)
 end
 
 local function UseableTargetedItem_ValidTarget(inst, target, doer)
-	if not target:HasTag("chess") or target:HasTag("gilded_knight") then
+	if not target:HasTag("befriendable_clockwork") then
 		return false
 	end
 	local follower = target.replica.follower

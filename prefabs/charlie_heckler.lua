@@ -33,6 +33,7 @@ local function fn()
     inst.components.talker:MakeChatter()
 
 	inst:AddTag("NOCLICK") --starts in "idle" state with NOCLICK tag
+    inst:AddTag("NOBLOCK")
 
     inst.entity:SetPristine()
 

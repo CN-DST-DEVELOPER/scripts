@@ -778,7 +778,7 @@ local function TryGallopCollideUpdate(inst)
 			strengthmult = 0.15 + (gallop_speedboost / (TUNING.WILSON_RUN_SPEED * 2)),
 		})
         local workaction = target.components.workable ~= nil and target.components.workable:GetWorkAction() or nil
-        if workaction and not GALLOP_NO_WORK_ACTIONS[workaction] then
+        if workaction and not GALLOP_NO_WORK_ACTIONS[workaction] and target.components.workable:CanBeWorked() then
             target.components.workable:WorkedBy(inst, TUNING.YOTH_KNIGHTSTICK_WORK_COLLIDE)
         end
 

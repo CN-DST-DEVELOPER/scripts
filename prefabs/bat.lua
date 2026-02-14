@@ -48,7 +48,7 @@ end
 local RETARGET_CANT_TAGS = { "bat" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 local function IsValidTarget(guy, inst)
-    inst.components.combat:CanTarget(guy)
+    return inst.components.combat:CanTarget(guy)
 end
 
 local function Retarget(inst)

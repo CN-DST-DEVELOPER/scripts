@@ -167,6 +167,7 @@ end
 local function TryBefriendChess(inst, doer)
 	if not inst.components.health:IsDead() and
 		inst.components.follower:GetLeader() == nil and
+		inst:HasTag("befriendable_clockwork") and
 		doer and doer:IsValid() and not IsEntityDeadOrGhost(doer) and
 		doer.components.leader and
 		doer.components.minigame_participator == nil
@@ -193,6 +194,18 @@ local function MakeBefriendable(inst)
 	inst.components.followermemory:SetOnLeaderLostFn(ForceSetNewHome)
 
 	inst.TryBefriendChess = TryBefriendChess
+end
+
+local function sgTrySetBefriendable(inst)
+	if inst.TryBefriendChess then
+		inst:AddTag("befriendable_clockwork")
+	end
+end
+
+local function sgTryClearBefriendable(inst)
+	if inst.TryBefriendChess and not inst.sg.statemem.keepbefriendable then
+		inst:RemoveTag("befriendable_clockwork")
+	end
 end
 
 --------------------------------------------------------------------------
@@ -325,6 +338,8 @@ return {
     OnAttacked = OnAttacked,
 	OnNewCombatTarget = OnNewCombatTarget,
 	MakeBefriendable = MakeBefriendable,
+	sgTrySetBefriendable = sgTrySetBefriendable,
+	sgTryClearBefriendable = sgTryClearBefriendable,
 	MakeHealthRegen = MakeHealthRegen,
 	WaitForTrader = WaitForTrader,
 }

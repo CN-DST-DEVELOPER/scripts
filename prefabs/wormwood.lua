@@ -795,6 +795,8 @@ local function master_postinit(inst)
     inst.endtalksound = "dontstarve/characters/wormwood/end"
     --inst.endghosttalksound = nil
 
+    inst.sg.mem.nocorpse = true -- No flesh inside us.
+
     inst.components.health:SetMaxHealth(TUNING.WORMWOOD_HEALTH)
     inst.components.hunger:SetMax(TUNING.WORMWOOD_HUNGER)
     inst.components.sanity:SetMax(TUNING.WORMWOOD_SANITY)

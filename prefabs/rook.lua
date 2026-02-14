@@ -171,7 +171,8 @@ local function MakeRook(name, common_postinit, master_postinit, _assets, _prefab
 		inst.entity:SetPristine()
 
 		if not TheWorld.ismastersim then
-			inst:ListenForEvent(0, InitGroundFx_Client)
+			inst:DoTaskInTime(0, InitGroundFx_Client)
+
 			return inst
 		end
 

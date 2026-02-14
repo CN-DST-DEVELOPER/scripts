@@ -654,7 +654,7 @@ return Class(function(self, inst)
             elseif closest_generic == nil then
                 if (v.components.health == nil or not v.components.health:IsInvincible())
                         and not is_blocker -- If we're out of range of the first branch, ignore blocker objects.
-                        and (v.components.playerlightningtarget == nil or math.random() <= v.components.playerlightningtarget:GetHitChance()) then
+                        and (v.components.playerlightningtarget == nil or TryLuckRoll(v, v.components.playerlightningtarget:GetHitChance(), LuckFormulas.LightningStrike)) then
                     closest_generic = v
                 end
             end

@@ -79,6 +79,14 @@ local function UnregisterShrine(inst)
     TheWorld:PushEvent("ms_knightshrinedeactivated", inst)
 end
 
+local function OnRemove(inst)
+    UnregisterShrine(inst)
+    if inst.heckler ~= nil then
+        inst.heckler:Remove()
+        inst.heckler = nil
+    end
+end
+
 local function DropOffering(inst, worker)
     if not inst.offering then return end
 
@@ -362,7 +370,7 @@ local function fn()
     hauntable:SetHauntValue(TUNING.HAUNT_TINY)
 
     inst:ListenForEvent("ondeconstructstructure", DropOffering)
-    inst:ListenForEvent("onremove", UnregisterShrine) -- This case has to be here because we don't use a source modifier list in yoth_knightmanager
+    inst:ListenForEvent("onremove", OnRemove) -- This case has to be here because we don't use a source modifier list in yoth_knightmanager
 
     return inst
 end

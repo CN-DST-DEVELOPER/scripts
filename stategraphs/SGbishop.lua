@@ -1,3 +1,4 @@
+local clockwork_common = require("prefabs/clockwork_common")
 require("stategraphs/commonstates")
 
 local events=
@@ -352,8 +353,10 @@ local states=
 		end,
 
 		ontimeout = function(inst)
-			inst.targetingfx:KillFx()
-			inst.targetingfx = nil
+			if inst.targetingfx then
+				inst.targetingfx:KillFx()
+				inst.targetingfx = nil
+			end
 			inst.sg.statemem.shoot = true
 			inst.sg:GoToState("attack_shoot", Vector3(inst.sg.statemem.tgtx, 0, inst.sg.statemem.tgtz))
 		end,
@@ -458,6 +461,7 @@ local states=
 			FrameEvent(6, function(inst)
 				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
+				clockwork_common.sgTrySetBefriendable(inst)
 			end),
 		},
 
@@ -465,10 +469,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -487,6 +494,7 @@ local states=
 			FrameEvent(7, function(inst)
 				inst.sg:RemoveStateTag("noelectrocute")
 				inst.sg:AddStateTag("caninterrupt")
+				clockwork_common.sgTrySetBefriendable(inst)
 			end),
 		},
 
@@ -494,10 +502,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -507,6 +518,7 @@ local states=
 		onenter = function(inst, nohit)
 			inst.components.locomotor:StopMoving()
 			inst.AnimState:PlayAnimation("stun_loop")
+			clockwork_common.sgTrySetBefriendable(inst)
 		end,
 
 		timeline =
@@ -524,10 +536,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_pst")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -537,6 +552,7 @@ local states=
 		onenter = function(inst)
 			inst.components.locomotor:StopMoving()
 			inst.AnimState:PlayAnimation("stun_hit")
+			clockwork_common.sgTrySetBefriendable(inst)
 			inst.sg.mem.stunhits = inst.sg.mem.stunhits + 1
 			CommonHandlers.UpdateHitRecoveryDelay(inst)
 		end,
@@ -546,6 +562,7 @@ local states=
 			FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound(inst.soundpath.."hurt") end),
 			FrameEvent(6, function(inst)
 				if inst.sg.mem.stunhits >= 4 then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_pst")
 					return
 				end
@@ -557,10 +574,13 @@ local states=
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.keepbefriendable = true
 					inst.sg:GoToState("stun_loop")
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 
 	State{
@@ -573,6 +593,7 @@ local states=
 			if inst.sg.mem.stunhits < 4 then
 				inst.sg:AddStateTag("caninterrupt")
 			end
+			clockwork_common.sgTrySetBefriendable(inst)
 		end,
 
 		timeline =
@@ -584,6 +605,7 @@ local states=
 			FrameEvent(14, function(inst)
 				inst.sg:RemoveStateTag("stunned")
 				inst.sg.mem.stunhits = nil
+				clockwork_common.sgTryClearBefriendable(inst)
 				inst.SoundEmitter:PlaySound(inst.effortsound)
 			end),
 			FrameEvent(21, function(inst) inst.SoundEmitter:PlaySound(inst.soundpath.."land") end),
@@ -604,6 +626,8 @@ local states=
 				end
 			end),
 		},
+
+		onexit = clockwork_common.sgTryClearBefriendable,
 	},
 }
 
@@ -693,18 +717,37 @@ CommonStates.AddElectrocuteStates(states,
 {	--fns
 	loop_onenter = function(inst)
 		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTrySetBefriendable(inst)
+
 			--V2C: can change this back since fx is already spawned at this point
 			inst.override_combat_fx_height = nil
 		end
 	end,
+	loop_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") and not inst.sg.statemem.not_interrupted then
+			clockwork_common.sgTryClearBefriendable(inst)
+		end
+	end,
 	pst_onenter = function(inst)
-		if not inst.sg:HasStateTag("stunned") then
+		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTrySetBefriendable(inst)
+		else
 			inst.sg:GoToState("shock_to_stun")
+		end
+	end,
+	pst_onexit = function(inst)
+		if inst.sg:HasStateTag("stunned") then
+			clockwork_common.sgTryClearBefriendable(inst)
 		end
 	end,
 	onanimover = function(inst)
 		if inst.AnimState:AnimDone() then
-			inst.sg:GoToState(inst.sg:HasStateTag("stunned") and "stun_loop" or "idle")
+			if inst.sg:HasStateTag("stunned") then
+				inst.sg.statemem.keepbefriendable = true
+				inst.sg:GoToState("stun_loop")
+			else
+				inst.sg:GoToState("idle")
+			end
 		end
 	end,
 })

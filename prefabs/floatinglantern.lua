@@ -177,9 +177,8 @@ local function flyoff(inst, isload)
 
         --
         inst.globalicon = SpawnPrefab("globalmapicon")
-	    inst.globalicon.entity:SetParent(inst.entity)
+        inst.globalicon:TrackEntity(inst)
         inst.globalicon.MiniMapEntity:SetPriority(21)
-        inst.globalicon.MiniMapEntity:SetIcon("floatinglantern.png")
 	end
 
     inst.flyawaytask = nil
@@ -392,6 +391,7 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("floatinglantern.png")
 	inst.MiniMapEntity:SetCanUseCache(false)
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
 
     inst.AnimState:SetBank("floatinglantern")
     inst.AnimState:SetBuild("floatinglantern")
