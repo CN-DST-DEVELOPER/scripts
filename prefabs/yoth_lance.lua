@@ -44,7 +44,7 @@ local function fn()
 
     inst:AddTag("nopunch")
 
-    MakeInventoryFloatable(inst, "med", 0.05, {1.1, 0.5, 1.1}, true, -9)
+	MakeInventoryFloatable(inst, "med", 0.05, {1.8, 0.5, 1}, true, -37)
 
     inst:AddTag("sharp")
     inst:AddTag("pointy")
@@ -59,7 +59,7 @@ local function fn()
         return inst
     end
 
-    inst.components.floater:SetBankSwapOnFloat(true, -9, { sym_build = "fence_rotator", sym_name = "swap_fence_rotator" })
+	inst.components.floater:SetBankSwapOnFloat(true, -37, { sym_build = "yoth_lance", sym_name = "swap_lance" })
 
     local finiteuses = inst:AddComponent("finiteuses")
     finiteuses:SetMaxUses(TUNING.YOTH_LANCE_USES)

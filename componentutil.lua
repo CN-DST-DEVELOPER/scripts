@@ -1019,7 +1019,7 @@ function StrikeLightningAtPoint(strike_prefab, hit_player, x, y, z)
                     if not hit_player then
                         LightningStrikeAttack(ent)
                     end
-                elseif ent.components.burnable and ent:HasAnyTag(LIGHTNING_BURNING_ONEOF_TAGS) then
+                elseif ent.components.burnable and ent.components.burnable.canlight and ent:HasAnyTag(LIGHTNING_BURNING_ONEOF_TAGS) then
                     ent.components.burnable:Ignite()
                 end
 

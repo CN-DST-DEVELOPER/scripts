@@ -29,6 +29,7 @@ local function common_postinit(inst)
     end
 end
 
+local MODIFIER_SOURCE = "wes_misfortune"
 local function master_postinit(inst)
 	inst.customidlestate = "wes_funnyidle"
 
@@ -37,8 +38,8 @@ local function master_postinit(inst)
 	if inst.components.houndedtarget == nil then
 		inst:AddComponent("houndedtarget")
 	end
-	inst.components.houndedtarget.target_weight_mult:SetModifier(inst, TUNING.WES_HOUND_TARGET_MULT, "misfortune")
-	inst.components.houndedtarget.hound_thief = true
+	inst.components.houndedtarget.target_weight_mult:SetModifier(inst, TUNING.WES_HOUND_TARGET_MULT, MODIFIER_SOURCE)
+	inst.components.houndedtarget.hound_thief_sources:SetModifier(inst, true, MODIFIER_SOURCE)
 
     -- TODO #FIXME_CNY2026_LUCK, 
     -- hook this up? if luck mechanic doesn't change wes too much.

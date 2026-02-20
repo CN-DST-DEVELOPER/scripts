@@ -232,6 +232,8 @@ local function MakeBishop(name, common_postinit, master_postinit, _assets, _pref
 			return inst
 		end
 
+		inst.scrapbook_damage = TUNING.BISHOP_DAMAGE * TUNING.ELECTRIC_DAMAGE_MULT --show dry damage, not immune damage
+
 		inst.override_combat_fx_size = "med"
 		inst.kind = "" --for sound paths *unused?*
 		inst.soundpath = "dontstarve/creatures/bishop/"

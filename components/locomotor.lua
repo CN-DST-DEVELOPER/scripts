@@ -391,6 +391,12 @@ function LocoMotor:OnRemoveFromEntity()
 			self.inst:RemoveTag("turfrunner_"..tostring(ground_tile))
 		end
     end
+	for source, src_params in pairs(self._externalspeedmultipliers) do
+		self.inst:RemoveEventCallback("onremove", src_params.onremove, source)
+	end
+	if self.predictexternalspeedmultiplier then
+		self.predictexternalspeedmultiplier:Reset()
+	end
 end
 
 function LocoMotor:GetTimeMoving()

@@ -437,7 +437,7 @@ local function CLIENT_SpawnFrame(parent)
     inst:AddComponent("updatelooper")
     inst.components.updatelooper:AddOnUpdateFn(BALATRO_UTIL.UpdateLoop)
 
-    BALATRO_UTIL.SetLightMode_Idle(inst)
+	BALATRO_UTIL.SetLightMode_Idle(inst, true) --true for "nosound", deferred till _deferred_init
 
     MakeSnowCovered(inst)
 
@@ -445,6 +445,15 @@ local function CLIENT_SpawnFrame(parent)
 
     parent:AddChild(inst)
     table.insert(parent.highlightchildren, inst)
+
+	local function _deferred_init(parent)
+		inst:RemoveEventCallback("entitysleep", _deferred_init, parent)
+		inst:RemoveEventCallback("entitywake", _deferred_init, parent)
+		_deferred_init = nil
+		BALATRO_UTIL.LightMode_DeferredSoundInit(inst)
+	end
+	inst:ListenForEvent("entitysleep", _deferred_init, parent)
+	inst:ListenForEvent("entitywake", _deferred_init, parent)
 
     return inst
 end

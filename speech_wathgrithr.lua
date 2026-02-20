@@ -5951,7 +5951,7 @@ return{
         HERMITCRABTEA_FOLIAGE = "A potion to keep madness at bay.",
         HERMITCRABTEA_SUCCULENT_PICKED = "It shall quench the heat of Surtr's wrathful breath.",
         HERMITCRABTEA_FIRENETTLES = "To warm mine blood 'gainst Niflheim's bitter frost!",
-        HERMITCRABTEA_TILLWEED = "An elixir to replinish a warrior's vigor!",
+        HERMITCRABTEA_TILLWEED = "An elixir to replenish a warrior's vigor!",
         HERMITCRABTEA_MOON_TREE_BLOSSOM = "By the draught, lunar beasts take no heed of us!",
         HERMITCRABTEA_FORGETMELOTS = "It doth quell the raging storm within.",
         SHELLWEAVER = "The sea witch hath shared her ways with us. A high honor, indeed.",

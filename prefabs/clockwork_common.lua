@@ -167,7 +167,6 @@ end
 local function TryBefriendChess(inst, doer)
 	if not inst.components.health:IsDead() and
 		inst.components.follower:GetLeader() == nil and
-		inst:HasTag("befriendable_clockwork") and
 		doer and doer:IsValid() and not IsEntityDeadOrGhost(doer) and
 		doer.components.leader and
 		doer.components.minigame_participator == nil

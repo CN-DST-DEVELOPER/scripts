@@ -2447,6 +2447,17 @@ end
         inst:AddComponent("areaaware")
         inst.components.areaaware:SetUpdateDist(.45)
 
+		--use for player runspeed modifiers that should be ignored when mounted
+		--e.g. character specific things:
+		--       -wx speed chip
+		--       -wormwood bloom level
+		--       -wolfgang skilltree for normal size speedup
+		--     stategraph specific things:
+		--       -wonkey running
+		--       -galloping
+		inst:AddComponent("playerspeedmult")
+		inst.components.playerspeedmult:SetSpeedMultCap(2)
+
         inst:AddComponent("attuner")
         --attuner server listeners are not registered until after "ms_playerjoined" has been pushed
 
@@ -2527,7 +2538,6 @@ end
             inst:ListenForEvent("localplayer._shadowportalmax", OnShadowPortalMax)
             inst:ListenForEvent("localplayer._hermit_music", OnHermitMusic)
             
-
             inst:AddComponent("hudindicatable")
             inst.components.hudindicatable:SetShouldTrackFunction(ShouldTrackfn)
         end
@@ -2541,13 +2551,10 @@ end
         inst._piratemusicstate = net_bool(inst.GUID, "player.piratemusicstate", "piratemusicstatedirty")
         inst._piratemusicstate:set(false)
         inst:ListenForEvent("piratemusicstatedirty", OnPirateMusicStateDirty)
-
         
         inst:ListenForEvent("parasiteoverlaydirty", OnParasiteOverlayDirty)
         inst:ListenForEvent("healthbarbuffsymboldirty", OnHealthbarBuffSymbolDirty)
         inst:ListenForEvent("blackoutdirty", OnBlackoutDirty)
-        
-
 
         inst.PostActivateHandshake = ex_fns.PostActivateHandshake
         inst.OnPostActivateHandshake_Client = ex_fns.OnPostActivateHandshake_Client
@@ -2557,6 +2564,7 @@ end
         inst.SynchronizeOneClientAuthoritativeSetting = ex_fns.SynchronizeOneClientAuthoritativeSetting
 
         inst.entity:SetPristine()
+
         if not TheWorld.ismastersim then
             return inst
         end
@@ -2593,6 +2601,7 @@ end
         inst.player_classified.entity:SetParent(inst.entity)
 
         inst.components.boatcannonuser:SetClassified(inst.player_classified)
+		inst.components.playerspeedmult:SetClassified(inst.player_classified)
 
         inst:ListenForEvent("death", ex_fns.OnPlayerDeath)
         if inst.ghostenabled then

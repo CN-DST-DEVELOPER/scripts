@@ -230,9 +230,9 @@ local states=
 					inst:PushEvent("attackstart")
 				end
 
-				inst.sg.statemem.canaoe = inst.sg.lasttags["running"]
+				if inst.sg.lasttags["running"] then
+					inst.sg:AddStateTag("running_collides")
 
-				if inst.sg.statemem.canaoe then
 					local hitany, hittarget = DoRamAOE(inst)
 					if hitany then
 						inst.sg.statemem.hittarget = hittarget
@@ -246,7 +246,7 @@ local states=
 				if inst:IsAsleep() then
 					inst.sg:GoToState("idle")
 					return
-				elseif dt > 0 and inst.sg.statemem.canaoe then
+				elseif dt > 0 and inst.sg:HasStateTag("running_collides") then
 					local hitany, hittarget = DoRamAOE(inst)
 					if hitany then
 						inst.sg.statemem.hittarget = hittarget

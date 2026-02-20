@@ -130,9 +130,9 @@ AddCreatureScanDataDefinition("ruinsnightmare", "maxsanity", 8)
 
 ---------------------------------------------------------------
 local function movespeed_updaterunspeed(wx)
-    if not wx._runspeedoverridden then
-        wx.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED * (1 + TUNING.WX78_MOVESPEED_CHIPBOOSTS[wx._movespeed_chips + 1])
-    end
+	local mult = 1 + TUNING.WX78_MOVESPEED_CHIPBOOSTS[wx._movespeed_chips + 1]
+	--V2C: playerspeedmult does not stack with mount speed
+	wx.components.playerspeedmult:SetSpeedMult("wx_movespeed_chip", mult)
 end
 
 local function movespeed_activate(inst, wx)

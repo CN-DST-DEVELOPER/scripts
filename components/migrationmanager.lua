@@ -165,9 +165,7 @@ local function InitializeMigrationMapFromTopology()
         _migrationmap = {}
         for i, id in ipairs(_world.topology.ids) do
             local searchednodes = {} -- ["Task:0:Room"] = true
-            if not IsNodeLinker(id) then
-                RecurseNeighbours(_world.topology.nodes[i], searchednodes, GetNodeFromTopologyID(id))
-            end
+            RecurseNeighbours(_world.topology.nodes[i], searchednodes, GetNodeFromTopologyID(id))
         end
     end
 
@@ -415,6 +413,7 @@ end
 function self:EnterMigration(migrator_type, ent) -- decides whether to join a existing group or create a new one at position
     local node = self:GetMigrationNodeAtInst(ent)
     if not node then
+        ent:Remove() -- TODO maybe we should enter the closest valid node?
         return
     end
 

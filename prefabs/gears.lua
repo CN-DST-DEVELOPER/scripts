@@ -8,7 +8,7 @@ local function ResetInUse(inst)
 end
 
 local function OnUsedOnChess(inst, target, doer)
-	if target.TryBefriendChess and target:TryBefriendChess(doer) then
+	if target.TryBefriendChess and target:HasTag("befriendable_clockwork") and target:TryBefriendChess(doer) then
 		if target.components.health then
 			target.components.health:SetPercent(1)
 		end

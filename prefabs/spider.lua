@@ -197,7 +197,7 @@ end
 
 local function HasFriendlyLeader(inst, target)
     local leader = inst.components.follower and inst.components.follower:GetLeader()
-    local target_leader = target.components.follower and target.components.follower:GetLeader()
+	local target_leader = target.components.follower and target.components.follower.leader -- Getting leader directly special case.
 
     if leader ~= nil and target_leader ~= nil then
 

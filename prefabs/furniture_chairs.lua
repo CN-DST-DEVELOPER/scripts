@@ -82,7 +82,8 @@ local function IsSitterRockingLoop(inst, sitter)
 end
 
 local function OnSyncChairRocking(inst, sitter)
-	if inst.components.sittable:IsOccupiedBy(sitter) then
+	--sittable is removed when burnt
+	if inst.components.sittable and inst.components.sittable:IsOccupiedBy(sitter) then
 		if IsSitterRockingPre(inst, sitter) then
 			_PlayAnimation(inst, "rocking_pre")
 			local t = sitter.AnimState:GetCurrentAnimationTime()
@@ -144,6 +145,7 @@ local function OnChairBurnt(inst)
 	end
 
 	CancelSitterAnimOver(inst)
+	inst:RemoveEventCallback("ms_sync_chair_rocking", OnSyncChairRocking)
 	inst:RemoveComponent("sittable")
 end
 

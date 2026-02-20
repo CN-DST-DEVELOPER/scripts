@@ -769,7 +769,7 @@ local function TryGallopCollideUpdate(inst)
 
     -- Do collision effects
     if target ~= nil then
-        local gallop_speedboost = inst.sg.statemem.gallop_speedboost -- we could be knocked out of the state from these event callbacks, so cache any statemems
+		local gallop_speedboost = inst.components.locomotor:GetRunSpeed() - TUNING.WILSON_RUN_SPEED
         target:PushEvent("attacked", { attacker = inst, damage = 0 })
         target:PushEventImmediate("knockback", {
 			knocker = inst,
@@ -11360,7 +11360,7 @@ local states =
                 inst.sg:GoToState("run")
                 return
             end
-            inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+			inst.components.playerspeedmult:SetPredictedSpeedMult("wonkey_run", (TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS) / (TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_WALK_SPEED_PENALTY))
             inst.components.hunger.burnratemodifiers:SetModifier(inst, TUNING.WONKEY_RUN_HUNGER_RATE_MULT, "wonkey_run")
 			inst:AddTag("wonkey_run")
             inst.Transform:SetPredictedSixFaced()
@@ -11420,7 +11420,7 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.monkeyrunning then
-                inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_WALK_SPEED_PENALTY
+				inst.components.playerspeedmult:RemovePredictedSpeedMult("wonkey_run")
                 inst.components.hunger.burnratemodifiers:RemoveModifier(inst, "wonkey_run")
 				inst:RemoveTag("wonkey_run")
                 inst.Transform:ClearPredictedFacingModel()
@@ -11632,13 +11632,8 @@ local states =
                 math.min(TUNING.YOTH_KNIGHTSTICK_MAX_GALLOPS, math.floor((time_moving - TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP) / inst.AnimState:GetCurrentAnimationLength()))
                 or 0
 
-            local speed_multiplier = inst.components.locomotor:GetSpeedMultiplier()
-            local max_gallop_speed = math.max(0, TUNING.YOTH_KNIGHTSTICK_MAX_SPEED - (TUNING.WILSON_RUN_SPEED * speed_multiplier)) / speed_multiplier
-            local additive_speed_boost = math.min(max_gallop_speed, TUNING.YOTH_KNIGHTSTICK_BASE_SPEED + gallopcount * TUNING.YOTH_KNIGHTSTICK_SPEED_BONUS_PER_GALLOP)
-
-            inst.sg.statemem.gallop_speedboost = additive_speed_boost
-            inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED + additive_speed_boost
-            inst:PushEvent("startoverriderunspeed")
+			local mult = Remap(gallopcount, 0, TUNING.YOTH_KNIGHTSTICK_MAX_GALLOPS, TUNING.YOTH_KNIGHTSTICK_SPEED_MULT.min, TUNING.YOTH_KNIGHTSTICK_SPEED_MULT.max)
+			inst.components.playerspeedmult:SetCappedPredictedSpeedMult("gallop_run", mult)
 
             inst.components.hunger.burnratemodifiers:SetModifier(inst, TUNING.YOTH_KNIGHTSTICK_GALLOP_HUNGER_RATE_MULT, "gallop_run")
 			inst:AddTag("gallop_run")
@@ -11730,8 +11725,7 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.galloping then
-                inst.components.locomotor.runspeed = TUNING.WILSON_RUN_SPEED
-                inst:PushEvent("stopoverriderunspeed")
+				inst.components.playerspeedmult:RemoveCappedPredictedSpeedMult("gallop_run")
                 inst.components.hunger.burnratemodifiers:RemoveModifier(inst, "gallop_run")
 				inst:RemoveTag("gallop_run")
 				inst.player_classified.playinghorseshoesounds:set(false)

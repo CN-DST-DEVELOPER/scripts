@@ -1625,7 +1625,7 @@ local states =
                 inst.sg:GoToState("run")
                 return
             end
-            inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS
+			inst.components.playerspeedmult:SetPredictedSpeedMult("wonkey_run", (TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_SPEED_BONUS) / (TUNING.WILSON_RUN_SPEED + TUNING.WONKEY_WALK_SPEED_PENALTY))
             inst.Transform:SetPredictedSixFaced()
             inst.components.locomotor:RunForward()
 
@@ -1683,7 +1683,7 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.monkeyrunning then
-                inst.components.locomotor.predictrunspeed = nil
+				inst.components.playerspeedmult:RemovePredictedSpeedMult("wonkey_run")
                 inst.Transform:ClearPredictedFacingModel()
             end
         end,
@@ -1934,10 +1934,8 @@ local states =
                 math.min(TUNING.YOTH_KNIGHTSTICK_MAX_GALLOPS, math.floor((time_moving - TUNING.YOTH_KNIGHTSTICK_TIME_TO_GALLOP) / inst.AnimState:GetCurrentAnimationLength()))
                 or 0
 
-            local speed_multiplier = inst.components.locomotor:GetSpeedMultiplier()
-            local max_gallop_speed = math.max(0, TUNING.YOTH_KNIGHTSTICK_MAX_SPEED - (TUNING.WILSON_RUN_SPEED * speed_multiplier)) / speed_multiplier
-            local additive_speed_boost = math.min(max_gallop_speed, TUNING.YOTH_KNIGHTSTICK_BASE_SPEED + gallopcount * TUNING.YOTH_KNIGHTSTICK_SPEED_BONUS_PER_GALLOP)
-            inst.components.locomotor.predictrunspeed = TUNING.WILSON_RUN_SPEED + additive_speed_boost
+			local mult = Remap(gallopcount, 0, TUNING.YOTH_KNIGHTSTICK_MAX_GALLOPS, TUNING.YOTH_KNIGHTSTICK_SPEED_MULT.min, TUNING.YOTH_KNIGHTSTICK_SPEED_MULT.max)
+			inst.components.playerspeedmult:SetCappedPredictedSpeedMult("gallop_run", mult)
 
 			if not inst.sg.statemem.tripped then
 				inst.components.locomotor:RunForward()
@@ -2031,7 +2029,7 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.galloping then
-                inst.components.locomotor.predictrunspeed = nil
+				inst.components.playerspeedmult:RemoveCappedPredictedSpeedMult("gallop_run")
 				inst.sg.mem.gallop_lastrotation = inst.sg.statemem.lastrotation
 				inst.sg.mem.gallop_rotation_tracker = inst.sg.statemem.rotation_tracker
 				inst.sg.mem.gallop_tripped = inst.sg.statemem.tripped

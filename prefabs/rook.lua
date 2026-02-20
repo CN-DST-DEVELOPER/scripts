@@ -75,7 +75,8 @@ local function DoCollideShake(inst)
 end
 
 local function oncollide(inst, other)
-	if other and not other.isplayer and other:IsValid() and
+	if inst.sg and inst.sg:HasStateTag("running_collides") and
+		other and not other.isplayer and other:IsValid() and
 		other.components.workable and
 		other.components.workable:CanBeWorked() and
 		other.components.workable:GetWorkAction() ~= ACTIONS.NET and

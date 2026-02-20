@@ -5,7 +5,7 @@
 --   provided a key is passed in for each modifiers
 -------------------------------------------------------------------------------
 
-SourceModifierList = Class(function(self, inst, base_value, fn)
+SourceModifierList = Class(function(self, inst, base_value, fn, dirtycb)
     self.inst = inst
 
     -- Private members
@@ -19,6 +19,7 @@ SourceModifierList = Class(function(self, inst, base_value, fn)
     end
 
     self._fn = fn or SourceModifierList.multiply
+	self._dirtycb = dirtycb
 end)
 
 SourceModifierList.multiply = function(a, b)
@@ -43,14 +44,17 @@ function SourceModifierList:IsEmpty()
 end
 
 -------------------------------------------------------------------------------
-local function RecalculateModifier(inst)
-    local m = inst._base
-    for source, src_params in pairs(inst._modifiers) do
+function SourceModifierList:RecalculateModifier()
+	local m = self._base
+	for source, src_params in pairs(self._modifiers) do
         for k, v in pairs(src_params.modifiers) do
-            m = inst._fn(m, v)
+			m = self._fn(m, v)
         end
     end
-    inst._modifier = m
+	self._modifier = m
+	if self._dirtycb then
+		self._dirtycb(self.inst, m)
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -81,16 +85,16 @@ function SourceModifierList:SetModifier(source, m, key)
 		if EntityScript.is_instance(source) then
             self._modifiers[source].onremove = function(source)
                 self._modifiers[source] = nil
-                RecalculateModifier(self)
+				self:RecalculateModifier()
             end
 
             self.inst:ListenForEvent("onremove", self._modifiers[source].onremove, source)
         end
 
-        RecalculateModifier(self)
+		self:RecalculateModifier()
     elseif src_params.modifiers[key] ~= m then
         src_params.modifiers[key] = m
-        RecalculateModifier(self)
+		self:RecalculateModifier()
     end
 end
 
@@ -104,7 +108,7 @@ function SourceModifierList:RemoveModifier(source, key)
         src_params.modifiers[key] = nil
         if next(src_params.modifiers) ~= nil then
             --this source still has other keys
-			RecalculateModifier(self)
+			self:RecalculateModifier()
             return
         end
     end
@@ -114,7 +118,20 @@ function SourceModifierList:RemoveModifier(source, key)
         self.inst:RemoveEventCallback("onremove", src_params.onremove, source)
     end
     self._modifiers[source] = nil
-    RecalculateModifier(self)
+	self:RecalculateModifier()
+end
+
+function SourceModifierList:Reset()
+	for source, src_params in pairs(inst._modifiers) do
+		if src_params.onremove then
+			self.inst:RemoveEventCallback("onremove", src_params.onremove, source)
+		end
+		self._modifiers[source] = nil
+	end
+	inst._modifier = inst._base
+	if self._dirtycb then
+		self._dirtycb(self.inst, inst._modifier)
+	end
 end
 
 -------------------------------------------------------------------------------
@@ -157,7 +174,9 @@ function SourceModifierList:HasModifier(source, key)
     return src_params.modifiers[key] ~= nil
 end
 
-
+function SourceModifierList:HasAnyModifiers()
+	return next(self._modifiers) ~= nil
+end
 
 -------------------------------------------------------------------------------
 return SourceModifierList

@@ -116,15 +116,17 @@ end
 
 local function SpawnBuzzardShadow(player, buzzard)
     local shadow = SpawnPrefab("circlingbuzzard_lunar")
+    RegisterBuzzardShadow(shadow)
     shadow.components.mutatedbuzzardcircler:SetCircleTarget(player)
     shadow.components.mutatedbuzzardcircler:Start()
-    buzzard.shadow = shadow
-    shadow.buzzard = buzzard
 
-    shadow:ListenForEvent("onremove", shadow_OnRemove)
-    buzzard:ListenForEvent("onremove", buzzard_OnRemove)
-    --
-    RegisterBuzzardShadow(shadow)
+    if shadow:IsValid() then -- shadow could have been removed from circler:Start call
+        buzzard.shadow = shadow
+        shadow.buzzard = buzzard
+
+        shadow:ListenForEvent("onremove", shadow_OnRemove)
+        buzzard:ListenForEvent("onremove", buzzard_OnRemove)
+    end
 end
 
 local function FilterPopulationFn(migrator_type, population)
@@ -186,7 +188,7 @@ local function AnyBuzzardInRange(x, y, z)
     end
 
     for i, buzzard in ipairs(_buzzardshadows) do
-        if buzzard:GetDistanceSqToPoint(x, y, z) <= MUTATEDBUZZARD_CORPSE_RANGE then
+        if buzzard:GetDistanceSqToPoint(x, y, z) <= MUTATEDBUZZARD_CORPSE_RANGE_SQ then
             return true
         end
     end

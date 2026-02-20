@@ -8,6 +8,11 @@ local LuckUser = Class(function(self, inst)
     self.luckmodifiers = SourceModifierList(inst, 0, SourceModifierList.additive)
 end)
 
+function LuckUser:OnRemoveFromEntity()
+    self.luckmodifiers:Reset()
+    self:_UpdateLuck_Internal()
+end
+
 function LuckUser:GetLuck()
     return self.luckmodifiers:Get()
 end
@@ -21,10 +26,11 @@ function LuckUser:_UpdateLuck_Internal()
 
         local houndedtarget = self.inst.components.houndedtarget or self.inst:AddComponent("houndedtarget")
         houndedtarget.target_weight_mult:SetModifier(self.inst, unlucky_mult, MODIFIER_SOURCE)
-        houndedtarget.hound_thief = luck <= -1 and true or nil
+        houndedtarget.hound_thief_sources:SetModifier(self.inst, luck <= -1, MODIFIER_SOURCE)
     else
         if self.inst.components.houndedtarget then
             self.inst.components.houndedtarget.target_weight_mult:RemoveModifier(self.inst, MODIFIER_SOURCE)
+            self.inst.components.houndedtarget.hound_thief_sources:RemoveModifier(self.inst, MODIFIER_SOURCE)
         end
     end
 end

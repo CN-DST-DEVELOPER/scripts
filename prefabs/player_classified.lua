@@ -243,7 +243,7 @@ local function OnEntityReplicated(inst)
         for i, v in ipairs({ "builder", "combat", "health", "hunger", "rider", "sanity" }) do
 			inst._parent:TryAttachClassifiedToReplicaComponent(inst, v)
         end
-        for i, v in ipairs({ "playercontroller", "playervoter", "boatcannonuser" }) do
+		for i, v in ipairs({ "playercontroller", "playervoter", "boatcannonuser", "playerspeedmult" }) do
             if inst._parent.components[v] ~= nil then
                 inst._parent.components[v]:AttachClassified(inst)
             end
@@ -686,6 +686,12 @@ local function OnExternalVelocityVectorDirty(inst)
     if inst._parent then
         inst._parent.Physics:SetMotorVelExternal(inst.externalvelocityvectorx:value(), 0, inst.externalvelocityvectorz:value())
     end
+end
+
+fns.OnPlayerSpeedMultDirty = function(inst)
+	if inst._parent and inst._parent.components.playerspeedmult then
+		inst._parent.components.playerspeedmult:ApplyRunSpeed_Internal()
+	end
 end
 
 local function OnPlayerCameraShake(inst)
@@ -1174,6 +1180,7 @@ local function RegisterNetListeners_local(inst)
 	inst:ListenForEvent("isstrafingdirty", fns.OnIsStrafingDirty)
     inst:ListenForEvent("iscarefulwalkingdirty", OnIsCarefulWalkingDirty)
     inst:ListenForEvent("externalvelocityvectordirty", OnExternalVelocityVectorDirty)
+	inst:ListenForEvent("playerspeedmultdirty", fns.OnPlayerSpeedMultDirty)
     inst:ListenForEvent("isghostmodedirty", OnGhostModeDirty)
     inst:ListenForEvent("actionmeterdirty", OnActionMeterDirty)
     inst:ListenForEvent("playerhuddirty", OnPlayerHUDDirty)
@@ -1583,6 +1590,14 @@ local function fn()
 	inst.busyremoteoverridelocomote = net_bool(inst.GUID, "locomotor.busyremoteoverridelocomote") --WASD
 	inst.busyremoteoverridelocomoteclick = net_bool(inst.GUID, "locomotor.busyremoteoverridelocomoteclick") --L.click
 	inst.isstrafing = net_bool(inst.GUID, "locomotor.isstrafing", "isstrafingdirty")
+
+	--PlayerSpeedMult variables
+	inst.psm_basespeed = net_float(inst.GUID, "playerspeedmult.psm_basespeed", "playerspeedmultdirty")
+	inst.psm_basespeed:set(inst.runspeed:value())
+	inst.psm_servermult = net_float(inst.GUID, "playerspeedmult.psm_servermult", "playerspeedmultdirty")
+	inst.psm_servermult:set(1)
+	inst.psm_cappedservermult = net_float(inst.GUID, "playerspeedmult.psm_cappedservermult", "playerspeedmultdirty")
+	inst.psm_cappedservermult:set(1)
 
     --CarefulWalking variables
     inst.iscarefulwalking = net_bool(inst.GUID, "carefulwalking.careful", "iscarefulwalkingdirty")

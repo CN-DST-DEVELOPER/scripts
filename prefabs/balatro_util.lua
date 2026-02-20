@@ -91,14 +91,14 @@ end
 
 -- These are called by the balatro_machine or the UI machine.
 
-local function SERVER_SetLightMode_Idle1(inst)
+local function SERVER_SetLightMode_Idle1(inst, nosound)
     if inst.light_mode ~= nil then
         inst.light_mode:set(LIGHTMODES.IDLE1)
     else
         UI_LIGHTMODE = LIGHTMODES.IDLE1
     end
 
-    if inst.SoundEmitter ~= nil and not inst.SoundEmitter:PlayingSound(SOUND_NAME) then
+	if not nosound and inst.SoundEmitter and not inst.SoundEmitter:PlayingSound(SOUND_NAME) then
         inst.SoundEmitter:PlaySound("balatro/balatro_cabinet/light_blink_LP", SOUND_NAME)
     end
 end
@@ -113,6 +113,17 @@ local function SERVER_SetLightMode_Blink(inst)
     if inst.SoundEmitter ~= nil then
         inst.SoundEmitter:KillSound(SOUND_NAME)
     end
+end
+
+local function LightMode_DeferredSoundInit(inst)
+	if inst.SoundEmitter then
+		local mode = inst._light_mode and inst._light_mode:value() or UI_LIGHTMODE
+		if mode ~= LIGHTMODES.IDLE1 then
+			inst.SoundEmitter:KillSound(SOUND_NAME)
+		elseif not inst.SoundEmitter:PlayingSound(SOUND_NAME) then
+			inst.SoundEmitter:PlaySound("balatro/balatro_cabinet/light_blink_LP", SOUND_NAME)
+		end
+	end
 end
 
 ----------------------------------------------------------------------------------------------------------------------
@@ -262,6 +273,7 @@ return {
     UpdateLoop = UpdateLoop,
     SetLightMode_Idle = SERVER_SetLightMode_Idle1,
     SetLightMode_Blink = SERVER_SetLightMode_Blink,
+	LightMode_DeferredSoundInit = LightMode_DeferredSoundInit,
     SetAnimState = SetAnimState,
 
     SCORE_RANKS = SCORE_RANKS,

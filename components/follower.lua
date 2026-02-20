@@ -1,6 +1,6 @@
 local function onattacked(inst, data)
     local self = inst.components.follower
-    local leader = self:GetLeader()
+    local leader = self.leader -- Getting leader directly special case.
     if leader == data.attacker then
         self:SetLeader(nil)
     end

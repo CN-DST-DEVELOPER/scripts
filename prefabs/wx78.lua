@@ -601,26 +601,6 @@ end
 
 ----------------------------------------------------------------------------------------
 
-local function OnOverrideRunSpeed(inst)
-    if not inst._runspeedoverridden then
-        inst._runspeedoverridden = true
-        if inst.movespeed_updaterunspeed then
-            inst:movespeed_updaterunspeed()
-        end
-    end
-end
-
-local function OnStopOverrideRunSpeed(inst)
-    if inst._runspeedoverridden then
-        inst._runspeedoverridden = nil
-        if inst.movespeed_updaterunspeed then
-            inst:movespeed_updaterunspeed()
-        end
-    end
-end
-
-----------------------------------------------------------------------------------------
-
 local function common_postinit(inst)
     inst:AddTag("electricdamageimmune")
     --electricdamageimmune is for combat and not lightning strikes
@@ -734,8 +714,6 @@ local function master_postinit(inst)
     inst:ListenForEvent("startstarving", OnStartStarving)
     inst:ListenForEvent("stopstarving", OnStopStarving)
     inst:ListenForEvent("timerdone", OnTimerFinished)
-    inst:ListenForEvent("startoverriderunspeed", OnOverrideRunSpeed)
-    inst:ListenForEvent("stopoverriderunspeed", OnStopOverrideRunSpeed)
 
     ----------------------------------------------------------------
     inst.components.playerlightningtarget:SetHitChance(TUNING.WX78_LIGHTNING_TARGET_CHANCE)
