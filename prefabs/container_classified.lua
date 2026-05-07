@@ -129,12 +129,15 @@ local function GetItems(inst)
     return items
 end
 
-local function ValidateSpecialiedContainer(container)
+local function ValidateSpecialiedContainer(container, ignoreclosed)
 	return container ~= nil
 		and container.priorityfn ~= nil
 		and (	container:IsOpenedBy(ThePlayer) or
-				(container:CanBeOpened() and not container.inst:HasTag("portablecontainer"))
-				--NOTE: droponopen check not avail on clients, but it's also mostly deprecated. hmm...
+				(	not ignoreclosed and
+					container:CanBeOpened() and
+					not container.inst:HasTag("portablecontainer")
+					--NOTE: droponopen check not avail on clients, but it's also mostly deprecated. hmm...
+				)
 			)
 end
 
@@ -147,7 +150,7 @@ local function GetSpecializedContainers(inst)
 		for i = 1, #inst._items do
 			local item = inst._itemspreview[i]
 			local container = item and item.replica.container
-			if ValidateSpecialiedContainer(container) then
+			if ValidateSpecialiedContainer(container, inst.ignoreclosedspoverflow) then
 				ret = ret or {}
 				table.insert(ret, container)
 			end
@@ -156,7 +159,7 @@ local function GetSpecializedContainers(inst)
 		for i, v in ipairs(inst._items) do
 			local item = v:value()
 			local container = item and item.replica.container
-			if ValidateSpecialiedContainer(container) then
+			if ValidateSpecialiedContainer(container, inst.ignoreclosedspoverflow) then
 				ret = ret or {}
 				table.insert(ret, container)
 			end
@@ -170,14 +173,14 @@ local function IsSpecializedContainer(inst, container)
 		for i = 1, #inst._items do
 			local item = inst._itemspreview[i]
 			if item and item.replica.container == container then
-				return ValidateSpecialiedContainer(container)
+				return ValidateSpecialiedContainer(container, false)
 			end
 		end
 	else
 		for i, v in ipairs(inst._items) do
 			local item = v:value()
 			if item and item.replica.container == container then
-				return ValidateSpecialiedContainer(container)
+				return ValidateSpecialiedContainer(container, false)
 			end
 		end
 	end
@@ -730,6 +733,8 @@ local function MoveItemFromAllOfSlot(inst, slot, container)
                 end
 				if container_classified.ignorespoverflow ~= nil and container_classified:IsSpecializedContainer(parent_container) then
 					container_classified.ignorespoverflow = true
+				elseif container_classified.ignoreclosedspoverflow ~= nil then
+					container_classified.ignoreclosedspoverflow = true
 				end
 
 				local count = nil --nil for wholestack
@@ -756,6 +761,9 @@ local function MoveItemFromAllOfSlot(inst, slot, container)
                 end
 				if container_classified.ignorespoverflow then
 					container_classified.ignorespoverflow = false
+				end
+				if container_classified.ignoreclosedspoverflow then
+					container_classified.ignoreclosedspoverflow = false
 				end
 
                 if remainder ~= nil then
@@ -784,6 +792,8 @@ local function MoveItemFromHalfOfSlot(inst, slot, container)
                 end
 				if container_classified.ignorespoverflow ~= nil and container_classified:IsSpecializedContainer(parent_container) then
 					container_classified.ignorespoverflow = true
+				elseif container_classified.ignoreclosedspoverflow ~= nil then
+					container_classified.ignoreclosedspoverflow = true
 				end
 
 				local stackable = item.replica.stackable
@@ -809,6 +819,9 @@ local function MoveItemFromHalfOfSlot(inst, slot, container)
                 end
 				if container_classified.ignorespoverflow then
 					container_classified.ignorespoverflow = false
+				end
+				if container_classified.ignoreclosedspoverflow then
+					container_classified.ignoreclosedspoverflow = false
 				end
 
                 if remainder ~= nil then
@@ -840,6 +853,8 @@ local function MoveItemFromCountOfSlot(inst, slot, container, count)
                 end
 				if container_classified.ignorespoverflow ~= nil and container_classified:IsSpecializedContainer(parent_container) then
 					container_classified.ignorespoverflow = true
+				elseif container_classified.ignoreclosedspoverflow ~= nil then
+					container_classified.ignoreclosedspoverflow = true
 				end
 
                 local remainder = nil
@@ -858,6 +873,9 @@ local function MoveItemFromCountOfSlot(inst, slot, container, count)
                 end
 				if container_classified.ignorespoverflow then
 					container_classified.ignorespoverflow = false
+				end
+				if container_classified.ignoreclosedspoverflow then
+					container_classified.ignoreclosedspoverflow = false
 				end
 
                 if remainder ~= nil then
@@ -1019,6 +1037,7 @@ local function fn()
     inst._itemspreview = nil
 
 	inst.ignorespoverflow = false
+	inst.ignoreclosedspoverflow = false
 
     --Network variables
 	inst.infinitestacksize = net_bool(inst.GUID, "container.infinitestacksize")

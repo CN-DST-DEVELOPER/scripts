@@ -271,6 +271,16 @@ local ItemTile = Class(Widget, function(self, invitem)
             end
         end, invitem)
 
+	self.inst:ListenForEvent("container_got_item_while_closed",
+		function(invitem, data)
+			if not self.ispreviewing then
+				if self.movinganim then
+					self.movinganim.isolddata = true
+				end
+				self:ScaleTo(self.basescale * 2, self.basescale, 0.25)
+			end
+		end, invitem)
+
     self.inst:ListenForEvent("percentusedchange",
         function(invitem, data)
             self:SetPercent(data.percent)

@@ -68,26 +68,12 @@ local function on_put_in_inventory(inst, data)
     if not inst.components.equippable then
         inst:DoTaskInTime(8 + 4 * math.random(), turn_evil_redirect, owner)
     end
-
-    local self = inst.components.itemmimic
-    if self then
-        if ShouldItemMimicBeRevealedFor(inst, owner) then
-            self:RemovePauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
-        else
-            self:AddPauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
-        end
-    end
 end
 
 local function on_dropped(inst)
     local owner = (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetGrandOwner())
     if owner then
         inst:RemoveEventCallback("performaction", inst.components.itemmimic._perform_action_listener, owner)
-    end
-
-    local self = inst.components.itemmimic
-    if self then
-        self:RemovePauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
     end
 end
 
@@ -125,7 +111,7 @@ local ItemMimic = Class(function(self, inst)
 
     self.OnRefreshPauseStates = function(inst, data)
         local owner = data and data.owner or inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner() or nil
-        if not data.forceadd and ShouldItemMimicBeRevealedFor(inst, owner) then
+        if (data == nil or not data.forceadd) and ShouldItemMimicBeRevealedFor(inst, owner) then
             self:RemovePauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
         else
             self:AddPauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
@@ -160,7 +146,32 @@ local ItemMimic = Class(function(self, inst)
 
     local auto_reveal_task_time = TUNING.ITEMMIMIC_AUTO_REVEAL_BASE + math.random() * TUNING.ITEMMIMIC_AUTO_REVEAL_RAND
     self._auto_reveal_task = inst:DoTaskInTime(auto_reveal_task_time, on_timed_out)
+
+    if self.inst.components.inventoryitem then
+        self.hasitemsource = true
+        MakeComponentAnInventoryItemSource(self)
+    end
 end)
+
+function ItemMimic:OnRemoveFromEntity()
+    if self.hasitemsource then
+        RemoveComponentInventoryItemSource(self)
+        self.hasitemsource = nil
+    end
+end
+
+--------------------------------------------------------------------------
+-- MakeComponentAnInventoryItemSource
+
+function ItemMimic:OnItemSourceRemoved(owner)
+    self.OnRefreshPauseStates(self.inst)
+end
+
+function ItemMimic:OnItemSourceNewOwner(owner)
+    self.OnRefreshPauseStates(self.inst)
+end
+
+--------------------------------------------------------------------------
 
 function ItemMimic:AddPauseSource(source, reason)
     self.pausesources:SetModifier(source, true, reason)

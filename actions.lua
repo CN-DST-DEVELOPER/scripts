@@ -6821,9 +6821,13 @@ ACTIONS.SWAPBODIES_MAP.maponly_checkvalidpos_fn = function(act)
         return false, "NOTARGET"
     end
 	x, y, z = mapent.Transform:GetWorldPosition()
+    -- NOTES(JBK): WX-78 exists in both places at once so swapping bodies is WX-78 not teleporting but it is blocked by Wagstaff's barrier to stop the signal.
     local px, py, pz = act.doer.Transform:GetWorldPosition()
-    if not IsTeleportingPermittedFromPointToPoint(px, py, pz, x, y, z) then
-        return false, "NOTARGET"
+    local map = TheWorld.Map
+    if map:IsWagPunkArenaBarrierUp() then
+        if map:IsPointInWagPunkArena(px, py, pz) ~= map:IsPointInWagPunkArena(x, y, z) then
+            return false, "NOTARGET"
+        end
     end
 	return true, nil, x, z, mapent
 end

@@ -38,6 +38,7 @@ local Inventory = Class(function(self, inst)
     --Hacky flags for altering behaviour when moving items between containers
     self.ignoreoverflow = false
 	self.ignorespoverflow = false
+	self.ignoreclosedspoverflow = false
     self.ignorefull = false
     self.silentfull = false
     self.ignoresound = false
@@ -1112,7 +1113,7 @@ function Inventory:GiveItem(inst, slot, src_pos)
 			local receiveitemonopen
 			if not container:IsOpenedBy(self.inst) and container.canbeopened and not (container.droponopen or container.inst:HasTag("portablestorage")) then
 				container:Open(self.inst)
-				receiveitemonopen = SpawnPrefab("container_receiveitemonopen_classified")
+				receiveitemonopen = SpawnPrefab("container_closed_receiveitem_classified")
 				receiveitemonopen.entity:SetParent(container.inst.entity)
 				receiveitemonopen.Network:SetClassifiedTarget(self.inst)
 			end
@@ -1465,11 +1466,12 @@ function Inventory:GetOverflowContainer()
         or nil
 end
 
-local function ValidateSpecializedContainer(self, container)
+local function ValidateSpecializedContainer(self, container, ignoreclosed)
 	return container ~= nil
 		and container.priorityfn ~= nil
 		and (	container:IsOpenedBy(self.inst) or
-				(	container.canbeopened and
+				(	not ignoreclosed and
+					container.canbeopened and
 					not (container.droponopen or container.inst:HasTag("portablecontainer"))
 				)
 			)
@@ -1483,7 +1485,7 @@ function Inventory:GetSpecializedContainers()
 	local ret
 	for k = 1, self.maxslots do
 		local v = self.itemslots[k]
-		if v and ValidateSpecializedContainer(self, v.components.container) then
+		if v and ValidateSpecializedContainer(self, v.components.container, self.ignoreclosedspoverflow) then
 			ret = ret or {}
 			table.insert(ret, v.components.container)
 		end
@@ -1495,7 +1497,7 @@ function Inventory:IsSpecializedContainer(container)
 	for k = 1, self.maxslots do
 		local v = self.itemslots[k]
 		if v and v.components.container == container then
-			return ValidateSpecializedContainer(self, container)
+			return ValidateSpecializedContainer(self, container, false)
 		end
 	end
 	return false
@@ -2535,6 +2537,8 @@ function Inventory:MoveItemFromAllOfSlot(slot, container)
 				--Hacks for altering normal inventory:GiveItem() behaviour
 				if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
 					container.ignorespoverflow = true
+				elseif container.ignoreclosedspoverflow ~= nil then
+					container.ignoreclosedspoverflow = true
 				end
 
                 if not container:GiveItem(item, targetslot, nil, false) then
@@ -2546,6 +2550,9 @@ function Inventory:MoveItemFromAllOfSlot(slot, container)
 				--Hacks for altering normal inventory:GiveItem() behaviour
 				if container.ignorespoverflow then
 					container.ignorespoverflow = false
+				end
+				if container.ignoreclosedspoverflow then
+					container.ignoreclosedspoverflow = false
 				end
             end
 
@@ -2579,6 +2586,8 @@ function Inventory:MoveItemFromHalfOfSlot(slot, container)
 				--Hacks for altering normal inventory:GiveItem() behaviour
 				if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
 					container.ignorespoverflow = true
+				elseif container.ignoreclosedspoverflow ~= nil then
+					container.ignoreclosedspoverflow = true
 				end
 
                 if not container:GiveItem(halfstack, targetslot) then
@@ -2590,6 +2599,9 @@ function Inventory:MoveItemFromHalfOfSlot(slot, container)
 				--Hacks for altering normal inventory:GiveItem() behaviour
 				if container.ignorespoverflow then
 					container.ignorespoverflow = false
+				end
+				if container.ignoreclosedspoverflow then
+					container.ignoreclosedspoverflow = false
 				end
             end
 
@@ -2625,6 +2637,8 @@ function Inventory:MoveItemFromCountOfSlot(slot, container, count)
 					--Hacks for altering normal inventory:GiveItem() behaviour
 					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
 						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
 					end
 
                     if not container:GiveItem(countedstack, targetslot) then
@@ -2637,6 +2651,9 @@ function Inventory:MoveItemFromCountOfSlot(slot, container, count)
 					if container.ignorespoverflow then
 						container.ignorespoverflow = false
 					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
+					end
 				elseif item.components.inventoryitem and item.components.inventoryitem.islockedinslot then
 					assert(BRANCH ~= "dev")
                 else
@@ -2647,6 +2664,8 @@ function Inventory:MoveItemFromCountOfSlot(slot, container, count)
 					--Hacks for altering normal inventory:GiveItem() behaviour
 					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
 						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
 					end
 
                     if not container:GiveItem(item, targetslot, nil, false) then
@@ -2658,6 +2677,9 @@ function Inventory:MoveItemFromCountOfSlot(slot, container, count)
 					--Hacks for altering normal inventory:GiveItem() behaviour
 					if container.ignorespoverflow then
 						container.ignorespoverflow = false
+					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
 					end
                 end
             end

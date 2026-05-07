@@ -1110,6 +1110,15 @@ function fns.MasterSeamlessPlayerSwapTarget(inst)
     fns.CommonSeamlessPlayerSwapTarget(inst)
 end
 
+function fns.OnPlayerReroll(inst)
+    if inst.components.socketholder then
+        local items = inst.components.socketholder:UnsocketEverything()
+        for _, item in ipairs(items) do
+            Launch2(item, inst, 1, 1, 0.2, 0, 4)
+        end
+    end
+end
+
 function fns.EnableLoadingProtection(inst)
     inst.loadingprotection = true
 
@@ -2481,6 +2490,7 @@ end
         inst:ListenForEvent("local_seamlessplayerswaptarget", fns.LocalSeamlessPlayerSwapTarget)
         inst:ListenForEvent("master_seamlessplayerswap", fns.MasterSeamlessPlayerSwap)
         inst:ListenForEvent("master_seamlessplayerswaptarget", fns.MasterSeamlessPlayerSwapTarget)
+        inst:ListenForEvent("ms_playerreroll", fns.OnPlayerReroll)
 
         inst:AddComponent("talker")
         inst.components.talker:SetOffsetFn(GetTalkerOffset)

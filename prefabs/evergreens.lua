@@ -389,6 +389,10 @@ end
 
 local LEIF_TAGS = { "leif" }
 local function chop_tree(inst, chopper, chopsleft, numchops)
+	if inst.components.growable == nil or inst:IsAsleep() then
+		return --likely partially re-configured for burnt when off-screen
+	end
+
     PlayChopSound(inst, chopper)
 
     local growth_stage = GetGrowthStages(inst)[inst.components.growable.stage]

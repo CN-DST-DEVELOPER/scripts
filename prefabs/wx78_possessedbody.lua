@@ -145,9 +145,11 @@ end
 
 local function OnSkillTreeInitializedFn(inst, owner)
     if owner.wx78_classified == nil or not owner.wx78_classified:TryToAddBackupBody(inst) then
-        local linkeditem = inst.components.linkeditem
-        if linkeditem then
-            linkeditem:LinkToOwnerUserID(nil)
+        if not table.contains(SEAMLESSSWAP_CHARACTERLIST, owner.prefab) then
+            local linkeditem = inst.components.linkeditem
+            if linkeditem then
+                linkeditem:LinkToOwnerUserID(nil)
+            end
         end
     else
         inst:CheckCircuitSlotStatesFrom(owner)
@@ -158,10 +160,8 @@ local function OnOwnerInstCreatedFn(inst, owner)
 	-- inst.components.globaltrackingicon:StartTracking(owner)
 end
 local function OnOwnerInstRemovedFn(inst, owner)
-    if owner then
-        if owner.wx78_classified then
-            owner.wx78_classified:TryToRemoveBackupBody(inst)
-        end
+    if owner.wx78_classified then
+        owner.wx78_classified:TryToRemoveBackupBody(inst)
     end
 end
 

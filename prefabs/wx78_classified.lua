@@ -33,7 +33,7 @@ end
 
 local function TryToAddBackupBody(inst, body)
     if inst.backupbodies[body] then
-        return false
+        return true
     end
 
     if inst:GetNumFreeBackupBodies() <= 0 then

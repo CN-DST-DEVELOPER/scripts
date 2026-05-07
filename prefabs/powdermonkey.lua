@@ -186,14 +186,6 @@ local function battlecry(combatcmp, target)
     end
 end
 
-local function onmonkeychange(inst, data)
-    if data and data.player then
-        if inst.components.combat and inst.components.combat.target == data.player then
-            inst.components.combat:DropTarget()
-        end
-    end
-end
-
 local function modifiedsleeptest(inst)
     return (inst.components.crewmember == nil and DefaultSleepTest(inst))
         or nil
@@ -341,7 +333,13 @@ local function fn()
     inst:ListenForEvent("attacked", OnAttacked)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("itemget", OnGotItem)
-    inst:ListenForEvent("ms_seamlesscharacterspawned", onmonkeychange, TheWorld)
+    inst:ListenForEvent("ms_seamlesscharacterspawned", function(_world, player)
+        if player then
+            if inst.components.combat and inst.components.combat.target == player then
+                inst.components.combat:DropTarget()
+            end
+        end
+    end, TheWorld)
 
     MakeHauntablePanic(inst)
 
