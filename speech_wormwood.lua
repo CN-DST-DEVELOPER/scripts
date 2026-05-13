@@ -23,7 +23,7 @@ return{
             NOTMERM = "Scaley friend, help!",
             NOKELP = "only_used_by_wurt",
 --fallback to speech_wilson.lua             HASMERMLEADER = "only_used_by_wurt",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -362,7 +362,7 @@ return{
             NOTAMERM = "Nope. Not mine",
             NOTSOULJARHANDLER = "Don't touch soul friends",
             RESTRICTED = "Nope",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -398,7 +398,7 @@ return{
             NOTMASTERCHEF = "Not mine",
             NOTSOULJARHANDLER = "Don't touch soul friends",
             RESTRICTED = "Nope",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -6058,7 +6058,7 @@ return{
         KNIGHT_YOTH =
         {
             GENERIC = "Neigh machine mad", -- Generic quote. It's aggressive.
-            FOLLOWING = "Nice neigh machine.", -- Following the character examining
+            FOLLOWING = "Nice neigh machine", -- Following the character examining
             FOLLOWING_OTHER = "Whose neigh machine?", -- Following another character or mannequin
         },
 

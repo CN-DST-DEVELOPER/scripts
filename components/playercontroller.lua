@@ -1416,7 +1416,7 @@ end
 function PlayerController:DoControllerDropItemFromInvTile(item, single)
 	if item and item.replica.inventoryitem and
 		(	not item.replica.inventoryitem:IsLockedInSlot() or
-			(single and inventoryitem.replica.stackable and inventoryitem.replica.stackable:IsStack())
+			(single and item.replica.stackable and item.replica.stackable:IsStack())
 		)
 	then
 		self.inst.replica.inventory:DropItemFromInvTile(item, single)

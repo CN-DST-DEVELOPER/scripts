@@ -215,6 +215,11 @@ function Projectile:Stop()
 		self.dozeOffTask:Cancel()
 		self.dozeOffTask = nil
 	end
+    self.stuckcheck_targetpos = nil
+    self.stuckcheck_pos = nil
+    self.stuckcheck_distsqtotarget = nil
+    self.stuckcheck_movedtowardstarget = nil
+    self.stuckcheck_stucktime = nil
 end
 
 function Projectile:Hit(target)
@@ -290,7 +295,62 @@ local function RestoreDelayPos(inst, pos, rot)
     inst.Transform:SetRotation(rot)
 end
 
-local function DoUpdate(self, target, pos, rot, force)
+local STUCKCHECK_TIME_TO_BE_STUCK = 1
+local STUCKCHECK_2D_DIST_TO_NONMOVING_TARGET = 4 * 4 -- If a projectile is near the target it should be considered stuck if it cannot reach it.
+
+local function CheckStuck(self, target, distsqtotarget, pos, dt)
+    if not self.stuckcheck_distsqtotarget then
+        self.stuckcheck_targetpos = target:GetPosition()
+        self.stuckcheck_pos = pos
+        self.stuckcheck_distsqtotarget = distsqtotarget
+        self.stuckcheck_movedtowardstarget = nil
+        self.stuckcheck_stucktime = 0
+        return false
+    end
+
+    local expectedtraveldist = self.speed * dt
+    local realtraveldistsq = (self.stuckcheck_pos - pos):LengthSq()
+    local oldmovedtowardstarget = self.stuckcheck_movedtowardstarget
+    self.stuckcheck_movedtowardstarget = distsqtotarget < self.stuckcheck_distsqtotarget
+    local targetpos = target:GetPosition()
+    local cancheck2Ddist = (targetpos - self.stuckcheck_targetpos):LengthSq() < 0.01
+    if not cancheck2Ddist then
+        self.stuckcheck_targetpos = targetpos
+    end
+    if (realtraveldistsq < expectedtraveldist * expectedtraveldist) or (cancheck2Ddist and distsqtotarget < STUCKCHECK_2D_DIST_TO_NONMOVING_TARGET) then
+        self.stuckcheck_stucktime = self.stuckcheck_stucktime + dt
+        if self.stuckcheck_stucktime >= STUCKCHECK_TIME_TO_BE_STUCK then
+            return true
+        end
+    else
+        self.stuckcheck_pos = pos
+        if self.stuckcheck_movedtowardstarget then
+            if oldmovedtowardstarget == false then
+                self.stuckcheck_stucktime = self.stuckcheck_stucktime + dt
+                if self.stuckcheck_stucktime >= STUCKCHECK_TIME_TO_BE_STUCK then
+                    return true
+                end
+            else
+                self.stuckcheck_stucktime = 0
+            end
+        else
+            if oldmovedtowardstarget == true then
+                self.stuckcheck_stucktime = self.stuckcheck_stucktime + dt
+                if self.stuckcheck_stucktime >= STUCKCHECK_TIME_TO_BE_STUCK then
+                    return true
+                end
+            else
+                self.stuckcheck_stucktime = 0
+            end
+        end
+    end
+
+    self.stuckcheck_distsqtotarget = distsqtotarget
+
+    return false
+end
+
+local function DoUpdate(self, target, pos, rot, force, dt)
     if self.range ~= nil and distsq(self.start, pos) > self.range * self.range then
         if force then
             RestoreDelayPos(self.inst, pos, rot)
@@ -302,19 +362,29 @@ local function DoUpdate(self, target, pos, rot, force)
             local range = target:GetPhysicsRadius(0) + self.hitdist
             -- V2C: this is 3D distsq (since combat range checks use 3D distsq as well)
             -- NOTE: used < here, whereas combat uses <=, just to give us tiny bit of room for error =)
-            if distsq(pos, target:GetPosition()) < range * range then
+            local distsqtotarget = distsq(pos, target:GetPosition())
+            if distsqtotarget < range * range then
                 if force then
                     RestoreDelayPos(self.inst, pos, rot)
                 end
                 self:Hit(target)
                 return true
+            else
+                if CheckStuck(self, target, distsqtotarget, pos, dt) then
+                    if force then
+                        RestoreDelayPos(self.inst, pos, rot)
+                    end
+                    self:Miss(target)
+                    return true
+                end
             end
         end
     elseif CheckTarget(target) then
         local range = target:GetPhysicsRadius(0) + self.hitdist
         -- V2C: this is 3D distsq (since combat range checks use 3D distsq as well)
         -- NOTE: used < here, whereas combat uses <=, just to give us tiny bit of room for error =)
-        if distsq(pos, target:GetPosition()) < range * range then
+        local distsqtotarget = distsq(pos, target:GetPosition())
+        if distsqtotarget < range * range then
             if force then
                 RestoreDelayPos(self.inst, pos, rot)
             end
@@ -333,6 +403,13 @@ local function DoUpdate(self, target, pos, rot, force)
             elseif not force then
                 self:RotateToTarget(self.dest)
             end
+            if CheckStuck(self, target, distsqtotarget, pos, dt) then
+                if force then
+                    RestoreDelayPos(self.inst, pos, rot)
+                end
+                self:Miss(target)
+                return true
+            end
         end
     elseif self.owner == nil or
         not self.owner:IsValid() or
@@ -348,12 +425,21 @@ local function DoUpdate(self, target, pos, rot, force)
     else
         -- We have enough info to make our weapon fly to max distance before "missing"
         local range = self.owner.components.combat.attackrange + self.inst.components.weapon.attackrange
-        if distsq(self.owner:GetPosition(), pos) > range * range then
+        local distsqtotarget = distsq(self.owner:GetPosition(), pos)
+        if distsqtotarget > range * range then
             if force then
                 RestoreDelayPos(self.inst, pos, rot)
             end
             self:Miss(target)
             return true
+        else
+            if CheckStuck(self, target, distsqtotarget, pos, dt) then
+                if force then
+                    RestoreDelayPos(self.inst, pos, rot)
+                end
+                self:Miss(target)
+                return true
+            end
         end
     end
     return false
@@ -377,7 +463,7 @@ function Projectile:OnUpdate(dt)
 
         local rot = self.inst.Transform:GetRotation()
         for i, v in ipairs(self.delaypos) do
-            if DoUpdate(self, target, v.pos, v.rot, true) then
+            if DoUpdate(self, target, v.pos, v.rot, true, dt) then
                 return
             end
         end
@@ -385,7 +471,7 @@ function Projectile:OnUpdate(dt)
         RestoreDelayPos(self.inst, pos, rot)
     end
 
-    DoUpdate(self, target, pos)
+    DoUpdate(self, target, pos, nil, nil, dt)
 end
 
 function Projectile:RotateToTarget(dest)

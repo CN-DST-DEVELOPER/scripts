@@ -460,7 +460,8 @@ function Container:GiveItem(item, slot, src_pos, drop_on_fail)
 						local finished = spoverflow:GiveItem(item, nil, src_pos, false)
 						if finished or (item.components.stackable and item.components.stackable:StackSize() or 1) ~= num then
 							local receiveitemonopen = SpawnPrefab("container_closed_receiveitem_classified")
-							receiveitemonopen.entity:SetParent(spoverflow.inst.entity)
+							receiveitemonopen.entity:SetParent(self.inst.entity)
+							receiveitemonopen.item:set(spoverflow.inst)
 							receiveitemonopen.isclosed:set(true)
 
 							if ThePlayer and not spoverflow:IsOpenedBy(ThePlayer) and self:IsOpenedBy(ThePlayer) then

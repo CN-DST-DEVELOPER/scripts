@@ -6,16 +6,23 @@
 
 local function OnItemDirty(inst)
 	local parent = inst.entity:GetParent()
-	if parent then
+	local item = inst.item:value()
+	if parent and item then
 		if inst.isclosed:value() then
-			local container = parent.replica.container
+			local container = item.replica.container
 			if container and not container:IsOpenedBy(ThePlayer) then
-				parent:PushEvent("container_got_item_while_closed")
+				inst._data =
+				{
+					item = item,
+					isclosed = inst.isclosed:value(),
+				}
+				parent._receiveitemonopen = inst._data
+				item:PushEvent("container_got_item_while_closed")
 			end
-		elseif inst.item:value() then
+		else
 			inst._data = 
 			{
-				item = inst.item:value(),
+				item = item,
 				isstack = inst.isstack:value(),
 			}
 			parent._receiveitemonopen = inst._data

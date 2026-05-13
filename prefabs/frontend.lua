@@ -325,7 +325,8 @@ end
 --table.insert(assets, Asset("IMAGE", "images/nx_controllers.tex"))
 
 
-if PLATFORM == "WIN32_RAIL" then
+-- Don't pull these files in through prefabs.xml - they are added in packaging
+if PLATFORM == "WIN32_RAIL" and rawget(_G, "TheSim") then
     table.insert(assets, Asset("DYNAMIC_ATLAS", "images/rail.xml") )
 	table.insert(assets, Asset("PKGREF", "images/rail.tex"))
 end

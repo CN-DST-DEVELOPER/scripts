@@ -430,7 +430,15 @@ local function RegisterNetListeners(inst)
 
 	if inst._parent and inst._parent._receiveitemonopen then
 		local item = inst._parent._receiveitemonopen.item
-		if inst._parent._receiveitemonopen.isstack then
+		if inst._parent._receiveitemonopen.isclosed then
+			--a container (item) inside us, received a something while it remains closed.
+			if IsHolding(inst, item) then
+				local container = item.replica.container
+				if container and not container:IsOpenedBy(ThePlayer) then
+					item:DoStaticTaskInTime(0, item.PushEvent, "container_got_item_while_closed")
+				end
+			end
+		elseif inst._parent._receiveitemonopen.isstack then
 			if IsHolding(inst, item) then
 				QueueSlotTask(inst, item, inst:DoStaticTaskInTime(0, OnStackItemDirty, item))
 				CancelRefresh(inst)

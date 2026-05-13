@@ -279,6 +279,13 @@ local ItemTile = Class(Widget, function(self, invitem)
 				end
 				self:ScaleTo(self.basescale * 2, self.basescale, 0.25)
 			end
+			local parent = self.item.entity:GetParent()
+			if parent._receiveitemonopen and
+				parent._receiveitemonopen.item == self.item and
+				parent._receiveitemonopen.isclosed
+			then
+				parent._receiveitemonopen = nil
+			end
 		end, invitem)
 
     self.inst:ListenForEvent("percentusedchange",

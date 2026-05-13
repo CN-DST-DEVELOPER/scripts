@@ -6050,7 +6050,7 @@ return{
             BURNT = "What a pity.", -- Burnt.
         },
 
-        MASK_PRINCESSHAT = "There's a lonliness in her expression.",
+        MASK_PRINCESSHAT = "There's a loneliness in her expression.",
         COSTUME_PRINCESS_BODY = "So pretty.",
 
         PLAYBILL_THE_PRINCESS_YOTH = "I do love horses.",

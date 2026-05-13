@@ -93,6 +93,7 @@ local function common(anim, tags, removephysicscolliders)
     inst:AddComponent("projectile")
     inst.components.projectile:SetSpeed(60)
     inst.components.projectile:SetOnHitFn(onhit)
+    inst.components.projectile:SetOnMissFn(inst.Remove)
     inst:ListenForEvent("onthrown", onthrown)
     -------
 
