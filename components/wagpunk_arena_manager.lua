@@ -630,7 +630,7 @@ function self:WorkstationToggled(workstation, on) -- Caller assumed to be from s
                 self:TeleportWagstaffToWorkstation()
             elseif self.wagstaff and not self.wagstaff.erodingout and self.wagstaff.arena_state ~= self.STATES.PEARLMOVE then
                 self.wagstaff.arena_state = self.state
-                self.wagstaff.components.npc_talker:resetqueue()
+                self.wagstaff.components.npc_talker:ResetQueue()
                 self.wagstaff.components.talker:ShutUp()
             end
         elseif self.state == self.STATES.TURF then
@@ -643,7 +643,7 @@ function self:WorkstationToggled(workstation, on) -- Caller assumed to be from s
                 wagstaff.components.npc_talker:Chatter("WAGSTAFF_WAGPUNK_ARENA_TURF")
             elseif self.wagstaff and not self.wagstaff.erodingout and self.wagstaff.arena_state ~= self.STATES.TURF then
                 self.wagstaff.arena_state = self.state
-                self.wagstaff.components.npc_talker:resetqueue()
+                self.wagstaff.components.npc_talker:ResetQueue()
                 self.wagstaff.components.talker:ShutUp()
                 self.wagstaff.components.npc_talker:Chatter("WAGSTAFF_WAGPUNK_ARENA_TURF")
             end
@@ -662,7 +662,7 @@ function self:WorkstationToggled(workstation, on) -- Caller assumed to be from s
                 elseif self.wagstaff and not self.wagstaff.erodingout and self.wagstaff.arena_state ~= self.STATES.CONSTRUCT then
                     self.wagstaff.tiedtoworkstation = nil
                     self.wagstaff.arena_state = self.state
-                    self.wagstaff.components.npc_talker:resetqueue()
+                    self.wagstaff.components.npc_talker:ResetQueue()
                     self.wagstaff.components.talker:ShutUp()
                     if self:NeedsMoreWagdrones() then
                         self.wagstaff.components.npc_talker:Chatter("WAGSTAFF_WAGPUNK_ARENA_CONSTRUCT", math.random(#STRINGS.WAGSTAFF_WAGPUNK_ARENA_CONSTRUCT))
@@ -823,7 +823,7 @@ function self:CheckConstructCompleted()
                 self.inst.components.lunaralterguardianspawner:TrySpawnLunarGuardian(self.wagstaff or self.wagboss)
             end
             if self.wagstaff and not self.wagstaff.erodingout then
-                self.wagstaff.components.npc_talker:resetqueue()
+                self.wagstaff.components.npc_talker:ResetQueue()
                 self.wagstaff.components.talker:ShutUp()
                 self.wagstaff.components.npc_talker:Chatter("WAGSTAFF_NPC_GOT_ENOUGH_GESTALTCAGE")
             end
@@ -1255,7 +1255,7 @@ function self:DoWagstaffOneshotAtXZ(x, z, radiusopt, lines, oneline, postinitfn)
             self.wagstaff.oneshot = true
             self.wagstaff.desiredlocation = Vector3(x, 0, z)
             self.wagstaff.desiredlocationdistance = radiusopt
-            self.wagstaff.components.npc_talker:resetqueue()
+            self.wagstaff.components.npc_talker:ResetQueue()
             self.wagstaff.components.talker:ShutUp()
             self.wagstaff.components.npc_talker:Chatter(lines, linesindex)
             if postinitfn then

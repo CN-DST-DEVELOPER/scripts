@@ -213,6 +213,8 @@ local function create_base(build)
 
     MakeLargeBurnableCharacter(inst, "grass_gator_body")
     MakeLargeFreezableCharacter(inst, "grass_gator_body")
+    inst.components.burnable:SetBurnTime(10 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     MakeHauntablePanic(inst)
 

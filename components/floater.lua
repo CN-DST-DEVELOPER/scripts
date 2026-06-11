@@ -148,12 +148,22 @@ function Floater:OnLandedServer()
         -- If something lands in a place where the water effect should be shown, and it has an inventory component,
         -- update the inventory component to represent the associated wetness.
         -- Don't apply the wetness to something held by someone, though.
-        if self.inst.components.inventoryitem ~= nil and not self.inst.components.inventoryitem:IsHeld() and not self.inst:HasTag("likewateroffducksback") then
-			self.inst.components.inventoryitem:MakeMoistureAtLeast(TUNING.OCEAN_WETNESS)
+        local hotsplash
+        if self.inst.components.inventoryitem ~= nil and not self.inst.components.inventoryitem:IsHeld() then
+			if not self.inst:HasTag("likewateroffducksback") then
+                self.inst.components.inventoryitem:MakeMoistureAtLeast(TUNING.OCEAN_WETNESS)
+            end
+            local oldtemperature = self.inst.components.inventoryitem:GetTemperaturePercent()
+            self.inst.components.inventoryitem:SetTemperaturePercentAtMost(TUNING.OCEAN_TEMPERATURE_PENALTY_PERCENT)
+            local newtemperature = self.inst.components.inventoryitem:GetTemperaturePercent()
+            if oldtemperature ~= nil and newtemperature ~= nil
+                and oldtemperature - newtemperature > TUNING.FLOATER_HOT_SIZZLE_THRESHOLD then
+                hotsplash = true
+            end
         end
 
         if self.splash and (not self.inst.components.inventoryitem or not self.inst.components.inventoryitem:IsHeld()) then
-            local splash = SpawnPrefab("splash")
+            local splash = SpawnPrefab(hotsplash and "hot_splash" or "splash")
             splash.Transform:SetPosition(self.inst.Transform:GetWorldPosition())
         end
 

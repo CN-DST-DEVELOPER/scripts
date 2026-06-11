@@ -14,7 +14,7 @@ local prefabs_perd =
 }
 
 local FANTARGET_CANT_TAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "playerghost" }
-local FANTARGET_ONEOF_TAGS = { "smolder", "fire", "player" }
+local FANTARGET_ONEOF_TAGS = { "smolder", "fire", "player", "inventoryitemtemperature" }
 local function OnUse(inst, target)
     local x, y, z = target.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, TUNING.FEATHERFAN_RADIUS, nil, FANTARGET_CANT_TAGS, FANTARGET_ONEOF_TAGS)
@@ -23,9 +23,11 @@ local function OnUse(inst, target)
             -- Extinguish smoldering/fire and reset the propagator to a heat of .2
             v.components.burnable:Extinguish(true, 0)
         end
-        if v.components.temperature ~= nil then
-            -- cool off yourself and any other nearby players
-            v.components.temperature:DoDelta(math.clamp(TUNING.FEATHERFAN_MINIMUM_TEMP - v.components.temperature:GetCurrent(), TUNING.FEATHERFAN_COOLING, 0))
+
+        -- cool off yourself and any other nearby players, and items
+        local ent_temp = GetEntityTemperature(v)
+        if ent_temp ~= nil then
+            DoDeltaTemperatureToEntity(v, math.clamp(TUNING.FEATHERFAN_MINIMUM_TEMP - ent_temp, TUNING.FEATHERFAN_COOLING, 0))
         end
     end
 end

@@ -609,7 +609,9 @@ local function dospawnchest(inst, loading)
     chest.Transform:SetPosition(x, 0, z)
 
     --Set up chest loot
-    chest.components.container:GiveItem(SpawnPrefab("atrium_key"))
+    if not WORLDSTATETAGS.GetTagEnabled("ATRIUM_KEY_FOUND") then
+        chest.components.container:GiveItem(SpawnPrefab("atrium_key"))
+    end
 
     local loot_keys = {}
     for i, _ in ipairs(chest_loot) do

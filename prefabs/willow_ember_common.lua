@@ -67,36 +67,37 @@ local function GiveEmbers(inst, num, pos)
     inst.components.inventory:GiveItem(ember, nil, pos)
 end
 
-local CREATURES_MUST = { "_combat" }
-local CREATURES_CAN  = { "monster", "smallcreature", "largecreature", "animal", "bigbernie", "character" }
+local CREATURES_CAN  = { "miasma", "monster", "smallcreature", "largecreature", "animal", "bigbernie", "character" }
 local CREATURES_CANT = { "INLIMBO", "flight", "player", "ghost", "invisible", "noattack", "notarget" }
 
 -- Is also called from the client-side.
 local function GetBurstTargets(player)
     local x, y, z = player.Transform:GetWorldPosition()
 
-    local ents = TheSim:FindEntities(x, 0, z, TUNING.FIRE_BURST_RANGE, CREATURES_MUST, CREATURES_CANT, CREATURES_CAN)
+    local ents = TheSim:FindEntities(x, 0, z, TUNING.FIRE_BURST_RANGE, nil, CREATURES_CANT, CREATURES_CAN)
 	local j = 1
 	for i, v in ipairs(ents) do
-        local should_remove = false
+        local should_remove = v.components.combat == nil and not v:HasTag("miasma")
 
-		if not (v:HasTag("canlight") or v:HasTag("nolight")) or v:HasTag("fire") then
-			--filter out not burnables or things already burning
-			should_remove = true
-		else
-			-- filter out things that are allies or followers of allies, but not burnable bernie
-			local combat = player.replica.combat
-			local isally = combat and combat:IsAlly(v)
-			if not (isally and v:HasAllTags("bigbernie", "canlight")) then
-				if isally or combat == nil or combat:IsAlly(v) then
-					-- remove alies
-					should_remove = true
-				elseif v:HasTag("companion") then
-					-- remove companions (regardless if they failed ally check)
-					should_remove = true
-				end
-			end
-		end
+        if v.components.combat then
+		    if not v:HasAnyTag("canlight", "nolight", "fire") then
+		    	--filter out not burnables or things already burning
+		    	should_remove = true
+		    else
+		    	-- filter out things that are allies or followers of allies, but not burnable bernie
+		    	local combat = player.replica.combat
+		    	local isally = combat and combat:IsAlly(v)
+		    	if not (isally and v:HasAllTags("bigbernie", "canlight")) then
+		    		if isally or combat == nil or combat:IsAlly(v) then
+		    			-- remove alies
+		    			should_remove = true
+		    		elseif v:HasTag("companion") then
+		    			-- remove companions (regardless if they failed ally check)
+		    			should_remove = true
+		    		end
+		    	end
+		    end
+        end
 
 		if not should_remove then
 			ents[j] = v

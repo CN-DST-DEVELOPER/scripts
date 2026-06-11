@@ -186,7 +186,7 @@ local events =
         end
     end),
     EventHandler("roar", function(inst)
-        if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
+        if not (inst.sg:HasAnyStateTag("busy", "talking") or inst.components.health:IsDead()) then
             inst.sg:GoToState("taunt")
         elseif not inst.sg:HasStateTag("roar") then
             inst.sg.mem.wantstoroar = true
@@ -200,17 +200,27 @@ local events =
         end
     end),
     EventHandler("skullache", function(inst)
-        if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
+        if not (inst.sg:HasAnyStateTag("busy", "talking") or inst.components.health:IsDead()) then
             inst.sg:GoToState("skullache")
         else
             inst.sg.mem.wantstoskullache = true
         end
     end),
     EventHandler("fallapart", function(inst)
-        if not (inst.sg:HasStateTag("busy") or inst.components.health:IsDead()) then
+        if not (inst.sg:HasAnyStateTag("busy", "talking") or inst.components.health:IsDead()) then
             inst.sg:GoToState("fallapart")
         else
             inst.sg.mem.wantstofallapart = true
+        end
+    end),
+
+---------------------------------
+-- NPC event handlers.
+-- Make sure to check for inst.isnpc
+
+    EventHandler("ontalk", function(inst, data)
+        if inst.isnpc and not inst.sg:HasAnyStateTag("busy", "talking") then
+            inst.sg:GoToState("talk_stance_pre", data)
         end
     end),
 }
@@ -1536,6 +1546,111 @@ local states =
             inst.Transform:SetFourFaced()
         end,
     },
+
+
+--------------------------------------------------------------------------
+
+-- NPC Stalker States
+
+-- TODO #FIXME ANIMS.
+
+    State{
+        name = "talk_stance_pre",
+        tags = { "talking", "idle", "canrotate" },
+
+        onenter = function(inst, data)
+            inst.components.locomotor:Stop()
+            inst.Transform:SetSixFaced()
+            inst.AnimState:PlayAnimation("gate_pre") -- TODO
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg.statemem.keepsixfaced = true
+                    inst.sg:GoToState("talk_stance_idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            if not inst.sg.statemem.keepsixfaced then
+                inst.Transform:SetFourFaced()
+            end
+        end,
+    },
+
+    State{
+        name = "talk_stance_idle",
+        tags = { "talking", "idle", "canrotate" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.Transform:SetSixFaced()
+
+            if inst.components.talker:IsTalking() then
+                inst.AnimState:PlayAnimation("gate_loop", true) -- TODO
+            else
+                inst.AnimState:SetPercent("gate_loop", 1) -- TODO
+            end
+        end,
+
+        events =
+        {
+            EventHandler("ontalk", function(inst, data)
+                inst.sg:SetTimeout(5) -- TODO
+                inst.AnimState:PlayAnimation("gate_loop", true) -- TODO
+                return true
+            end),
+            EventHandler("donetalking", function(inst, data)
+                local haslines = inst.components.npc_talker and inst.components.npc_talker:HasLines()
+                inst.sg:SetTimeout(haslines and 1 or 5) -- TODO
+                inst.AnimState:SetPercent("gate_loop", 1) -- TODO
+                return true
+            end),
+        },
+
+        ontimeout = function(inst)
+            if inst.components.npc_talker and inst.components.npc_talker:HasLines() then
+                inst.components.npc_talker:DoNextLine()
+            else
+                inst.sg.statemem.keepsixfaced = true
+			    inst.sg:GoToState("talk_stance_pst")
+            end
+		end,
+
+        onexit = function(inst)
+            if not inst.sg.statemem.keepsixfaced then
+                inst.Transform:SetFourFaced()
+            end
+        end,
+    },
+
+    State{
+        name = "talk_stance_pst",
+        tags = { "idle", "canrotate" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.Transform:SetSixFaced()
+            inst.AnimState:PlayAnimation("gate_pst") -- TODO
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+        },
+
+        onexit = function(inst)
+            inst.Transform:SetFourFaced()
+        end,
+    },
+
 }
 
 CommonStates.AddSinkAndWashAshoreStates(states, {washashore = "taunt2_pst"})

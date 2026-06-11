@@ -516,8 +516,8 @@ local function ExitHotSpring(inst)
 end
 
 local function DoTalkQueue(inst)
-    if inst.components.npc_talker:haslines() and not inst.sg:HasStateTag("talking") and not inst.sg:HasStateTag("busy") and not inst.components.timer:TimerExists("speak_time") then
-        inst.components.npc_talker:donextline()
+    if inst.components.npc_talker:HasLines() and not inst.sg:HasStateTag("talking") and not inst.sg:HasStateTag("busy") and not inst.components.timer:TimerExists("speak_time") then
+        inst.components.npc_talker:DoNextLine()
     end
 end
 
@@ -764,8 +764,8 @@ function HermitBrain:OnStart()
 					IfNode(function() return not self.inst.components.timer:TimerExists("soaktime") end, "exit hotspring",
 						ActionNode(function() ExitHotSpring(self.inst) end)),
 					ActionNode(function()
-						if self.inst.components.npc_talker:haslines() and self.inst.sg.statemem.soakintalktask == nil then
-							self.inst.components.npc_talker:donextline()
+						if self.inst.components.npc_talker:HasLines() and self.inst.sg.statemem.soakintalktask == nil then
+							self.inst.components.npc_talker:DoNextLine()
 						end
 					end),
 				}),

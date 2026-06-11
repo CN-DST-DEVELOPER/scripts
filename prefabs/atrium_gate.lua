@@ -138,9 +138,26 @@ local function HideFx(inst)
     end
 end
 
+local function SocketVaultKey(inst, doer)
+    -- WORLDSTATETAGS.SetTagEnabled("VAULT_KEY_FOUND", true) -- FIXME(JBK): rifts7: Vault key progress flag.
+    inst.vault_key_socketed = true
+    inst.AnimState:Show("KEY")
+
+    if doer ~= nil then
+        -- TODO FIXME_RIFTS7_AUDIO
+        inst.SoundEmitter:PlaySound("dontstarve/common/together/atrium_gate/key_in")
+    end
+end
+
+local function IsVaultKeySocketed(inst)
+    return inst.vault_key_socketed
+end
+
 local function ItemTradeTest(inst, item)
     if item == nil then
         return false
+    elseif item.prefab == "vault_key" then
+        return false, "CANTSOCKETVAULTKEY"
     elseif item.prefab ~= "atrium_key" then
         return false, "NOTATRIUMKEY"
     end
@@ -231,6 +248,7 @@ local function OnDestabilizingPulse(inst)
 end
 
 local function StartDestabilizing(inst, onload)
+    WORLDSTATETAGS.SetTagEnabled("ATRIUM_KEY_FOUND", true)
     inst.components.trader:Disable()
     inst.components.pickable.caninteractwith = false
     inst:RemoveTag("intense")
@@ -250,6 +268,10 @@ local function StartDestabilizing(inst, onload)
     if inst._disablelighttask ~= nil then
         inst._disablelighttask:Cancel()
         inst._disablelighttask = nil
+    end
+    if inst._launchkeytask ~= nil then
+        inst._launchkeytask:Cancel()
+        inst._launchkeytask = nil
     end
     inst.Light:Enable(true)
     inst.SoundEmitter:KillSound("loop")
@@ -299,6 +321,12 @@ local function DisableLight(inst)
     inst.Light:Enable(false)
 end
 
+local function LaunchKey(inst)
+    local key = SpawnPrefab("atrium_key")
+    LaunchAt(key, inst, nil, 1.5, 1, 1)
+    inst._launchkeytask = nil
+end
+
 local function OnDestabilizeExplode(inst)
     SetCameraFocus(inst, 0)
     EnableShadowSuppression(inst, false)
@@ -308,7 +336,11 @@ local function OnDestabilizeExplode(inst)
     if inst._disablelighttask ~= nil then
         inst._disablelighttask:Cancel()
     end
+    if inst._launchkeytask ~= nil then
+        inst._launchkeytask:Cancel()
+    end
     inst._disablelighttask = inst:DoTaskInTime(1.75, DisableLight)
+    inst._launchkeytask = inst:DoTaskInTime(47 * FRAMES, LaunchKey)
 
     inst:StartCooldown(false)
 
@@ -324,10 +356,10 @@ local function ForceDestabilizeExplode(inst)
     -- returns true if a destabilization was actually forced
     if inst:IsDestabilizing() then
         -- Force the atrium gate to finish its destabilization process.
-        OnDestabilizeExplode(inst)
         if inst.components.worldsettingstimer:ActiveTimerExists("destabilizing") then
             inst.components.worldsettingstimer:StopTimer("destabilizing")
         end
+        OnDestabilizeExplode(inst)
 
         return true
     end
@@ -422,19 +454,25 @@ local function getstatus(inst)
     return (inst:IsDestabilizing() and "DESTABILIZING")
         or (inst.components.worldsettingstimer:ActiveTimerExists("cooldown") and "COOLDOWN")
         or ((inst:HasTag("intense") or inst.components.worldsettingstimer:ActiveTimerExists("destabilizedelay")) and "CHARGING")
+        -- or (inst:IsVaultKeySocketed() and "ON_VAULT")
         or (inst.components.pickable.caninteractwith and "ON")
         or "OFF"
 end
 
+local function IsGateOn(inst)
+    local status = getstatus(inst)
+    return status == "ON" or status == "ON_VAULT"
+end
+
 local function IsWaitingForStalker(inst)
-    return getstatus(inst) == "ON"
+    return IsGateOn(inst)
 end
 
 local function OnEntitySleep(inst)
     if inst._sleeptask ~= nil then
         inst._sleeptask:Cancel()
     end
-    inst._sleeptask = getstatus(inst) == "ON" and inst:DoTaskInTime(10, function() if getstatus(inst) == "ON" then Destabilize(inst, true) end end) or nil
+    inst._sleeptask = IsGateOn(inst) and inst:DoTaskInTime(10, function() if IsGateOn(inst) then Destabilize(inst, true) end end) or nil
 end
 
 local function OnEntityWake(inst)
@@ -444,7 +482,34 @@ local function OnEntityWake(inst)
     end
 end
 
+local function OnSave(inst, data)
+    data.vault_key_socketed = inst:IsVaultKeySocketed()
+    data.can_spawn_charlie_hand_keystone = inst.can_spawn_charlie_hand_keystone
+    if inst._launchkeytask ~= nil then
+        data.launch_key = true
+    end
+end
+
+local function OnLoad(inst, data)
+    if data ~= nil then
+        if data.vault_key_socketed then
+            inst:SocketVaultKey()
+        end
+        if data.can_spawn_charlie_hand_keystone then
+            inst.can_spawn_charlie_hand_keystone = data.can_spawn_charlie_hand_keystone
+        end
+        if data.launch_key then
+            local key = SpawnPrefab("atrium_key")
+            LaunchAt(key, inst, nil, 1.5, 1, 1)
+        end
+    end
+end
+
 local function OnLoadPostPass(inst, ents, data)
+    -- Repair the gate automatically if shadow rifts are always on, otherwise the shadow hand never arrives
+    if TheWorld.topology.overrides ~= nil and TheWorld.topology.overrides.rifts_enabled_cave == "always" and not inst.components.charliecutscene:IsGateRepaired() then
+        inst.components.charliecutscene:RepairGate()
+    end
     if inst:IsDestabilizing() then
         StartDestabilizing(inst, true)
     elseif inst.components.worldsettingstimer:ActiveTimerExists("cooldown") then
@@ -477,6 +542,71 @@ local function OnRemove(inst)
     TheWorld.Pathfinder:RemoveWall(x - 0.5, 0, z + 0.5)
     TheWorld.Pathfinder:RemoveWall(x + 0.5, 0, z - 0.5)
     TheWorld.Pathfinder:RemoveWall(x + 0.5, 0, z + 0.5)
+end
+
+--------------------------------------------------------------------------
+
+local KEYSTONE_MUST_TAGS = { "irreplaceable" }
+local KEYSTONE_RADIUS = math.ceil(ATRIUM_ARENA_SIZE + 4)
+
+local function FindKeyStone(inst)
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, KEYSTONE_RADIUS, KEYSTONE_MUST_TAGS)
+    for i, v in ipairs(ents) do
+        if v ~= inst and v.prefab == "vault_key" then
+            return v
+        end
+    end
+
+    return nil
+end
+
+local function UpdateCharlieHandKeyStone(inst)
+    local charliehand = inst.components.entitytracker:GetEntity("charlie_hand")
+    local canspawn = inst.can_spawn_charlie_hand_keystone
+        and inst.components.charliecutscene:IsGateRepaired()
+        and not inst:IsVaultKeySocketed()
+        and not inst:HasTag("intense")
+        and not inst.AnimState:IsCurrentAnimation("idle_fight")
+
+    if charliehand == nil and canspawn then
+        local keystone = FindKeyStone(inst)
+        if keystone ~= nil then
+            inst.components.charliecutscene:SpawnCharlieHandKeyStone()
+        end
+    elseif charliehand ~= nil and charliehand.prefab == "charlie_hand_keystone" and charliehand.persists then
+        local despawn = FindKeyStone(inst) == nil or not canspawn
+        if despawn then
+            charliehand.persists = false
+            charliehand:RunAway()
+        end
+    end
+end
+
+local function OnPlayerNear(inst, player)
+    inst.players = inst.players or {}
+    inst.players[player] = true
+
+    UpdateCharlieHandKeyStone(inst)
+    if inst.charlie_hand_keystone_task == nil then
+        inst.charlie_hand_keystone_task = inst:DoPeriodicTask(1, UpdateCharlieHandKeyStone)
+    end
+end
+
+local function OnPlayerFar(inst, player)
+    inst.players[player] = nil
+    if next(inst.players) == nil then
+        local charliehand = inst.components.entitytracker:GetEntity("charlie_hand")
+        if charliehand and charliehand.prefab == "charlie_hand_keystone" and charliehand.persists then
+            charliehand.persists = false
+            charliehand:RunAway()
+        end
+        inst.players = nil
+        if inst.charlie_hand_keystone_task ~= nil then
+            inst.charlie_hand_keystone_task:Cancel()
+            inst.charlie_hand_keystone_task = nil
+        end
+    end
 end
 
 --------------------------------------------------------------------------
@@ -570,11 +700,13 @@ local function fn()
     inst.AnimState:SetBuild("atrium_gate")
     inst.AnimState:PlayAnimation("idle")
     inst.AnimState:SetSymbolLightOverride("dreadstone_patch_red", 1)
+    inst.AnimState:Hide("KEY")
 
     inst.MiniMapEntity:SetIcon("atrium_gate.png")
 
     inst:AddTag("gemsocket") -- for "Socket" action string
     inst:AddTag("stargate")
+    inst:AddTag("give_dolongaction")
 
     inst._camerafocus = net_tinybyte(inst.GUID, "atrium_gate._camerafocus", "camerafocusdirty")
     inst._camerafocustask = nil
@@ -633,9 +765,17 @@ local function fn()
     inst:AddComponent("entitytracker")
     inst:AddComponent("colourtweener")
 
+    local playerprox = inst:AddComponent("playerprox")
+	playerprox:SetTargetMode(playerprox.TargetModes.AllPlayers)
+    playerprox:SetOnPlayerNear(OnPlayerNear)
+    playerprox:SetOnPlayerFar(OnPlayerFar)
+    playerprox:SetDist(ATRIUM_ARENA_SIZE, KEYSTONE_RADIUS)
+
     MakeHauntableWork(inst)
     MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
     inst.OnLoadPostPass = OnLoadPostPass
     inst.OnPreLoad = OnPreLoad
 
@@ -649,6 +789,10 @@ local function fn()
     inst.Destabilize = Destabilize
     inst.StartCooldown = StartCooldown
     inst.ForceDestabilizeExplode = ForceDestabilizeExplode
+
+    inst.SocketVaultKey = SocketVaultKey
+    inst.IsVaultKeySocketed = IsVaultKeySocketed
+    inst.vault_key_socketed = nil
 
     inst.IsObjectInAtriumArena = IsObjectInAtriumArena
 
@@ -668,13 +812,16 @@ local function fn()
             --IsAtriumDecay means "killed" to reset the fight (off-screen, or moved too far away from gate)
             Destabilize(inst, stalker:IsAtriumDecay())
 
-            if not stalker:IsAtriumDecay() and
-                TUNING.SPAWN_RIFTS == 1 and 
-                not inst.components.entitytracker:GetEntity("charlie_hand") and
-                TheWorld.components.riftspawner ~= nil and
-                not TheWorld.components.riftspawner:GetShadowRiftsEnabled()
+            if not stalker:IsAtriumDecay()
+                and not inst.components.entitytracker:GetEntity("charlie_hand")
             then
-                inst.components.charliecutscene:SpawnCharlieHand()
+                -- TODO #FIXME charlie hand keystone spawns after killing fuelweaver again for now.
+                inst.can_spawn_charlie_hand_keystone = true
+                if TUNING.SPAWN_RIFTS == 1
+                    and TheWorld.components.riftspawner ~= nil and
+                    not TheWorld.components.riftspawner:GetShadowRiftsEnabled() then
+                    inst.components.charliecutscene:SpawnCharlieHand()
+                end
             end
         end
     end

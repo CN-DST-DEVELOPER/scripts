@@ -472,7 +472,7 @@ params.bundle_container =
 }
 
 function params.bundle_container.itemtestfn(container, item, slot)
-    return not (item:HasTag("irreplaceable") or item:HasTag("_container") or item:HasTag("bundle") or item:HasTag("nobundling"))
+    return not item:HasAnyTag("irreplaceable", "_container", "bundle", "nobundling")
 end
 
 function params.bundle_container.widget.buttoninfo.fn(inst, doer)
@@ -668,7 +668,7 @@ params.mushroom_light =
 }
 
 function params.mushroom_light.itemtestfn(container, item, slot)
-    return (item:HasTag("lightbattery") or item:HasTag("lightcontainer")) and not container.inst:HasTag("burnt")
+    return item:HasAnyTag("lightbattery", "lightcontainer") and not container.inst:HasTag("burnt")
 end
 
 --------------------------------------------------------------------------
@@ -678,7 +678,7 @@ end
 params.mushroom_light2 = deepcopy(params.mushroom_light)
 
 function params.mushroom_light2.itemtestfn(container, item, slot)
-    return (item:HasTag("lightbattery") or item:HasTag("spore") or item:HasTag("lightcontainer")) and not container.inst:HasTag("burnt")
+    return item:HasAnyTag("lightbattery", "spore", "lightcontainer") and not container.inst:HasTag("burnt")
 end
 
 --------------------------------------------------------------------------
@@ -1017,12 +1017,12 @@ for y = 2, 0, -1 do
 end
 
 function params.icebox.itemtestfn(container, item, slot)
-    if item:HasTag("icebox_valid") then
+    if item:HasAnyTag("icebox_valid", "inventoryitemtemperature") then
         return true
     end
 
     --Perishable
-    if not (item:HasTag("fresh") or item:HasTag("stale") or item:HasTag("spoiled")) then
+    if not item:HasAnyTag("fresh", "stale", "spoiled") then
         return false
     end
 
@@ -1047,10 +1047,9 @@ end
 params.saltbox = deepcopy(params.icebox)
 
 function params.saltbox.itemtestfn(container, item, slot)
-	return ((item:HasTag("fresh") or item:HasTag("stale") or item:HasTag("spoiled"))
+    return (item:HasAnyTag("fresh", "stale", "spoiled")
 		and item:HasTag("cookable")
-		and not item:HasTag("deployable")
-		and not item:HasTag("smallcreature")
+		and not item:HasAnyTag("deployable", "smallcreature")
 		and item.replica.health == nil)
 		or item:HasTag("saltbox_valid")
 end
@@ -1341,7 +1340,7 @@ params.oceanfishingrod =
 }
 
 function params.oceanfishingrod.itemtestfn(container, item, slot)
-	return (slot == nil and (item:HasTag("oceanfishing_bobber") or item:HasTag("oceanfishing_lure")))
+	return (slot == nil and item:HasAnyTag("oceanfishing_bobber", "oceanfishing_lure"))
 		or (slot == 1 and item:HasTag("oceanfishing_bobber"))
 		or (slot == 2 and item:HasTag("oceanfishing_lure"))
 end
@@ -1759,7 +1758,7 @@ for y = 0, 6 do
 end
 
 function params.candybag.itemtestfn(container, item, slot)
-    return item:HasTag("halloweencandy") or item:HasTag("halloween_ornament") or string.sub(item.prefab, 1, 8) == "trinket_"
+    return item:HasAnyTag("halloweencandy", "halloween_ornament") or string.sub(item.prefab, 1, 8) == "trinket_"
 end
 
 params.candybag.priorityfn = params.candybag.itemtestfn
@@ -1877,7 +1876,7 @@ params.ocean_trawler =
 }
 
 function params.ocean_trawler.itemtestfn(container, item, slot)
-    return item:HasTag("cookable") or item:HasTag("oceanfish")
+    return item:HasAnyTag("cookable", "oceanfish")
 end
 
 --------------------------------------------------------------------------
@@ -1935,7 +1934,7 @@ end
 
 function params.beargerfur_sack.itemtestfn(container, item, slot)
     -- Prepared food.
-    return item:HasTag("beargerfur_sack_valid") or item:HasTag("preparedfood")
+    return item:HasAnyTag("beargerfur_sack_valid", "preparedfood")
 end
 
 --------------------------------------------------------------------------
@@ -2289,6 +2288,58 @@ function params.wx78_inventorycontainer.priorityfn(container, item)
 	local existingitem = container:GetItemInSlot(1)
 	local stackable = existingitem and existingitem.replica.stackable
 	return stackable ~= nil and stackable:CanStackWith(item)
+end
+
+--------------------------------------------------------------------------
+--[[ socket_keystone_construction_container ]]
+--------------------------------------------------------------------------
+
+params.socket_keystone_construction_container = deepcopy(params.construction_container)
+
+params.socket_keystone_construction_container.widget.slotpos = {Vector3(0, 8, 0)}
+params.socket_keystone_construction_container.widget.side_align_tip = 120
+params.socket_keystone_construction_container.widget.animbank = "ui_construction_1x1"
+params.socket_keystone_construction_container.widget.animbuild = "ui_construction_1x1"
+params.socket_keystone_construction_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.OFFER
+
+local function DoKeyStoneAct(inst, doer)
+	if inst.components.container ~= nil then
+		BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+	elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+		SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
+	end
+end
+
+local function GiveKeyStoneGoBack()
+	TheFrontEnd:PopScreen()
+end
+
+function params.socket_keystone_construction_container.widget.buttoninfo.fn(inst, doer)
+	if not params.socket_keystone_construction_container.widget.overrideactionfn(inst, doer) then
+		-- No UI no dialogue.
+		DoKeyStoneAct(inst, doer)
+	end
+end
+
+function params.socket_keystone_construction_container.widget.overrideactionfn(inst, doer)
+	if doer ~= nil and doer.HUD ~= nil and IsConstructionSiteComplete(inst, doer) then
+		-- We have UI do dialogue.
+		local function GiveKeyStonePopUp()
+			DoKeyStoneAct(inst, doer)
+			TheFrontEnd:PopScreen()
+		end
+
+		local str = inst.POPUP_STRINGS
+		local confirmation = RiftConfirmScreen(str.TITLE, str.BODY,
+		{
+			{ text = str.OK,     cb = GiveKeyStonePopUp },
+            { text = str.CANCEL, cb = GiveKeyStoneGoBack  },
+		})
+
+		TheFrontEnd:PushScreen(confirmation)
+		return true
+	end
+	return false
 end
 
 --------------------------------------------------------------------------

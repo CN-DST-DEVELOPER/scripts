@@ -67,8 +67,9 @@ local function fn()
     inst:AddTag("fedbyall")
     inst:AddTag("toolpunch")
 
-    -- for eater
+    --eatsrawmeat (from eater:SetCanEatRawMeat component) added to pristine state for optimization
     inst:AddTag("eatsrawmeat")
+    --strongstomach (from eater:SetStrongStomach component) added to pristine state for optimization
     inst:AddTag("strongstomach")
 
     --weapon (from weapon component) added to pristine state for optimization

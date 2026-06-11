@@ -62,6 +62,8 @@ local function common_clientfn()
 end
 
 local function common_serverfn(inst)
+	inst.scrapbook_tex = "mapscroll" --in case we're generating scrapbook from caves, still want the default version.
+
     inst:AddComponent("tradable")
     inst:AddComponent("inspectable")
     inst:AddComponent("erasablepaper")

@@ -9,7 +9,7 @@ local NumNearGroups = 0
 
 local function CanMouseThrough(inst)
 	local self = inst.components.transparentondrones
-	return self.a < 0.5, true
+	return true, self.a < 0.5
 end
 
 local TransparentOnDrones = Class(function(self, inst)

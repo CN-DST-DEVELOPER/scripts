@@ -62,8 +62,11 @@ function Heater:GetHeatRate(observer)
 end
 
 function Heater:GetEquippedHeat(observer)
-    return (self.equippedheatfn ~= nil and self.equippedheatfn(self.inst, observer))
-        or self.equippedheat
+	if self.equippedheatfn then
+		return self.equippedheatfn(self.inst, observer), self.carriedheatmultiplier
+    else
+	    return self.equippedheat, self.carriedheatmultiplier
+    end
 end
 
 function Heater:GetCarriedHeat(observer)

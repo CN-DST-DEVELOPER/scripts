@@ -478,6 +478,8 @@ local function fn()
 
     MakeMediumBurnable(inst)
     inst.components.burnable.nocharring = true
+    inst.components.burnable:SetBurnTime(20 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     MakeMediumPropagator(inst)
     MakeLargeFreezableCharacter(inst)

@@ -167,9 +167,7 @@ end
 
 local function _TossItems(inst, x, z, radius)
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, radius + WORK_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if v.components.mine then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 			_TossLaunch(v, x, z, 1.2, 0.1)
 		end
@@ -1569,22 +1567,22 @@ local states =
 		{
 			FrameEvent(61, function(inst)
 				inst.sg.statemem.wagstaff.components.npc_talker:Chatter("WAGSTAFF_WAGPUNK_ARENA_SCIONATTACKSWAGSTAFF")
-				inst.sg.statemem.wagstaff.components.npc_talker:donextline()
+				inst.sg.statemem.wagstaff.components.npc_talker:DoNextLine()
 				inst.sg.statemem.wagstaff:DoTalkSound(1)
 			end),
 			FrameEvent(135, function(inst)
-				inst.sg.statemem.wagstaff.components.npc_talker:donextline()
+				inst.sg.statemem.wagstaff.components.npc_talker:DoNextLine()
 				inst.sg.statemem.wagstaff:DoTalkSound(2)
 			end),
 			FrameEvent(224, function(inst)
 				inst.sg.statemem.wagstaff:Materialize()
 			end),
 			FrameEvent(244, function(inst)
-				inst.sg.statemem.wagstaff.components.npc_talker:donextline()
+				inst.sg.statemem.wagstaff.components.npc_talker:DoNextLine()
 				inst.sg.statemem.wagstaff:DoTalkSound(1.5)
 			end),
 			FrameEvent(325, function(inst)
-				inst.sg.statemem.wagstaff.components.npc_talker:donextline()
+				inst.sg.statemem.wagstaff.components.npc_talker:DoNextLine()
 				inst.sg.statemem.wagstaff:DoTalkSound(1.5)
 			end),
 			FrameEvent(366, function(inst)

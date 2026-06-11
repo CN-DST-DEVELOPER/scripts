@@ -236,6 +236,8 @@ local function NewObject(inst, obj)
 		inst._avaiablenests[nest] = true
 		inst._num_avaiablenests = inst._num_avaiablenests + 1
 	end
+
+    obj.proxy_destroy_entity = inst
     inst:ListenForEvent("carnivalgame_feedchicks_feed", onfeed, obj)
     inst:ListenForEvent("carnivalgame_feedchicks_available", onnestavailable, obj)
 end

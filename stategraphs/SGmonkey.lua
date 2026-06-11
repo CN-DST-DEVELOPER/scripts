@@ -80,16 +80,21 @@ local states =
         name = "action",
         onenter = function(inst, playanim)
             inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("interact", true)
+            inst.AnimState:PlayAnimation("interact")
             inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make")
         end,
         onexit = function(inst)
             inst.SoundEmitter:KillSound("make")
         end,
+        timeline =
+        {
+            FrameEvent(25, function(inst)
+                inst:PerformBufferedAction()
+            end)
+        },
         events =
         {
             EventHandler("animover", function (inst)
-                inst:PerformBufferedAction()
                 inst.sg:GoToState("idle")
             end),
         }

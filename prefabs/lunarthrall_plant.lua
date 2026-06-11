@@ -509,7 +509,9 @@ local function fn()
 
     MakeMediumFreezableCharacter(inst)
     inst.components.freezable:SetResistance(6)
-    MakeLargeBurnableCharacter(inst,"follow_gestalt_fx")
+    MakeLargeBurnableCharacter(inst, "follow_gestalt_fx")
+    inst.components.burnable:SetBurnTime(10 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     inst:SetStateGraph("SGlunarthrall_plant")
 	inst.sg.mem.burn_on_electrocute = true
@@ -611,6 +613,8 @@ local function vinefn()
     MakeMediumFreezableCharacter(inst)
     inst.components.freezable:SetResistance(6)
     MakeMediumBurnableCharacter(inst)
+    inst.components.burnable:SetBurnTime(8 * TUNING.PLANTMOB_BURNTIME_MULT)
+    -- inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     inst.persists = false
     inst.makeweak = makeweak
@@ -847,6 +851,8 @@ local function vineendfn()
     MakeMediumFreezableCharacter(inst)
     inst.components.freezable:SetResistance(6)
     MakeMediumBurnableCharacter(inst)
+    inst.components.burnable:SetBurnTime(8 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     inst:SetStateGraph("SGlunarthrall_plant_vine")
 	inst.sg.mem.burn_on_electrocute = true

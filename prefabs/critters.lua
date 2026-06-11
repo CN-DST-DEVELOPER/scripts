@@ -112,9 +112,13 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
     local assets =
     {
 	    Asset("ANIM", "anim/"..animname.."_basic.zip"),
-	    Asset("ANIM", "anim/"..animname.."_emotes.zip"),
-	    Asset("ANIM", "anim/"..animname.."_traits.zip"),
     }
+    if not data or not data.no_emotes then
+        table.insert(assets, Asset("ANIM", "anim/"..animname.."_emotes.zip"))
+    end
+    if not data or not data.no_traits then
+        table.insert(assets, Asset("ANIM", "anim/"..animname.."_traits.zip"))
+    end
     if buildname then
         table.insert(assets, Asset("ANIM", "anim/"..buildname..".zip"))
     end
@@ -188,6 +192,9 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
         inst:AddTag("noauradamage")
         inst:AddTag("small_livestock")
         inst:AddTag("NOBLOCK")
+        if data ~= nil and data.no_pet then
+            inst:AddTag("nopet")
+        end
 
         if data ~= nil and data.flyingsoundloop ~= nil then
             inst.SoundEmitter:PlaySound(data.flyingsoundloop, "flying")
@@ -260,6 +267,9 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
         end
 
         inst:AddComponent("crittertraits")
+        if data ~= nil and data.no_crafty_emote then
+            inst.components.crittertraits.no_crafty_emote = true
+        end
         inst:AddComponent("timer")
 
         inst:SetBrain(brain)
@@ -384,4 +394,6 @@ return MakeCritter("critter_lamb", "sheepington", 6, standard_diet, false, {favo
        MakeCritter("critter_eyeofterror", "eyeofterror_mini", 6, standard_diet, true, {buildname = "eyeofterror_mini_basic", favoritefood="baconeggs"--[[, flyingsoundloop = "a hover loop here, IF we want it"]] }),
        MakeBuilder("critter_eyeofterror"),
        MakeCritter("critter_bulbin", "bulbin", 6, standard_diet, false, {skin_only=true, favoritefood="stuffedeggplant", allow_platform_hopping=true, assets=bulbin_assets}),
-       MakeBuilder("critter_bulbin")
+       MakeBuilder("critter_bulbin"),
+       MakeCritter("critter_eets", "eets", 4, standard_diet, false, {skin_only=true, favoritefood="butterflymuffin", allow_platform_hopping=true, no_emotes = true, no_traits = true, no_pet = true, no_crafty_emote = true}),
+       MakeBuilder("critter_eets")

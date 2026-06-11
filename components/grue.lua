@@ -22,6 +22,14 @@ local function OnInvincibleToggle(inst, data)
     end
 end
 
+local function OnGrueImmuneArea(inst, data)
+    if data.isimmune then
+        inst.components.grue:AddImmunity(data.name)
+    else
+        inst.components.grue:RemoveImmunity(data.name)
+    end
+end
+
 local function OnDeath(inst)
     inst.components.grue:Stop()
 end
@@ -39,6 +47,7 @@ local function OnInit(inst, self)
     inst:ListenForEvent("enterlight", OnEnterLight)
     inst:ListenForEvent("nightvision", OnNightVision)
     inst:ListenForEvent("invincibletoggle", OnInvincibleToggle)
+    inst:ListenForEvent("grueimmunearea", OnGrueImmuneArea)
     inst:ListenForEvent("death", OnDeath)
     inst:ListenForEvent("ms_respawnedfromghost", OnRespawned)
 
@@ -92,6 +101,7 @@ function Grue:OnRemoveFromEntity()
         self.inst:RemoveEventCallback("enterlight", OnEnterLight)
         self.inst:RemoveEventCallback("nightvision", OnNightVision)
         self.inst:RemoveEventCallback("invincibletoggle", OnInvincibleToggle)
+        self.inst:RemoveEventCallback("grueimmunearea", OnGrueImmuneArea)
         self.inst:RemoveEventCallback("death", OnDeath)
         self.inst:RemoveEventCallback("ms_respawnedfromghost", OnRespawned)
     end

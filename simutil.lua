@@ -41,6 +41,7 @@ function FindEntity(inst, radius, fn, musttags, canttags, mustoneoftags)
     end
 end
 
+--V2C: why does this exist? TheSim:FindEntities already returns sorted by distance
 function FindClosestEntity(inst, radius, ignoreheight, musttags, canttags, mustoneoftags, fn)
     if inst ~= nil and inst:IsValid() then
         local x, y, z = inst.Transform:GetWorldPosition()
@@ -326,14 +327,17 @@ end
 -- This function fans out a search from a starting position/direction and looks for a walkable
 -- position, and returns the valid offset, valid angle and whether the original angle was obstructed.
 -- start_angle is in radians
-function FindWalkableOffset(position, start_angle, radius, attempts, check_los, ignore_walls, customcheckfn, allow_water, allow_boats)
+function FindWalkableOffset(position, start_angle, radius, attempts, check_los, ignore_walls, customcheckfn, allow_water, allow_boats, ignore_teleportchecks)
+    if ignore_teleportchecks == nil then
+        ignore_teleportchecks = (radius == 0)
+    end
     return FindValidPositionByFan(start_angle, radius, attempts,
             function(offset)
                 local x = position.x + offset.x
                 local y = position.y + offset.y
                 local z = position.z + offset.z
                 return (TheWorld.Map:IsAboveGroundAtPoint(x, y, z, allow_water) or (allow_boats and TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil))
-                    and (IsTeleportingPermittedFromPointToPoint(position.x, position.y, position.z, x, y, z))
+                    and (ignore_teleportchecks or IsTeleportingPermittedFromPointToPoint(position.x, position.y, position.z, x, y, z))
                     and (not check_los or
                         TheWorld.Pathfinder:IsClear(
                             position.x, position.y, position.z,

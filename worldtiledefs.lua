@@ -78,6 +78,14 @@ function LookupTileInfo(tile)
     return nil
 end
 
+local TrapFumaroleUtil = require("prefabs/trap_fumarole_util")
+local HOT_ROCKS_SIZZLE_PARAMS =
+{
+    { sizzle = 0.1 }, -- temp range 1
+    { sizzle = 0.5 }, -- temp range 2
+    { sizzle = 0.7 }, -- temp range 3
+}
+
 function PlayFootstep(inst, volume, ispredicted)
     local sound = inst.SoundEmitter
     if sound ~= nil then
@@ -89,8 +97,6 @@ function PlayFootstep(inst, volume, ispredicted)
 			return
 		end
 
-        local my_x, my_y, my_z = inst.Transform:GetWorldPosition()
-        local map = TheWorld.Map
         local my_platform = inst:GetCurrentPlatform()
 
         local tile = inst.components.locomotor ~= nil and inst.components.locomotor:TempGroundTile() or nil
@@ -129,6 +135,7 @@ function PlayFootstep(inst, volume, ispredicted)
                     )
             end
 		else
+            local x, y, z = inst.Transform:GetWorldPosition()
 			local soundpath
 
 			if tileinfo == nil then
@@ -136,7 +143,6 @@ function PlayFootstep(inst, volume, ispredicted)
 				--see if we're walking on web/snow/mud
 				tile, tileinfo = inst:GetCurrentTileType()
 				if tile and tileinfo then
-					local x, y, z = inst.Transform:GetWorldPosition()
 					local oncreep = TheWorld.GroundCreep:OnCreep(x, y, z)
 					local onsnow = not tileinfo.nogroundoverlays and TheWorld.state.snowlevel > 0.15
 					local onmud = not tileinfo.nogroundoverlays and TheWorld.state.wetness > 15
@@ -160,30 +166,37 @@ function PlayFootstep(inst, volume, ispredicted)
 				(size_inst:HasTag("largecreature") and "_large") or
 				""
 
-			if soundpath then
-				--web/snow/mud sounds
-				sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
-			elseif tileinfo then
-				--run/walk sounds
-				soundpath = inst.sg and inst.sg:HasStateTag("running") and tileinfo.runsound or tileinfo.walksound
+            if soundpath or tileinfo then
+                local hotrocks = TrapFumaroleUtil.GetTrapAtXZ(x, z)
+                if hotrocks ~= nil then
+                    sound:PlaySoundWithParams("dontstarve/movement/run_hotrocks"..sizesuffix, hotrocks._temperaturerange and HOT_ROCKS_SIZZLE_PARAMS[hotrocks._temperaturerange] or HOT_ROCKS_SIZZLE_PARAMS[1], volume or 1, ispredicted)
+                end
 
-				--V2C: rope bridge no longer uses the param
-				--     leaving this commented here as example for future custom footstep code
-				--for rope bridge, we have a parameter as well
-				--[[if tile == WORLD_TILES.ROPE_BRIDGE and inst.sg then
-					local t = GetTime()
-					if (inst.sg.mem._rope_bridge_step_time or 0) < t - 1 then
-						inst.sg.mem._rope_bridge_steps = 1 --too long since last step => reset count
-					else
-						inst.sg.mem._rope_bridge_steps = (inst.sg.mem._rope_bridge_steps or 0) + 1
-					end
-					inst.sg.mem._rope_bridge_step_time = t
-					sound:PlaySoundWithParams(soundpath..sizesuffix, { param00 = math.min(9, inst.sg.mem._rope_bridge_steps - 1) * 0.1 }, volume or 1, ispredicted)
-				else]]
-					--default behaviour
-					sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
-				--end
-			end
+                if soundpath then
+			    	--web/snow/mud sounds
+			    	sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
+			    elseif tileinfo then
+			    	--run/walk sounds
+			    	soundpath = inst.sg and inst.sg:HasStateTag("running") and tileinfo.runsound or tileinfo.walksound
+
+			    	--V2C: rope bridge no longer uses the param
+			    	--     leaving this commented here as example for future custom footstep code
+			    	--for rope bridge, we have a parameter as well
+			    	--[[if tile == WORLD_TILES.ROPE_BRIDGE and inst.sg then
+			    		local t = GetTime()
+			    		if (inst.sg.mem._rope_bridge_step_time or 0) < t - 1 then
+			    			inst.sg.mem._rope_bridge_steps = 1 --too long since last step => reset count
+			    		else
+			    			inst.sg.mem._rope_bridge_steps = (inst.sg.mem._rope_bridge_steps or 0) + 1
+			    		end
+			    		inst.sg.mem._rope_bridge_step_time = t
+			    		sound:PlaySoundWithParams(soundpath..sizesuffix, { param00 = math.min(9, inst.sg.mem._rope_bridge_steps - 1) * 0.1 }, volume or 1, ispredicted)
+			    	else]]
+			    		--default behaviour
+			    		sound:PlaySound(soundpath..sizesuffix, nil, volume or 1, ispredicted)
+			    	--end
+			    end
+            end
 		end
     end
 end

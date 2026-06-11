@@ -407,9 +407,7 @@ local function DoDamage(inst, targets)
 		local dx, dz = x1 - x, z1 - z
 		local dsq = dx * dx + dz * dz
 		if dsq < rsq and y1 < 0.2 then
-			if v.components.mine then
-				v.components.mine:Deactivate()
-			end
+			DeactivateInventoryItemBeforeLaunch(v)
 			if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 				local angle
 				if dsq > 0 then

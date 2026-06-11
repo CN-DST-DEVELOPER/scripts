@@ -15,6 +15,14 @@ local function GetHeatFn(inst)
     return heats[inst.components.firefx.level] or -20
 end
 
+local firelevels =
+{
+    { anim = "level1_redux", sound = "dontstarve_DLC001/common/coldfire", radius = 2, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .1 },
+    { anim = "level2_redux", sound = "dontstarve_DLC001/common/coldfire", radius = 3, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .3 },
+    { anim = "level3_redux", sound = "dontstarve_DLC001/common/coldfire", radius = 4, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .6 },
+    { anim = "level4_redux", sound = "dontstarve_DLC001/common/coldfire", radius = 5, intensity = .8, falloff = .33, colour = lightColour, soundintensity = 1 },
+}
+
 local function fn()
     local inst = CreateEntity()
 
@@ -45,13 +53,7 @@ local function fn()
     inst.components.heater:SetThermics(false, true)
 
     inst:AddComponent("firefx")
-    inst.components.firefx.levels =
-    {
-        { anim = "level1", sound = "dontstarve_DLC001/common/coldfire", radius = 2, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .1 },
-        { anim = "level2", sound = "dontstarve_DLC001/common/coldfire", radius = 3, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .3 },
-        { anim = "level3", sound = "dontstarve_DLC001/common/coldfire", radius = 4, intensity = .8, falloff = .33, colour = lightColour, soundintensity = .6 },
-        { anim = "level4", sound = "dontstarve_DLC001/common/coldfire", radius = 5, intensity = .8, falloff = .33, colour = lightColour, soundintensity = 1 },
-    }
+    inst.components.firefx.levels = firelevels
     inst.components.firefx:SetLevel(1)
     inst.components.firefx.usedayparamforsound = true
 

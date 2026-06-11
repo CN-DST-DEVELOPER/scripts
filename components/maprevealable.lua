@@ -268,4 +268,6 @@ function MapRevealable:OnRemoveFromEntity()
 	end
 end
 
+MapRevealable.OnRemoveEntity = MapRevealable.OnRemoveFromEntity
+
 return MapRevealable

@@ -13,27 +13,74 @@ local function NotifyBrainOfTarget(inst, target)
     end
 end
 
+local TARGET_DIST = TUNING.SHADOWCREATURE_TARGET_DIST
+local TARGET_DIST_SQ = TARGET_DIST * TARGET_DIST
+
+local VAULT_TARGET_MUST_TAGS, VAULT_SHADOWCREATURE_TAGS
+
+local function IsPriorityVaultTargetAtXZ(inst, target, x, z)
+	for _, v in ipairs(TheSim:FindEntities(x, 0, z, TARGET_DIST, VAULT_SHADOWCREATURE_TAGS)) do
+		if v ~= inst and v.components.combat:TargetIs(target) then
+			return false
+		end
+	end
+	return true
+end
+
 local function retargetfn(inst)
-    local maxrangesq = TUNING.SHADOWCREATURE_TARGET_DIST * TUNING.SHADOWCREATURE_TARGET_DIST
+    local maxrangesq = TARGET_DIST_SQ
     local rangesq, rangesq1, rangesq2 = maxrangesq, math.huge, math.huge
     local target1, target2 = nil, nil
+    local invault = nil
     for i, v in ipairs(AllPlayers) do
         if v.components.sanity:IsCrazy() and not v:HasTag("playerghost") then
             local distsq = v:GetDistanceSqToInst(inst)
             if distsq < rangesq then
+                local area_data = v.components.areaaware ~= nil and v.components.areaaware:GetCurrentArea() or nil
                 if inst.components.shadowsubmissive:TargetHasDominance(v) then
                     if distsq < rangesq1 and inst.components.combat:CanTarget(v) then
+                        invault = area_data ~= nil and area_data.id ~= nil and area_data.id:find("Vault") or nil
                         target1 = v
                         rangesq1 = distsq
                         rangesq = math.max(rangesq1, rangesq2)
                     end
                 elseif distsq < rangesq2 and inst.components.combat:CanTarget(v) then
+                    invault = area_data ~= nil and area_data.id ~= nil and area_data.id:find("Vault") or nil
                     target2 = v
                     rangesq2 = distsq
                     rangesq = math.max(rangesq1, rangesq2)
                 end
             end
         end
+    end
+
+    if invault then -- Vault targetting. Get the guard towers!
+		if VAULT_TARGET_MUST_TAGS == nil then
+			VAULT_TARGET_MUST_TAGS = { "vault_pillar_guard", "vault_key_trial_guardian" }
+			VAULT_SHADOWCREATURE_TAGS = { "shadowcreature", "_combat" }
+		end
+
+		local x, y, z = inst.Transform:GetWorldPosition()
+		local vaulttarget = inst.components.combat.target
+		if vaulttarget and vaulttarget:HasAllTags(VAULT_TARGET_MUST_TAGS) and IsPriorityVaultTargetAtXZ(inst, vaulttarget, x, z) then
+			inst.ignorecombatonkeeptarget = true
+			return
+		end
+
+		local ents = TheSim:FindEntities(x, y, z, TARGET_DIST, VAULT_TARGET_MUST_TAGS)
+		if #ents > 0 then
+			vaulttarget = ents[1]
+			for _, v in ipairs(ents) do
+				if v.entity:IsVisible() and inst.components.combat:CanTarget(v) and IsPriorityVaultTargetAtXZ(inst, v, x, z) then
+					vaulttarget = v
+					break
+				end
+			end
+			inst.ignorecombatonkeeptarget = true
+			return vaulttarget, true
+		end
+
+		inst.ignorecombatonkeeptarget = nil
     end
 
 	local forcechange = inst.forceretarget
@@ -75,12 +122,12 @@ local function keeptargetfn(inst, target)
 	--           -this is fine XD
 	--
 	--Deaggro if target has been sane for 2.5s, hasn't hit us in 6s, and hasn't tried to attack us for 5s
-	if inst._deaggrotime + 2.5 >= t or
+	if not inst.ignorecombatonkeeptarget and (inst._deaggrotime + 2.5 >= t or
 		inst.components.combat.lastwasattackedbytargettime + 6 >= t or
 		(	target.components.combat and
 			target.components.combat:IsRecentTarget(inst) and
 			(target.components.combat.laststartattacktime or 0) + 5 >= t
-		)
+		))
 	then
 		return true
 	elseif inst.wantstodespawn then
@@ -131,6 +178,16 @@ local function OnDeath(inst, data)
         --max one nightmarefuel if killed by a crazy NPC (e.g. Bernie)
         inst.components.lootdropper:SetLoot({ "nightmarefuel" })
         inst.components.lootdropper:SetChanceLootTable(nil)
+    end
+
+    -- no loot in key room
+    local vaultroommanager = TheWorld.components.vaultroommanager
+    if vaultroommanager ~= nil
+        and vaultroommanager:GetVaultRoomId() == "key1"
+        and TheWorld.Map:IsPointInVaultRoom(inst.Transform:GetWorldPosition())
+        and (data.afflicter == nil or not data.afflicter.isplayer) then
+		inst.components.lootdropper:SetLoot({})
+		inst.components.lootdropper:SetChanceLootTable(nil)
     end
 end
 

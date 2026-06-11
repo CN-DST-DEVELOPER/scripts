@@ -50,6 +50,7 @@ local function GetSpecialItemCategories()
 		MISC_ITEMS,
 		CLOTHING,
 		EMOTE_ITEMS,
+        IDLEANIMATIONS_ITEMS,
 		EMOJI_ITEMS,
 		BEEFALO_CLOTHING,
 	}
@@ -823,6 +824,8 @@ function DoesItemHaveTag(item, tag)
 		tags = MISC_ITEMS[item].skin_tags
 	elseif EMOTE_ITEMS[item] then
 		tags = EMOTE_ITEMS[item].skin_tags
+    elseif IDLEANIMATIONS_ITEMS[item] then
+        tags = IDLEANIMATIONS_ITEMS[item].skin_tags
 	else
 		if Prefabs[item] ~= nil then
 			tags = Prefabs[item].skin_tags
@@ -1376,6 +1379,11 @@ end
 function ShouldDisplayItemInCollection(item_type)
 	if ITEM_DISPLAY_BLACKLIST[item_type] then
         return false
+    end
+    if SKINOVERRIDES[item_type] then
+        if not TheInventory:CheckOwnership(item_type) then
+            return false
+        end
     end
 	local rarity = GetRarityForItem(item_type)
 	if rarity == "Event" or rarity == "ProofOfPurchase" or rarity == "Resurrected" or rarity == "Loyal" or rarity == "Timeless" then

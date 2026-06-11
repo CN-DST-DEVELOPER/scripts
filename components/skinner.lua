@@ -474,6 +474,92 @@ function Skinner:SetSkinMode(skintype, default_build)
 	self.inst.Network:SetPlayerSkin( self.skin_name or "", self.clothing["body"] or "", self.clothing["hand"] or "", self.clothing["legs"] or "", self.clothing["feet"] or "" )
 end
 
+local function MergeCantTagsAndCheckForbidden(canttags, overridedata)
+    if overridedata.tags then
+        for _, tag in ipairs(overridedata.tags) do
+            if canttags[tag] then
+                return true
+            end
+        end
+    end
+
+    if overridedata.canttags then
+        for _, tag in ipairs(overridedata.canttags) do
+            if canttags[tag] then
+                return true
+            end
+        end
+    end
+
+    -- All good to merge.
+    if overridedata.canttags then
+        for _, tag in ipairs(overridedata.canttags) do
+            canttags[tag] = true
+        end
+    end
+    return false
+end
+
+function Skinner:SetSkinOverrides(skinoverrides)
+    if self.skinoverrides then
+        for _, override in ipairs(self.skinoverrides) do
+            local overridedata = SKINOVERRIDES[override]
+            if overridedata and overridedata.onclearfn then
+                overridedata.onclearfn(self.inst)
+            end
+        end
+    end
+    local validated_skinoverrides = nil
+    if skinoverrides then
+        local canttags = {}
+        for _, override in ipairs(skinoverrides) do
+            if (not InGamePlay() or self.inst.userid and TheInventory:CheckClientOwnership(self.inst.userid, override)) then
+                local overridedata = SKINOVERRIDES[override]
+                if overridedata then
+                    if (overridedata.character == nil) or (overridedata.character == self.inst.prefab) then
+                        local forbidden = MergeCantTagsAndCheckForbidden(canttags, overridedata)
+                        if not forbidden then
+                            if not validated_skinoverrides then
+                                validated_skinoverrides = {override}
+                            else
+                                table.insert(validated_skinoverrides, override)
+                            end
+                            if overridedata.oninitfn then
+                                overridedata.oninitfn(self.inst)
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    self.skinoverrides = validated_skinoverrides
+end
+
+function Skinner:SetItemIdleAnimation(item_type) -- Added automatically from SetSkinOverrides.
+    local anim = nil
+    if item_type then
+        if (not InGamePlay() or self.inst.userid and TheInventory:CheckClientOwnership(self.inst.userid, item_type)) then
+            local idleanimationdata = IDLEANIMATIONS_ITEMS[item_type]
+            if idleanimationdata and idleanimationdata.data and idleanimationdata.data.anim then
+                anim = idleanimationdata.data.anim
+            end
+        end
+    end
+
+    if anim then
+        self.itemidleanimationdata = {anim = anim, item_type = item_type}
+    else
+        self.itemidleanimationdata = nil
+    end
+
+    return (self.itemidleanimationdata ~= nil) == (item_type ~= nil)
+end
+
+function Skinner:GetItemIdleAnimationData()
+    return self.itemidleanimationdata
+end
+
 function Skinner:SetupNonPlayerData()
 	self.skin_name = "NON_PLAYER"
 	self.skin_data = {}
@@ -715,7 +801,14 @@ function Skinner:GetCopiedPlayerData()
 end
 
 function Skinner:OnSave()
-	return {skin_name = self.skin_name, clothing = self.clothing, monkey_curse = self.monkey_curse, skin_mode = self.skintype, copiedplayer_data = self.copiedplayer_data}
+	return {
+        skin_name = self.skin_name,
+        clothing = self.clothing,
+        monkey_curse = self.monkey_curse,
+        skin_mode = self.skintype,
+        copiedplayer_data = self.copiedplayer_data,
+        skinoverrides = self.skinoverrides,
+    }
 end
 
 function Skinner:OnLoad(data)
@@ -759,6 +852,15 @@ function Skinner:OnLoad(data)
         end
 		self:SetSkinName(skin_name, true)
 	end
+
+    if data.skinoverrides then
+        self:SetSkinOverrides(data.skinoverrides)
+    else
+        -- FIXME(JBK): skinoverrides: HACK
+        if self.inst.prefab == "wx78" and (not InGamePlay() or self.inst.userid and TheInventory:CheckClientOwnership(self.inst.userid, "idleanimations_wx78_headadjust")) then
+            self:SetSkinOverrides({"idleanimations_wx78_headadjust"})
+        end
+    end
 end
 
 return Skinner

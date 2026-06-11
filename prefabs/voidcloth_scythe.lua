@@ -219,7 +219,7 @@ local function IsEntityInFront(inst, entity, doer_rotation, doer_pos)
 end
 
 local HARVEST_MUSTTAGS  = {"pickable"}
-local HARVEST_CANTTAGS  = {"INLIMBO", "FX"}
+local HARVEST_CANTTAGS  = { "INLIMBO", "FX", "intense" }
 
 local function DoScythe(inst, target, doer)
     inst:SayRandomLine(STRINGS.VOIDCLOTH_SCYTHE_TALK.onharvest, doer)

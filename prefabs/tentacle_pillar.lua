@@ -8,6 +8,7 @@ local prefabs =
 {
     "tentacle_pillar_arm",
     "tentacle_pillar_hole",
+    "globalmapiconseeable",
 
     --loot
     "tentaclespike",
@@ -314,7 +315,7 @@ end
 
 local function CreateHiddenGlobalIcon(inst)
 	inst.hiddenglobalicon = SpawnPrefab("globalmapiconseeable")
-	inst.hiddenglobalicon.MiniMapEntity:SetPriority(50) -- NOTES(JBK): This could be put to a constant for map actions that should go over everything as a reserved flag.
+	inst.hiddenglobalicon.MiniMapEntity:SetPriority(MINIMAP_DECORATION_PRIORITY)
 	inst.hiddenglobalicon.MiniMapEntity:SetRestriction("wormholetracker")
 	inst.hiddenglobalicon:AddTag("wormholetrackericon")
 	inst.hiddenglobalicon:TrackEntity(inst)

@@ -391,7 +391,7 @@ local function teleport_func(inst, target, pos, caster)
 				or nil
 
 		if loctarget == nil and not target_in_ocean then
-			loctarget = FindNearestActiveTelebase(x, y, z, nil, 1)
+			loctarget = FindNearestActiveTelebase(x, y, z, nil, 1, "purplegem")
 		end
 	end
 	teleport_start(target, inst, caster, loctarget, target_in_ocean, no_teleport)

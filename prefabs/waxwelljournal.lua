@@ -93,7 +93,7 @@ local function FindSpawnPoints(doer, pos, num, radius)
 		radius = 0
 	end
 	for i = 1, num do
-		local offset = FindWalkableOffset(pos, theta, radius, attempts, false, false, NotBlocked, true, true)
+		local offset = FindWalkableOffset(pos, theta, radius, attempts, false, false, NotBlocked, true, true, true)
 		if offset ~= nil then
 			table.insert(ret, Vector3(pos.x + offset.x, 0, pos.z + offset.z))
 		end

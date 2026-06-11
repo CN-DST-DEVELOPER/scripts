@@ -248,6 +248,9 @@ function InventoryItem:SerializeUsage()
         self.classified:SerializeRecharge(nil)
         self.classified:SerializeRechargeTime(nil)
     end
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.classified:SerializeTemperature(self:GetTemperature())
+    end
 end
 
 function InventoryItem:DeserializeUsage()
@@ -256,6 +259,7 @@ function InventoryItem:DeserializeUsage()
         self.classified:DeserializePerish()
         self.classified:DeserializeRecharge()
         self.classified:DeserializeRechargeTime()
+        self.classified:DeserializeTemperature()
     end
 end
 
@@ -489,6 +493,34 @@ end
 
 function InventoryItem:SetGrabbableOverrideTag(tag)
     self._grabbableoverridetag:set(tag or 0)
+end
+
+function InventoryItem:SetTemperature(temperature)
+    if self.classified ~= nil then
+        self.classified:SerializeTemperature(temperature)
+    end
+end
+
+-- function InventoryItem:SetMinTemperature(mintemperature)
+--     if self.classified ~= nil then
+--         self.classified:SerializeTemperature(nil, mintemperature)
+--     end
+-- end
+
+-- function InventoryItem:SetMaxTemperature(maxtemperature)
+--     if self.classified ~= nil then
+--         self.classified:SerializeTemperature(nil, nil, maxtemperature)
+--     end
+-- end
+
+function InventoryItem:GetTemperature()
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        return self.inst.components.inventoryitemtemperature.temperature
+    elseif self.classified ~= nil then
+        return self.classified.temperature:value()
+    else
+        return 0
+    end
 end
 
 return InventoryItem

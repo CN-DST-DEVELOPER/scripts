@@ -1986,6 +1986,7 @@ local function dofreeze(inst)
     local range = inst.crab and inst.crab:IsValid() and inst.crab:GetFreezeRange() or (TUNING.CRABKING_FREEZE_RANGE * 0.75)
     local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, range, nil, FREEZE_CANT_TAGS)
     for i,v in pairs(ents)do
+        -- NOTE: this code is not used anymore, but if it were reused, please use GetEntityTemperature and SetEntityTemperature to account for items
         if v.components.temperature then
             local rate = (TUNING.CRABKING_BASE_FREEZE_AMOUNT + ((inst.crab and inst.crab:IsValid() and inst.crab.gemcount.blue or 0) * TUNING.CRABKING_FREEZE_INCRAMENT)) /( (TUNING.CRABKING_CAST_TIME_FREEZE - (inst.crab and inst.crab:IsValid() and math.floor(inst.crab.gemcount.yellow/2) or 0) ) /interval)
             if v.components.moisture then

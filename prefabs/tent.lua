@@ -123,13 +123,14 @@ local function onload(inst, data)
 end
 
 local function temperaturetick(inst, sleeper)
-    if sleeper.components.temperature ~= nil then
+    local ent_temp = GetEntityTemperature(sleeper)
+    if ent_temp ~= nil then
         if inst.is_cooling then
-            if sleeper.components.temperature:GetCurrent() > TUNING.SLEEP_TARGET_TEMP_TENT then
-                sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() - TUNING.SLEEP_TEMP_PER_TICK)
+            if ent_temp > TUNING.SLEEP_TARGET_TEMP_TENT then
+                SetEntityTemperature(sleeper, ent_temp - TUNING.SLEEP_TEMP_PER_TICK)
             end
-        elseif sleeper.components.temperature:GetCurrent() < TUNING.SLEEP_TARGET_TEMP_TENT then
-            sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() + TUNING.SLEEP_TEMP_PER_TICK)
+        elseif ent_temp < TUNING.SLEEP_TARGET_TEMP_TENT then
+            SetEntityTemperature(sleeper, ent_temp + TUNING.SLEEP_TEMP_PER_TICK)
         end
     end
 end

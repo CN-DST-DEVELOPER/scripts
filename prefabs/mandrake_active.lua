@@ -171,6 +171,8 @@ local function fn()
 
 	MakeSmallBurnableCharacter(inst, "swap_fire")
 	inst.components.burnable.nocharring = true
+    inst.components.burnable:SetBurnTime(6 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
 	MakeTinyFreezableCharacter(inst, "swap_fire")
 

@@ -35,7 +35,7 @@ local function RemoveGridPillar(inst, pillar)
 	local id = pillar.row and GridId(pillar.row, pillar.col)
 	if inst.grid[id] == pillar then
 		inst.grid[id] = nil
-		pillar.row, pillar.col = nil
+		pillar.row, pillar.col = nil, nil
 	end
 end
 
@@ -407,6 +407,22 @@ local function SetSpawnXZ(inst, x, z)
 	inst.spawnx, inst.spawnz = x, z
 end
 
+local function IsPillarAvailable(inst, row, col)
+	local pillar = GetGridPillar(inst, row, col)
+	return pillar ~= nil and not pillar.components.walkableplatform:IsFull()
+end
+
+local function CheckIsolatedPillar(inst, pillar)
+	return IsGridPillar(inst, pillar)
+		and pillar.row > 0
+		and pillar.row < 6
+		and not (	IsPillarAvailable(inst, pillar.row - 1, pillar.col) or
+					IsPillarAvailable(inst, pillar.row + 1, pillar.col) or
+					IsPillarAvailable(inst, pillar.row, pillar.col - 1) or
+					IsPillarAvailable(inst, pillar.row, pillar.col + 1)
+				)
+end
+
 --------------------------------------------------------------------------
 --These are so we can detect earlier when a player is about to jump onto the first pillar
 
@@ -609,6 +625,7 @@ local function fn()
 
 	inst.SetSpawnXZ = SetSpawnXZ
 	inst.SetMinion = SetMinion
+	inst.CheckIsolatedPillar = CheckIsolatedPillar
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
 	inst.OnEntityWake = OnEntityWake

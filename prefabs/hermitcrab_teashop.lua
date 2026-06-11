@@ -234,7 +234,7 @@ local function OnIgnite(inst, data)
         local strtbl = STRINGS[chatlines]
         local strid = math.random(#strtbl)
         hermitcrab.components.npc_talker:Chatter(chatlines, strid, CHATPRIORITIES.LOW, true)
-        hermitcrab.components.npc_talker:donextline() -- hack, exiting out of limbo resets our queue
+        hermitcrab.components.npc_talker:DoNextLine() -- hack, exiting out of limbo resets our queue
     end
 end
 

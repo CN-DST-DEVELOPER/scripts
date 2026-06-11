@@ -117,7 +117,7 @@ local function fn()
 
     -----------------------
     inst:AddComponent("burnable")
-    inst.components.burnable:AddBurnFX("nightlight_flame", Vector3(0, 0, 0), "fire_marker")
+    inst.components.burnable:AddBurnFX("nightlight_flame", Vector3(0, 0, 0), "fire_marker", true)
     inst.components.burnable.canlight = false
     inst:ListenForEvent("onextinguish", onextinguish)
 	inst:ListenForEvent("onignite", onignite)

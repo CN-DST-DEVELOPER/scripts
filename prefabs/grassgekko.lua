@@ -80,6 +80,7 @@ local function OnLoad(inst, data)
     end
 end
 
+local FX_OFFSET = Vector3(1, 0, 1)
 local function fn()
     local inst = CreateEntity()
 
@@ -155,8 +156,10 @@ local function fn()
 
     inst:AddComponent("drownable")
 
-    MakeSmallBurnableCharacter(inst, "grassgecko_body", Vector3(1,0,1))
+    MakeSmallBurnableCharacter(inst, "grassgecko_body", FX_OFFSET)
     MakeSmallFreezableCharacter(inst)
+    inst.components.burnable:SetBurnTime(6 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGgrassgekko")

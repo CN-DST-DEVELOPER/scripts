@@ -47,7 +47,8 @@ local function DoUpdate(inst)
 	local self = inst.components.inventoryitemmoisture
 	local dt = self.moistureupdatetask.period
 	local nextdt = self:UpdateMoisture(dt) and UPDATE_TIME or SLOW_UPDATE_TIME
-	if dt ~= nextdt then
+	-- The entity could become invalid from UpdateMoisture, if something external deleted it from the onmoisturedeltacallback callback.
+	if dt ~= nextdt and inst:IsValid() then
 		self.moistureupdatetask:Cancel()
 		self.moistureupdatetask = inst:DoPeriodicTask(nextdt, DoUpdate)
 	end
@@ -59,8 +60,6 @@ end
 
 local InventoryItemMoisture = Class(function(self, inst)
     self.inst = inst
-
-    self.lastUpdate = GetTime()
 
     self._replica = nil
     --Don't initialize .moisture and .iswet until we have a link to inventoryitem replica
@@ -219,7 +218,7 @@ function InventoryItemMoisture:GetTargetMoisture()
 			end
 		end
 	end
-	local value = (self.inst.components.floater ~= nil and self.inst.components.floater.showing_effect and TUNING.MAX_WETNESS)
+	local value = (self.inst.components.floater ~= nil and self.inst.components.floater:IsFloating() and TUNING.MAX_WETNESS)
 		or (exposedroot and (TheWorld.state.israining and exposedroot.components.rainimmunity == nil and TheWorld.state.wetness or 0))
         or (owner.components.moisture ~= nil and owner.components.moisture:GetMoisture())
         or 0

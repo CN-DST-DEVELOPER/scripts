@@ -5,6 +5,10 @@ local assets =
     Asset("SOUND", "sound/common.fsb"),
 }
 
+local prefabs = {
+    "globalmapiconseeable",
+}
+
 local function GetStatus(inst)
     return inst.sg.currentstate.name ~= "idle" and "OPEN" or nil
 end

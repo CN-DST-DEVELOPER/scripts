@@ -349,8 +349,6 @@ local function rock_ice_fn()
     inst._stage = net_tinybyte(inst.GUID, "rock_ice.stage", "stagedirty")
     inst._stage:set(STAGE_INDICES["tall"])
 
-    inst.entity:SetPristine()
-
     if not TheNet:IsDedicated() then
         inst._puddle = SpawnPrefab("ice_puddle")
         inst._puddle.entity:SetParent(inst.entity)
@@ -361,6 +359,8 @@ local function rock_ice_fn()
     end
 
     OnStageDirty(inst)
+
+    inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst

@@ -16,6 +16,7 @@ local PopupDialogScreen = require "screens/redux/popupdialog"
 local RedeemDialog = require "screens/redeemdialog"
 local Puppet = require "widgets/skinspuppet"
 local WardrobeScreen = require "screens/redux/wardrobescreen"
+local BarterQueue = require "barterqueue"
 
 local KitcoonPuppet = require "widgets/kitcoonpuppet"
 
@@ -91,6 +92,8 @@ function PlayerSummaryScreen:DoInit()
             end
         end)
     end
+
+	self:SetupUnravelButton()
 end
 
 function PlayerSummaryScreen:_BuildItemsSummary()
@@ -171,6 +174,8 @@ function PlayerSummaryScreen:_BuildItemsSummary()
 			for key,count in pairs(GetMysteryBoxCounts()) do
 				box_count = box_count + count
 			end
+
+			self:RefreshUnravelDuplicatesButton()
 		end
     end
 
@@ -367,6 +372,8 @@ function PlayerSummaryScreen:OnBecomeActive()
     self:StartMusic()
 
     DisplayInventoryFailedPopup( self )
+
+	self:RefreshUnravelDuplicatesButton()
 end
 
 function PlayerSummaryScreen:OnBecomeInactive()
@@ -514,6 +521,61 @@ function PlayerSummaryScreen:OnUpdate(dt)
     for _,puppet in pairs( self.posse ) do
         puppet:EmoteUpdate(dt)
     end
+end
+
+function PlayerSummaryScreen:SetupUnravelButton()
+    local scale = 1.0
+    local w = 200 * scale
+    local h = 40 * scale
+
+    self.unravel_button = TEMPLATES.IconButton("images/button_icons.xml", "weave_filter_on.tex", STRINGS.UI.BARTER_QUEUE.TOOLTIP_ON, false, false, function() self:UnravelDuplicates()() end)
+    self.unravel_button:SetPosition(-350, -275)
+    self.root:AddChild(self.unravel_button)
+	self.unravel_button:Disable()
+
+    self.menu:SetFocusChangeDir(MOVE_RIGHT, self.unravel_button)
+    self.unravel_button:SetFocusChangeDir(MOVE_LEFT, self.menu)
+    self.unravel_button:SetFocusChangeDir(MOVE_DOWN, self.menu)
+end
+
+function PlayerSummaryScreen:RefreshUnravelDuplicatesButton()
+	if BarterQueue then
+		if TheFrontEnd.barter_widget and TheFrontEnd.barter_widget:IsVisible() then
+			self.unravel_button:Enable()
+			self.unravel_button:SetHoverText(STRINGS.UI.BARTER_QUEUE.TOOLTIP_CANCEL)
+			self.unravel_button.icon:SetTexture("images/button_icons.xml", "weave_filter_off.tex" )
+			self.unravel_button:SetOnClick(function() self:CancelUnravelDuplicates() end)
+		else
+			local totDupes, totSpool, dupes = BarterQueue.GetInfo()
+			if totDupes > 0 then
+				self.unravel_button:Enable()
+				self.unravel_button:SetHoverText(STRINGS.UI.BARTER_QUEUE.TOOLTIP_UNRAVEL)
+				self.unravel_button.icon:SetTexture("images/button_icons.xml", "weave_filter_on.tex" )
+				self.unravel_button:SetOnClick(function() self:UnravelDuplicates() end)
+			else
+				self.unravel_button:Disable()
+				self.unravel_button:SetHoverText(STRINGS.UI.BARTER_QUEUE.TOOLTIP_UNRAVEL_DISABLED)
+				self.unravel_button.icon:SetTexture("images/button_icons.xml", "weave_filter_on.tex" )
+			end
+		end
+	else
+		self.unravel_button:Hide()
+	end
+end
+
+function PlayerSummaryScreen:BarterQueueUpdate()
+	self:RefreshUnravelDuplicatesButton()
+end
+
+function PlayerSummaryScreen:UnravelDuplicates()
+	BarterQueue.UnravelDuplicates() 
+end
+
+function PlayerSummaryScreen:CancelUnravelDuplicates()
+	BarterQueue.CancelUnravelDuplicates() 
+	self.unravel_button:SetHoverText(STRINGS.UI.BARTER_QUEUE.TOOLTIP_UNRAVEL)
+	self.unravel_button.icon:SetTexture("images/button_icons.xml", "weave_filter_on.tex" )
+	self.unravel_button:SetOnClick(function() BarterQueue.UnravelDuplicates() end)
 end
 
 return PlayerSummaryScreen

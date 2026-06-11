@@ -106,6 +106,7 @@ function Weapon:OnAttack(attacker, target, projectile)
     if self.onattack ~= nil then
         self.onattack(self.inst, attacker, target)
     end
+    self.inst:PushEvent("weapononattack", { attacker = attacker, target = target })
 
 	if self.inst.components.finiteuses ~= nil and not self.inst.components.finiteuses:IgnoresCombatDurabilityLoss()
 		and not (projectile ~= nil and projectile.components.projectile ~= nil and projectile.components.projectile:IsBounced())

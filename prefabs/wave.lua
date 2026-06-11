@@ -24,13 +24,8 @@ local function DoSplash(inst)
 
     local ents = TheSim:FindEntities(pos.x, pos.y, pos.z, 4)
     for _, v in pairs(ents) do
-        local moisture = v.components.moisture
-        if moisture ~= nil then
-            local waterproofness = moisture:GetWaterproofness()
-            moisture:DoDelta(SPLASH_WETNESS * (1 - waterproofness))
-
-            local entity_splash = SpawnPrefab("splash")
-            entity_splash.Transform:SetPosition(v:GetPosition():Get())
+        if DoDeltaMoistureToEntity(v, SPLASH_WETNESS) then
+            SpawnPrefab("splash").Transform:SetPosition(v.Transform:GetWorldPosition())
         end
     end
 

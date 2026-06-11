@@ -367,7 +367,30 @@ local function ClearWatcherTable(inst, tbl)
 	end
 end
 
-local FIRE_MUST_TAGS = {"fire",}
+local FIRE_ONEOF_TAGS = { "fire", "heatstar" }
+local FIRE_CANT_TAGS = { "shadow_fire", "blueflame" }
+local function TestFireFn(guy, inst)
+    -- night stick shouldnt burn miasma, return true for stuff that can light, like torch and willows lighter
+    if guy.components.burnable and guy.components.equippable then
+        return guy.components.lighter ~= nil
+    end
+
+    return true
+end
+
+local function ForceKillMiasma(inst)
+    inst.force_killed = true
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local miasmamanager = TheWorld.components.miasmamanager
+    if miasmamanager and miasmamanager:GetMiasmaAtPoint(x, y, z) then
+        miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, true)
+    elseif inst._miasma_kill_task == nil then
+        -- Fake diminishing an unmanaged miasma cloud.
+        inst._miasma_kill_task = inst:DoTaskInTime(TUNING.MIASMA_DIMINISH_INTERVAL_SECONDS * TUNING.MIASMA_MAXSTRENGTH, inst.Remove)
+    end
+    inst._diminishing:set(true)
+end
+
 local FIRE_RADIUS = MIASMA_RADIUS + 1 -- Small fudge factor.
 local function OnUpdate(inst)
 	local temp = inst.watchers_toremove
@@ -392,7 +415,14 @@ local function OnUpdate(inst)
 	end
 
     local miasmamanager = TheWorld.components.miasmamanager
-    local nearestfire = TheSim:FindEntities(x, y, z, FIRE_RADIUS, FIRE_MUST_TAGS)[1]
+    local ents = TheSim:FindEntities(x, y, z, FIRE_RADIUS, nil, FIRE_CANT_TAGS, FIRE_ONEOF_TAGS)
+    local nearestfire
+    for i, v in ipairs(ents) do
+        if TestFireFn(v, inst) then
+            nearestfire = v
+            break
+        end
+    end
     if nearestfire then
         if miasmamanager and miasmamanager:GetMiasmaAtPoint(x, y, z) then
             miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, true)
@@ -401,7 +431,7 @@ local function OnUpdate(inst)
             inst._miasma_kill_task = inst:DoTaskInTime(TUNING.MIASMA_DIMINISH_INTERVAL_SECONDS * TUNING.MIASMA_MAXSTRENGTH, inst.Remove)
         end
         inst._diminishing:set(true)
-    else
+    elseif not inst.force_killed then
         if miasmamanager and miasmamanager:GetMiasmaAtPoint(x, y, z) then
             miasmamanager:SetMiasmaDiminishingAtPoint(x, y, z, false)
         elseif inst._miasma_kill_task ~= nil then
@@ -571,6 +601,7 @@ local function fn()
     inst.ClearWatcherTable = ClearWatcherTable
     inst.StartAllWatchers = StartAllWatchers
     inst.StopAllWatchers = StopAllWatchers
+    inst.ForceKillMiasma = ForceKillMiasma
 
     _MiasmaCloudCount = _MiasmaCloudCount + 1
     if _MiasmaCloudCount == 1 then

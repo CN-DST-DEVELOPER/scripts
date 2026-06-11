@@ -1585,16 +1585,27 @@ function ToggleOnCharacterCollisions(inst)
 end
 
 function ToggleOffAllObjectCollisions(inst)
-    if not (inst.sg.mem.isobstaclepassthrough and inst.sg.mem.ischaracterpassthrough) then
-        inst.sg.mem.isobstaclepassthrough = true
-        inst.sg.mem.ischaracterpassthrough = true
-		inst.Physics:ClearCollidesWith(bit.bor(
-			COLLISION.CHARACTERS,
-			COLLISION.OBSTACLES,
-			COLLISION.SMALLOBSTACLES,
-			COLLISION.GIANTS
-		))
-    end
+	local oldmask = inst.Physics:GetCollisionMask()
+	local newmask = oldmask
+	if not inst.sg.mem.ischaracterpassthrough and bit.band(newmask, COLLISION.CHARACTERS) ~= 0 then
+		inst.sg.mem.ischaracterpassthrough = true
+		newmask = bit.bxor(newmask, COLLISION.CHARACTERS)
+	end
+	if not inst.sg.mem.isobstaclepassthrough then
+		local obstaclepassthroughmask = bit.band(newmask,
+			bit.bor(COLLISION.OBSTACLES,
+			bit.bor(COLLISION.SMALLOBSTACLES,
+					COLLISION.GIANTS))
+		)
+		if obstaclepassthroughmask ~= 0 then
+			newmask = bit.bxor(newmask, obstaclepassthroughmask)
+			inst.sg.mem.isobstaclepassthrough = true
+			inst.sg.mem.obstaclepassthroughmask = obstaclepassthroughmask
+		end
+	end
+	if newmask ~= oldmask then
+		inst.Physics:SetCollisionMask(newmask)
+	end
     if inst.sg.mem.physicstask ~= nil then
         inst.sg.mem.physicstask:Cancel()
         inst.sg.mem.physicstask = nil
@@ -1607,11 +1618,12 @@ end
 function ToggleOnAllObjectCollisionsAt(inst, x, z)
     if inst.sg.mem.isobstaclepassthrough then
         inst.sg.mem.isobstaclepassthrough = nil
-        inst.Physics:CollidesWith(bit.bor(
-        	COLLISION.OBSTACLES,
-			COLLISION.SMALLOBSTACLES,
-			COLLISION.GIANTS
-        ))
+		inst.Physics:CollidesWith(inst.sg.mem.obstaclepassthroughmask or
+			bit.bor(COLLISION.OBSTACLES,
+			bit.bor(COLLISION.SMALLOBSTACLES,
+					COLLISION.GIANTS))
+		)
+		inst.sg.mem.obstaclepassthroughmask = nil
     end
     inst.Physics:Teleport(x, 0, z)
     ToggleOnCharacterCollisions(inst)
@@ -1931,4 +1943,126 @@ function MakeHermitCrabAreaListener(inst, callbackfn)
 		inst:ListenForEvent("entitywake", UpdateWithinStatus)
 		inst:ListenForEvent("entitysleep", UpdateWithinStatus)
 	end
+end
+
+--------------------------------------------------------------------------
+
+local function fumarole_OnTemperatureDelta(inst, data)
+    if not inst:HasTag("broken") then -- because repair and this callback can happen at the same event push
+        return
+    end
+    local target_temp = inst.components.inventoryitemtemperature:GetTargetTemperature()
+	local target_delta = target_temp - inst.components.inventoryitem:GetTemperature()
+    if target_delta > TUNING.FUMAROLETOOL_HEATING_THRESHOLD and not inst._reheating then
+        inst.AnimState:PlayAnimation("broken_reheating_pre")
+        inst.AnimState:PushAnimation("broken_reheating_loop")
+        inst._reheating = true
+    elseif inst._reheating and target_delta <= TUNING.FUMAROLETOOL_HEATING_MINTHRESHOLD then
+        inst.AnimState:PlayAnimation("broken_reheating_pst")
+        inst.AnimState:PushAnimation("broken", false)
+        inst._reheating = nil
+    end
+end
+
+local function GetFumaroleHeatFn(inst)
+    return inst.components.inventoryitem:GetTemperature()
+end
+
+local function GetFumaroleToolStatus(inst)
+    local temprange = inst.components.fumaroletool:GetTempRange()
+    return (temprange == 2 and "LUKEWARM")
+        or (temprange == 3 and "WARM")
+        or (temprange == 4 and "HOT")
+end
+
+local function GetFumaroleDamageMultFn(inst, target)
+    local temprange = inst.components.fumaroletool:GetTempRange()
+    if target:HasTag("frozen") then
+        return TUNING.FUMAROLETOOL_FROZEN_DAMAGE_MULTS[temprange]
+    elseif target.components.freezable ~= nil then
+        if target.components.freezable:IsFrozen() then
+            return TUNING.FUMAROLETOOL_FROZEN_DAMAGE_MULTS[temprange]
+        elseif target.components.freezable.coldness > 0 then
+            local percent = target.components.freezable:GetFreezePercent()
+            return Lerp(1, TUNING.FUMAROLETOOL_FREEZING_DAMAGE_MULTS[temprange], percent)
+        end
+    end
+end
+
+function MakeFumaroleToolPristine(inst)
+    inst:AddTag("heatrock")
+    --HASHEATER (from heater component) added to pristine state for optimization
+    inst:AddTag("HASHEATER")
+    --inventoryitemtemperature (from inventoryitem component) added to pristine state for optimization
+	inst:AddTag("inventoryitemtemperature")
+    inst:AddTag("show_broken_ui")
+end
+
+function MakeFumaroleTool(inst, heatonuse, onbroken, onrepaired, onupdatetemperature)
+    inst.components.inspectable.getstatus = GetFumaroleToolStatus
+    inst.components.inventoryitem:EnableTemperature(true)
+    inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", TUNING.FUMAROLETOOL_TEMP_MODIFIER)
+    inst.components.inventoryitem:SetMinTemperature(TUNING.FUMAROLETOOL_MINTEMP)
+    inst.components.inventoryitem:SetMaxTemperature(TUNING.FUMAROLETOOL_MAXTEMP)
+    if inst.components.finiteuses ~= nil then
+        inst.components.finiteuses:ClearAllConsumptions()
+        inst.components.finiteuses:SetIgnoreCombatDurabilityLoss(true)
+    end
+
+	local function _onbroken(_, isloading)
+        if inst.components.equippable:IsEquipped() then
+		    local owner = inst.components.inventoryitem.owner
+		    if owner ~= nil and owner.components.inventory ~= nil then
+		    	local item = owner.components.inventory:Unequip(inst.components.equippable.equipslot)
+		    	if item ~= nil then
+		    		owner.components.inventory:GiveItem(item, nil, owner:GetPosition())
+		    	end
+		    	owner:PushEvent("toolbroke", { tool = inst })
+		    end
+        end
+
+        if onbroken ~= nil then
+			onbroken(inst)
+		end
+
+		inst.AnimState:PlayAnimation("broken")
+		inst.components.inspectable.nameoverride = "BROKEN_FUMAROLETOOLITEM"
+        inst:ListenForEvent("temperaturedelta", fumarole_OnTemperatureDelta)
+        if inst.components.floater:IsFloating() then
+            inst.components.floater:SwitchToDefaultAnim(true)
+        end
+
+        if not isloading then
+            if inst.components.finiteuses ~= nil then
+		    	inst.components.finiteuses:Use(1)
+		    end
+		end
+	end
+
+	local function _onrepaired(_)
+        if onrepaired ~= nil then
+			onrepaired(inst)
+		end
+        if not inst.components.inventoryitem:IsHeld() then
+	        inst.AnimState:PlayAnimation("repair")
+	        inst.AnimState:PushAnimation("idle_4")
+        end
+	    inst.components.inspectable.nameoverride = nil
+        inst._reheating = nil
+        inst:RemoveEventCallback("temperaturedelta", fumarole_OnTemperatureDelta)
+	end
+
+    local heater = inst:AddComponent("heater")
+    heater.heatfn = GetFumaroleHeatFn
+    heater.equippedheatfn = GetFumaroleHeatFn
+    heater.carriedheatfn = GetFumaroleHeatFn
+
+    local fumaroletool = inst:AddComponent("fumaroletool")
+    fumaroletool:SetOnBroken(_onbroken)
+    fumaroletool:SetOnRepaired(_onrepaired)
+    fumaroletool:SetHeatOnUse(heatonuse)
+    fumaroletool:SetOnUpdateTemperatureRange(onupdatetemperature)
+
+    local damagetypebonus = inst.components.damagetypebonus or inst:AddComponent("damagetypebonus")
+    damagetypebonus:AddBonusCallback(GetFumaroleDamageMultFn)
 end

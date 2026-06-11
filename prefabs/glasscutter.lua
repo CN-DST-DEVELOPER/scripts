@@ -31,7 +31,7 @@ end
 
 local function onattack(inst, attacker, target)
 	inst.components.weapon.attackwear = target ~= nil and target:IsValid()
-		and (target:HasAnyTag("shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall"))
+		and target:HasAnyTag(PURE_SHADOW_TARGET_TAGS)
 		and TUNING.GLASSCUTTER.SHADOW_WEAR
 		or 1
 end

@@ -565,6 +565,8 @@ local prefabs =
 
     -- Year of the Clockwork Knight
     "yothknightwarningsound",
+
+    "hot_splash",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

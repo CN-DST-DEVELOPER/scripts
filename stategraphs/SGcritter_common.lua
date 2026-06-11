@@ -105,7 +105,7 @@ SGCritterStates.AddIdle = function(states, num_emotes, timeline, idle_anim_fn)
 end
 
 --------------------------------------------------------------------------
-SGCritterStates.AddEat = function(states, timeline, fns)
+SGCritterStates.AddEat = function(states, timeline, fns, nothankyou)
     table.insert(states, State{
         name = "eat",
         tags = { "busy" },
@@ -130,7 +130,7 @@ SGCritterStates.AddEat = function(states, timeline, fns)
         {
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
-					local dest_state = inst.sg.mem.queuethankyou and "emote_cute" or "idle"
+					local dest_state = (inst.sg.mem.queuethankyou and not nothankyou) and "emote_cute" or "idle"
 					inst.sg.mem.queuethankyou = nil
                     inst.sg:GoToState(dest_state)
                 end

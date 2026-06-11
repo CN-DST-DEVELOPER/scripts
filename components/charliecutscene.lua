@@ -346,6 +346,20 @@ end
 
 -----------------------------------------------------------------------------------------------
 
+function CharlieCutscene:SpawnCharlieHandKeyStone()
+    self.hand = SpawnPrefab("charlie_hand_keystone")
+
+    self.inst.components.entitytracker:TrackEntity("charlie_hand", self.hand)
+    self.hand.components.entitytracker:TrackEntity("atrium", self.inst)
+
+    local spawn_pos = self:FindCharlieHandSpawnPoint()
+
+    self.hand:Initialize(spawn_pos)
+    self.hand:ShowUp()
+end
+
+-----------------------------------------------------------------------------------------------
+
 function CharlieCutscene:IsGateRepaired()
     return self._gatefixed
 end

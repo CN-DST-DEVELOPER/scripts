@@ -142,9 +142,7 @@ local function DoDamage(inst)
 		if v.prefab == "ice" then
 			v:Remove()
 		else
-			if v.components.mine then
-				v.components.mine:Deactivate()
-			end
+			DeactivateInventoryItemBeforeLaunch(v)
 			if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 				SpikeLaunch(v, inst, .8 + radius, radius * .4, radius + v:GetPhysicsRadius(0))
 			end

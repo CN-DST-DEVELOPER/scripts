@@ -17,6 +17,9 @@ local actionhandlers =
     ActionHandler(ACTIONS.JUMPIN_MAP, "jumpin_pre"),
     ActionHandler(ACTIONS.REMOTERESURRECT, "remoteresurrect"),
     ActionHandler(ACTIONS.MIGRATE, "migrate"),
+
+    -- Rifts 7
+    ActionHandler(ACTIONS.CLIMB, "climb_pre"),
 }
 
 local events =
@@ -195,6 +198,38 @@ local states =
 
         onupdate = function(inst)
 			if inst.sg:ServerStateMatches() then
+                if inst.entity:FlattenMovementPrediction() then
+                    inst.sg:GoToState("idle", "noanim")
+                end
+            elseif inst.bufferedaction == nil then
+                inst.AnimState:PlayAnimation("appear")
+                inst.sg:GoToState("idle", true)
+            end
+        end,
+
+        ontimeout = function(inst)
+            inst:ClearBufferedAction()
+            inst.AnimState:PlayAnimation("appear")
+            inst.sg:GoToState("idle", true)
+        end,
+    },
+
+    State{
+        name = "climb_pre",
+        tags = { "doing", "busy", "canrotate" },
+        server_states = { "climb_pre", "climb" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("dissipate")
+            inst.SoundEmitter:PlaySound("dontstarve/ghost/ghost_haunt", nil, nil, true)
+
+            inst:PerformPreviewBufferedAction()
+            inst.sg:SetTimeout(TIMEOUT)
+        end,
+
+        onupdate = function(inst)
+            if inst.sg:ServerStateMatches() then
                 if inst.entity:FlattenMovementPrediction() then
                     inst.sg:GoToState("idle", "noanim")
                 end

@@ -27,6 +27,9 @@ local actionhandlers =
         end),
     ActionHandler(ACTIONS.REMOTERESURRECT, "remoteresurrect"),
     ActionHandler(ACTIONS.MIGRATE, "migrate"),
+
+    -- Rifts 7
+    ActionHandler(ACTIONS.CLIMB, "climb_pre"),
 }
 
 local events =
@@ -483,6 +486,65 @@ local states =
                 end
             end),
         },
+    },
+    
+
+    State{
+        name = "climb_pre",
+        tags = { "doing", "busy", "canrotate" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+            inst.AnimState:PlayAnimation("dissipate")
+            inst.SoundEmitter:PlaySound("dontstarve/ghost/ghost_haunt", nil, nil, true)
+        end,
+
+        events =
+        {
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() then
+                    if inst.bufferedaction ~= nil then
+                        inst:PerformBufferedAction()
+                    else
+                        inst.sg:GoToState("idle")
+                    end
+                end
+            end),
+        },
+    },
+
+    State{
+        name = "climb",
+        tags = { "doing", "busy", "canrotate" },
+
+        onenter = function(inst, data)
+            inst.components.locomotor:Stop()
+            --inst.AnimState:PlayAnimation("dissipate")
+
+            inst.sg.statemem.target = data.teleporter
+            inst.sg.statemem.teleportarrivestate = "jumpout"
+
+            inst.sg.statemem.target:PushEvent("starttravelsound", inst)
+            if inst.sg.statemem.target ~= nil and inst.sg.statemem.target.components.teleporter ~= nil
+                and inst.sg.statemem.target.components.teleporter:Activate(inst) then
+                inst.sg.statemem.isteleporting = true
+                if inst.components.playercontroller ~= nil then
+                    inst.components.playercontroller:Enable(false)
+                end
+                inst:Hide()
+            else
+                inst.sg:GoToState("jumpout")
+            end
+        end,
+
+        onexit = function(inst)
+            if inst.sg.statemem.isteleporting then
+                if inst.components.playercontroller ~= nil then
+                    inst.components.playercontroller:Enable(true)
+                end
+                inst:Show()
+            end
+        end,
     },
 
     State{

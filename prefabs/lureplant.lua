@@ -409,6 +409,8 @@ local function fn()
 
     MakeLargeBurnable(inst)
     MakeMediumPropagator(inst)
+    inst.components.burnable:SetBurnTime(30 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     MakeHauntableIgnite(inst, TUNING.HAUNT_CHANCE_OCCASIONAL)
     AddHauntableCustomReaction(inst, OnHaunt, false, false, true)

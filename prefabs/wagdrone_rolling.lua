@@ -160,7 +160,7 @@ local function fn()
 
 	inst:SetPhysicsRadiusOverride(0.4)
 	MakeCharacterPhysics(inst, 80, inst.physicsradiusoverride)
-	inst.Physics:SetCollisionMask(COLLISION.WORLD)
+	inst.Physics:ClearCollidesWith(COLLISION.GIANTS)
 
 	inst:AddTag("scarytoprey")
 	inst:AddTag("mech")

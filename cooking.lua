@@ -172,6 +172,8 @@ AddIngredientValues({"petals_evil_dried"}, {decoration = 1, magic = .5, dried = 
 
 AddIngredientValues({"wx78_foodbrick"}, {inedible = 1})
 
+AddIngredientValues({"mitegland"}, {meat=.5,monster=.5}, true)
+
 --our naming conventions aren't completely consistent, sadly
 local aliases =
 {

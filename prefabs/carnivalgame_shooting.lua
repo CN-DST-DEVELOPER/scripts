@@ -446,6 +446,7 @@ local function station_NewObject(inst, obj)
 		end
 	end
 
+	obj.proxy_destroy_entity = inst
 	inst:ListenForEvent("carnivalgame_shooting_target_hit", on_target_hit, obj)
 end
 
@@ -554,6 +555,7 @@ local function station_master_postinit(inst)
 			inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_shooting/button_press")
 		end 
 	end, button)
+	button.proxy_destroy_entity = inst
 	inst.button = button
 
 	-- template carnival game setup

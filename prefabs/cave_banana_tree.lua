@@ -129,6 +129,7 @@ local function tree_fn()
     inst.MiniMapEntity:SetIcon("cave_banana_tree.png")
 
     inst:AddTag("plant")
+    inst:AddTag("high_dolongaction")
 
     inst.AnimState:SetBank("cave_banana_tree")
     inst.AnimState:SetBuild("cave_banana_tree")

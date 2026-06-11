@@ -115,8 +115,8 @@ local states =
         end,
 
         ontimeout = function(inst)
-            if inst.components.npc_talker and inst.components.npc_talker:haslines() then
-                inst.components.npc_talker:donextline()
+            if inst.components.npc_talker and inst.components.npc_talker:HasLines() then
+                inst.components.npc_talker:DoNextLine()
             end
 
             if inst.sg.statemem.exitstate then
@@ -129,8 +129,8 @@ local states =
         events =
         {
             EventHandler("donetalking", function(inst)
-                if inst.components.npc_talker and inst.components.npc_talker:haslines() then
-                    inst.components.npc_talker:donextline()
+                if inst.components.npc_talker and inst.components.npc_talker:HasLines() then
+                    inst.components.npc_talker:DoNextLine()
                 end
 
                 if inst.sg.statemem.exitstate then
@@ -679,8 +679,8 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                if inst.components.npc_talker:haslines() then
-                    inst.components.npc_talker:donextline()
+                if inst.components.npc_talker:HasLines() then
+                    inst.components.npc_talker:DoNextLine()
                     inst.sg:GoToState("talkto")
                 else
                     inst.sg:GoToState("idle")

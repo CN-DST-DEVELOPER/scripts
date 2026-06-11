@@ -171,6 +171,9 @@ function SourceModifierList:HasModifier(source, key)
     if src_params == nil then
         return false
     end
+    if key == nil then
+        key = "key"
+    end
     return src_params.modifiers[key] ~= nil
 end
 

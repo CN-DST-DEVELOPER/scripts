@@ -284,6 +284,7 @@ local function commonfn(Sim)
     inst:AddTag("flying")
     inst:AddTag("NOBLOCK")                  -- To not block boat deployment.
     inst:AddTag("oceanvine")
+    inst:AddTag("high_dolongaction")
 --[[
     if not TheNet:IsDedicated() then
         inst:AddComponent("distancefade")

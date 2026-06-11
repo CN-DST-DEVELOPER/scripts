@@ -58,6 +58,7 @@ self.UPDATE_TICK_TIME = 1
 self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT = 10
 self.updaterotatecooldownticks = self.UPDATE_ROTATE_ROOMS_COOLDOWN_TICKS_COUNT
 
+self.roomsdirectioncache = {} -- e.g. [roomid][roomid2] = { dist = dist, direction = direction },
 
 function self:DeclareRoom(roomid, roomindex)
     self.maxroomindex = self.maxroomindex + 1
@@ -82,7 +83,7 @@ function self:LinkRooms(roomid, direction, linkedroom, linkeddirection)
     link.linkeddirection = linkeddirection
     if linkedroom == "lobby" then
         roomdata.haslobby = true
-        if not direction == DIRECTIONS.S then
+        if direction ~= DIRECTIONS.S then
             print("Vault Room Manager does not like a lobby to vault linking to a room not at the south.")
             assert(false, "You must fix this.")
         else
@@ -104,6 +105,10 @@ function self:MakeLinkUnderConstruction(roomid, direction)
     local roomdata = self.rooms[roomid]
     local link = roomdata.links[direction]
     link.underconstruction = true
+end
+function self:MakeRoomGrueImmuneArea(roomid)
+    local roomdata = self.rooms[roomid]
+    roomdata.grueimmunearea = true
 end
 
 ------------------
@@ -245,6 +250,8 @@ function self:CreateLayoutV2()
     self:DeclareRoom("generator1", 16)
     self:DeclareRoom("playbill1", 17)
     self:DeclareRoom("fountain1", 18)
+    -- rifts 7
+    self:DeclareRoom("decon1", 19)
     ------------------
     self:LinkRooms("mask1", DIRECTIONS.N, "teleport1", DIRECTIONS.S)
     self:LinkRooms("mask1", DIRECTIONS.S, "lobby", nil)
@@ -269,15 +276,21 @@ function self:CreateLayoutV2()
     self:MakeLinkRigid("puzzle1", DIRECTIONS.N)
     self:MakeLinkRigid("puzzle1", DIRECTIONS.S)
 
-    self:LinkRooms("lore3", DIRECTIONS.N, "key1", DIRECTIONS.S)
+    self:LinkRooms("lore3", DIRECTIONS.N, "decon1", DIRECTIONS.S)
     self:LinkRoomsBroken("lore3", DIRECTIONS.E, "generator1", DIRECTIONS.W)
     self:LinkRooms("lore3", DIRECTIONS.S, "puzzle1", DIRECTIONS.N)
     self:LinkRooms("lore3", DIRECTIONS.W, "fountain2", DIRECTIONS.E)
     self:MakeLinkRigid("lore3", DIRECTIONS.N)
     self:MakeLinkRigid("lore3", DIRECTIONS.S)
-    self:MakeLinkUnderConstruction("lore3", DIRECTIONS.N) -- TODO(JBK): Remove this when no longer under construction.
 
-    self:LinkRoomsBroken("key1", DIRECTIONS.S, "lore3", DIRECTIONS.N)
+    self:LinkRooms("decon1", DIRECTIONS.S, "lore3", DIRECTIONS.N)
+    self:LinkRooms("decon1", DIRECTIONS.N, "key1", DIRECTIONS.S)
+    self:MakeLinkRigid("decon1", DIRECTIONS.N)
+    self:MakeLinkRigid("decon1", DIRECTIONS.S)
+
+    self:LinkRooms("key1", DIRECTIONS.S, "decon1", DIRECTIONS.N)
+    self:MakeLinkRigid("key1", DIRECTIONS.S)
+    self:MakeRoomGrueImmuneArea("key1")
 
     self:LinkRooms("hall1", DIRECTIONS.N, "lore1", DIRECTIONS.S)
     self:LinkRooms("hall1", DIRECTIONS.E, "teleport1", DIRECTIONS.W)
@@ -341,9 +354,14 @@ function self:CreateLayoutV2()
     self:LinkRooms("hall7", DIRECTIONS.W, "generator1", DIRECTIONS.E)
 end
 
+function self:ResetAllRepairedLinks()
+	self.repairedlinks = {}
+	self.roomsdirectioncache = {}
+end
 function self:DeleteLayout()
     self.maxroomindex = 0
     self.rooms = {}
+	self:ResetAllRepairedLinks()
 end
 local CURRENT_VERSION = 2
 self.version = CURRENT_VERSION
@@ -358,6 +376,52 @@ end
 self:CreateLayout(self.version)
 ------------------
 
+local function RecurseRoomNeighboursDistanceCache(roomid, roomlinks, dist, directionbefore)
+    local nextdist = dist + 1
+    for direction, roomlink in pairs(roomlinks) do
+        local originaldirection = directionbefore or direction
+        local linkedroomdata = self.rooms[roomlink.linkedroom]
+        if linkedroomdata ~= nil then
+            local link = self.rooms[roomid].links[direction]
+            local linkedlink = link and linkedroomdata.links[link.linkeddirection] or nil
+            if (dist < ((self.roomsdirectioncache[roomid][roomlink.linkedroom] and self.roomsdirectioncache[roomid][roomlink.linkedroom].dist) or math.huge))
+                and linkedlink and not self:IsLinkBroken(linkedroomdata, link.linkeddirection, linkedlink) then
+                self.roomsdirectioncache[roomid][roomlink.linkedroom] = { dist = dist, direction = originaldirection }
+
+                local nextroomlinks = self.rooms[roomlink.linkedroom] ~= nil and self.rooms[roomlink.linkedroom].links or nil
+                if nextroomlinks then
+                    RecurseRoomNeighboursDistanceCache(roomid, nextroomlinks, nextdist, originaldirection)
+                end
+            end
+        end
+    end
+end
+
+function self:_ClearRoomDirectionsCache(roomid)
+    self.roomsdirectioncache[roomid] = nil
+    for id, otherroomid in pairs(self.roomsdirectioncache) do
+        if otherroomid == roomid then
+            self.roomsdirectioncache[id] = nil
+        end
+    end
+end
+
+function self:_CacheRoomDirectionsAndDistances(roomid)
+    local roomdata = self.rooms[roomid]
+    if roomdata and self.roomsdirectioncache[roomid] == nil then
+        self.roomsdirectioncache[roomid] = {}
+
+        local dist = 1
+        RecurseRoomNeighboursDistanceCache(roomid, roomdata.links, dist)
+    end
+end
+
+function self:GetClosestDirectionFromRoomToRoom(roomid1, roomid2)
+    self:_CacheRoomDirectionsAndDistances(roomid1)
+    return self.roomsdirectioncache[roomid1] ~= nil and self.roomsdirectioncache[roomid1][roomid2] ~= nil and self.roomsdirectioncache[roomid1][roomid2].direction or nil
+end
+
+------------------
 
 self.inst:ListenForEvent("ms_register_vault_marker", function(inst, ent) self:OnRegisterVaultMarker(ent) end, _world)
 self.inst:ListenForEvent("ms_unregister_vault_marker", function(inst, ent) self:OnUnregisterVaultMarker(ent) end, _world)
@@ -369,7 +433,9 @@ self.inst:ListenForEvent("ms_register_vault_lobby_exit", function(inst, ent) sel
 self.inst:ListenForEvent("ms_register_vault_lobby_exit_target", function(inst, ent) self:OnVaultLobbyExitTargetCreated(ent) end, _world)
 self.inst:ListenForEvent("arhivepoweron", function(inst) self:OnArchivesPowered(true) end, _world)
 self.inst:ListenForEvent("arhivepoweroff", function(inst) self:OnArchivesPowered(false) end, _world)
-self.inst:ListenForEvent("resetruins", function(inst) self:ResetVault() end, _world) -- TODO(JBK): Move this event to the other when the other is there.
+self.inst:ListenForEvent("resetvault", function(inst) self:ResetVault() end, _world)
+self.inst:ListenForEvent("ms_register_vault_key_exit", function(inst, ent) self:OnVaultKeyExitCreated(ent) end, _world)
+self.inst:ListenForEvent("ms_register_vault_key_exit_target", function(inst, ent) self:OnVaultKeyExitTargetCreated(ent) end, _world)
 
 function self:OnArchivesPowered(powered)
     self.archivespowered = powered or nil
@@ -412,12 +478,52 @@ function self:OnVaultLobbyExitTargetCreated(ent)
     self:TryToLinkLobbyExit()
 end
 
+function self:TryToBreakKeyExit()
+    if self.keyexit then
+        self.keyexit:SetExitTarget(nil)
+    end
+end
+function self:TryToLinkKeyExit()
+    if self.keyexit and self.keyexittarget then
+        self.keyexit:SetExitTarget(self.keyexittarget)
+    end
+end
+function self:OnVaultKeyExitCreated(ent)
+    if self.keyexit then
+        self.keyexit:Remove()
+    end
+    self.keyexit = ent
+    ent:ListenForEvent("onremove", function()
+        self.keyexit = nil
+        self:TryToBreakKeyExit()
+    end)
+    self:TryToLinkKeyExit()
+end
+function self:OnVaultKeyExitTargetCreated(ent)
+    if self.keyexittarget then
+        self.keyexittarget:Remove()
+    end
+    self.keyexittarget = ent
+    ent:ListenForEvent("onremove", function()
+        self.keyexittarget = nil
+        self:TryToBreakKeyExit()
+    end)
+    self:TryToLinkKeyExit()
+end
+
+function self:GetVaultLobbyExitTarget()
+    return self.lobbyexittarget
+end
 
 function self:GetVaultCenterMarker()
     return self.markers["vaultmarker_vault_center"]
 end
 function self:GetVaultLobbyCenterMarker()
     return self.markers["vaultmarker_lobby_center"]
+end
+function self:GetVaultRoomId()
+    local room = self:GetVaultCenterMarker()
+    return room and room.components.vaultroom and room.components.vaultroom:GetCurrentRoomId()
 end
 function self:HideRoom()
 	self:CancelPendingTeleport()
@@ -655,6 +761,7 @@ function self:BreakLink(teleporter)
     if not next(repairedlinks) then
         self.repairedlinks[roomdata.roomid] = nil
     end
+    self:_ClearRoomDirectionsCache(roomdata.roomid)
 end
 function self:RepairLink(teleporter)
     local direction = DIRECTIONS[teleporter.components.vault_teleporter:GetUnshuffledDirectionName()]
@@ -671,6 +778,7 @@ function self:RepairLink(teleporter)
         self.repairedlinks[roomdata.roomid] = repairedlinks
     end
     repairedlinks[direction] = true
+    self:_ClearRoomDirectionsCache(roomdata.roomid)
 end
 function self:OnVaultTeleporterRepaired(teleporter, doer)
     self:RepairLink(teleporter)
@@ -825,6 +933,13 @@ function self:ShowRoom()
 
     if toteleportents then
         self:TeleportEntities(toteleportents, targetteleportmarkername)
+        local grueimmunearea_data = {
+            name = "VaultGrueImmune",
+            isimmune = roomdata.grueimmunearea,
+        }
+        for k, v in pairs(toteleportents) do
+            v:PushEvent("grueimmunearea", grueimmunearea_data)
+        end
     end
     self:ConfigureVaultRoom(roomdata)
     self:SetAllExits(roomdata)
@@ -950,6 +1065,12 @@ function self:StopTrackingPlayer(player)
         return
     end
 
+    local grueimmunearea_data = {
+        name = "VaultGrueImmune",
+        isimmune = false,
+    }
+    player:PushEvent("grueimmunearea", grueimmunearea_data)
+
     self.players[player] = nil
     self.playersinvault = self.playersinvault - 1
     player:RemoveEventCallback("onremove", self.OnPlayerRemove)
@@ -1039,11 +1160,9 @@ function self:OnUpdate(dt)
                 [1] = 1,
             }
             for roomindex = 2, self.maxroomindex do
-                if roomindex ~= 6 then -- FIXME(JBK): Rifts6.1 super hack room "key1" is not defined yet.
-                    local roomdata = self.rooms[roomindex]
-                    if roomdata and roomdata.vaultroomdata then
-                        table.insert(self.cachedroomrotates, roomindex)
-                    end
+                local roomdata = self.rooms[roomindex]
+                if roomdata and roomdata.vaultroomdata then
+                    table.insert(self.cachedroomrotates, roomindex)
                 end
             end
         end
@@ -1060,7 +1179,9 @@ function self:OnUpdate(dt)
                 end
                 if self.version ~= CURRENT_VERSION then
                     self.version = CURRENT_VERSION
-                    self:CreateLayout(self.version)
+					self:CreateLayout(self.version) --this already calls ResetAllRepairedLinks()
+				else
+					self:ResetAllRepairedLinks()
                 end
                 self:SetPRNGSeed(self:GetPRNGSeed() + 1)
                 targetroom = 1

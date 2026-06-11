@@ -37,7 +37,7 @@ local function _FindMissileTargets(inst, maxtargets, targets, _missiles)
 		REGISTERED_HEAT_TAGS = TheSim:RegisterFindTags(
 			nil,
 			{ "INLIMBO", "FX", "flight", "invisible", "notarget", "noattack", "brightmare", "brightmareboss", "ghost", "playerghost", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece" },
-			{ "fire", "smolder", "HASHEATER", "engineeringbattery", "spotlight", "_combat" }
+			{ "fire", "smolder", "HASHEATER", "engineeringbattery", "spotlight", "_combat", "inventoryitemtemperature" }
 		)
 	end
 
@@ -90,8 +90,9 @@ local function _FindMissileTargets(inst, maxtargets, targets, _missiles)
 			end
 
 			if heater == nil then
-				if v.components.temperature then
-					temperature = v.components.temperature:GetCurrent()
+				local ent_temp = GetEntityTemperature(v)
+				if ent_temp then
+					temperature = ent_temp
 				elseif v.components.fueled and not v.components.fueled:IsEmpty() and v:HasTag("engineeringbattery") then
 					temperature = temperature + 10
 				elseif v.components.burnable and v.components.burnable:IsSmoldering() then
@@ -633,9 +634,7 @@ end
 local function _TossItems(inst, radius)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, radius + WORK_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if v.components.mine then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 			_TossLaunch(v, x, z, 1.2, 0.1)
 		end

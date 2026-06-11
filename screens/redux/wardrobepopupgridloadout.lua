@@ -121,7 +121,7 @@ local GridWardrobePopupScreen = Class(Screen, function(self, owner_player, profi
 end)
 
 function GridWardrobePopupScreen:OffsetServerPausedWidget(serverpausewidget)
-	serverpausewidget:SetOffset(-650,0)
+	serverpausewidget:SetOffset(-470,10)
 end
 
 function GridWardrobePopupScreen:OnDestroy()

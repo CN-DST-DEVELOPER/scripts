@@ -99,8 +99,9 @@ local ItemTile = Class(Widget, function(self, invitem)
     DoInspected(invitem)
 
 	local show_spoiled_meter = self:HasSpoilage() or self.item:HasTag("show_broken_ui")
+    local has_temperature = false --self.item:HasTag("inventoryitemtemperature") and not self.item:HasTag("hide_temperature")
 
-	if show_spoiled_meter or self.item:HasTag("show_spoiled") then
+	if has_temperature or show_spoiled_meter or self.item:HasTag("show_spoiled") then
 		self.bg = self:AddChild(Image(HUD_ATLAS, "inv_slot_spoiled.tex"))
         self.bg:SetClickable(false)
     end
@@ -138,6 +139,14 @@ local ItemTile = Class(Widget, function(self, invitem)
         else
             self.rechargeframe:GetAnimState():SetMultColour(0, 0, 0.3, 0.54) -- 'Cooldown until' with DARK BLUE colour.
         end
+    end
+
+    if has_temperature then
+        self.temperature = self:AddChild(UIAnim())
+        self.temperature:GetAnimState():SetBank("temperature_meter")
+        self.temperature:GetAnimState():SetBuild("temperature_meter")
+        self.temperature:GetAnimState():AnimateWhilePaused(false)
+        self.temperature:SetClickable(false)
     end
 
     if self.item.inv_image_bg ~= nil then
@@ -314,6 +323,11 @@ local ItemTile = Class(Widget, function(self, invitem)
             end, invitem)
     end
 
+    self.inst:ListenForEvent("temperaturedelta",
+        function(invitem, data)
+            self:UpdateTemperaturePercent(data.new, data.mintemp, data.maxtemp)
+        end, invitem)
+
     self.inst:ListenForEvent("wetnesschange",
         function(invitem, wet)
             if not self.isactivetile then
@@ -324,7 +338,7 @@ local ItemTile = Class(Widget, function(self, invitem)
                 end
             end
         end, invitem)
-        
+
     self.inst:ListenForEvent("acidsizzlingchange",
         function(invitem, isacidsizzling)
             if not self.isactivetile then
@@ -391,6 +405,11 @@ function ItemTile:Refresh()
             self:SetPercent(self.item.components.finiteuses:GetPercent())
         elseif self.item.components.fueled ~= nil then
             self:SetPercent(self.item.components.fueled:GetPercent())
+        end
+
+        if self.item.components.inventoryitemtemperature ~= nil then
+            local inventoryitem = self.item.components.inventoryitem
+            self:UpdateTemperaturePercent(inventoryitem:GetTemperature(), inventoryitem:GetMinTemperature(), inventoryitem:GetMaxTemperature())
         end
 
         if self.rechargeframe ~= nil and self.item.components.rechargeable ~= nil then
@@ -671,6 +690,9 @@ function ItemTile:StartDrag()
         if self.spoilage ~= nil then
             self.spoilage:Hide()
         end
+        if self.temperature ~= nil then
+            self.temperature:Hide()
+        end
         self.wetness:Hide()
         self:HandleAcidSizzlingFX(false)
         if self.bg ~= nil then
@@ -915,6 +937,39 @@ function ItemTile:HandleBuffFX(invitem, fromchanged, data)
                 end)
             end
         end
+    end
+end
+
+function ItemTile:UpdateTemperaturePercent(temperature, mintemp, maxtemp)
+    -- Haack. we need to update broken state for fumarole tool, so do it hereeeee :)
+	if not self.dragging and self.item:HasTag("show_broken_ui") then
+        if self.item:HasTag("broken") then
+            if self.bg then
+				self.bg:Show()
+			end
+            if self.spoilage then
+                self.spoilage:Show()
+            end
+			self:SetPerishPercent(0)
+        else
+            if self.bg then
+				self.bg:Hide()
+			end
+			if self.spoilage then
+				self.spoilage:Hide()
+			end
+		end
+	end
+
+    if temperature ~= nil and mintemp ~= nil and maxtemp ~= nil then
+        local percent = Remap(temperature, mintemp, maxtemp, 0, 1)
+        self:SetTemperaturePercent(percent)
+    end
+end
+
+function ItemTile:SetTemperaturePercent(percent)
+    if self.temperature ~= nil then
+        self.temperature:GetAnimState():SetPercent("idle", percent)
     end
 end
 

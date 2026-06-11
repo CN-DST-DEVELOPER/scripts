@@ -68,6 +68,22 @@ local function overfog_fn()
     return inst
 end
 
+local function overfog_noproxy_fn()
+    local inst = common_fn()
+    inst.MiniMapEntity:SetDrawOverFogOfWar(true)
+    inst.MiniMapEntity:SetIsProxy(false)
+
+	RegisterGlobalMapIcon(inst, "globalmapicon")
+
+    inst.entity:SetPristine()
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    common_server(inst)
+    return inst
+end
+
 local function overfog_named_fn()
     local inst = common_fn()
     inst.MiniMapEntity:SetDrawOverFogOfWar(true)
@@ -400,6 +416,7 @@ end
 --------------------------------------------------------------------------
 
 return Prefab("globalmapicon", overfog_fn),
+    Prefab("globalmapiconnoproxy", overfog_noproxy_fn),
     Prefab("globalmapiconnamed", overfog_named_fn),
     Prefab("globalmapiconunderfog", underfog_fn),
     Prefab("globalmapiconseeable", overfog_seeable_fn)

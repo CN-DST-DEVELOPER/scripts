@@ -34,6 +34,7 @@ local FurnitureDecorTaker = Class(function(self, inst)
         if self.decor_item then
             self.inst:RemoveEventCallback("onremove", self._on_decor_item_removed, self.decor_item)
             self.inst:RemoveEventCallback("onpickup", self._on_decor_item_picked_up, self.decor_item)
+            self.inst:RemoveEventCallback("onputininventory", self._on_decor_item_picked_up, self.decor_item)
 			if self.decor_item.components.furnituredecor then
 				self.decor_item.components.furnituredecor:TakeOffFurniture(self.inst)
 			end
@@ -88,6 +89,7 @@ function FurnitureDecorTaker:AcceptDecor(item, giver)
 
     self.inst:ListenForEvent("onremove", self._on_decor_item_removed, item)
     self.inst:ListenForEvent("onpickup", self._on_decor_item_picked_up, item)
+    self.inst:ListenForEvent("onputininventory", self._on_decor_item_picked_up, item)
 
     local item_furnituredecor = item.components.furnituredecor
     if item_furnituredecor then
@@ -104,6 +106,7 @@ function FurnitureDecorTaker:TakeItem()
         self.enabled = true
         self.inst:RemoveEventCallback("onremove", self._on_decor_item_removed, decor_item)
         self.inst:RemoveEventCallback("onpickup", self._on_decor_item_picked_up, decor_item)
+        self.inst:RemoveEventCallback("onputininventory", self._on_decor_item_picked_up, decor_item)
 
 		if decor_item.components.furnituredecor and decor_item:IsValid() then
 			decor_item.components.furnituredecor:TakeOffFurniture(self.inst)

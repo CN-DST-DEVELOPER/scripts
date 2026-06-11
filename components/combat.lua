@@ -29,6 +29,7 @@ local Combat = Class(function(self, inst)
     self.attackrange = 3
     self.hitrange = 3
     self.areahitrange = nil
+	self.hitarc = nil
     self.temprange = nil
 	--self.areahitcheck = nil
     self.areahitdamagepercent = nil
@@ -147,6 +148,10 @@ end
 function Combat:SetRange(attack, hit)
     self.attackrange = attack
     self.hitrange = (hit or self.attackrange)
+end
+
+function Combat:SetHitArc(arc)
+	self.hitarc = arc
 end
 
 function Combat:SetPlayerStunlock(stunlock)
@@ -1025,6 +1030,7 @@ function Combat:CanLightTarget(target, weapon)
         --V2C: fueled or fueltype should not really matter. if we can burn it, should still allow lighting.
 end
 
+--@V2C: WARNING!  This doesn't match combat replica's version.  Why is this needed on clients anyway?
 function Combat:CanHitTarget(target, weapon)
     if self.inst ~= nil and
         self.inst:IsValid() and
@@ -1038,16 +1044,45 @@ function Combat:CanHitTarget(target, weapon)
             )
         ) then
 
-        local targetpos = target:GetPosition()
-        -- V2C: this is 3D distsq
-        local pos = self.temppos or self.inst:GetPosition()
-        if self.ignorehitrange or distsq(targetpos, pos) <= self:CalcHitRangeSq(target) then
-            return true
-        elseif weapon ~= nil and weapon.components.projectile ~= nil then
+		if self.ignorehitrange then
+			return true
+		end
+
+		local x1, y1, z1 = target.Transform:GetWorldPosition()
+		local x, y, z
+		if self.temppos then
+			x, y, z = self.temppos:Get()
+		else
+			x, y, z = self.inst.Transform:GetWorldPosition()
+		end
+
+		local dx = x1 - x
+		local dy = y1 - y
+		local dz = z1 - z
+		local dsq3d = dx * dx + dy * dy + dz * dz
+
+		if dsq3d <= self:CalcHitRangeSq(target) then
+			if self.hitarc == nil or (dx == 0 and dz == 0) then
+				return true
+			end
+			local rot = self.inst.Transform:GetRotation()
+			local rot1 = math.atan2(-dz, dx) * RADIANS
+			if DiffAngle(rot, rot1) * 2 <= self.hitarc then
+				return true
+			end
+		end
+
+		--OOR, but check projectile as well
+		if weapon and weapon.components.projectile then
+			x, y, z = weapon.Transform:GetWorldPosition()
+			dx = x1 - x
+			dy = y1 - y
+			dz = z1 - z
+			dsq3d = dx * dx + dy * dy + dz * dz
+
             local range = target:GetPhysicsRadius(0) + weapon.components.projectile.hitdist
-            -- V2C: this is 3D distsq
-            return distsq(targetpos, weapon:GetPosition()) <= range * range
-        end
+			return dsq3d <= range * range
+		end
     end
     return false
 end

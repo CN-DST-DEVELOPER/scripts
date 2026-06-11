@@ -213,9 +213,7 @@ local _GroundDetectionUpdate = _ismastersim and function(debris, override_densit
                         elseif v.components.combat ~= nil then
                             v.components.combat:GetAttacked(debris, 30, nil)
                         elseif v.components.inventoryitem ~= nil then
-                            if v.components.mine ~= nil then
-                                v.components.mine:Deactivate()
-                            end
+                            DeactivateInventoryItemBeforeLaunch(v)
                             Launch(v, debris, TUNING.LAUNCH_SPEED_SMALL)
                         end
                     end

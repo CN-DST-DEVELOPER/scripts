@@ -10,7 +10,7 @@ local NO_TAGS = { "playerghost", "INLIMBO", "flight", "invisible" }
 for k, v in pairs(FUELTYPE) do
     table.insert(NO_TAGS, v.."_fueled")
 end
-local BLOW_ONEOF_TAGS = { "_health", "canlight", "freezable" }
+local BLOW_ONEOF_TAGS = { "_health", "canlight", "freezable", "inventoryitemtemperature" }
 
 local function GetHeatRate(inst)
     local wet_multiplier = inst:GetWetMultiplier()
@@ -47,13 +47,8 @@ local function DoBlowUpdate(inst, dt)
                 v.components.health ~= nil then
                 v.components.burnable:ExtendBurning()
             end
-            if v.components.temperature ~= nil then
-                local maxtemp = v.components.temperature:GetMax()
-                local curtemp = v.components.temperature:GetCurrent()
-                if maxtemp > curtemp then
-                    v.components.temperature:DoDelta(heatmult)
-                end
-            end
+
+            DoDeltaTemperatureToEntity(v, heatmult)
         end
     end
 end

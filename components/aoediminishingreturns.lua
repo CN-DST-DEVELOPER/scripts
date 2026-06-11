@@ -1,12 +1,12 @@
 local SourceModifierList = require("util/sourcemodifierlist")
 
-local AoeDimishingReturns = Class(function(self, inst)
+local AoeDiminishingReturns = Class(function(self, inst)
 	self.inst = inst
 	self.mult = SourceModifierList(inst)
 end)
 
-function AoeDimishingReturns:OnRemoveFromEntity()
+function AoeDiminishingReturns:OnRemoveFromEntity()
 	self.mult:Reset()
 end
 
-return AoeDimishingReturns
+return AoeDiminishingReturns

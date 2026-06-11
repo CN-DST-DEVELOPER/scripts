@@ -421,6 +421,13 @@ local function mainfn()
 
     inst.testforlockbox = testforlockbox
 
+    -- For key room exit
+    local teleporter = inst:AddComponent("teleporter")
+    teleporter.overrideteleportarrivestate = "abyss_drop"
+    teleporter.offset = 3
+    teleporter:SetEnabled(false)
+    TheWorld:PushEvent("ms_register_vault_key_exit_target", inst)
+
     return inst
 end
 

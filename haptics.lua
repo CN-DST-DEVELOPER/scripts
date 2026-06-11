@@ -2,8 +2,8 @@
 HapticEffects =
 {						
 	-- danger effects start ---------------------------------------------------------------------------------------------------------------------------
-	{ event="dontstarve/wilson/hungry", vibration=true, audio=false, vibration_intensity=1.0, audio_intensity=1.0, category="DANGER" },	
-	{ event="dontstarve/wilson/hit", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="DANGER" },	
+	{ event="dontstarve/wilson/hungry", vibration=true, audio=false, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="DANGER" },	
+	{ event="dontstarve/wilson/hit", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="DANGER" },	
 	
 	-- Charlie
 	{ event="dontstarve/charlie/warn", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="DANGER" },		
@@ -245,74 +245,82 @@ HapticEffects =
 	{ event="dontstarve/common/horn_beefalo", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="dontstarve/common/together/houndwhistle", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="dontstarve_DLC001/common/glommer_bell", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="hookline_2/characters/trident_attack", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
+	{ event="hookline_2/characters/trident_attack", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	
+	-- sanctum teleport	
+	{ event="rifts6/vault_portal/teleport_fx", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },
+	{ event="rifts6/vault_portal/teleport_arrive_FX", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },
 	
 	-- character specific effects start ---------------------------------------------------------------------------------------------	
 	-- walter
-	{ event="dontstarve/characters/walter/slingshot/stretch", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="dontstarve/characters/walter/slingshot/shoot", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta5/walter/finger_whistle", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/characters/walter/slingshot/stretch", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="dontstarve/characters/walter/slingshot/shoot", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta5/walter/finger_whistle", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wanda
-	{ event="wanda1/wanda/jump_whoosh", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/younger_transition", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/older_transition", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/watch/heal", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/watch/warp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/watch/recall", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/watch/weapon/pst", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="wanda2/characters/wanda/watch/weapon/pst_shadow", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="wanda1/wanda/jump_whoosh", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/younger_transition", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/older_transition", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/watch/heal", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/watch/warp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/watch/recall", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/watch/weapon/pst", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="wanda2/characters/wanda/watch/weapon/pst_shadow", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- webber
-	{ event="webber1/spiderwhistle/blow", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="webber2/common/spider_repellent", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="webber1/spiderwhistle/blow", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="webber2/common/spider_repellent", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wendy
-	{ event="dontstarve/characters/wendy/summon", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta5/wendy/pour_elixir_f17", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta5/wendy/player_drink", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/characters/wendy/summon", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta5/wendy/pour_elixir_f17", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta5/wendy/player_drink", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- willow
-	{ event="meta3/willow/pyrokinetic_activate", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="meta3/willow/pyrokinetic_activate", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wilson
-	{ event="dontstarve/wilson/shave_LP", vibration=true, audio=true, vibration_intensity=2.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/wilson/shave_LP", vibration=true, audio=true, vibration_intensity=2.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- winona
-	{ event="meta4/winona_remote/click", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta4/winona_teleumbrella/telaumbrella_out", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="meta4/winona_remote/click", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta4/winona_teleumbrella/telaumbrella_out", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wolfgang
-	{ event="wolfgang2/characters/wolfgang/grunt", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="wolfgang2/characters/wolfgang/grunt", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0,player_only=true,  category="PLAYER" },	
 	
 	-- woodie
-	{ event="dontstarve/characters/woodie/moose/roar", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="dontstarve/characters/woodie/moose/punch", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="dontstarve/characters/woodie/moose/slide", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta2/woodie/weremoose_groundpound", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta2/woodie/werebeaver_groundpound", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
-	{ event="meta2/woodie/weregoose_takeoff", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="meta2/woodie/weregoose_land", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/characters/woodie/moose/roar", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="dontstarve/characters/woodie/moose/punch", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="dontstarve/characters/woodie/moose/slide", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta2/woodie/weremoose_groundpound", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta2/woodie/werebeaver_groundpound", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },		
+	{ event="meta2/woodie/weregoose_takeoff", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="meta2/woodie/weregoose_land", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wormwood
-	{ event="dontstarve/characters/wormwood/living_log_craft", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="dontstarve/characters/wormwood/fertalize_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/characters/wormwood/living_log_craft", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="dontstarve/characters/wormwood/fertalize_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- wortox
-	{ event="dontstarve/characters/wortox/soul/hop_out", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="dontstarve/characters/wortox/soul/hop_out", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
 	
 	-- WX-78
 	--{ event="WX_rework/module/insert", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	--{ event="WX_rework/module/remove", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="dontstarve/characters/wx78/spark", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
-	{ event="WX_rework/chassis/internal_rumble", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },			
+	{ event="dontstarve/characters/wx78/spark", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },		
+	{ event="WX_rework/chassis/internal_rumble", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },			
 	{ event="WX_rework/tube/HUD_in", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="WX_rework/tube/HUD_out", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
 	{ event="WX_rework/tube/HUD_on", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="WX_rework/tube/HUD_off", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
-	{ event="WX_rework/bee_shield/activate", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="WX_rework/bee_shield/break", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
-	{ event="WX_rework/screech/loop", vibration=true, audio=true, vibration_intensity=25.0, audio_intensity=2.0, category="PLAYER" },		
+	{ event="WX_rework/tube/HUD_off", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="WX_rework/module_tray/shadowheart2_implant", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="WX_rework/module_tray/shadowheart_implant", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },	
+	{ event="WX_rework/module_tray/shadowfuel_implant", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		
+	{ event="WX_rework/bee_shield/activate", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="WX_rework/bee_shield/break", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, player_only=true, category="PLAYER" },	
+	{ event="WX_rework/screech/loop", vibration=true, audio=true, vibration_intensity=2.0, audio_intensity=1.0, player_only=true, category="PLAYER" },		
+	{ event="rifts5/wagdrone_flying/electro_ball_explode", vibration=true, audio=true, vibration_intensity=2.0, audio_intensity=1.0, category="PLAYER" },		
 	
 	-- character specific effects end ----------------------------------------------------------------------------------------------------------------
 	-- player effects end ----------------------------------------------------------------------------------------------------------------------------
@@ -368,6 +376,7 @@ HapticEffects =
 	{ event="dontstarve/tentacle/tentapiller_emerge", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	{ event="dontstarve/tentacle/tentapiller_die", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	{ event="dontstarve/tentacle/tentapiller_die_VO", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
+	{ event="rifts7/vault_crawler/roll_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 		
 	-- other	
 	{ event="rifts4/rope_bridge/shake_lp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },		
@@ -535,6 +544,7 @@ HapticEffects =
 	{ event="daywalker/voice/speak_short", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },
 	{ event="daywalker/voice/attack_big", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },
 	{ event="daywalker/voice/chainbreak_break_2", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },
+	{ event="daywalker/pillar/hit", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },
 	
 	-- scrappy werepig
 	{ event="qol1/daywalker_scrappy/buried_stagger", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },

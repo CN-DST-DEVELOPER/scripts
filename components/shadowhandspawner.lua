@@ -101,7 +101,7 @@ local function testfortinkerthings(boat)
 end
 
 local NEARFIRE_MUST_TAGS = { "fire" }
-local NEARFIRE_CANT_TAGS = { "_equippable" }
+local NEARFIRE_CANT_TAGS = { "_equippable", "shadow_fire" }
 
 local function SpawnHand(player, params)
     if #params.ents > 0 or player.components.age:GetAge() < INITIAL_SPAWN_THRESHOLD then

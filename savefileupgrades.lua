@@ -1407,6 +1407,12 @@ t = {
 				end
             end,
         },
+        {
+            version = 5.23, -- Add 1 vault_orb to maps due to irreplaceable tags being added and reset method changing needing one.
+            fn = function(savedata)
+                FlagForRetrofitting_Cave(savedata, "retrofit_add_one_vault_orb")
+            end,
+        },
     },
 }
 

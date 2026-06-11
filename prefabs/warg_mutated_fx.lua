@@ -88,12 +88,10 @@ local function OnUpdateHitbox(inst)
 					if target_data.tick ~= tick then
 						target_data.tick = tick
 						--Supercool
-						if v.components.temperature ~= nil then
-							local newtemp = math.max(v.components.temperature.mintemp, TUNING.MUTATED_WARG_COLDFIRE_TEMPERATURE)
-							if newtemp < v.components.temperature:GetCurrent() then
-								v.components.temperature:SetTemperature(newtemp)
-							end
-						end
+						local ent_temp = GetEntityTemperature(v)
+						if ent_temp and TUNING.MUTATED_WARG_COLDFIRE_TEMPERATURE < ent_temp then
+            			    SetEntityTemperature(v, TUNING.MUTATED_WARG_COLDFIRE_TEMPERATURE)
+            			end
 						--Hit
 						if (target_data.hit_tick == nil or target_data.hit_tick + hit_frames < tick) and combat:CanTarget(v) then
 							target_data.hit_tick = tick

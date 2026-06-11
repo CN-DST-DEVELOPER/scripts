@@ -62,6 +62,12 @@ FrontEnd = Class(function(self, name)
 	self.consoletext:Hide()
     -----------------
 
+	self.globalwidgetroot = Widget("globalwidgetroot")
+	self.globalwidgetroot.global_widget = true
+	self.globalwidgetroot:SetVAnchor(ANCHOR_MIDDLE)
+	self.globalwidgetroot:SetHAnchor(ANCHOR_MIDDLE)
+	self.globalwidgetroot:SetScaleMode(SCALEMODE_PROPORTIONAL)
+
 	------ SERVERPAUSE -----------
 	self.serverpausewidget = ServerPauseWidget()
 	self.serverpausewidget:SetPosition(0,0,0)
@@ -160,6 +166,7 @@ FrontEnd = Class(function(self, name)
 	self.helptexttext:SetVAlign(ANCHOR_TOP)
 	self.helptextstring = ""
 
+    self.overlayroot:AddChild(self.globalwidgetroot)
 	self.overlayroot:AddChild(self.topblackoverlay)
 	self.overlayroot:AddChild(self.topwhiteoverlay)
 	self.overlayroot:AddChild(self.topvigoverlay)
@@ -408,7 +415,7 @@ function FrontEnd:OnFocusMove(dir, down)
 	end
 end
 
-ValidateLineNumber(411)
+ValidateLineNumber(418)
 function FrontEnd:OnControl(control, down)
     -- if there is a textedit that is currently editing, stop editing if the player clicks somewhere else
     if self.textProcessorWidget ~= nil and not self.textProcessorWidget.focus and not down and control == CONTROL_PRIMARY then
@@ -487,7 +494,7 @@ function FrontEnd:OnControl(control, down)
     end
     self.isprimary = false
 end
-ValidateLineNumber(490)
+ValidateLineNumber(497)
 
 function FrontEnd:ShowTitle(text,subtext)
 	self.title:SetString(text)

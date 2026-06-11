@@ -176,10 +176,10 @@ local function DoArenaActions(inst)
         inst.desiredlocationdistance = nil
         return BufferedAction(inst, nil, ACTIONS.WALKTO, nil, location, nil, distance)
     end
-    if inst.components.npc_talker:haslines() then
+    if inst.components.npc_talker:HasLines() then
         if not inst.sg:HasStateTag("talking") and not inst.sg:HasStateTag("busy") and not inst.components.timer:TimerExists("speak_time") then
             inst:PushEvent("talk")
-            inst.components.npc_talker:donextline()
+            inst.components.npc_talker:DoNextLine()
         end
         return
     end
@@ -224,12 +224,12 @@ local function DoArenaActions(inst)
         local t = GetTime()
         if inst.levernagcooldowntime == nil or inst.levernagcooldowntime < t then
             inst.levernagcooldowntime = t + TUNING.WAGPUNK_ARENA_WAGSTAFF_NAG_COOLDOWN_TIME
-            inst.components.npc_talker:resetqueue()
+            inst.components.npc_talker:ResetQueue()
             inst.components.talker:ShutUp()
             if not inst.erodingout then
                 inst.components.npc_talker:Chatter("WAGSTAFF_WAGPUNK_ARENA_LEVER", math.random(#STRINGS.WAGSTAFF_WAGPUNK_ARENA_LEVER))
                 inst:PushEvent("talk")
-                inst.components.npc_talker:donextline()
+                inst.components.npc_talker:DoNextLine()
             end
         end
         local wagpunk_arena_manager = TheWorld.components.wagpunk_arena_manager

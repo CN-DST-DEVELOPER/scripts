@@ -2,7 +2,9 @@ local SourceModifierList = require("util/sourcemodifierlist")
 
 local DamageTypeBonus = Class(function(self, inst)
 	self.inst = inst
+
 	self.tags = {}
+	--self.bonuscallbacks = {}
 end)
 
 function DamageTypeBonus:AddBonus(tag, src, pct, key)
@@ -24,6 +26,19 @@ function DamageTypeBonus:RemoveBonus(tag, src, key)
 	end
 end
 
+-- add a callback to return a multiplier
+function DamageTypeBonus:AddBonusCallback(fn)
+    self.bonuscallbacks = self.bonuscallbacks or {}
+    self:RemoveBonusCallback(fn)
+    table.insert(self.bonuscallbacks, fn)
+end
+
+function DamageTypeBonus:RemoveBonusCallback(fn)
+    if self.bonuscallbacks ~= nil then
+        table.removearrayvalue(self.bonuscallbacks, fn)
+    end
+end
+
 function DamageTypeBonus:GetBonus(target)
 	local mult = 1
 	if target ~= nil then
@@ -31,6 +46,11 @@ function DamageTypeBonus:GetBonus(target)
 			if target:HasTag(k) then
 				mult = mult * v:Get()
 			end
+		end
+		if self.bonuscallbacks ~= nil then
+			for i, fn in ipairs(self.bonuscallbacks) do
+    		    mult = mult * (fn(self.inst, target) or 1)
+    		end
 		end
 	end
 	return mult

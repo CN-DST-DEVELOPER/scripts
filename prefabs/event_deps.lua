@@ -266,9 +266,12 @@ local SPECIAL_EVENT_DEPS =
         {
             assets =
             {
-                Asset("ANIM", "anim/dst_menu_meta6.zip"),
+                Asset("ANIM", "anim/dst_menu_rift7.zip"),
+
+				Asset("PKGREF", "sound/music_frontend_rifts7.fsb"),
 				Asset("PKGREF", "sound/music_frontend_WX.fsb"),
 
+                Asset("PKGREF", "anim/dst_menu_meta6.zip"),
                 Asset("PKGREF", "anim/dst_menu_rift6.zip"),
 				Asset("PKGREF", "anim/dst_menu_rift5.zip"),
 				Asset("PKGREF", "anim/dst_menu_meta5.zip"),

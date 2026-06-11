@@ -593,6 +593,11 @@ local function create_common(bank, build, tag, common_init, extra_data)
     inst:AddTag("drop_inventory_onpickup")
     inst:AddTag("drop_inventory_onmurder")
 
+    --eatsrawmeat (from eater:SetCanEatRawMeat component) added to pristine state for optimization
+    inst:AddTag("eatsrawmeat")
+    --strongstomach (from eater:SetStrongStomach component) added to pristine state for optimization
+    inst:AddTag("strongstomach")
+
     inst.scrapbook_deps = {"silk","spidergland","monstermeat"}
 
     if tag ~= nil then

@@ -345,8 +345,8 @@ function Drownable:TakeDrowningDamage()
 		penalty_scale = (TileGroupManager:IsShallowOceanTile(tile) and TUNING.DROWNING_SHALLOW_SCALE) or 1.0
 	end
 
-	if self.inst.components.moisture ~= nil and tunings.WETNESS ~= nil then
-		self.inst.components.moisture:DoDelta(penalty_scale * tunings.WETNESS, true)
+	if tunings.WETNESS ~= nil then
+		DoDeltaMoistureToEntity(self.inst, penalty_scale * tunings.WETNESS, nil, true, true)
 	end
 
 	if self.inst.components.inventory ~= nil then

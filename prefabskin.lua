@@ -2459,6 +2459,17 @@ function critter_bulbin_builder_clear_fn(inst)
     inst.linked_skinname = nil
 end
 
+function critter_eets_init_fn(inst, build_name)
+    basic_init_fn(inst, build_name, "eets_basic")
+end
+function critter_eets_clear_fn(inst)
+    -- No default build fallback.
+    inst.persists = false
+    inst:DoStaticTaskInTime(0, inst.Remove)
+end
+function critter_eets_builder_clear_fn(inst)
+    inst.linked_skinname = nil
+end
 
 --------------------------------------------------------------------------
 --[[ Mini Sign skin functions ]]

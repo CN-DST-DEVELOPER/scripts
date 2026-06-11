@@ -78,6 +78,7 @@ local function OnDeath(inst)
     inst:DoTaskInTime(.5, DoExtinguish)
 end
 
+local FX_OFFSET = Vector3(0, -1, .1)
 local function fn()
     local inst = CreateEntity()
 
@@ -139,12 +140,12 @@ local function fn()
 	inst.sg.mem.burn_on_electrocute = true
     inst:SetBrain(brain)
 
-    MakeSmallBurnableCharacter(inst, "treedrake_root", Vector3(0, -1, .1))
-    inst.components.burnable:SetBurnTime(10)
-    inst.components.health.fire_damage_scale = 2
+    MakeSmallBurnableCharacter(inst, "treedrake_root", FX_OFFSET)
+    inst.components.burnable:SetBurnTime(6 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
     inst:ListenForEvent("death", OnDeath)
     inst.components.propagator.flashpoint = 5 + math.random() * 3
-    MakeSmallFreezableCharacter(inst, "treedrake_root", Vector3(0, -1, .1))
+    MakeSmallFreezableCharacter(inst, "treedrake_root", FX_OFFSET)
 
 	MakeHauntablePanicAndIgnite(inst)
 

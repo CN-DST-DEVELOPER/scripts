@@ -260,7 +260,11 @@ function Combat:CanLightTarget(target, weapon)
 		and not target:HasAnyTag("fire", "burnt")
 end
 
+--@V2C: WARNING!  This doesn't match combat component's version.  Why is this needed on clients anyway?
 function Combat:CanHitTarget(target)
+	print("WARNING: combat_replica::CanHitTarget is deprecated; no client-safe support for this.")
+	assert(BRANCH ~= "dev")
+
     if self.inst.components.combat ~= nil then
         return self.inst.components.combat:CanHitTarget(target)
     elseif self.classified ~= nil
@@ -348,7 +352,7 @@ function Combat:CanBeAlly(guy)
 	if self.inst.isplayer or
 		self.inst.bedazzled or
 		(myleader and (myleader.isplayer or myleader.replica.inventoryitem)) or
-		self.inst:HasAnyTag("domesticated", "saltlicker_salted")
+		self.inst:HasAnyTag("player_aligned", "domesticated", "saltlicker_salted")
 	then
 		if guy.bedazzled or
 			guy:HasTag("companion") or
@@ -362,7 +366,7 @@ function Combat:CanBeAlly(guy)
 				return true -- They're aligned to another player.
 			end
 
-			if guy:HasAnyTag("domesticated", "saltlicker_salted") then
+			if guy:HasAnyTag("player_aligned", "domesticated", "saltlicker_salted") then
 				return true -- No current leader, but still considered aligned to players.
 			end
 		end
@@ -399,7 +403,7 @@ function Combat:TargetHasFriendlyLeader(target)
 
         return leader == target
 				or (target_leader ~= nil and (target_leader == leader or (target_leader.isplayer and not PVP_enabled)))
-				or (target:HasTag("domesticated") and not PVP_enabled)
+				or (target:HasAnyTag("player_aligned", "domesticated") and not PVP_enabled)
     end
 
     return false

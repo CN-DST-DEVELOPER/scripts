@@ -13,6 +13,9 @@ assert(TheWorld.ismastersim, "Shadow creature spawner should not exist on client
 local NON_INSANITY_MODE_DESPAWN_INTERVAL = 0.1
 local NON_INSANITY_MODE_DESPAWN_VARIANCE = 0.1
 
+local KEY_ROOM_DESPAWN_INTERVAL = 0.2
+local KEY_ROOM_DESPAWN_VARIANCE = 0.1
+
 local OCEAN_SPAWN_ATTEMPTS = 4
 
 --------------------------------------------------------------------------
@@ -266,9 +269,17 @@ local function UpdatePopulation(player, params)
         end
 
         --Reschedule population update
-        params.poptask = player:DoTaskInTime(is_insanity_mode and (TUNING.SANITYMONSTERS_POP_CHANGE_INTERVAL + TUNING.SANITYMONSTERS_POP_CHANGE_VARIANCE * math.random())
-												or (NON_INSANITY_MODE_DESPAWN_INTERVAL + NON_INSANITY_MODE_DESPAWN_VARIANCE * math.random())
-											, UpdatePopulation, params)
+        local schedule_time
+
+        local area_data = player.components.areaaware ~= nil and player.components.areaaware:GetCurrentArea() or nil
+        if area_data ~= nil and area_data.id ~= nil and area_data.id:find("Vault") and TheWorld.Map:IsPointInVaultRoom(player.Transform:GetWorldPosition()) then
+            schedule_time = KEY_ROOM_DESPAWN_INTERVAL + KEY_ROOM_DESPAWN_VARIANCE * math.random()
+        elseif is_insanity_mode then
+            schedule_time = TUNING.SANITYMONSTERS_POP_CHANGE_INTERVAL + TUNING.SANITYMONSTERS_POP_CHANGE_VARIANCE * math.random()
+        else
+            schedule_time = NON_INSANITY_MODE_DESPAWN_INTERVAL + NON_INSANITY_MODE_DESPAWN_VARIANCE * math.random()
+        end
+        params.poptask = player:DoTaskInTime(schedule_time, UpdatePopulation, params)
     end
 end
 

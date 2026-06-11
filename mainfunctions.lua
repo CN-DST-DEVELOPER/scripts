@@ -2018,7 +2018,13 @@ local function OnUserPickedCharacter(char, skin_base, clothing_body, clothing_ha
             selection = nil
         end
 
-        TheNet:SendSpawnRequestToServer(char, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_skins, selection)
+        -- FIXME(JBK): skinoverrides: Player selections from UI.
+        local skinoverrides = {}
+        if char == "wx78" and TheInventory:CheckOwnership("idleanimations_wx78_headadjust") then -- FIXME(JBK): skinoverrides: HACK
+            table.insert(skinoverrides, "idleanimations_wx78_headadjust")
+        end
+
+        TheNet:SendSpawnRequestToServer(char, skin_base, clothing_body, clothing_hand, clothing_legs, clothing_feet, starting_skins, selection, skinoverrides)
     end
 
     TheFrontEnd:Fade(FADE_OUT, 1, doSpawn, nil, nil, "white")
@@ -2357,6 +2363,7 @@ WORLDSTATETAGS.DeclareTag("ATRIUM_KEY_FOUND")
 --WORLDSTATETAGS.DeclareTag("") -- FIXME(JBK): It would be nice for a CELESTIAL_PORTAL_BUILT thing here for caves.
 WORLDSTATETAGS.DeclareTag("ARCHIVES_ENERGIZED")
 WORLDSTATETAGS.DeclareTag("SHADOW_RIFTS_ACTIVE")
+-- WORLDSTATETAGS.DeclareTag("VAULT_KEY_FOUND") -- FIXME(JBK): rifts7: Vault key progress flag.
 WORLDSTATETAGS.Lock()
 
 

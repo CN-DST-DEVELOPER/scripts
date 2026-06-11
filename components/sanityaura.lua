@@ -17,6 +17,11 @@ function SanityAura:GetBaseAura(observer) --No falloff.
 	return self.aurafn == nil and self.aura or self.aurafn(self.inst, observer)
 end
 
+function SanityAura:SetBaseAuraName(baseauraname)
+    -- Auras with the same source name will count as one. It is assumed all auras with the same name have the same magnitude.
+    self.baseauraname = baseauraname
+end
+
 local SANITY_EFFECT_RANGE_SQ = TUNING.SANITY_EFFECT_RANGE * TUNING.SANITY_EFFECT_RANGE
 function SanityAura:GetAura(observer)
 	local aura_val = 0

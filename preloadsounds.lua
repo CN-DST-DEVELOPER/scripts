@@ -256,6 +256,9 @@ local MainSounds =
 
     "yoth_2026.fev",
     "yoth_2026.fsb",
+
+    "rifts7.fev",
+    "rifts7.fsb",
 }
 
 function PreloadSoundList(list)

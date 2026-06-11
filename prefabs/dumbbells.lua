@@ -564,6 +564,7 @@ local function MakeDumbbell(name, consumption, efficiency, damage, impact_sound,
             inst:AddComponent("heater")
             inst.components.heater.heatfn = HeatFn
             inst.components.heater.carriedheatfn = HeatFn
+            inst.components.heater.equippedheatfn = HeatFn
             inst.components.heater.carriedheatmultiplier = TUNING.HEAT_ROCK_CARRIED_BONUS_HEAT_FACTOR
             inst.components.heater:SetThermics(false, false)
 

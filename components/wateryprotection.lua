@@ -32,16 +32,11 @@ function WateryProtection:ApplyProtectionToEntity(ent, noextinguish)
     if self.addcoldness > 0 and ent.components.freezable ~= nil then
         ent.components.freezable:AddColdness(self.addcoldness)
     end
-    if self.temperaturereduction > 0 and ent.components.temperature ~= nil then
-        ent.components.temperature:SetTemperature(ent.components.temperature:GetCurrent() - self.temperaturereduction)
+    if self.temperaturereduction > 0 then
+        DoDeltaTemperatureToEntity(ent, -self.temperaturereduction)
     end
     if self.addwetness > 0 then
-        if ent.components.moisture ~= nil then
-            local waterproofness = ent.components.moisture:GetWaterproofness()
-            ent.components.moisture:DoDelta(self.addwetness * (1 - waterproofness))
-        elseif ent.components.inventoryitem ~= nil then
-            ent.components.inventoryitem:AddMoisture(self.addwetness)
-        end
+        DoDeltaMoistureToEntity(ent, self.addwetness)
     end
 end
 

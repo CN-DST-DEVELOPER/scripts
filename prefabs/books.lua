@@ -717,7 +717,7 @@ local book_defs =
         fn = function(inst, reader)
             local x, y, z = reader.Transform:GetWorldPosition()
             local players = FindPlayersInRange( x, y, z, TUNING.BOOK_TEMPERATURE_RADIUS, true )
-            
+
             for _, player in pairs(players) do
                 player.components.temperature:SetTemperature(TUNING.BOOK_TEMPERATURE_AMOUNT)
                 player.components.moisture:SetMoistureLevel(0)
@@ -730,6 +730,7 @@ local book_defs =
                 for _, item in ipairs(items) do
                     if item.components.inventoryitem ~= nil then
                         item.components.inventoryitem:DryMoisture()
+                        item.components.inventoryitem:SetTemperature(TUNING.BOOK_TEMPERATURE_AMOUNT)
                     end
                 end
             end

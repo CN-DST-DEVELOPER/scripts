@@ -51,6 +51,10 @@ local function common_postinit(inst)
 
     --bearded (from beard component) added to pristine state for optimization
     inst:AddTag("bearded")
+    --eatsrawmeat (from eater:SetCanEatRawMeat component) added to pristine state for optimization
+    inst:AddTag("eatsrawmeat")
+    --strongstomach (from eater:SetStrongStomach component) added to pristine state for optimization
+    inst:AddTag("strongstomach")
 
     inst.AnimState:AddOverrideBuild("webber_spiderwhistle")
     inst.AnimState:AddOverrideBuild("player_spider_repellent")

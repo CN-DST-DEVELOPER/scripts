@@ -921,7 +921,7 @@ local function _Mutations_TalkAboutMutatedCreature_Internal(inst)
 
             local strings_index = WAGSTAFF_MUTATIONS_DIALOGUE_LOOKUP[num_defeated]
             inst.components.npc_talker:Chatter(strings_index)
-            inst.components.npc_talker:donextline()
+            inst.components.npc_talker:DoNextLine()
 
         else
             giverewardtask_time = MUTATIONS_TASK_DELAYS.GIVE_SECURITY_PULSE_CAGE_TASKCOMPLETED
@@ -931,7 +931,7 @@ local function _Mutations_TalkAboutMutatedCreature_Internal(inst)
 
             local strings_index = "WAGSTAFF_NPC_MUTATION_DEFEATED_AFTER_TASK_COMPLETED"..math.random(3)
             inst.components.npc_talker:Chatter(strings_index)
-            inst.components.npc_talker:donextline()
+            inst.components.npc_talker:DoNextLine()
         end
 
         inst.sg:GoToState("analyzing")
@@ -1207,7 +1207,7 @@ end
 local function DoFadeOut_Arena(inst)
     if not inst.erodingout then
         inst.erodingout = true
-        inst.components.npc_talker:resetqueue()
+        inst.components.npc_talker:ResetQueue()
         inst.components.talker:ShutUp()
         inst:erode(TUNING.WAGPUNK_ARENA_WAGSTAFF_FADEOUT_TIME)
         inst.components.timer:StartTimer("expiretime", TUNING.WAGPUNK_ARENA_WAGSTAFF_FADEOUT_TIME)
@@ -1223,7 +1223,7 @@ local function OnGetItemFromPlayer_Arena(inst, giver, item)
     local chatter = inst.trader_chatterreason
     if item:HasTag("mapscroll") then
         inst.trader_chatterreason = nil
-        inst.components.npc_talker:resetqueue()
+        inst.components.npc_talker:ResetQueue()
         inst.components.talker:ShutUp()
         if chatter and not inst.erodingout then
             inst.components.talker:Chatter(chatter, math.random(#STRINGS[chatter]), nil, nil, CHATPRIORITIES.LOW)
@@ -1239,7 +1239,7 @@ local function OnGetItemFromPlayer_Arena(inst, giver, item)
         table.insert(inst.itemstotoss, mapscroll_tricker)
     elseif item.prefab == "gestalt_cage_filled1" or item.prefab == "gestalt_cage_filled2" or item.prefab == "gestalt_cage_filled3" then
         -- Let the brain handle it.
-        inst.components.npc_talker:resetqueue()
+        inst.components.npc_talker:ResetQueue()
         inst.components.talker:ShutUp()
         if chatter and not inst.erodingout then
             inst.components.talker:Chatter(chatter, math.random(#STRINGS[chatter]), nil, nil, CHATPRIORITIES.LOW)

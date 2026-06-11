@@ -219,9 +219,7 @@ end
 
 local function TossItems(inst, x, z, isocean)
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, inst.AOE_RADIUS + WORK_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if v.components.mine then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 			TossLaunch(v, x, z, 1, 0.4)
 			if isocean then

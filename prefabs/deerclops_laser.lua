@@ -117,13 +117,10 @@ local function DoDamage(inst, targets, skiptoss)
                                     v.components.freezable:AddColdness(-2)
                                 end
                             end
-                            if v.components.temperature ~= nil then
-                                local maxtemp = math.min(v.components.temperature:GetMax(), 10)
-                                local curtemp = v.components.temperature:GetCurrent()
-                                if maxtemp > curtemp then
-                                    v.components.temperature:DoDelta(math.min(10, maxtemp - curtemp))
-                                end
-                            end
+							local ent_temp = GetEntityTemperature(v)
+							if ent_temp and 10 > ent_temp then
+                            	DoDeltaTemperatureToEntity(v, 10-ent_temp)
+							end
                         end
                     end
                 end
@@ -135,10 +132,9 @@ local function DoDamage(inst, targets, skiptoss)
         if not skiptoss[v] then
             local range = RADIUS + v:GetPhysicsRadius(.5)
             if v:GetDistanceSqToPoint(x, y, z) < range * range then
-                if v.components.mine ~= nil then
+                if DeactivateInventoryItemBeforeLaunch(v) then
                     targets[v] = true
                     skiptoss[v] = true
-                    v.components.mine:Deactivate()
                 end
                 if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
                     targets[v] = true

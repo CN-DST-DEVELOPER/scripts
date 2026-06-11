@@ -1006,6 +1006,57 @@ function self:OnPostInit()
 		end
 	end
 
+    ---------------------------------------------------------------------------
+
+    if self.retrofit_add_one_vault_orb then
+        local vaultmarker_lobby_center
+        for _, v in pairs(Ents) do
+            if v.prefab == "vaultmarker_lobby_center" then
+                vaultmarker_lobby_center = v
+                break
+            end
+        end
+        -- NOTES(JBK): The check for vault_orb if iterating Ents would skip all of the unloaded vault rooms with it is not designed to iterate.
+        -- This would be the start to finding if orbs exist and then it needs to look at vault_teleporter and its state.
+        -- Finally for all rooms that have no save data the current vault def would need to be looked over to count how many orbs would be in the map.
+        -- This is a lot of checks for something that can be given free here without issue so we will do that.
+        -- Maybe in the future vaultroommanager can have its own record keeping for what is inside of it or for it to self calculate it.
+        --for k,v in pairs(TheWorld.components.vaultroommanager.rooms) do
+        --if type(k) == "string" then
+        --    if v.vaultroomdata and v.vaultroomdata.ents then
+        --        if v.vaultroomdata.ents["vault_orb"] then
+        --        end
+        --    end
+        --end
+
+        local vault_orb
+        if not vaultmarker_lobby_center then
+            print("Cannot add one vault_orb because the map is missing vaultmarker_lobby_center somehow.")
+            return
+        end
+        print("Adding one vault_orb to vaultmarker_lobby_center.")
+        local x, y, z = vaultmarker_lobby_center.Transform:GetWorldPosition()
+        local function TryToFindClearSpot()
+            for radius = 1, 8 do
+                for theta = 0, 360 do
+                    local x1, z1 = math.cos(theta * DEGREES) * radius, math.sin(theta * DEGREES) * radius
+                    if TheSim:CountEntities(x1, 0, z1, 2) == 0 then
+                        vault_orb = SpawnPrefab("vault_orb")
+                        vault_orb.Transform:SetPosition(x1, 0, z1)
+                        return
+                    end
+                end
+            end
+        end
+        if not vault_orb then
+            -- Spawn it right next to the middle where a statue is.
+            vault_orb = SpawnPrefab("vault_orb")
+            vault_orb.Transform:SetPosition(x + 2, 0, z)
+        end
+
+        self.retrofit_add_one_vault_orb = nil
+    end
+
 	---------------------------------------------------------------------------
 
 	if self.requiresreset then
@@ -1055,6 +1106,7 @@ function self:OnLoad(data)
 		self.floating_heavyobstaclephysics_fix = data.floating_heavyobstaclephysics_fix or false
 		self.retrofit_missing_retrofits_generated_densities = data.retrofit_missing_retrofits_generated_densities or false
 		self.retrofit_cave_mite_spawners = data.retrofit_cave_mite_spawners or false
+        self.retrofit_add_one_vault_orb = data.retrofit_add_one_vault_orb or false
     end
 end
 

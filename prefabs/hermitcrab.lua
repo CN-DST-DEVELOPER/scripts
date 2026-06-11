@@ -1763,7 +1763,7 @@ end
 local function OnHermitCrabLeaveTeaShop(inst)
     inst.components.locomotor:Clear()
 
-    inst.components.npc_talker:resetqueue()
+    inst.components.npc_talker:ResetQueue()
     inst.Physics:SetActive(true)
     EnableShop(inst)
     inst:RestartBrain("serving_teashop")
@@ -2061,7 +2061,7 @@ local function fn()
     inst:ListenForEvent("exitlimbo",  function()
         if inst.entity:IsAwake() then
             inst.components.timer:StartTimer("complain_time", GetComplainTime(inst))
-            inst.components.npc_talker:resetqueue()
+            inst.components.npc_talker:ResetQueue()
         end
     end)
 
@@ -2077,7 +2077,7 @@ local function fn()
     inst.OnEntityWake = function(inst)
 		if not inst:IsInLimbo() then
             inst.components.timer:StartTimer("complain_time", GetComplainTime(inst))
-            inst.components.npc_talker:resetqueue()
+            inst.components.npc_talker:ResetQueue()
         end
 
         StartMeetPlayersTask(inst)

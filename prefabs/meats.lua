@@ -24,6 +24,11 @@ local batnose_assets =
     Asset("ANIM", "anim/batnose.zip"),
 }
 
+local mitegland_assets =
+{
+    Asset("ANIM", "anim/mite_gland.zip"),
+}
+
 local prefabs =
 {
     "cookedmeat",
@@ -82,6 +87,12 @@ local batwingprefabs =
 local plantmeatprefabs =
 {
     "plantmeat_cooked",
+    "spoiled_food",
+}
+
+local miteglandprefabs =
+{
+    "mitegland_cooked",
     "spoiled_food",
 }
 
@@ -764,6 +775,127 @@ local function batnose_cooked()
     return inst
 end
 
+local function mitegland_oneaten(inst, eater)
+    if not (eater.components.eater ~= nil and eater.components.eater.eatsrawmeat) then
+        eater:AddDebuff("mitegland_debuff", "mitegland_debuff")
+    end
+end
+
+local MITEGLAND_TAGS = { "cattoy", "rawmeat" }
+local MITEGLAND_COOKABLE_DATA = { product = "mitegland_cooked" }
+local function mitegland()
+    local inst = common("mite_gland", "mite_gland", "raw", MITEGLAND_TAGS, nil, MITEGLAND_COOKABLE_DATA)
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = TUNING.HEALING_MEDSMALL
+    inst.components.edible.hungervalue = TUNING.CALORIES_MEDSMALL
+    inst.components.edible.sanityvalue = -TUNING.SANITY_SMALL
+    inst.components.edible:SetOnEatenFn(mitegland_oneaten)
+
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+
+    return inst
+end
+
+local function mitegland_cooked()
+    local inst = common("mite_gland", "mite_gland", "cooked")
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.edible.healthvalue = TUNING.HEALING_MED
+    inst.components.edible.hungervalue = TUNING.CALORIES_MED
+    inst.components.edible.sanityvalue = -TUNING.SANITY_TINY
+    inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+
+    return inst
+end
+
+------------------------------------------------------------
+
+local MITEDEBUFF_TIMER = "mitedebuff_timer"
+
+local function miteglanddebuff_DoT_OnTick(inst, target)
+	if target.components.talker ~= nil and target.components.health ~= nil and not target.components.health:IsDead() and target:HasTag("idle") then
+		target.components.talker:Say(GetString(target, "ANNOUNCE_MITEGLAND_DEBUFF"))
+	end
+end
+
+local function miteglanddebuff_OnAttached(inst, target)
+	inst.entity:SetParent(target.entity)
+	inst.Transform:SetPosition(0, 0, 0)
+
+    inst:ListenForEvent("death", function()
+        inst.components.debuff:Stop()
+    end, target)
+
+	if target.components.temperature ~= nil then
+		target.components.temperature:SetModifier("mitegland_debuff", TUNING.FIRE_NETTLE_TOXIN_TEMP_MODIFIER)
+	end
+
+    inst:DoPeriodicTask(10, miteglanddebuff_DoT_OnTick, 5, target)
+end
+
+local function miteglanddebuff_OnDetached(inst, target)
+	if target ~= nil and target:IsValid() and target.components.temperature ~= nil then
+		target.components.temperature:RemoveModifier("mitegland_debuff")
+
+		if target.components.talker ~= nil and target.components.health ~= nil and not target.components.health:IsDead() then
+			target.components.talker:Say(GetString(target, "ANNOUNCE_MITEGLAND_DEBUFF_DONE"))
+		end
+	end
+    inst:Remove()
+end
+
+local function miteglanddebuff_OnExtended(inst)
+    inst.components.timer:StopTimer(MITEDEBUFF_TIMER)
+    inst.components.timer:StartTimer(MITEDEBUFF_TIMER, TUNING.FIRE_NETTLE_TOXIN_DURATION)
+end
+
+local function miteglanddebuff_OnTimerDone(inst, data)
+    if data.name == MITEDEBUFF_TIMER then
+        inst.components.debuff:Stop()
+    end
+end
+
+local function mitegland_debuff_fn()
+	local inst = CreateEntity()
+
+    if not TheWorld.ismastersim then
+        --Not meant for client!
+        inst:DoTaskInTime(0, inst.Remove)
+
+        return inst
+    end
+
+    inst.entity:AddTransform()
+
+    --[[Non-networked entity]]
+    --inst.entity:SetCanSleep(false)
+    inst.entity:Hide()
+
+    inst:AddTag("CLASSIFIED")
+
+	inst:AddComponent("debuff")
+	inst.components.debuff:SetAttachedFn(miteglanddebuff_OnAttached)
+	inst.components.debuff:SetDetachedFn(miteglanddebuff_OnDetached)
+	inst.components.debuff:SetExtendedFn(miteglanddebuff_OnExtended)
+	inst.components.debuff.keepondespawn = true
+
+    inst:AddComponent("timer")
+    inst:ListenForEvent("timerdone", miteglanddebuff_OnTimerDone)
+
+	miteglanddebuff_OnExtended(inst)
+
+	return inst
+end
+
+-----------------------------------------------------------------
+
 return Prefab("meat", raw, assets, prefabs),
         Prefab("cookedmeat", cooked, assets),
         Prefab("meat_dried", driedmeat, assets),
@@ -793,4 +925,7 @@ return Prefab("meat", raw, assets, prefabs),
         Prefab("barnacle", barnacle, assets),
         Prefab("barnacle_cooked", barnacle_cooked, assets),
         Prefab("batnose", batnose, batnose_assets, batwingprefabs),
-        Prefab("batnose_cooked", batnose_cooked, batnose_assets)
+        Prefab("batnose_cooked", batnose_cooked, batnose_assets),
+        Prefab("mitegland", mitegland, mitegland_assets, miteglandprefabs),
+        Prefab("mitegland_debuff", mitegland_debuff_fn),
+        Prefab("mitegland_cooked", mitegland_cooked, mitegland_assets)

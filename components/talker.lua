@@ -306,6 +306,10 @@ function Talker:ShutUp()
     end
 end
 
+function Talker:IsTalking()
+    return self.task ~= nil
+end
+
 Talker.OnRemoveEntity = CancelSay
 
 return Talker

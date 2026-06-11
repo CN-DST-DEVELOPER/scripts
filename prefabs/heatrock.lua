@@ -171,7 +171,7 @@ local function OnOwnerChange(inst)
         owner = nextowner
     end
 
-	if owner:HasTag("pocketdimension_container") or owner:HasTag("buried") then
+	if owner:HasAnyTag("pocketdimension_container", "buried") then
 		inst._light.entity:SetParent(inst.entity)
 		if not inst._light:IsInLimbo() then
 			inst._light:RemoveFromScene()

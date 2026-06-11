@@ -185,6 +185,15 @@ local function AddHauntable(inst)
     end
 end
 
+local function RemoveHauntable(inst)
+	if inst.components.hauntable then
+		if inst.components.hauntable.onunhaunt then
+			inst.components.hauntable.onunhaunt(inst)
+		end
+		inst:RemoveComponent("hauntable")
+	end
+end
+
 local function ItemTradeTest(inst, item)
 	return item ~= nil and item.prefab == "vault_orb"
 end
@@ -206,7 +215,7 @@ local function OnRepair(inst, giver, item)
 		OnAnimOver(inst)
 	else
 		inst.components.channelable:SetEnabled(false)
-        inst:RemoveComponent("hauntable")
+		inst:RemoveHauntable()
 		inst.AnimState:PlayAnimation("repair")
 		inst.SoundEmitter:PlaySound("rifts6/vault_portal/repair")
 		inst:ListenForEvent("animover", OnAnimOver)
@@ -220,11 +229,12 @@ local function MakeFixed(inst)
 end
 
 local function MakeBroken(inst)
+	inst:RemoveEventCallback("animover", OnAnimOver) --cancel mid repair???
 	inst.AnimState:PlayAnimation("idle_broken")
 	inst.SoundEmitter:KillSound("loop")
 
 	inst.components.channelable:SetEnabled(false)
-    inst:RemoveComponent("hauntable")
+	inst:RemoveHauntable()
 
 	if inst.components.trader == nil then
 		inst:AddComponent("trader")
@@ -236,13 +246,14 @@ local function MakeBroken(inst)
 end
 
 local function MakeUnderConstruction(inst)
+	inst:RemoveEventCallback("animover", OnAnimOver) --cancel mid repair???
 	inst.AnimState:PlayAnimation("unpowered_construction")
 	inst.SoundEmitter:KillSound("loop")
 
 	inst:RemoveTag("trader_repair")
 	inst:RemoveComponent("trader")
 	inst.components.channelable:SetEnabled(false)
-    inst:RemoveComponent("hauntable")
+	inst:RemoveHauntable()
 
 	inst.components.inspectable:SetNameOverride("vault_teleporter_underconstruction")
 	inst.components.inspectable.getstatus = nil
@@ -313,7 +324,7 @@ local function SetPowered(inst, powered)
     if powered then
         inst:AddHauntable()
     else
-        inst:RemoveComponent("hauntable")
+		inst:RemoveHauntable()
     end
 end
 
@@ -339,6 +350,7 @@ local function fn()
 	inst.MiniMapEntity:SetIcon("vault_teleporter.png")
 
     MakeObstaclePhysics(inst, 0.1)
+	inst.Physics:ClearCollidesWith(COLLISION.GIANTS)
 
 	inst.AnimState:SetBank("vault_portal")
 	inst.AnimState:SetBuild("vault_portal")
@@ -376,6 +388,7 @@ local function fn()
     inst.components.inspectable.getstatus = GetStatus
 
     inst.AddHauntable = AddHauntable
+	inst.RemoveHauntable = RemoveHauntable
     inst.UpdateHauntable = UpdateHauntable
     inst:AddHauntable()
 
@@ -410,6 +423,8 @@ local function orbfn()
 
 	MakeInventoryFloatable(inst, "small", 0.05, { 0.8, 0.75, 0.8 })
 
+    inst:AddTag("irreplaceable")
+    inst:AddTag("forcedtosavethroughvirtualrooms")
 	inst:AddTag("donotautopick")
 
 	inst.entity:SetPristine()

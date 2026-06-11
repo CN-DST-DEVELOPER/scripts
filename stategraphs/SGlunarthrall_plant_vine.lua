@@ -107,9 +107,7 @@ local function DoToss(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local totoss = TheSim:FindEntities(x, 0, z, TOSS_RADIUS + TOSS_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)
 	for i, v in ipairs(totoss) do
-		if v.components.mine ~= nil then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce then
 			Launch2(v, inst, .5, 1, .1, TOSS_RADIUS + v:GetPhysicsRadius(0))
 		end

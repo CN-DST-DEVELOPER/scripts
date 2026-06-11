@@ -70,8 +70,8 @@ end
 
 local function OnGetMaterials(inst)
     inst.AnimState:PlayAnimation("grab")
-    inst.AnimState:PushAnimation("grab_pst")
-    
+    inst.AnimState:PushAnimation("grab_pst", false)
+
     inst.persists = false
 
     inst.SoundEmitter:PlaySound("rifts2/charlie/charlie_hand_accept")
@@ -143,7 +143,10 @@ local function OnLoadPostPass(inst, data)
 
         inst:DoTaskInTime(0, function ()
             -- Stay out when the atrium is destabilizing.
-            inst:OnAtriumPowered(atrium.components.pickable ~= nil and atrium.components.pickable.caninteractwith)
+            inst:OnAtriumPowered(
+                (atrium.components.pickable ~= nil and atrium.components.pickable.caninteractwith) or
+                (atrium.components.worldsettingstimer ~= nil and atrium.components.worldsettingstimer:ActiveTimerExists("destabilizedelay"))
+            )
         end)
     end
 
@@ -163,7 +166,7 @@ end
 
 ----------------------------------------------------------------------------
 
-local function CharlieHandFn()
+local function CommonCharlieHandFn()
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -184,9 +187,10 @@ local function CharlieHandFn()
 
     -- constructionsite (from constructionsite component) added to pristine state for optimization.
     inst:AddTag("constructionsite")
-
     -- Offer action strings.
     inst:AddTag("offerconstructionsite")
+
+    inst:SetPrefabNameOverride("charlie_hand")
 
     inst.entity:SetPristine()
 
@@ -208,10 +212,7 @@ local function CharlieHandFn()
     inst:AddComponent("entitytracker")
     inst:AddComponent("knownlocations")
     inst:AddComponent("inspectable")
-
-    local constructionsite = inst:AddComponent("constructionsite")
-    constructionsite:SetConstructionPrefab("enable_shadow_rift_construction_container")
-    constructionsite:SetOnConstructedFn(ConstructionSite_OnConstructed)
+    inst:AddComponent("constructionsite")
 
     local locomotor = inst:AddComponent("locomotor")
     locomotor.walkspeed = 2
@@ -227,7 +228,6 @@ local function CharlieHandFn()
     inst.OnLoadPostPass = OnLoadPostPass
     inst.OnRemoveEntity = OnRemove
 
-    inst:ListenForEvent("atriumpowered", function(_, ispowered) inst:OnAtriumPowered(ispowered) end, TheWorld)
     inst:ListenForEvent("startaction",   inst.HandleAction)
 
     return inst
@@ -235,6 +235,57 @@ end
 
 ----------------------------------------------------------------------------
 
+local function CharlieHandFn()
+    local inst = CommonCharlieHandFn()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.constructionsite:SetConstructionPrefab("enable_shadow_rift_construction_container")
+    inst.components.constructionsite:SetOnConstructedFn(ConstructionSite_OnConstructed)
+
+    inst:ListenForEvent("atriumpowered", function(_, ispowered) inst:OnAtriumPowered(ispowered) end, TheWorld)
+
+    return inst
+end
+
+local function KeyStone_ConstructionSite_OnConstructed(inst, doer)
+    if inst.components.constructionsite:IsComplete() then
+        local atrium = inst.components.entitytracker:GetEntity("atrium")
+
+        if atrium ~= nil and atrium.components.charliecutscene ~= nil then
+            local was_destabilizing = atrium:ForceDestabilizeExplode()
+
+            atrium.components.entitytracker:ForgetEntity("charlie_hand")
+
+            -- atrium:SocketVaultKey(doer)
+
+            atrium.can_spawn_charlie_hand_keystone = false -- TODO #FIXME
+            TheWorld:PushEvent("resetvault")
+
+            -- atrium:DoTaskInTime(was_destabilizing and 2 or 0, inst.StartCutScene)
+            -- atrium.components.charliecutscene._running = true
+        end
+
+        inst:OnGetMaterials()
+    end
+end
+
+local function CharlieHandKeyStoneFn()
+    local inst = CommonCharlieHandFn()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst.components.constructionsite:SetConstructionPrefab("socket_keystone_construction_container")
+    inst.components.constructionsite:SetOnConstructedFn(KeyStone_ConstructionSite_OnConstructed)
+
+    return inst
+end
+
+----------------------------------------------------------------------------
 
 local function EnableRiftContainerFn()
     local inst = CreateEntity()
@@ -267,7 +318,39 @@ end
 
 ----------------------------------------------------------------------------
 
+local function GiveKeyStoneContainerFn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddNetwork()
+
+	inst:AddTag("bundle")
+
+	-- Offer action strings.
+	inst:AddTag("offerconstructionsite")
+
+    -- Blank string for controller action prompt.
+    inst.name = " "
+	inst.POPUP_STRINGS = STRINGS.UI.GIVE_KEY_STONE
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("container")
+    inst.components.container:WidgetSetup("socket_keystone_construction_container")
+
+    inst.persists = false
+
+    return inst
+end
+
+----------------------------------------------------------------------------
 
 return
         Prefab("charlie_hand",                               CharlieHandFn,          assets, prefabs ),
-        Prefab("enable_shadow_rift_construction_container",  EnableRiftContainerFn                   )
+        Prefab("charlie_hand_keystone",                      CharlieHandKeyStoneFn,  assets, prefabs ),
+        Prefab("enable_shadow_rift_construction_container",  EnableRiftContainerFn                   ),
+        Prefab("socket_keystone_construction_container",     GiveKeyStoneContainerFn                 )

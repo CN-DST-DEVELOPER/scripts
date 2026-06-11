@@ -44,7 +44,7 @@ local function OnUpdate(inst)
 	if REGISTERED_AOE_TAGS == nil then
 		REGISTERED_AOE_TAGS = TheSim:RegisterFindTags(
 			{ "_health" },
-			{ "FX", "DECOR", "INLIMBO", "flight", "noattack", "notarget", "invisible", "wall", "brightmare", "brightmareboss", "shadowcreature" }
+			{ "FX", "DECOR", "INLIMBO", "flying", "noattack", "notarget", "invisible", "wall", "brightmare", "brightmareboss", "shadowcreature" }
 		)
 	end
 	local x, y, z = inst.Transform:GetWorldPosition()

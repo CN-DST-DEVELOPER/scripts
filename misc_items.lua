@@ -1478,6 +1478,15 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 117,
 	},
+	mysterybox_kleifest =
+	{
+		type = "mysterybox",
+		skin_tags = { "MYSTERYBOX", },
+		build_name_override = "mysterybox_klei",
+		box_build = "box_mystery_klei",
+		rarity = "Loyal",
+		release_group = 182,
+	},
 	mysterybox_lava_4 =
 	{
 		type = "mysterybox",
@@ -1591,6 +1600,20 @@ MISC_ITEMS =
 		rarity = "Common",
 		rarity_modifier = "Woven",
 		release_group = 115,
+	},
+	pack_20s_1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 5,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_20s1.xml",
+		display_tex = "20s1.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "walter_20s", "walterhat_20s", "winona_20s", },
+		output_items = {  "walter_20s", "body_walter_20s", "walterhat_20s", "winona_20s", "body_winona_20s", "hand_winona_20s", "feet_winona_20s", },
+		release_group = 182,
 	},
 	pack_adventure_1 =
 	{
@@ -4661,6 +4684,48 @@ MISC_ITEMS =
 		output_items = {  "wanda_rose", "body_wanda_rose", "hand_wanda_rose", "feet_wanda_rose", "wortox_rose", "body_wortox_rose", "legs_wortox_rose", "walter_rose", "body_walter_rose", "legs_walter_rose", "walterhat_rose", },
 		release_group = 158,
 	},
+	pack_rose_furniture =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 7,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_rose_furniture.xml",
+		display_tex = "rose_furniture.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		output_items = {  "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		release_group = 182,
+	},
+	pack_rose_furnitureitems =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 3,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_rose_furnitureitems.xml",
+		display_tex = "rose_furnitureitems.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		output_items = {  "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		release_group = 182,
+	},
+	pack_rose_items =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 6,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_rose_items.xml",
+		display_tex = "rose_items.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", },
+		output_items = {  "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", },
+		release_group = 182,
+	},
 	pack_rosepirate =
 	{
 		type = "purchase",
@@ -4674,6 +4739,20 @@ MISC_ITEMS =
 		display_items = {  "wanda_rose", "wortox_rose", "walter_rose", "walterhat_rose", "webber_pirate", "webber_beard_pirate", "wilson_pirate", "wilson_beard_pirate", "waxwell_pirate", },
 		output_items = {  "wanda_rose", "body_wanda_rose", "hand_wanda_rose", "feet_wanda_rose", "wortox_rose", "body_wortox_rose", "legs_wortox_rose", "walter_rose", "body_walter_rose", "legs_walter_rose", "walterhat_rose", "webber_pirate", "body_webber_pirate", "hand_webber_pirate", "feet_webber_pirate", "webber_beard_pirate", "wilson_pirate", "body_wilson_pirate", "legs_wilson_pirate", "wilson_beard_pirate", "waxwell_pirate", "body_waxwell_pirate", "legs_waxwell_pirate", },
 		release_group = 158,
+	},
+	pack_rosewestern20s_total =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_rosewestern20s_bundle.xml",
+		display_tex = "rosewestern20s_bundle.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_western", "wolfgang_western", "wurt_western", "walter_20s", "walterhat_20s", "winona_20s", "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		output_items = {  "waxwell_western", "body_waxwell_western", "hand_waxwell_western", "legs_waxwell_western", "wolfgang_western", "body_wolfgang_western", "legs_wolfgang_western", "wurt_western", "body_wurt_western", "hand_wurt_western", "legs_wurt_western", "walter_20s", "body_walter_20s", "walterhat_20s", "winona_20s", "body_winona_20s", "hand_winona_20s", "feet_winona_20s", "axe_rose", "pitchfork_rose", "shovel_rose", "stone_chair_rose", "stonetable_square_rose", "wall_stone_rose", "fence_rose", "fence_gate_rose", "chair_stool_rose", "decor_centerpiece_rose", "decor_flowervase_rose", "decor_lamp_rose", "decor_phonograph_rose", "decor_pictureframe_rose", "decor_portraitframe_rose", "round_table_rose", "wood_chair_rose", "wood_table_rose", },
+		release_group = 182,
 	},
 	pack_seaside_items =
 	{
@@ -6371,6 +6450,20 @@ MISC_ITEMS =
 		output_items = {  "wes_western", "body_wes_western", "hand_wes_western", "legs_wes_western", "feet_wes_western", },
 		release_group = 167,
 	},
+	pack_western2_20s1 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 2,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_western2_20s1.xml",
+		display_tex = "western2_20s1.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_western", "wolfgang_western", "wurt_western", "walter_20s", "walterhat_20s", "winona_20s", },
+		output_items = {  "waxwell_western", "body_waxwell_western", "hand_waxwell_western", "legs_waxwell_western", "wolfgang_western", "body_wolfgang_western", "legs_wolfgang_western", "wurt_western", "body_wurt_western", "hand_wurt_western", "legs_wurt_western", "walter_20s", "body_walter_20s", "walterhat_20s", "winona_20s", "body_winona_20s", "hand_winona_20s", "feet_winona_20s", },
+		release_group = 182,
+	},
 	pack_western_1 =
 	{
 		type = "purchase",
@@ -6412,6 +6505,20 @@ MISC_ITEMS =
 		display_items = {  "footballhat_western", "raincoat_western", "winterhat_western", "tophat_western", "strawhat_western", "lunarplanthat_brave", "armor_lunarplant_brave", "lunarplanthat_knight", "armor_lunarplant_knight", "chester_mystical", "bushhat_mystical", "glasscutter_mystical", "lantern_mystical", "mushroom_farm_mystical", "siestahut_mystical", "winterometer_mystical", "beargerfursack_mystical", "telebase_mystical", "telestaff_mystical", "mermwatchtower_mystical", "mermhouse_crafted_mystical", "beefalohat_mystical", "bundle_mystical", },
 		output_items = {  "footballhat_western", "raincoat_western", "winterhat_western", "tophat_western", "strawhat_western", "lunarplanthat_brave", "armor_lunarplant_brave", "lunarplanthat_knight", "armor_lunarplant_knight", "chester_mystical", "bushhat_mystical", "glasscutter_mystical", "lantern_mystical", "mushroom_farm_mystical", "siestahut_mystical", "winterometer_mystical", "beargerfursack_mystical", "telebase_mystical", "telestaff_mystical", "mermwatchtower_mystical", "mermhouse_crafted_mystical", "beefalohat_mystical", "bundle_mystical", },
 		release_group = 167,
+	},
+	pack_western_2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 4,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_western2.xml",
+		display_tex = "western2.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "waxwell_western", "wolfgang_western", "wurt_western", },
+		output_items = {  "waxwell_western", "body_waxwell_western", "hand_waxwell_western", "legs_waxwell_western", "wolfgang_western", "body_wolfgang_western", "legs_wolfgang_western", "wurt_western", "body_wurt_western", "hand_wurt_western", "legs_wurt_western", },
+		release_group = 182,
 	},
 	pack_wickerbottom_deluxe =
 	{
@@ -8734,6 +8841,13 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 43,
 	},
+	playerportrait_bg_panflute_insect =
+	{
+		type = "playerportrait",
+		skin_tags = { "INSECT", "PLAYERPORTRAIT", },
+		rarity = "Loyal",
+		release_group = 182,
+	},
 	playerportrait_bg_panflutean =
 	{
 		type = "playerportrait",
@@ -10098,6 +10212,13 @@ MISC_ITEMS =
 		skin_tags = { "ARTNOUVEAU", "PROFILEFLAIR", },
 		rarity = "Loyal",
 		release_group = 136,
+	},
+	profileflair_panflute_insect =
+	{
+		type = "profileflair",
+		skin_tags = { "INSECT", "PROFILEFLAIR", },
+		rarity = "Loyal",
+		release_group = 182,
 	},
 	profileflair_pengull =
 	{

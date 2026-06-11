@@ -11,7 +11,7 @@ local function MakeFx(t)
         }
     else
         assets = {
-            Asset("ANIM", "anim/"..t.build..".zip"),
+            Asset("ANIM", "anim/"..t.build..".zip", t.renderpath),
         }
     end
 

@@ -24,8 +24,7 @@ local function DoTurnOn(inst)
 	if inst.fire == nil then
 		inst.fire = SpawnPrefab("vault_torch_flame")
 		inst:AddChild(inst.fire)
-		--V2C: fire_marker was made for pigtorch_flame, now switched to coldfirefire so + 58.4
-		inst.fire.entity:AddFollower():FollowSymbol(inst.GUID, "fire_marker", 0, 40 + 58.4, 0)
+		inst.fire.entity:AddFollower():FollowSymbol(inst.GUID, "fire_marker", 0, 40, 0)
 		inst.fire.persists = false
 		inst.fire.components.firefx:SetLevel((inst:IsBroken() and 1) or (inst:IsStuck() and 3) or 2, true)
 		inst.fire.components.firefx:AttachLightTo(inst)
@@ -339,9 +338,9 @@ end
 local FLAME_LIGHT_COLOUR = { 180/255, 240/255, 255/255 }
 local FLAME_LEVELS =
 {
-	{ anim = "level1", sound = "rifts6/vault_torch/coldfire_LP", radius = 2, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.06 },
-	{ anim = "level2", sound = "rifts6/vault_torch/coldfire_LP", radius = 3, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.08 },
-	{ anim = "level3", sound = "rifts6/vault_torch/coldfire_LP", radius = 4, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.1 },
+	{ anim = "level1_redux", sound = "rifts6/vault_torch/coldfire_LP", radius = 2, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.06 },
+	{ anim = "level2_redux", sound = "rifts6/vault_torch/coldfire_LP", radius = 3, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.08 },
+	{ anim = "level3_redux", sound = "rifts6/vault_torch/coldfire_LP", radius = 4, intensity = 0.25, falloff = 0.5, colour = FLAME_LIGHT_COLOUR, soundintensity = 0.1 },
 }
 FLAME_LIGHT_COLOR = nil
 

@@ -186,12 +186,15 @@ local function ExtraDeployDist(doer, dest, bufferedaction)
 			end
 		end
 
-		if use_extra_space then
+        local extra_deploy_distance = invobject and invobject.extra_deploy_distance or nil
+		if use_extra_space or extra_deploy_distance then
+            extra_deploy_distance = extra_deploy_distance or 1
+
 			if invobject and invobject:HasTag("usedeployspacingasoffset") then
 				local inventoryitem = invobject.replica.inventoryitem
-				return (inventoryitem and inventoryitem:DeploySpacingRadius() or 0) + 1
+				return (inventoryitem and inventoryitem:DeploySpacingRadius() or 0) + extra_deploy_distance
 			end
-			return 1
+			return extra_deploy_distance
 		end
 	end
     return 0
@@ -382,9 +385,10 @@ ACTIONS =
     SHAVE = Action({ mount_valid=true }),
 	STORE = Action({ mount_valid=true }),
     RUMMAGE = Action({ priority=-1, mount_valid=true }),
-	DEPLOY = Action({distance=1.1, mount_valid=true, extra_arrive_dist=ExtraDeployDist }),
+    -- DEPLOY_TILEARRIVE should stay a hold action.
+	DEPLOY = Action({distance=1.1, mount_valid=true, extra_arrive_dist=ExtraDeployDist, invalid_hold_action=true }),
     DEPLOY_TILEARRIVE = Action({customarrivecheck=CheckTileWithinRange, theme_music = "farming"}), -- Note: If this is used for non-farming in the future, this would need to be swapped to theme_music_fn
-	DEPLOY_FLOATING = Action({do_not_locomote=true, floating_valid=true }),
+	DEPLOY_FLOATING = Action({do_not_locomote=true, floating_valid=true, invalid_hold_action=true }),
     PLAY = Action({ mount_valid=true }),
     CREATE = Action(),
     JOIN = Action(),
@@ -705,6 +709,11 @@ ACTIONS =
 
     -- A unique action to equip things on the possessed bodies, but can still give stuff to their inventory
     EQUIPONBODY = Action({ priority=3, canforce=true, rangecheckfn=DefaultRangeCheck }),
+
+    -- Rifts 7
+    CLIMB = Action({ ghost_valid=true, encumbered_valid=true }),
+    STARTVAULTORBTELEPORT = Action({ rmb = true }),
+	VAULTORBTELEPORT_MAP = Action({ customarrivecheck = ArriveAnywhere, rmb = true, map_only=true, map_works_on_unexplored = true, closes_map=true, }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -1586,6 +1595,9 @@ ACTIONS.DEPLOY.fn = function(act)
             local container = act.doer.components.inventory or act.doer.components.container
             local obj = container ~= nil and container:RemoveItem(act.invobject) or nil
             if obj ~= nil then
+                obj.prevcontainer = nil
+                obj.prevslot = nil
+
                 local success, reason = obj.components.deployable:Deploy(act_pos, act.doer, act.rotation)
                 if success then
                     return true
@@ -1608,10 +1620,12 @@ ACTIONS.DEPLOY.strfn = function(act)
                 (act.invobject:HasTag("gatebuilder") and "GATE") or
                 (act.invobject:HasTag("portableitem") and "PORTABLE") or
                 (act.invobject:HasTag("boatbuilder") and "WATER") or
+                (act.invobject:HasTag("trap_fumarole") and "HOT_ROCKS") or
+                (act.invobject:HasTag("trap") and "TURRET") or
                 (act.invobject:HasTag("deploykititem") and "TURRET") or
                 (act.invobject:HasTag("eyeturret") and "TURRET") or
                 (act.invobject:HasTag("fertilizer") and "FERTILIZE_GROUND") or
-                (act.invobject:HasTag("graveplanter") and "GRAVEPLANT")    )
+                (act.invobject:HasTag("graveplanter") and "GRAVEPLANT")  )
         or nil
 end
 
@@ -1882,6 +1896,7 @@ ACTIONS.PICK.strfn = function(act)
 	return (act.target:HasTag("pickable_harvest_str") and "HARVEST")
         or (act.target:HasTag("pickable_rummage_str") and "RUMMAGE")
         or (act.target:HasTag("pickable_search_str") and "SEARCH")
+        or (act.target:HasTag("gemsocket") and "UNSOCKET")
         or nil
 end
 
@@ -2885,9 +2900,7 @@ ACTIONS.COMMENT.fn = function(act)
             doer.components.npc_talker:Say(comment_data.speech)
         end
 
-        if doer.components.npc_talker:haslines() then
-            doer.components.npc_talker:donextline()
-        end
+        doer.components.npc_talker:DoNextLine()
     elseif doer.components.talker then
         if comment_data.do_chatter then
             doer.components.talker:Chatter(
@@ -6718,6 +6731,8 @@ ACTIONS.MAPSCOUT_MAP.maponly_checkvalidpos_fn = function(act)
 		return false
 	elseif not (act.doer.components.skilltreeupdater and act.doer.components.skilltreeupdater:IsActivated("wx78_scoutdrone_1")) then
 		return false
+    elseif not act.target.GetDroneRange then
+        return false
 	end
 
 	local x, y, z = act:GetActionPoint():Get()
@@ -6890,4 +6905,68 @@ ACTIONS.EQUIPONBODY.fn = function(act)
         act.target.components.inventory:Equip(act.invobject)
         return true
     end
+end
+
+ACTIONS.CLIMB.strfn = function(act)
+    return act.doer ~= nil and act.doer:HasTag("playerghost") and "HAUNT" or nil
+end
+
+ACTIONS.CLIMB.fn = function(act)
+    if act.doer ~= nil and
+        act.doer.sg ~= nil and
+        act.doer.sg.currentstate.name == "climb_pre" then
+        if act.target ~= nil and
+            act.target.components.teleporter ~= nil and
+            act.target.components.teleporter:IsActive() then
+            act.doer.sg:GoToState("climb", { teleporter = act.target })
+            return true
+        end
+        act.doer.sg:GoToState("idle")
+    end
+end
+
+ACTIONS.STARTVAULTORBTELEPORT.fn = function(act)
+    if act.invobject and act.invobject.components.vaultorbteleporter then
+        return act.invobject.components.vaultorbteleporter:StartMapAction(act.doer)
+    end
+end
+
+local MAP_VAULTORB_MUST = { "CLASSIFIED", "globalmapicon", "vaultorbteleportdestinationtrackericon" }
+ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn = function(act)
+    local target = act.target or act.invobject
+    if act.doer == nil or target == nil then
+        return false
+    end
+
+    local x, y, z = act:GetActionPoint():Get()
+    local mapent = TheSim:FindEntities(x, y, z, TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS, MAP_VAULTORB_MUST)[1]
+    if mapent == nil then
+        return false, "NOTARGET"
+    end
+
+    x, y, z = mapent.Transform:GetWorldPosition()
+    local px, py, pz = act.doer.Transform:GetWorldPosition()
+
+    if not IsTeleportingPermittedFromPointToPoint(px, py, pz, x, y, z) then
+        return false
+    end
+
+    return true, nil, x, z, mapent
+end
+
+ACTIONS.VAULTORBTELEPORT_MAP.fn = function(act)
+    local valid, reason, act_posx, act_posz, mapent = ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn(act)
+    if not valid then
+        return valid, reason
+    end
+
+    if act.invobject.components.vaultorbteleporter == nil then
+        return false, "NOTARGET"
+    end
+
+    if not mapent or not mapent._target or not mapent._target:IsValid() then
+        return false, "NOTARGET"
+    end
+
+    return act.invobject.components.vaultorbteleporter:Activate(act.doer, mapent._target)
 end

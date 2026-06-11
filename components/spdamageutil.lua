@@ -15,6 +15,8 @@ end
 local Fallbacks = {
     GetDamage = function(ent) return 0 end,
     GetDefense = function(ent) return 0 end,
+	GetTakenMult = function(ent) return 1 end,
+	GetTakenBonus = function(ent) return 0 end,
 }
 
 SpDamageUtil.DefineSpType("planar", {
@@ -35,6 +37,16 @@ end
 SpDamageUtil.GetSpDefenseForType = function(ent, sptype)
 	local fns = SpTypeMap[sptype]
 	return fns ~= nil and (fns.GetDefense or Fallbacks.GetDefense)(ent) or 0
+end
+
+SpDamageUtil.GetSpTakenMultForType = function(ent, sptype)
+	local fns = SpTypeMap[sptype]
+	return fns and (fns.GetTakenMult or Fallbacks.GetTakenMult)(ent) or 1
+end
+
+SpDamageUtil.GetSpTakenBonusForType = function(ent, sptype)
+	local fns = SpTypeMap[sptype]
+	return fns and (fns.GetTakenBonus or Fallbacks.GetTakenBonus)(ent) or 0
 end
 
 SpDamageUtil.CollectSpDamage = function(ent, tbl)
@@ -84,9 +96,16 @@ SpDamageUtil.ApplySpDefense = function(ent, tbl)
 	if tbl ~= nil then
 		for k, v in pairs(tbl) do
 			local def = SpDamageUtil.GetSpDefenseForType(ent, k)
-			if def > 0 then
-				tbl[k] = v > def and v - def or nil
+			local mult = SpDamageUtil.GetSpTakenMultForType(ent, k)
+			local bonus = SpDamageUtil.GetSpTakenBonusForType(ent, k)
+			if v > def then
+				v = (v - def) * mult + bonus
+			else
+				--ignore mult since def blocks all of base v
+				--remaining def can be used to block any bonus
+				v = bonus - (def - v)
 			end
+			tbl[k] = v > 0 and v or nil
 		end
 		if next(tbl) == nil then
 			tbl = nil

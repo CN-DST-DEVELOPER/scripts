@@ -138,7 +138,7 @@ local function OnLoad(inst, data)
 	end
 end
 
-local function debuff_fn(anim)
+local function debuff_fn()
 	local inst = CreateEntity()
 
     if not TheWorld.ismastersim then

@@ -1040,7 +1040,7 @@ local function OnWormholeTravelDirty(inst)
         elseif inst._parent.player_classified.wormholetravelevent:value() == WORMHOLETYPE.OCEANWHIRLPORTAL then
             TheFocalPoint.SoundEmitter:PlaySound("meta3/whirlpool/whirlpool_travel")
         elseif inst._parent.player_classified.wormholetravelevent:value() == WORMHOLETYPE.VAULTLOBBYEXIT then
-            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/cave/tentapiller_hole_travel") -- FIXME(JBK): rifts6 sounds
+            TheFocalPoint.SoundEmitter:PlaySound("dontstarve/cave/tentapiller_hole_travel") -- FIXME(JBK): rifts6 sounds -- FIXME(JBK): rifts7 sounds
         end
     end
 end

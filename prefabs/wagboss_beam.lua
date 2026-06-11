@@ -233,9 +233,7 @@ local function UpdateBeamAOE(inst, dt)
 								inst.targets[v] = tick
 							end
 						elseif v.components.inventoryitem and v.components.locomotor == nil then
-							if v.components.mine then
-								v.components.mine:Deactivate()
-							end
+							DeactivateInventoryItemBeforeLaunch(v)
 							if not v.components.inventoryitem.nobounce then
 								TossLaunch(v, inst, 1.2, 0.1)
 							end

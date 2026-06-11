@@ -191,6 +191,18 @@ end
 
 local TOSS_MUST_TAGS = { "_inventoryitem" }
 local TOSS_CANT_TAGS = { "locomotor", "INLIMBO" }
+function LaunchArea(inst, radius, launch_basespeed, launch_speedmult, launch_startheight, launch_startradius)
+    local x, y, z = inst.Transform:GetWorldPosition()
+
+    local totoss = TheSim:FindEntities(x, 0, z, radius, TOSS_MUST_TAGS, TOSS_CANT_TAGS)
+    for i, v in ipairs(totoss) do
+        DeactivateInventoryItemBeforeLaunch(v)
+        if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
+			Launch2(v, inst, launch_basespeed, launch_speedmult, launch_startheight, launch_startradius)
+        end
+    end
+end
+
 function LaunchAndClearArea(inst, radius, launch_basespeed, launch_speedmult, launch_startheight, launch_startradius)
     local x, y, z = inst.Transform:GetWorldPosition()
 
@@ -199,13 +211,5 @@ function LaunchAndClearArea(inst, radius, launch_basespeed, launch_speedmult, la
 		DestroyEntity(v, inst)
     end
 
-    local totoss = TheSim:FindEntities(x, 0, z, radius, TOSS_MUST_TAGS, TOSS_CANT_TAGS)
-    for i, v in ipairs(totoss) do
-        if v.components.mine ~= nil then
-            v.components.mine:Deactivate()
-        end
-        if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
-			Launch2(v, inst, launch_basespeed, launch_speedmult, launch_startheight, launch_startradius)
-        end
-    end
+    LaunchArea(inst, radius, launch_basespeed, launch_speedmult, launch_startheight, launch_startradius)
 end

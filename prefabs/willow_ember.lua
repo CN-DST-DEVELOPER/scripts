@@ -193,8 +193,8 @@ local function ConsumeEmbers(inst, doer, amount)
 	end
 end
 
-local SPAWN_FIRE_CANT =     { "player", "INLIMBO", "FX", "NOCLICK" }
-local SPAWN_FIRE_CANT_PVP = { "INLIMBO", "FX", "NOCLICK" }
+local SPAWN_FIRE_CANT =     { "player", "INLIMBO", "NOCLICK" } -- "FX" don't exclude FX, we want to find miasma
+local SPAWN_FIRE_CANT_PVP = { "INLIMBO", "NOCLICK" }  -- "FX" don't exclude FX, we want to find miasma
 
 local function ThrowFire_SpawnFire(inst, doer, pos)
     local x, y, z = pos:Get()
@@ -208,37 +208,41 @@ local function ThrowFire_SpawnFire(inst, doer, pos)
     end
 
     for i, target in ipairs(ents) do
-        if target ~= doer and
-            target.components.burnable ~= nil
-        then
-            if target.components.freezable ~= nil and target.components.freezable:IsFrozen() then
-                target.components.freezable:Unfreeze()
+        if target ~= doer then
+            if target:HasTag("miasma") and target.ForceKillMiasma then
+                target:ForceKillMiasma()
+            elseif not target:HasTag("FX") then
+                if target.components.burnable ~= nil then
+                    if target.components.freezable ~= nil and target.components.freezable:IsFrozen() then
+                        target.components.freezable:Unfreeze()
 
-            elseif target.components.fueled == nil or (
-                target.components.fueled.fueltype ~= FUELTYPE.BURNABLE and
-                target.components.fueled.secondaryfueltype ~= FUELTYPE.BURNABLE
-            ) then
-                -- Does not take burnable fuel, so just burn it.
-                if target.components.burnable.canlight or target.components.combat ~= nil then
-                    target.components.burnable:Ignite(true, inst, doer)
-                end
+                    elseif target.components.fueled == nil or (
+                        target.components.fueled.fueltype ~= FUELTYPE.BURNABLE and
+                        target.components.fueled.secondaryfueltype ~= FUELTYPE.BURNABLE
+                    ) then
+                        -- Does not take burnable fuel, so just burn it.
+                        if target.components.burnable.canlight or target.components.combat ~= nil then
+                            target.components.burnable:Ignite(true, inst, doer)
+                        end
 
-            elseif target.components.fueled.accepting then
-                -- Takes burnable fuel, so fuel it.
-                local fuel = SpawnPrefab("boards")
+                    elseif target.components.fueled.accepting then
+                        -- Takes burnable fuel, so fuel it.
+                        local fuel = SpawnPrefab("boards")
 
-                if fuel ~= nil then
-                    if fuel.components.fuel ~= nil and
-                        fuel.components.fuel.fueltype == FUELTYPE.BURNABLE
-                    then
-                        target.components.fueled:TakeFuelItem(fuel)
-                    else
-                        fuel:Remove()
+                        if fuel ~= nil then
+                            if fuel.components.fuel ~= nil and
+                                fuel.components.fuel.fueltype == FUELTYPE.BURNABLE
+                            then
+                                target.components.fueled:TakeFuelItem(fuel)
+                            else
+                                fuel:Remove()
+                            end
+                        end
                     end
+                elseif target:HasTag("canlight") then
+                    target:PushEvent("onlighterlight")
                 end
             end
-        elseif target ~= doer and target:HasTag("canlight") then
-            target:PushEvent("onlighterlight")
         end
     end
 end
@@ -271,7 +275,9 @@ end
 
 local function DoBurstFire(doer, inst, ent)
 	if ent:IsValid() then
-		if ent.components.burnable then
+        if ent:HasTag("miasma") and ent.ForceKillMiasma then
+            ent:ForceKillMiasma()
+		elseif ent.components.burnable then
 			ent.components.burnable:Ignite(nil, inst, doer)
 		else
 			ent:PushEvent("onlighterlight")

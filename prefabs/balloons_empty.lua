@@ -56,10 +56,7 @@ end
 
 local function onbuilt(inst, builder)
     SpawnPrefab("waterballoon_splash").Transform:SetPosition(inst.Transform:GetWorldPosition())
-    if builder.components.moisture ~= nil then
-        local waterproofness = builder.components.moisture:GetWaterproofness()
-        builder.components.moisture:DoDelta(20 * (1 - waterproofness))
-    end
+    DoDeltaMoistureToEntity(builder, 20)
 end
 
 local function OnHaunt(inst)

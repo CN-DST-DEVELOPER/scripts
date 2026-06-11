@@ -2050,19 +2050,21 @@ local function showradius_createent()
     ent.AnimState:SetLightOverride(1)
     ent.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
     ent.AnimState:SetLayer(LAYER_BACKGROUND)
-    ent.AnimState:SetSortOrder(1)
+    ent.AnimState:SetSortOrder(7)
     ent.AnimState:SetAddColour(0, .2, .5, 0)
     return ent
 end
 local _showradius_ents = nil
-function c_showradius(radius, parent)
-    if _showradius_ents then
-        for _, ent in ipairs(_showradius_ents) do
-            if ent:IsValid() then
-                ent:Remove()
+function c_showradius(radius, parent, dontclearoldones)
+    if not dontclearoldones then
+        if _showradius_ents then
+            for _, ent in ipairs(_showradius_ents) do
+                if ent:IsValid() then
+                    ent:Remove()
+                end
             end
+            _showradius_ents = nil
         end
-        _showradius_ents = nil
     end
     if not radius then
         return
@@ -2073,7 +2075,7 @@ function c_showradius(radius, parent)
     end
     parent = parent or ConsoleWorldEntityUnderMouse() or ConsoleCommandPlayer()
 
-    _showradius_ents = {}
+    _showradius_ents = _showradius_ents or {}
     for _, radius in ipairs(radius) do
         local ent = showradius_createent()
         if parent ~= nil then

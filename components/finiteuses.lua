@@ -31,6 +31,10 @@ function FiniteUses:SetConsumption(action, uses)
     end
 end
 
+function FiniteUses:ClearAllConsumptions()
+    self.consumption = {}
+end
+
 function FiniteUses:GetDebugString()
     return string.format("%.2f/%d", self.current, self.total)
 end

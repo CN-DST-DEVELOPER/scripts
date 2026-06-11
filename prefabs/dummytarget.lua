@@ -72,6 +72,9 @@ local function MakeDummy(name, common_postinit, master_postinit)
 			TheWorld:PushEvent("ms_register_for_damage_tracking", { inst = inst })
 		end
 
+		MakeMediumFreezableCharacter(inst, "ww_torso")
+		inst.components.freezable:SetResistance(10)
+
 		if master_postinit ~= nil then
 			master_postinit(inst)
 		end

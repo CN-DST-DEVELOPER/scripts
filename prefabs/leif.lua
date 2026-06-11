@@ -159,6 +159,8 @@ local function common_fn(build)
     inst:AddComponent("health")
     inst.components.health:SetMaxHealth(TUNING.LEIF_HEALTH)
 
+    inst.components.burnable:SetBurnTime(10 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
     ------------------
 
     inst:AddComponent("combat")

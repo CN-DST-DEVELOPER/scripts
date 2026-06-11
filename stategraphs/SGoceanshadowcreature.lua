@@ -33,6 +33,13 @@ local events =
             inst.sg:GoToState("teleport_to_land")
         end
     end),
+    EventHandler("dispelsanityshadowcreature", function(inst)
+        if inst.sg.currentstate.name ~= "disappear" then
+            inst.wantstodespawn = true -- Setting flags in case of metatable watchers.
+            inst.sg.mem.forcedespawn = true -- Setting flags in case of metatable watchers.
+            inst.sg:GoToState("disappear")
+        end
+    end),
 
     CommonHandlers.OnLocomote(false, true),
 }

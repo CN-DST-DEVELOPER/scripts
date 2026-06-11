@@ -76,13 +76,7 @@ local function OnPerish(inst)
     local stacksize = inst.components.stackable ~= nil and inst.components.stackable:StackSize() or 1
 
     if owner ~= nil then
-        if owner.components.moisture ~= nil then
-            owner.components.moisture:DoDelta(stacksize * TUNING.SNOWBALL_MELT_MOISTURE)
-
-        elseif owner.components.inventoryitem ~= nil then
-            owner.components.inventoryitem:AddMoisture(stacksize * TUNING.SNOWBALL_MELT_MOISTURE_ITEMS)
-        end
-
+        DoDeltaMoistureToEntity(owner, stacksize, TUNING.SNOWBALL_MELT_MOISTURE_ITEMS, true)
         inst:Remove()
     else
         local x, y, z = inst.Transform:GetWorldPosition()

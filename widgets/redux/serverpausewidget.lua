@@ -4,12 +4,14 @@ local Text = require "widgets/text"
 local ServerPauseWidget = Class(Widget, function(self)
     Widget._ctor(self, "ServerPauseWidget")
 
+	self:SetScaleMode(SCALEMODE_PROPORTIONAL)
+
     self:SetHAnchor(ANCHOR_MIDDLE)
     self:SetVAnchor(ANCHOR_TOP)
 
     self.root = self:AddChild(Widget("Root"))
 
-    self.text = self.root:AddChild(Text(UIFONT, 60))
+    self.text = self.root:AddChild(Text(UIFONT, 40))
     self.text:SetPosition(0, -45)
 end)
 

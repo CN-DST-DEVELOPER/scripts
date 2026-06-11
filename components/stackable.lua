@@ -143,6 +143,7 @@ function Stackable:Get(num)
                 instance.components.inventoryitem:OnPutInInventory(self.inst.components.inventoryitem.owner)
             end
             instance.components.inventoryitem:InheritMoisture(self.inst.components.inventoryitem:GetMoisture(), self.inst.components.inventoryitem:IsWet())
+            instance.components.inventoryitem:SetTemperature(self.inst.components.inventoryitem:GetTemperature())
         end
 
         return instance
@@ -173,6 +174,7 @@ function Stackable:Put(item, source_pos)
 
         if self.inst.components.inventoryitem ~= nil then
             self.inst.components.inventoryitem:DiluteMoisture(item, numberadded)
+            self.inst.components.inventoryitem:DiluteTemperature(item, numberadded)
         end
 
         if self.inst.components.edible ~= nil then

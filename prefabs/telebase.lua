@@ -3,19 +3,31 @@ require "prefabutil"
 local assets =
 {
     Asset("ANIM", "anim/staff_purple_base_ground.zip"),
+	Asset("ANIM", "anim/vaultorbdestination.zip"), -- From vaultorbteleportdestination component.
+    Asset("MINIMAP_IMAGE", "vaultorbdestination_icon"), -- From vaultorbteleportdestination component.
 }
 
 local prefabs =
 {
     "gemsocket",
     "collapse_small",
+    -- global icons from vaultorbteleportdestination component.
+    "globalmapiconnoproxy",
+    "globalmapicon",
+    -- lootdropper from telebase_gemsocket.lua --don't need? otherwise, exclude from scrapbook?
+    --"purplegem",
+    --"vault_orb_refined",
 }
 
-local function teleport_target(inst)
-    for k, v in pairs(inst.components.objectspawner.objects) do
-        if v.DestroyGemFn ~= nil then
-            v.DestroyGemFn(v)
-        end
+local function AddVaultOrbRefinedActions(inst)
+    if not inst.components.vaultorbteleportdestination then
+        inst:AddComponent("vaultorbteleportdestination")
+    end
+end
+
+local function RemoveVaultOrbRefinedActions(inst)
+    if inst.components.vaultorbteleportdestination then
+        inst:RemoveComponent("vaultorbteleportdestination")
     end
 end
 
@@ -28,27 +40,70 @@ local function validteleporttarget(inst)
     return true
 end
 
+local function OnGemChange(inst)
+    local requiredgem = nil
+    for k, v in pairs(inst.components.objectspawner.objects) do
+        if v.gemprefab then
+            requiredgem = v.gemprefab
+            break
+        end
+    end
+    for k, v in pairs(inst.components.objectspawner.objects) do
+        v.requiredgem = requiredgem
+    end
+    inst.gemtype = requiredgem
+    if validteleporttarget(inst) then
+        for k, v in pairs(inst.components.objectspawner.objects) do
+            v.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
+        end
+        if requiredgem == "vault_orb_refined" then
+            AddVaultOrbRefinedActions(inst)
+        end
+    else
+        for k, v in pairs(inst.components.objectspawner.objects) do
+            v.AnimState:ClearBloomEffectHandle()
+        end
+        RemoveVaultOrbRefinedActions(inst)
+    end
+end
+
+local function teleport_target(inst)
+    for k, v in pairs(inst.components.objectspawner.objects) do
+        if v.DestroyGemFn ~= nil then
+            v.DestroyGemFn(v)
+        end
+    end
+    OnGemChange(inst)
+end
+
 --------------------------------------------------------------------------
 
 local TELEBASES = {}
 
 --Global
-function FindNearestActiveTelebase(x, y, z, range, minrange)
+function FindNearestActiveTelebase(x, y, z, range, minrange, prioritizetype)
     range = (range == nil and math.huge) or (range > 0 and range * range) or 0
     minrange = math.min(range, minrange ~= nil and minrange > 0 and minrange * minrange or 0)
     if minrange < range then
+        local prioritymindistsq = math.huge
+        local prioritynearest = nil
         local mindistsq = math.huge
         local nearest = nil
         for k, v in pairs(TELEBASES) do
             if validteleporttarget(k) then
                 local distsq = k:GetDistanceSqToPoint(x, y, z)
-                if distsq < mindistsq and distsq >= minrange and distsq < range then
+                if prioritizetype and k.gemtype == prioritizetype then
+                    if distsq < prioritymindistsq and distsq >= minrange and distsq < range then
+                        prioritymindistsq = distsq
+                        prioritynearest = k
+                    end
+                elseif distsq < mindistsq and distsq >= minrange and distsq < range then
                     mindistsq = distsq
                     nearest = k
                 end
             end
         end
-        return nearest
+        return prioritynearest or nearest
     end
 end
 
@@ -71,12 +126,13 @@ local function OnRemove(inst)
         v:Remove()
     end
     TELEBASES[inst] = nil
+    RemoveVaultOrbRefinedActions(inst)
 end
 
 local function dropgems(inst)
     for k, v in pairs(inst.components.objectspawner.objects) do
         if v.components.pickable ~= nil and v.components.pickable.caninteractwith then
-            inst.components.lootdropper:SpawnLootPrefab("purplegem")
+            inst.components.lootdropper:SpawnLootPrefab(v.gemprefab)
         end
     end
 end
@@ -102,18 +158,6 @@ local function onhit(inst)
     end
 end
 
-local function OnGemChange(inst)
-    if validteleporttarget(inst) then
-        for k, v in pairs(inst.components.objectspawner.objects) do
-            v.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
-        end
-    else
-        for k, v in pairs(inst.components.objectspawner.objects) do
-            v.AnimState:ClearBloomEffectHandle()
-        end
-    end
-end
-
 local function NewObject(inst, obj)
     local function OnGemChangeProxy()
         OnGemChange(inst)
@@ -123,7 +167,7 @@ local function NewObject(inst, obj)
     inst:ListenForEvent("picked", OnGemChangeProxy, obj)
     OnGemChange(inst)
 
-    --obj.proxy_destroy_entity = inst --FIXME(Omar): uncomment for next time.
+    obj.proxy_destroy_entity = inst
 end
 
 local function RevealPart(v)

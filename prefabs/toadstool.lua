@@ -409,9 +409,7 @@ local function DoMushroomSprout(inst, angles)
                 --toss stuff out of the way
                 for i, v in ipairs(totoss) do
                     if v:IsValid() then
-                        if v.components.mine ~= nil then
-                            v.components.mine:Deactivate()
-                        end
+                        DeactivateInventoryItemBeforeLaunch(v)
                         if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
                             SproutLaunch(v, ent, 1.5)
                         end

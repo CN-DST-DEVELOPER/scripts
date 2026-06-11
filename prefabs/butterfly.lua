@@ -148,6 +148,8 @@ local function fn()
 
     MakeSmallBurnableCharacter(inst, "butterfly_body")
     MakeTinyFreezableCharacter(inst, "butterfly_body")
+    inst.components.burnable:SetBurnTime(6 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     ------------------
     inst:AddComponent("inspectable")

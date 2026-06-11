@@ -287,6 +287,7 @@ local function fn()
 	inst.AnimState:SetBuild("wx78_drone_scout")
 	inst.AnimState:PlayAnimation("idle")
 
+	inst:AddTag("flying")
 	inst:AddTag("mapscout")
     inst:AddTag("staysthroughvirtualrooms")
 

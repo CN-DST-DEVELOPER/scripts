@@ -32,11 +32,12 @@ local function onuse_furry(inst, sleeper)
 end
 
 local function temperaturetick(inst, sleeper)
-    if sleeper.components.temperature ~= nil then
-        if inst.components.sleepingbag.sleep_temp_min ~= nil and sleeper.components.temperature:GetCurrent() < inst.components.sleepingbag.sleep_temp_min then
-            sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() + TUNING.SLEEP_TEMP_PER_TICK)
-        elseif inst.components.sleepingbag.sleep_temp_max ~= nil and sleeper.components.temperature:GetCurrent() > inst.components.sleepingbag.sleep_temp_max then
-            sleeper.components.temperature:SetTemperature(sleeper.components.temperature:GetCurrent() - TUNING.SLEEP_TEMP_PER_TICK)
+    local ent_temp = GetEntityTemperature(sleeper)
+    if ent_temp ~= nil then
+        if inst.components.sleepingbag.sleep_temp_min ~= nil and ent_temp < inst.components.sleepingbag.sleep_temp_min then
+            SetEntityTemperature(sleeper, ent_temp + TUNING.SLEEP_TEMP_PER_TICK)
+        elseif inst.components.sleepingbag.sleep_temp_max ~= nil and ent_temp > inst.components.sleepingbag.sleep_temp_max then
+            SetEntityTemperature(sleeper, ent_temp - TUNING.SLEEP_TEMP_PER_TICK)
         end
     end
 end

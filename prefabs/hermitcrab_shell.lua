@@ -50,10 +50,7 @@ local function ContinueTeleport(musician, x, y, z)
     end
     musician:PushEvent("teleport_move")
 
-    if musician.components.moisture then
-        local waterproofness = musician.components.moisture:GetWaterproofness()
-        musician.components.moisture:DoDelta(TUNING.HERMITCRAB_SHELL_ADD_WETNESS * (1 - waterproofness))
-    end
+    DoDeltaMoistureToEntity(musician, TUNING.HERMITCRAB_SHELL_ADD_WETNESS)
 
     if musician:HasTag("player") then
         musician:SnapCamera()

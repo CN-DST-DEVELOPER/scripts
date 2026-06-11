@@ -201,7 +201,7 @@ function Tune(overrides)
         BLUEAMULET_FUEL = total_day_time * 0.75,
         BLUEGEM_COOLER = -20,
 
-        PURPLEAMULET_FUEL = total_day_time * 0.4,
+        PURPLEAMULET_FUEL = seg_time * 8,
 
         YELLOWAMULET_FUEL = total_day_time,
         YELLOWSTAFF_USES = 20,
@@ -1455,6 +1455,10 @@ function Tune(overrides)
 
             CARPENTRY_STATION_STONE = TechTree.Create({
                 CARPENTRY = 3,
+            }),
+
+            VAULT_REFINER_PEDESTAL = TechTree.Create({
+                VAULT_REFINE = 1,
             }),
 		},
 
@@ -9405,7 +9409,6 @@ function Tune(overrides)
         WX78_SHIELDING_COOLDOWN = 20,
         WX78_SHIELDING_TOTAL_DAMAGE = 100, -- we can take 100 damage before getting knocked out the state.
         WX78_SHIELDING_MIN_TIME_COOLDOWN = 5, -- Minimum number of time we can be in the state before going off cooldown.
-        -- WX78_SHIELDING_COOLDOWN = 30,
 
 		WX78_SPIN_AOE_DIMINISHING = 0.5,
 		WX78_SPIN_EFFICIENCY_DECAY = 0.5,
@@ -9425,6 +9428,96 @@ function Tune(overrides)
 
 		CLOCKWORK_MAX_FOLLOWING = 2, --per type
 		CLOCKWORK_MAX_FOLLOWING_CHESSFRIEND = 3,
+
+        -- Rifts 7
+
+        VAULT_ORB_REFINED_DETECTION_RADIUS = 16,
+
+        PLANTMOB_BURNTIME_MULT = 4/3,
+        PLANTMOB_FIRE_DAMAGE_SCALE = 1.25,
+
+        OCEAN_AMBIENT_TEMPERATURE_PENALTY = -50,
+        OCEAN_TEMPERATURE_PENALTY_PERCENT = 1/3, -- initial temperature level(percent between min and maxtemp) when things enter ocean
+        FLOATER_HOT_SIZZLE_THRESHOLD = .25,
+
+        FUMAROLETOOL_NUMUSES = 4,
+        FUMAROLETOOL_STARTING_TEMP = 90,
+        FUMAROLETOOL_STARTING_MOISTURE_PENALTY = 60,
+        FUMAROLETOOL_MINTEMP = 0,
+        FUMAROLETOOL_MAXTEMP = 90,
+        FUMAROLETOOL_TEMP_MODIFIER = -30,
+        FUMAROLETOOL_TEMPS = { 0, 20, 40, 60 },
+        FUMAROLETOOL_LIGHTOVERRIDES = { 0, 0, .15, .35 },
+        FUMAROLETOOL_FREEZING_DAMAGE_MULTS = { 1, 1, 1.25, 2 }, -- partially frozen
+        FUMAROLETOOL_FROZEN_DAMAGE_MULTS = { 1, 1, 1.5, 3 },
+        FUMAROLETOOL_HEATING_THRESHOLD = 5,
+        FUMAROLETOOL_HEATING_MINTHRESHOLD = 2,
+
+        -- NOTES:
+        -- AXE_USES = 100,
+        -- HAMMER_USES = 75, -- 25% less than axe
+        -- SHOVEL_USES = 25, -- quarter of axe
+        -- PITCHFORK_USES = 25, -- quarter of axe
+        -- FARM_HOE_USES = 25, -- quarter of axe
+        -- PICKAXE_USES = 33, -- third of axe
+
+        FUMAROLEAXE_HEAT_ON_USE = -0.2, -- base
+        FUMAROLEPICKAXE_HEAT_ON_USE = -0.2 * 3, -- 3x more
+        FUMAROLESHOVEL_HEAT_ON_USE = -0.2 * 4, -- 4x more
+        FUMAROLEHAMMER_HEAT_ON_USE = -0.2 * (4/3), -- 1.33x more
+        FUMAROLEHOE_HEAT_ON_USE = -0.2, -- 4x more
+
+        FUMAROLEAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        FUMAROLEPICKAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        FUMAROLESHOVEL_EFFECTIVENESS = { 1, 1, 1.25, 1.5 }, -- We have nothing that takes more than 1 work dig, so who knows how this should be balanced :shrug:
+        FUMAROLEHAMMER_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        -- no effectiveness for garden hoe!
+
+        TRAP_FUMAROLE_DAMAGE = 10, -- 10 fire damage every second
+        TRAP_FUMAROLE_MINTEMP = 0,
+        TRAP_FUMAROLE_MAXTEMP = 90,
+        TRAP_FUMAROLE_MAXTEMP_HELD = 25, -- a little under the threshold so we have time to be placed before changing threshold.
+        TRAP_FUMAROLE_TEMP_MODIFIER = -30,
+        TRAP_FUMAROLE_TEMPS = { 0, 30, 60 },
+        TRAP_FUMAROLE_LIGHTOVERRIDES = { 0, .125, .35 },
+        TRAP_FUMAROLE_IGNITE_TIME = seg_time * 0.5, -- multiplied by mult below depending on temperature stage, this also cooks stuff.
+        TRAP_FUMAROLE_IGNITE_MULTS = { 0, 0.5, 1 },
+        TRAP_FUMAROLE_MAX_IGNITE_ITEMS = 2, -- max items we can cook/ignite per tile
+        TRAP_FUMAROLE_TEMPERATURE_RATE = 3,
+        TRAP_FUMAROLE_PROPAGATOR_RATE = 25,
+
+        HEALINGSALVE_FUMAROLEBUFF_DURATION = seg_time * 4,
+
+		VAULT_PILLAR_GUARD_HEALTH = 6000,
+		VAULT_PILLAR_GUARD_DAMAGE = 150,
+		VAULT_PILLAR_GUARD_ATTACK_PERIOD = 3,
+		VAULT_PILLAR_GUARD_ATTACK_RANGE = 5,
+        VAULT_PILLAR_GUARD_HIT_RECOVERY = 2,
+		VAULT_PILLAR_GUARD_SPEED = 2.85,
+		VAULT_PILLAR_GUARD_MIN_STAGGER_TIME = 6,
+		VAULT_PILLAR_GUARD_MAX_STAGGER_TIME = 15,
+		VAULT_PILLAR_GUARD_STAGGER_DAMAGE_MULT = 1.5,
+		VAULT_PILLAR_GUARD_SPIN_CD = 16,
+		VAULT_PILLAR_GUARD_QUICKJUMP_CD = 12,
+		--for crafted ones (distances from home pt)
+		VAULT_PILLAR_GUARD_COMBAT_RANGE = 20,
+		VAULT_PILLAR_GUARD_DEAGGRO_DIST = 35,
+
+		VAULT_CRAWLER_HEALTH = 1000,
+		VAULT_CRALWER_DAMAGE = 40,
+		VAULT_CRAWLER_SPEED = 3,
+		VAULT_CRAWLER_ATTACK_PERIOD = 2,
+		VAULT_CRAWLER_ATTACK_RANGE = 1.2,
+		VAULT_CRAWLER_HIT_RANGE = 1.9,
+		VAULT_CRAWLER_HIT_ARC = 120,
+		VAULT_CRAWLER_ROLLING_SPEED = 2.5,
+
+		VAULT_SHADOW_SUPPRESSION_MULT = 0.025, --dmg mult for combat btwn guards/crawlers vs shadowcreatures
+
+        MAX_SECURITY_PULSE_FOLLOWING = 4,
+
+        VAULT_PILLAR_GUARD_PIECE_GOLD_VALUE = 15,
+        VAULT_PILLAR_GUARD_PIECE_ROCK_VALUE = 18, -- appease value for antlion, 6 days
     }
 
     TUNING_MODIFIERS = {}

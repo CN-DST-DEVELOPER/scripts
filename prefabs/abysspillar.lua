@@ -205,6 +205,9 @@ local PillarStates =
 local OCCUPIED_TO_WARNING_TIME = 4
 local WARNING_TO_COLLAPSE_TIME = 2
 
+local ISOLATED_OCCUPIED_TO_WARNING_TIME = 0.8
+local ISOLATED_WARNING_TO_COLLAPSE_TIME = 1.2
+
 local function SwitchIdleAnim(inst)
 	if inst.AnimState:IsCurrentAnimation("idle_a") then
 		inst.AnimState:PlayAnimation("transition_a_b")
@@ -311,6 +314,14 @@ local function SetState(inst, state)
 	end
 end
 
+local function IsPillarIsolated(inst)
+	if inst.row and inst.col then
+		local trial = inst._abysspillargroup and inst._abysspillargroup.inst
+		return trial and trial:IsValid() and trial.CheckIsolatedPillar and trial:CheckIsolatedPillar(inst, inst.row, inst.col)
+	end
+	return false
+end
+
 local function DoPlayerCollapseImminent(inst)
 	inst.AnimState:PlayAnimation("occupied_warning", true)
 	if inst:IsAsleep() then
@@ -319,7 +330,8 @@ local function DoPlayerCollapseImminent(inst)
 	if inst.SoundEmitter:PlayingSound("loop") then
 		inst.SoundEmitter:SetVolume("loop", 1)
 	end
-	inst.occupiedtask = inst:DoTaskInTime(WARNING_TO_COLLAPSE_TIME, SetState, PillarStates.COLLAPSE)
+	local collapse_delay = IsPillarIsolated(inst) and ISOLATED_WARNING_TO_COLLAPSE_TIME or WARNING_TO_COLLAPSE_TIME
+	inst.occupiedtask = inst:DoTaskInTime(collapse_delay, SetState, PillarStates.COLLAPSE)
 end
 
 local function ShouldChildTriggerCollapse(child)
@@ -334,7 +346,8 @@ local function OnAddPlatformFollower(inst, child)
 			SetState(inst, PillarStates.OCCUPIED)
 			if child.isplayer then
 				if inst.occupiedtask == nil and not inst.nocollapse then
-					inst.occupiedtask = inst:DoTaskInTime(OCCUPIED_TO_WARNING_TIME, DoPlayerCollapseImminent)
+					local warning_delay = IsPillarIsolated(inst) and ISOLATED_OCCUPIED_TO_WARNING_TIME or OCCUPIED_TO_WARNING_TIME
+					inst.occupiedtask = inst:DoTaskInTime(warning_delay, DoPlayerCollapseImminent)
 				end
 				inst:PushEvent("abysspillar_playeroccupied", child)
 			end

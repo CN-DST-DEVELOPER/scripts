@@ -139,9 +139,7 @@ local function DoCollapse(inst)
 
     local totoss = TheSim:FindEntities(pos.x, 0, pos.z, inst.radius, TOSS_MUST_TAGS, TOSS_CANT_TAGS)
     for _, tossible_entity in ipairs(totoss) do
-        if tossible_entity.components.mine ~= nil then
-            tossible_entity.components.mine:Deactivate()
-        end
+        DeactivateInventoryItemBeforeLaunch(tossible_entity)
         if not tossible_entity.components.inventoryitem.nobounce
                 and (tossible_entity.Physics ~= nil and tossible_entity.Physics:IsActive()) then
             SmallLaunch(tossible_entity, inst, 1.5)

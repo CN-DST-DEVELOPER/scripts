@@ -290,8 +290,6 @@ local function fn()
 
     inst.scrapbook_proxy = "rock_ice"
 
-    inst.entity:SetPristine()
-
     if not TheNet:IsDedicated() then
         inst._puddle = SpawnPrefab("ice_puddle")
         inst._puddle.entity:SetParent(inst.entity)
@@ -302,6 +300,8 @@ local function fn()
     end
 
     inst:OnStageDirty()
+
+    inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst

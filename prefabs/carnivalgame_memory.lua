@@ -222,6 +222,7 @@ local function NewObject(inst, obj)
 		end
 	end
 
+	obj.proxy_destroy_entity = inst
 	--carnivalgame_memory_revealcard
     inst:ListenForEvent("carnivalgame_memory_cardrevealed", on_card_picked, obj)
 end

@@ -51,6 +51,7 @@ AddModReleaseID( "R38_ELECTROCUTE" )
 AddModReleaseID( "R39_WHIRL_VAULT" )
 AddModReleaseID( "R40_PEARLMAS" )
 AddModReleaseID( "R41_ST_WX78" )
+AddModReleaseID( "R42_HEATED_VAULT" )
 
 -----------------------------------------------------------------------------------------------
 

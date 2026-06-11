@@ -125,7 +125,7 @@ for k, v in pairs(FUELTYPE) do
     table.insert(NOTAGS, v.."_fueled")
 end
 
-local FREEZETARGET_ONEOF_TAGS = { "locomotor", "freezable", "fire", "smolder" }
+local FREEZETARGET_ONEOF_TAGS = { "locomotor", "freezable", "fire", "smolder", "inventoryitemtemperature" }
 local function OnUpdateIceCircle(inst, x, z)
     inst._rad:set(inst._rad:value() * .98 + ICE_CIRCLE_RADIUS * .02)
 
@@ -175,12 +175,12 @@ local function OnUpdateIceCircle(inst, x, z)
                     v.components.freezable:AddColdness(.1, 1, true)
                 end
             end
-            if v.components.temperature ~= nil then
-                local newtemp = math.max(v.components.temperature.mintemp, TUNING.DEER_ICE_TEMPERATURE)
-                if newtemp < v.components.temperature:GetCurrent() then
-                    v.components.temperature:SetTemperature(newtemp)
-                end
+
+            local ent_temp = GetEntityTemperature(v)
+            if ent_temp and TUNING.DEER_ICE_TEMPERATURE < ent_temp then
+                SetEntityTemperature(v, TUNING.DEER_ICE_TEMPERATURE)
             end
+
             if v.components.grogginess ~= nil and not v.components.grogginess:IsKnockedOut() then
                 local curgrog = v.components.grogginess.grog_amount
                 if curgrog < TUNING.DEER_ICE_FATIGUE then
@@ -250,7 +250,7 @@ end
 --------------------------------------------------------------------------
 
 local FIRE_CIRCLE_RADIUS = 3.6
-local FIRE_TARGET_ONEOF_TAGS = { "_health", "canlight", "freezable" }
+local FIRE_TARGET_ONEOF_TAGS = { "_health", "canlight", "freezable", "inventoryitemtemperature" }
 local FIND_DEER_ICE_CIRCLE_TAG = { "deer_ice_circle" }
 local function OnUpdateFireCircle(inst, x, z)
     inst._rad = inst._rad * .9 + FIRE_CIRCLE_RADIUS * .1
@@ -304,11 +304,10 @@ local function OnUpdateFireCircle(inst, x, z)
                         v.components.burnable:ExtendBurning()
                     end
                 end
-                if v.components.temperature ~= nil then
-                    local newtemp = math.min(v.components.temperature:GetMax(), TUNING.DEER_FIRE_TEMPERATURE)
-                    if newtemp > v.components.temperature:GetCurrent() then
-                        v.components.temperature:SetTemperature(newtemp)
-                    end
+
+                local ent_temp = GetEntityTemperature(v)
+                if ent_temp and TUNING.DEER_FIRE_TEMPERATURE > ent_temp then
+                    SetEntityTemperature(v, TUNING.DEER_FIRE_TEMPERATURE)
                 end
             end
         end

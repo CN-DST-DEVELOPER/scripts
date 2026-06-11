@@ -609,9 +609,7 @@ local function Detonate(inst)
 					v.components.locomotor == nil and
 					v:IsValid()
 				then
-					if v.components.mine then
-						v.components.mine:Deactivate()
-					end
+					DeactivateInventoryItemBeforeLaunch(v)
 					if not v.components.inventoryitem.nobounce then
 						TossLaunch(v, inst, 1.2, 0.1)
 					end

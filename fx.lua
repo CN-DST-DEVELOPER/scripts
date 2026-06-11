@@ -67,6 +67,16 @@ local fx =
         anim = "idle",
     },
     {
+        name = "hot_splash",
+        bank = "splash",
+        build = "splash",
+        anim = "splash",
+        sound = "turnoftides/common/together/water/splash/bird",
+        sound2 = "moonstorm/characters/wagstaff/thumper/steam",
+        sounddelay2 = 2 * FRAMES,
+        fn = FinalOffset1,
+    },
+    {
         name = "splash",
         bank = "splash",
         build = "splash",
@@ -3854,6 +3864,47 @@ local fx =
 		build = "vault_portal_fx",
 		anim = "activate",
 	},
+	{
+		name = "fumarole_ember",
+		bank = "trap_fumarole",
+		build = "trap_fumarole",
+		anim = "fire_pre",
+        animqueue = true,
+        bloom = true,
+        fn = function(inst)
+            inst.AnimState:SetLightOverride(0.3)
+
+            local x, y, z = inst.Transform:GetWorldPosition()
+            local w, h = TheWorld.Map:GetSize()
+
+            x = math.floor(x * 100 + 0.5) * 0.01
+			z = math.floor(z * 100 + 0.5) * 0.01
+
+            local prng = PRNG_Uniform(z * w + z)
+
+        	inst.AnimState:SetLayer(LAYER_WORLD_BACKGROUND)
+	        inst.AnimState:SetSortOrder(3)
+
+            for i = 1, prng:RandInt(1, 5) do
+                inst.AnimState:PushAnimation("fire_loop", false)
+            end
+            inst.AnimState:PushAnimation("fire_pst", false)
+
+            local sx, sy = .7 + prng:Rand() * .5, .7 + prng:Rand() * .5
+            sx = prng:Rand() < 0.5 and -sx or sx
+            inst.AnimState:SetScale(sx, sy)
+        end,
+	},
+    {
+        name = "fumarole_cook_fx",
+        bank = "lavaarena_creature_teleport_smoke_fx",
+        build = "lavaarena_creature_teleport_smoke_fx",
+        anim = function() return "smoke_"..math.random(3) end,
+		fn = function(inst)
+			local scale = .35 + math.random() * .25
+			inst.AnimState:SetScale(math.random() < .5 and scale or -scale, scale)
+		end,
+    },
 }
 
 for cratersteamindex = 1, 4 do

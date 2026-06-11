@@ -334,7 +334,7 @@ local COMPONENT_ACTIONS =
                             table.insert(actions, ACTIONS.ABANDON)
                         end
                     end
-                elseif inst.replica.container == nil then
+                elseif inst.replica.container == nil and not inst:HasTag("nopet") then
                     table.insert(actions, ACTIONS.PET)
                 end
             end
@@ -877,7 +877,9 @@ local COMPONENT_ACTIONS =
 
         teleporter = function(inst, doer, actions, right)
             if inst:HasTag("teleporter") then
-                if not inst:HasAnyTag("townportal", "vault_teleporter") then
+                if inst:HasTag("climbable") then
+                    table.insert(actions, ACTIONS.CLIMB)
+                elseif not inst:HasAnyTag("townportal", "vault_teleporter") then
                     table.insert(actions, ACTIONS.JUMPIN)
                 elseif right and not doer:HasTag("channeling") then
                     table.insert(actions, ACTIONS.TELEPORT)
@@ -1428,6 +1430,10 @@ local COMPONENT_ACTIONS =
 				if not (rider and rider:IsRiding()) then
 					if target:HasTag("alltrader") then
 						if not right then
+							table.insert(actions, ACTIONS.GIVE)
+						elseif doer.components.playercontroller and doer.components.playercontroller.isclientcontrollerattached then
+							--V2C: -added this for trading torch to warg shrine, conflicts with LIGHT action.
+							--     -kept this separate in case it breaks something else.
 							table.insert(actions, ACTIONS.GIVE)
 						end
 					elseif inst:HasTag("reviver") and target:HasTag("ghost") then
@@ -3007,6 +3013,17 @@ local COMPONENT_ACTIONS =
                     end
                     table.insert(actions, ACTIONS.USEITEMON)
                 end
+            end
+        end,
+
+        vaultorbteleporter = function(inst, doer, actions, right)
+            if inst.bufferedmapaction and
+                inst.bufferedmapaction:GetAction() == ACTIONS.VAULTORBTELEPORT_MAP and
+                inst.bufferedmapaction:IsDoer(doer)
+            then
+                table.insert(actions, ACTIONS.VAULTORBTELEPORT_MAP)
+            else
+                table.insert(actions, ACTIONS.STARTVAULTORBTELEPORT)
             end
         end,
 

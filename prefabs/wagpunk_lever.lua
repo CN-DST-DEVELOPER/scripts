@@ -65,6 +65,10 @@ local function RetractLever(inst)
     end
 end
 
+local function GetActivateVerb(inst, doer)
+	return "PULL"
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -82,7 +86,10 @@ local function fn()
 
     inst:AddTag("NOCLICK")
 
+	inst.GetActivateVerb = GetActivateVerb
+
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end

@@ -36,10 +36,21 @@ local function SetOrientation(inst, orientation)
 	return inst
 end
 
+local function ChangeSortOrder(inst, order)
+	inst.AnimState:SetSortOrder(order)
+	inst.sortorder = order
+	return inst
+end
+
+local function EnableOn(inst, enable)
+	inst.AnimState:PlayAnimation("idle"..tostring(inst.variation)..(enable and "_on" or ""))
+end
+
 local function OnSave(inst, data)
 	data.variation = inst.variation ~= 1 and inst.variation or nil
 	data.nocenter = inst.nocenter or nil
 	data.orientation = inst.orientation ~= 1 and inst.orientation or nil
+	data.sortorder = inst.sortorder ~= -3 and inst.sortorder or nil
 end
 
 local function OnLoad(inst, data)--, ents)
@@ -52,6 +63,9 @@ local function OnLoad(inst, data)--, ents)
 		end
 		if data.orientation then
 			inst:SetOrientation(data.orientation)
+		end
+		if data.sortorder then
+			inst:ChangeSortOrder(data.sortorder)
 		end
 	end
 end
@@ -85,6 +99,8 @@ local function fn()
 	inst.SetVariation = SetVariation
 	inst.HideCenter = HideCenter
 	inst.SetOrientation = SetOrientation
+	inst.ChangeSortOrder = ChangeSortOrder
+	inst.EnableOn = EnableOn
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
 

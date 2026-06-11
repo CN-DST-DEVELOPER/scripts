@@ -1301,7 +1301,7 @@ function PlayerController:DoControllerAttackButton(target)
             return
         end
 
-        if not self.inst.replica.combat:CanHitTarget(target) or
+		if not self.inst.replica.combat:LocomotorCanAttack(nil, target) or
             IsEntityDead(target, true) or
             not CanEntitySeeTarget(self.inst, target) then
             return
@@ -4580,7 +4580,11 @@ function PlayerController:DoAction(buffaction, spellbook)
         if highlight_guy.components.highlight == nil then
             highlight_guy:AddComponent("highlight")
         end
-        highlight_guy.components.highlight:Flash(.2, .125, .1)
+        local flashadd, flashtimein, flashtimeout = .2, .125, .1
+        if highlight_guy.highlightflashaddoverride then
+            flashadd = highlight_guy.highlightflashaddoverride
+        end
+        highlight_guy.components.highlight:Flash(flashadd, flashtimein, flashtimeout)
     end
 
     --Clear any buffered attacks since we're starting a new action

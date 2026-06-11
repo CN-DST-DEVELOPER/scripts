@@ -105,9 +105,13 @@ nil,
 
 function InventoryItem:OnRemoveFromEntity()
     self:EnableMoisture(false)
+    self:EnableTemperature(false)
     self.inst:RemoveEventCallback("stacksizechange", OnStackSizeChange)
+    self.inst:RemoveEventCallback("enterlimbo", OnEnterLimbo)
+    self.inst:RemoveEventCallback("exitlimbo", OnExitLimbo)
 end
 
+-- InventoryItemMoisture functions
 --Provided specifically for waterproofer component
 function InventoryItem:EnableMoisture(enable)
     if enable == false then
@@ -126,7 +130,7 @@ end
 
 function InventoryItem:GetMoisturePercent()
     local inventoryitemmoisture = self.inst.components.inventoryitemmoisture
-    return inventoryitemmoisture and inventoryitemmoisture.moisture / TUNING.MAX_WETNESS
+    return inventoryitemmoisture and inventoryitemmoisture.moisture / TUNING.MAX_WETNESS or 0
 end
 
 function InventoryItem:IsWet()
@@ -134,7 +138,7 @@ function InventoryItem:IsWet()
 end
 
 function InventoryItem:IsAcidSizzling()
-    return self.inst.replica.inventoryitem:IsAcidSizzling()
+    return self.isacidsizzling
 end
 
 function InventoryItem:InheritMoisture(moisture, iswet)
@@ -177,6 +181,94 @@ function InventoryItem:DryMoisture()
     if self.inst.components.inventoryitemmoisture ~= nil then
         self.inst.components.inventoryitemmoisture:SetMoisture(0)
     end
+end
+
+-- InventoryItemTemperature functions
+function InventoryItem:EnableTemperature(enable)
+    if enable == false then
+        if self.inst.components.inventoryitemtemperature ~= nil then
+            self.inst:RemoveComponent("inventoryitemtemperature")
+        end
+    elseif self.inst.components.inventoryitemtemperature == nil then
+        self.inst:AddComponent("inventoryitemtemperature")
+        self.inst.components.inventoryitemtemperature:AttachReplica(self.inst.replica.inventoryitem)
+    end
+end
+
+function InventoryItem:GetTemperature() -- Purposefully defaulting to nil
+    return self.inst.components.inventoryitemtemperature ~= nil and self.inst.components.inventoryitemtemperature.temperature or nil
+end
+
+function InventoryItem:GetTemperaturePercent() -- Purposefully defaulting to nil
+    return self.inst.components.inventoryitemtemperature ~= nil and self.inst.components.inventoryitemtemperature:GetPercent() or nil
+end
+
+function InventoryItem:GetMinTemperature()
+    return self.inst.components.inventoryitemtemperature ~= nil and self.inst.components.inventoryitemtemperature.mintemp or 0
+end
+
+function InventoryItem:GetMaxTemperature()
+    return self.inst.components.inventoryitemtemperature ~= nil and self.inst.components.inventoryitemtemperature.maxtemp or 0
+end
+
+function InventoryItem:SetTemperature(temp)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetTemperature(temp)
+    end
+end
+
+function InventoryItem:SetMinTemperature(temp)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetMinTemperature(temp)
+    end
+end
+
+function InventoryItem:SetMaxTemperature(temp)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetMaxTemperature(temp)
+    end
+end
+
+function InventoryItem:SetSaveMinAndMaxTemperature(boolval)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature.save_min_and_max_temp = boolval or nil
+    end
+end
+
+function InventoryItem:SetTemperatureModifier(name, value)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetModifier(name, value)
+    end
+end
+
+function InventoryItem:RemoveTemperatureModifier(name)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:RemoveModifier(name)
+    end
+end
+
+function InventoryItem:DiluteTemperature(item, count)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:DiluteTemperature(item, count)
+    end
+end
+
+function InventoryItem:AddTemperature(delta)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:DoDelta(delta)
+    end
+end
+
+function InventoryItem:SetTemperatureMaxMoisturePenalty(moisturepenalty)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetMaxMoisturePenalty(moisturepenalty)
+    end
+end
+
+function InventoryItem:SetTemperaturePercentAtMost(percent) -- percent is between min and max temperatures
+	if self.inst.components.inventoryitemtemperature ~= nil then
+		self.inst.components.inventoryitemtemperature:SetPercentAtMost(percent)
+	end
 end
 
 function InventoryItem:SetOwner(owner)

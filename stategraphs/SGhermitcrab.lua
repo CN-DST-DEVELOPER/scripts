@@ -582,7 +582,7 @@ local states =
                 return
             end
 
-            if inst.sg.mem.teleporting and not inst.components.npc_talker:haslines() then
+            if inst.sg.mem.teleporting and not inst.components.npc_talker:HasLines() then
                 inst.sg:GoToState("dancebusy")
                 return
             end
@@ -2038,8 +2038,8 @@ local states =
             if inst.itemstotoss then
                 inst.sg:GoToState("tossitem")
             else
-                if inst.components.npc_talker:haslines() then
-                    inst.components.npc_talker:donextline()
+                if inst.components.npc_talker:HasLines() then
+                    inst.components.npc_talker:DoNextLine()
                     inst.sg:GoToState("talkto")
                 else
                     inst.sg:GoToState("idle")
@@ -2538,8 +2538,8 @@ local states =
                 if inst.itemstotoss then
                     inst.sg:GoToState("tossitem")
                 else
-                    if inst.components.npc_talker:haslines() then
-                        inst.components.npc_talker:donextline()
+                    if inst.components.npc_talker:HasLines() then
+                        inst.components.npc_talker:DoNextLine()
                         inst.sg:GoToState("talkto")
                     else
                        inst.sg:GoToState("idle")
@@ -2596,8 +2596,8 @@ local states =
         events =
         {
             EventHandler("animqueueover", function(inst)
-                if inst.components.npc_talker:haslines() then
-                    inst.components.npc_talker:donextline()
+                if inst.components.npc_talker:HasLines() then
+                    inst.components.npc_talker:DoNextLine()
                     inst.sg:GoToState("talkto")
                 else
                     inst.sg:GoToState("idle")

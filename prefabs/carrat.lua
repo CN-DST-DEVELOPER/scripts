@@ -659,6 +659,7 @@ local function setbeefalocarratrat(inst)
     inst.beefalo_carrat = true
 end
 
+local DIET = { FOODGROUP.OMNI }
 local function fn()
     local inst = CreateEntity()
 
@@ -760,7 +761,7 @@ local function fn()
     inst:SetBrain(brain)
 
     inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
+    inst.components.eater:SetDiet(DIET, DIET)
     inst.components.eater:SetStrongStomach(true)
 
     inst:AddComponent("cookable")
@@ -783,9 +784,10 @@ local function fn()
     -- because it looks bad paired with the burning of the planted prefab.
     inst:AddComponent("burnable")
     inst.components.burnable:SetFXLevel(2)
-    inst.components.burnable:SetBurnTime(10)
     inst.components.burnable.canlight = false
     inst.components.burnable:AddBurnFX("fire", Vector3(0, 0, 0))
+    inst.components.burnable:SetBurnTime(6 * TUNING.PLANTMOB_BURNTIME_MULT)
+    inst.components.health.fire_damage_scale = TUNING.PLANTMOB_FIRE_DAMAGE_SCALE
 
     MakeSmallPropagator(inst)
     inst.components.propagator.acceptsheat = false

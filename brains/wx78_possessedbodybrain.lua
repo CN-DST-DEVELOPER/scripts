@@ -356,8 +356,8 @@ local function IsWeaponBetter(inst, weapon1, weapon2, target)
     local itemdmg, itemspdmg = inst.components.combat:CalcDamage(target, weapon1)
     local dmg, spdmg = inst.components.combat:CalcDamage(target, weapon2)
 
-    itemspdmg = itemspdmg and SpDamageUtil.CalcTotalDamage(itemspdmg) or 0
-    spdmg = spdmg and SpDamageUtil.CalcTotalDamage(spdmg) or 0
+	itemspdmg = SpDamageUtil.CalcTotalDamage(SpDamageUtil.ApplySpDefense(target, itemspdmg))
+	spdmg = SpDamageUtil.CalcTotalDamage(SpDamageUtil.ApplySpDefense(target, spdmg))
 
     return (itemdmg + itemspdmg) > (dmg + spdmg)
 end

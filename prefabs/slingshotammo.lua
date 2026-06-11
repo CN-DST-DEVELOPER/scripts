@@ -107,7 +107,7 @@ local function NoHoles(pt)
 end
 
 local function SpawnShadowTentacle(inst, attacker, target, pt, starting_angle)
-    local offset = FindWalkableOffset(pt, starting_angle, 2, 3, false, true, NoHoles, false, true)
+    local offset = FindWalkableOffset(pt, starting_angle, 2, 3, false, true, NoHoles, false, true, true)
     if offset ~= nil then
         local tentacle = SpawnPrefab("shadowtentacle")
         if tentacle ~= nil then
@@ -882,7 +882,7 @@ local function OnHit_LunarPlantHusk(inst, attacker, target)
 			data.counter = math.random(3, 5)
 
 			local pt = target:GetPosition()
-			local offset = FindWalkableOffset(pt, TWOPI * math.random(), 2, 3, false, true, NoHoles_LunarPlantHusk, false, true)
+			local offset = FindWalkableOffset(pt, TWOPI * math.random(), 2, 3, false, true, NoHoles_LunarPlantHusk, false, true, true)
 			if offset then
 				local tentacle = SpawnPrefab("lunarplanttentacle")
 				tentacle.owner = attacker

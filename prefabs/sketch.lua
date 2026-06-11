@@ -48,6 +48,7 @@ local SKETCHES =
     { item = "chesspiece_wagboss_robot",    recipe = "chesspiece_wagboss_robot_builder",    image = "chesspiece_wagboss_robot_sketch"},
     { item = "chesspiece_wagboss_lunar",    recipe = "chesspiece_wagboss_lunar_builder",    image = "chesspiece_wagboss_lunar_sketch"},
     { item = "chesspiece_yoth",             recipe = "chesspiece_yoth_builder",             image = "chesspiece_yoth_sketch"},
+    { item = "chesspiece_vault_pillar_guard",recipe = "chesspiece_vault_pillar_guard_builder",image = "chesspiece_vault_pillar_guard_sketch"},
 }
 
 local function GetSketchID(item)

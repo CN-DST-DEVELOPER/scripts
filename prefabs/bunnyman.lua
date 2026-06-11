@@ -341,7 +341,7 @@ local function ShouldAggro(inst, target)
     return true
 end
 
-local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "HAIR_HAT" }
+local SCRAPBOOK_HIDE_LAYERS = { "hat", "ARM_carry", "HAIR_HAT" }
 
 local function fn()
     local inst = CreateEntity()
@@ -395,7 +395,7 @@ local function fn()
         return inst
     end
 
-    inst.scrapbook_hide = SCRAPBOOK_HIDE_SYMBOLS
+	inst.scrapbook_hide = SCRAPBOOK_HIDE_LAYERS
 
     --Remove these tags so that they can be added properly when replicating components below
     inst:RemoveTag("_named")

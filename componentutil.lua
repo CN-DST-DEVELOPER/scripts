@@ -137,6 +137,16 @@ HARVESTABLE_PLANT_TARGET_TAGS = {
     "kelp",
 }
 
+-- FOr pure shadow stuff to target, for glass tools/weapons.
+PURE_SHADOW_TARGET_TAGS = {
+    "shadow",
+    "shadowminion",
+    "shadowchesspiece",
+    "stalker",
+    "stalkerminion",
+    "shadowthrall",
+}
+
 --------------------------------------------------------------------------
 local IGNORE_DROWNING_ONREMOVE_TAGS = {"ignorewalkableplatforms", "ignorewalkableplatformdrowning", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO"}
 function TempTile_HandleTileChange_Ocean(x, y, z)
@@ -2109,4 +2119,62 @@ function GetArmorWagpunkRange(inst, owner)
     end
 
     return range
+end
+
+--------------------------------------------------------------------------
+
+function DeactivateInventoryItemBeforeLaunch(inst)
+    if inst.components.mine ~= nil then
+        inst.components.mine:Deactivate()
+        return true
+    elseif inst.inventoryitem_DeactivateBeforeLaunch then
+        inst:inventoryitem_DeactivateBeforeLaunch()
+        return true
+    end
+end
+
+--------------------------------------------------------------------------
+
+-- Setters and getters for moisture and temperature
+-- This supports the regular components and inventoryitem components
+
+function DoDeltaMoistureToEntity(inst, amount, itemmult, skipwaterproof, no_announce)
+    if inst.components.moisture ~= nil then
+        local waterproofness = skipwaterproof and 0 or inst.components.moisture:GetWaterproofness()
+        inst.components.moisture:DoDelta(amount * (1 - waterproofness), no_announce)
+        return true
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:AddMoisture(amount * (itemmult or 1))
+        return true
+    end
+end
+
+function GetEntityMoisture(inst)
+    return (inst.components.moisture ~= nil and inst.components.moisture:GetMoisture())
+        or (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetMoisture())
+        or nil
+end
+
+function DoDeltaTemperatureToEntity(inst, amount)
+    if inst.components.temperature ~= nil then
+        inst.components.temperature:DoDelta(amount)
+        return true
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:AddTemperature(amount)
+        return true
+    end
+end
+
+function SetEntityTemperature(inst, newtemp)
+    if inst.components.temperature ~= nil then
+        inst.components.temperature:SetTemperature(newtemp)
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:SetTemperature(newtemp)
+    end
+end
+
+function GetEntityTemperature(inst) -- Purposely defaulting to nil. Account for it.
+    return (inst.components.temperature ~= nil and inst.components.temperature:GetCurrent())
+        or (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetTemperature())
+        or nil
 end

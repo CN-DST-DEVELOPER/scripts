@@ -130,6 +130,7 @@ function GroundPounder:DestroyPoints(points, breakobjects, dodamage, pushplatfor
                     for _, object in ipairs(ents) do
                         local inventoryitem = object.components.inventoryitem
                         if inventoryitem then
+							DeactivateInventoryItemBeforeLaunch(object)
                             Launch(object, self.inst)
                             inventoryitem:SetLanded(false, true)
                         end
@@ -238,6 +239,7 @@ function GroundPounder:DestroyRing(pt, radius, points, breakobjects, dodamage, p
 						local object = ents[i]
 						local inventoryitem = object.components.inventoryitem
 						if inventoryitem then
+							DeactivateInventoryItemBeforeLaunch(object)
 							Launch(object, self.inst)
 							inventoryitem:SetLanded(false, true)
 						end

@@ -726,6 +726,7 @@ local function fn()
     end
 
 	inst.scrapbook_thingtype = "creature"
+	inst.scrapbook_anim = "idle_loop"
 
 	--Remove these tags so that they can be added properly when replicating components below
 	inst:RemoveTag("_hunger")

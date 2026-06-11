@@ -74,7 +74,7 @@ local function _getunloadaction(ent, map, tile_x, tile_y)
 
 	if owner ~= ent and owner.entity:GetParent() or not _inroom(owner, map, tile_x, tile_y) then
 		return _SKIP
-	elseif owner.isplayer or owner:HasAnyTag("irreplaceable", "followsthroughvirtualrooms") then
+	elseif owner.isplayer or owner:HasAnyTag("irreplaceable", "followsthroughvirtualrooms") and not owner:HasAnyTag("forcedtosavethroughvirtualrooms") then
 		return _KEEP
 	end
 	return _SAVE

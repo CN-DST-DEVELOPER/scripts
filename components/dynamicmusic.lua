@@ -142,7 +142,7 @@ local TRIGGERED_DANGER_MUSIC =
 
     eyeofterror =
     {
-        "terraria1/common/music_epicfight_eot",
+		"dontstarve/music/music_epicfight_eot",
     },
 
     piratemonkeyraid = 
@@ -185,6 +185,8 @@ local TRIGGERED_DANGER_MUSIC =
 	vault =
 	{
 		"dontstarve/music/music_cavepuzzle",
+		"", --silence
+		"dontstarve/music/music_epicfight_pillarguard",
 	},
 
     knight_yoth =

@@ -143,9 +143,7 @@ local function DoDamage(inst, OnIgnite)
 
     local totoss = TheSim:FindEntities(x, 0, z, inst.spikeradius + DAMAGE_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)
     for i, v in ipairs(totoss) do
-        if v.components.mine ~= nil then
-            v.components.mine:Deactivate()
-        end
+        DeactivateInventoryItemBeforeLaunch(v)
         if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
             if isblock then
                 SpikeLaunch(v, inst, 1.2, .6, inst.spikeradius + v:GetPhysicsRadius(0))

@@ -354,18 +354,36 @@ SGWX78Common.AddWX78SpinStates = function(states)
 			end),
 			FrameEvent(2, function(inst)
 				if inst.sg.statemem.quickstart == nil then
-					inst.sg.statemem.targets = nil
-					inst.sg.statemem.canrelease = true
+					if inst.sg.statemem.updatedonce then
+						inst.sg.statemem.targets = nil
+						inst.sg.statemem.canrelease = true
+					else
+						inst.sg.statemem.cleartargetsafterupdate = true
+					end
 				end
 			end),
 			FrameEvent(3, function(inst)
-				inst.sg.statemem.targets = nil
-				inst.sg.statemem.canrelease = true
+				if inst.sg.statemem.updatedonce then
+					inst.sg.statemem.targets = nil
+					inst.sg.statemem.canrelease = true
+				else
+					inst.sg.statemem.cleartargetsafterupdate = true
+				end
 			end),
 		},
 
 		onupdate = function(inst, dt)
-			if inst.sg.statemem.targets then
+			--@V2C #HACK for switch >(
+			if inst.sg.statemem.cleartargetsafterupdate and inst.sg.statemem.updatedonce then
+				inst.sg.statemem.cleartargetsafterupdate = nil
+				inst.sg.statemem.targets = nil
+				inst.sg.statemem.canrelease = true
+			--
+			elseif inst.sg.statemem.targets then
+				--@V2C #HACK for switch >(
+				inst.sg.statemem.updatedonce = true
+				--
+
 				local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 				local canchop, canmine
 				if item and item.components.tool then
@@ -535,11 +553,24 @@ SGWX78Common.AddWX78SpinStates = function(states)
 					end
 				end
                 if harvestedcount > 0 then
-					if not pickused and item:IsValid() and item.components.finiteuses and item.components.finiteuses:GetUses() > 0 then
-						if inst.sg.currentstate.name == "wx_spin" then
-							inst.sg.statemem.pickused = true
+					if not pickused and item:IsValid() then
+						if (item.components.fumaroletool and item.components.inventoryitem:GetTemperature() > 0)
+							or (item.components.finiteuses and item.components.finiteuses:GetUses() > 0)
+						then
+							if inst.sg.currentstate.name == "wx_spin" then
+								inst.sg.statemem.pickused = true
+							end
+							if item.components.fumaroletool then
+								item.components.fumaroletool:OnUsed(inst)
+							elseif item.components.finiteuses then
+								item.components.finiteuses:Use(TUNING.WX78_SPIN_PICK_EFFICIENCY)
+							end
 						end
-						item.components.finiteuses:Use(TUNING.WX78_SPIN_PICK_EFFICIENCY)
+
+						if item.components.fumaroletool then
+							item.components.fumaroletool:OnUsed(inst)
+						end
+
 					end
                     inst:PushEvent("picksomethingfromaoe", {harvestedcount = harvestedcount,})
                 end

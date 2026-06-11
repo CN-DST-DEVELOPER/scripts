@@ -60,6 +60,7 @@ local assets =
     Asset("ANIM", "anim/hunger_health_pulse.zip"),
     Asset("ANIM", "anim/spoiled_meter.zip"),
     Asset("ANIM", "anim/recharge_meter.zip"),
+    Asset("ANIM", "anim/temperature_meter.zip"),
     Asset("ANIM", "anim/inventory_fx_shadow.zip"),
     Asset("ANIM", "anim/inventory_fx_acidsizzle.zip"),
     Asset("ANIM", "anim/inventory_fx_buff_panflute.zip"),

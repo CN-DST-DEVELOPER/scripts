@@ -473,4 +473,12 @@ function WardrobeScreen:OnUpdate(dt)
     self.puppet:EmoteUpdate(dt)
 end
 
+function WardrobeScreen:BarterQueueUpdate()
+	local active_tab = self.subscreener.sub_screens[self.subscreener.active_key]
+	if active_tab.picker then
+		active_tab.picker:RefreshItems()
+	end
+	self:RefreshInventory()
+end
+
 return WardrobeScreen

@@ -778,6 +778,8 @@ local function slingshot2ex_common_postinit(inst)
 	inst.components.aoetargeting.reticule.invalidcolour = { .5, 0, 0, 1 }
 	inst.components.aoetargeting.reticule.ease = true
 	inst.components.aoetargeting.reticule.mouseenabled = true
+	inst.components.aoetargeting.reticule.twinstickmode = 1
+	inst.components.aoetargeting.reticule.twinstickrange = 6.5
 end
 
 local function slingshot2ex_SpellFn(inst, doer, pos)

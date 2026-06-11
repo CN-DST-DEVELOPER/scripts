@@ -1240,6 +1240,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"not_used_by_wurt",
+		"not_used_by_wurt",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "not_used_by_wurt",
+    ANNOUNCE_GOT_DECON_MISTED = "Oooh, feel good on scales, florp!",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "What Shadowfolk doing?!",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Need more theer-mole bomb!",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Glorp! Why you following me?", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -2176,6 +2189,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "Little big Ironfolk.",
         CHESSPIECE_WAGBOSS_LUNAR = "Moon stuff made big Ironfolk bad.",
         CHESSPIECE_YOTH = "Where spring now, springy Ironfolk?",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "Cute tiny horns! Florp!",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -2217,6 +2231,7 @@ return{
         CRITTER_PERDLING = "Hello birdy!",
 		CRITTER_LUNARMOTHLING = "You ugly, but me love you.",
         CRITTER_BULBIN = "Little, smelly and green. You perfect, florp.",
+        CRITTER_EETS = "You jump weird, florp.",
 
 		CROW =
 		{
@@ -5897,7 +5912,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Mine!",
-        VAULT_LOBBY_EXIT = "Me jump!",
+        VAULT_LOBBY_EXIT = "Hmm... could climb back if had rope...",
 		VAULT_CHANDELIER_BROKEN = "Not me, florp.",
 
 		ANCIENT_HUSK = "Glurgh. Something bad.",
@@ -6122,6 +6137,104 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "What you see?",
         WX78_SHADOWDRONE_HARVESTER = "Florp! So grabby!",
+
+        -- Rifts 7
+        STALKER_NPC = "N-not scared of him anymore!",
+
+        MITEGLAND =
+        {
+            GENERIC = "Blegh!! Nasty bug guts!",
+            COLD = "Cold bug guts.",
+        },
+        MITEGLAND_COOKED = "Glurgh. Nuh-uh.",
+
+        BROKEN_FUMAROLETOOLITEM = "Easy to fix. Just get hot, florp!", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "It gonna break, florp!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Hey! How come not warm anymore?", -- The next state, its lukewarm, no cracks.
+			WARM = "So warm! Gimme!", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It good chopper, but hurt claws!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "It gonna break, florp!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Hey! How come not warm anymore?", -- The next state, its lukewarm, no cracks.
+			WARM = "So warm! Gimme!", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It good at breaking rock, but hurt claws!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "It gonna break, florp!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Hey! How come not warm anymore?", -- The next state, its lukewarm, no cracks.
+			WARM = "So warm! Gimme!", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It good smasher, but hurt claws!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "It gonna break, florp!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Hey! How come not warm anymore?", -- The next state, its lukewarm, no cracks.
+			WARM = "So warm! Gimme!", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It good digger, but hurt claws!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "It gonna break, florp!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Hey! How come not warm anymore?", -- The next state, its lukewarm, no cracks.
+			WARM = "So warm! Gimme!", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It good at gardening, but hurt claws!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "Hee-hee-hee...", -- When held in the inventory.
+            GENERIC = "Glurgh. Trap no good anymore!", -- Coldest state, the trap is ineffective.
+            WARM = "Rocks still hot enough to hurt.", -- Warm, a bit red hot, it does some damage.
+            HOT = "Come here! Good place for stepping! Hee-hee...", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "Fire lady right! Fire fun when don't hurt, florp!",
+
+		VAULT_PILLAR_GUARD = "Glorp! Didn't do it!!",
+		VAULT_PILLAR_GUARD_CRAFTED = "You be good!",
+		VAULT_PILLAR_GUARD_DORMANT = "Nice horns, florp!",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "I know, florp! Needs floaty glowy!",
+		VAULT_PILLAR_GUARD_CONSTR = "Glorp? What else it want?",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Me decide where put!",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "Weird bug fun to roll around, florp!",
+			SOCKETED = "I win!",
+		},
+
+        VAULT_DECON_DOOR = "Glurgh. Big wall not gonna keep me out!",
+        VAULT_DECON_MISTER = "Do again! Do again!",
+		VAULT_KEY_ACTIVATOR = "Something round go inside?",
+		VAULT_CRAWLER_LEVER = "Pull! Pull!",
+        VAULT_KEY = "Oooooh! What it unlock, florp?",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "Mine!", -- Keystone is on it, ready to take
+            PICKED = "Gone.", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "Prettiest rock! Glorp!",
+        VAULT_PILLAR_GUARD_PIECE = "Me always have spare parts.",
+        VAULT_REFINER_PEDESTAL = "Glurph. Makes old stuff.",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "Show which way! Now!!", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "Glurgh. Why not working?", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "We here!", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "Climbing easy.",
+        VAULT_KEY_EXIT = "What mean can't climb out?",--There's no where to tie a rope. Exit, but no re-entry.
     },
 
     DESCRIBE_GENERIC = "What that?",

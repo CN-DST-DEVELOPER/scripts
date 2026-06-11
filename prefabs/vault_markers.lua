@@ -14,6 +14,7 @@ local prefabs =
 	"mask_ancient_handmaidhat",
 	"mask_ancient_masonhat",
 	"playbill_the_vault",
+    "vault_compass",
 	"temp_beta_msg", --#TEMP_BETA
 	"vault_chandelier",
 	"vault_chandelier_broken",
@@ -27,6 +28,19 @@ local prefabs =
 	"vault_table_round",
     "vaultcollision_lobby",
     "vaultcollision_vault",
+    -- rifts 7
+    "vault_decon_switch",
+    "vault_decon_switch_reset",
+    "vault_decon_switch_reset2",
+    "vault_decon_door",
+    "vault_decon_door_collision",
+    "vault_decon_mister",
+    "vault_sanity_adjuster",
+    "vault_sanity_adjuster_alwaysincreasing",
+    "vault_sanity_adjuster_alwaysdecreasing",
+    "vault_key",
+	"vault_key_trial",
+	"vault_security_desk",
 }
 
 local function UpdateNetvars(inst)

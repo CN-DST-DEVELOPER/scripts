@@ -624,7 +624,7 @@ function Builder:HasTechIngredient(ingredient)
 end
 
 function Builder:MakeRecipe(recipe, pt, rot, skin, onsuccess)
-    if recipe ~= nil and not self.inst.sg:HasAnyStateTag("drowning", "falling", "floating") then -- TODO(JBK): This should be refactored to not do the state checks here.
+	if recipe and not self.inst.sg:HasAnyStateTag("drowning", "falling", "floating", "nointerrupt", "nopredict", "pausepredict") then -- TODO(JBK): This should be refactored to not do the state checks here.
         self.inst:PushEvent("makerecipe", { recipe = recipe })
         if self:IsBuildBuffered(recipe.name) or self:HasIngredients(recipe) then
             self.inst.components.locomotor:Stop()
@@ -991,7 +991,7 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 	if self:KnowsRecipe(ing_recipe) then
 		canaccess = true
 		if self:HasIngredients(ing_recipe) then
-			self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
+			success = self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
 				function()
 					if usingtempbonus then
 						self:ConsumeTempTechBonuses()
@@ -1015,12 +1015,11 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 					end
 				end
 			)
-			success = true
 		end
 	elseif canlearn and CanPrototypeRecipe(ing_recipe.level, self.accessible_tech_trees) then
 		canaccess = true
 		if self:HasIngredients(ing_recipe) then
-			self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
+			success = self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
 				function()
 					if usingtempbonus then
 						self:ConsumeTempTechBonuses()
@@ -1029,7 +1028,6 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 					self:UnlockRecipe(ing_recipe.name)
 				end
 			)
-			success = true
 		end
 	end
 	return success, canaccess

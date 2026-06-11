@@ -12,6 +12,7 @@ local ZOOM_CLAMP_MIN = 1
 local ZOOM_CLAMP_MAX = 20
 
 local MAP_SELECT_WORMHOLE_MUST = {"CLASSIFIED", "globalmapicon", "wormholetrackericon"}
+local MAP_SELECT_VAULTORBDESTINATION_MUST = {"CLASSIFIED", "globalmapicon", "vaultorbteleportdestinationtrackericon"}
 
 local MapScreen = Class(Screen, function(self, owner)
     self.owner = owner
@@ -367,6 +368,68 @@ function MapScreen:ProcessStaticDecorations_WobyCourier(staticdecorations, zooms
     end
 end
 
+local function VaultOrbTeleport_ShouldHideFn(owner, ent)
+    local fx, fy, fz = owner.Transform:GetWorldPosition()
+    local tx, ty, tz = ent.Transform:GetWorldPosition()
+    return not IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
+end
+function MapScreen:ProcessStaticDecorations_VaultOrbTeleporter(staticdecorations, zoomscale, w, h, director)
+    local px, py, pz = director.Transform:GetWorldPosition()
+    local ents_bin = GlobalMapIconsDB.prefabs["globalmapicon"]
+    if ents_bin then
+        local entdatas = {}
+        for ent, _ in pairs(ents_bin) do
+            if ent:HasTag("vaultorbteleportdestinationtrackericon") then
+                table.insert(entdatas, {
+                    ent = ent,
+                    dsq = director:GetDistanceSqToInst(ent),
+                })
+            end
+        end
+        if entdatas[2] then
+            table.sort(entdatas, function(a, b) return a.dsq == b.dsq and a.ent.GUID < b.ent.GUID or a.dsq < b.dsq end)
+        end
+        if entdatas[1] then
+            local minzoomscale = 0.18
+            local maxzoomscale = 0.55
+            local overallzoomscaler = 3.6
+            local zoomradius = TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS
+            local zoomscale_clamped = math.clamp(zoomscale, minzoomscale or zoomscale, maxzoomscale or zoomscale) * overallzoomscaler
+            for _, entdata in ipairs(entdatas) do
+                local ent = entdata.ent
+                local ex, ey, ez = ent.Transform:GetWorldPosition()
+                if staticdecorations[ent.GUID .. "_VAULTORBTELEPORTER"] == nil then
+                    local decoration = self.decorationrootstatic:AddChild(UIAnim())
+                    local decorationdata = {
+                        ent = ent,
+                        decoration = decoration,
+                        minzoomscale = minzoomscale,
+                        maxzoomscale = maxzoomscale,
+                        overallzoomscaler = overallzoomscaler,
+                        zoomradius = zoomradius,
+                        animgainfocus = { "proximity_pre", "proximity_loop" },
+                        animlosefocus = { "proximity_pst", "idle" },
+                        shouldhidefn = VaultOrbTeleport_ShouldHideFn,
+                    }
+                    staticdecorations[ent.GUID .. "_VAULTORBTELEPORTER"] = decorationdata
+                    local animstate = decoration:GetAnimState()
+                    animstate:SetBank("vaultorbdestination")
+                    animstate:SetBuild("vaultorbdestination")
+                    animstate:PlayAnimation("idle", true)
+                    local x, y = self.minimap:WorldPosToMapPos(ex, ez, 0)
+                    decoration:SetPosition(x * w, y * h)
+                    decoration:SetScale(zoomscale_clamped, zoomscale_clamped, 1)
+                    local ex, ey, ez = ent.Transform:GetWorldPosition()
+                    if not IsTeleportingPermittedFromPointToPoint(px, py, pz, ex, ey, ez) then
+                        decoration:Hide()
+                        decorationdata.mapicon_hidden = true
+                    end
+                end
+            end
+        end
+    end
+end
+
 function MapScreen:ProcessStaticDecorations_SwapBodies(staticdecorations, zoomscale, w, h, director)
     local entdatas = {}
 	local ents_bin = GlobalMapIconsDB.prefabs["wx78_backupbody"]
@@ -491,6 +554,11 @@ function MapScreen:ProcessStaticDecorations_Internal(staticdecorations, zoomscal
             if courierdirector and courierdirector:IsValid() then
                 self:ProcessStaticDecorations_WobyCourier(staticdecorations, zoomscale, w, h, courierdirector)
             end
+        elseif self.maptarget.prefab == "vault_orb_refined" then
+            local director = self.owner
+            if director and director:IsValid() then
+                self:ProcessStaticDecorations_VaultOrbTeleporter(staticdecorations, zoomscale, w, h, director)
+            end
         end
 	elseif self.inherentmapactions then
         local director = self.owner
@@ -587,6 +655,9 @@ function MapScreen:UpdateStaticDecorations()
 			if not shouldhide and decorationdata.animhidedistsq and self.owner:GetDistanceSqToInst(ent) < decorationdata.animhidedistsq then
                 shouldhide = true
             end
+        end
+        if not shouldhide and decorationdata.shouldhidefn then
+            shouldhide = decorationdata.shouldhidefn(self.owner, ent)
         end
         if shouldhide then
             decoration:Hide()
@@ -1062,6 +1133,25 @@ function MapScreen:ProcessRMBDecorations_MAPSCOUTSELECT_MAP(rmb, fresh)
 	end
 end
 
+function MapScreen:ProcessRMBDecorations_VAULTORBTELEPORT_MAP(rmb, fresh)
+    local rmb_pos = rmb:GetActionPoint()
+    local ents = TheSim:FindEntities(rmb_pos.x, rmb_pos.y, rmb_pos.z, TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS, MAP_SELECT_VAULTORBDESTINATION_MUST)
+    for _, ent in ipairs(ents) do
+        local decorationdata = self.decorationdata.staticdecorations[ent.GUID .. "_VAULTORBTELEPORTER"]
+        if decorationdata and not decorationdata.mapicon_hidden then
+            if not decorationdata.mapfocus then
+                local decoration = decorationdata.decoration
+                decoration:GetAnimState():PlayAnimation(decorationdata.animgainfocus[1], true)
+                for i = 2, #decorationdata.animgainfocus do
+                    decoration:GetAnimState():PushAnimation(decorationdata.animgainfocus[i])
+                end
+            end
+            decorationdata.mapfocus = TheSim:GetStep() --screens use wallupdate and don't pause like simtick
+            break
+        end
+    end
+end
+
 function MapScreen:ProcessRMBDecorations(rmb, fresh)
     if fresh then
         self.decorationdata.rmbents = {}
@@ -1078,6 +1168,8 @@ function MapScreen:ProcessRMBDecorations(rmb, fresh)
         self:ProcessRMBDecorations_SWAPBODIES_MAP(rmb, fresh)
 	elseif rmb.action == ACTIONS.MAPSCOUTSELECT_MAP then
 		self:ProcessRMBDecorations_MAPSCOUTSELECT_MAP(rmb, fresh)
+    elseif rmb.action == ACTIONS.VAULTORBTELEPORT_MAP then
+        self:ProcessRMBDecorations_VAULTORBTELEPORT_MAP(rmb, fresh)
     end
 end
 

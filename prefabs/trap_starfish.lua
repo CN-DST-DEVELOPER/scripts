@@ -254,6 +254,8 @@ local function dug_trap_starfish()
         return inst
     end
 
+    inst.scrapbook_subcat = "trap"
+
     -- Stop the starfish from idling in unison.
 	inst.AnimState:SetFrame(math.random(inst.AnimState:GetCurrentAnimationNumFrames()) - 1)
 

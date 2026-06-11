@@ -10,6 +10,7 @@ local prefabs =
     "stalker",
     "stalker_forest",
     "stalker_atrium",
+    "stalker_npc",
 }
 
 local NUM_FORMS = 3

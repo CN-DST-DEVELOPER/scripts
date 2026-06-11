@@ -1259,6 +1259,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"That glandular snack has me under attack!",
+		"My stomach feels full of fire and brimstone!",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "The burning pain has left this plane.",
+    ANNOUNCE_GOT_DECON_MISTED = "Refreshing!",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "Is this a dream, or a nightmare?",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "My resistance to fire has just expired.",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hello, fellow who glows and follows!", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -2196,6 +2209,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "That bot was a lot.",
         CHESSPIECE_WAGBOSS_LUNAR = "What error caused such a terror?",
         CHESSPIECE_YOTH = "This little knight put up quite the fight.",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "It was tall, now small.",
 
         CHESSJUNK1 = "It looks quite broke, and that's no joke!",
         CHESSJUNK2 = "It looks quite broke, and that's no joke!",
@@ -2237,6 +2251,7 @@ return{
         CRITTER_PERDLING = "You're so sweet, I could just gobble you up.",
 		CRITTER_LUNARMOTHLING = "On wings alight comes a fuzzy delight!",
         CRITTER_BULBIN = "Once you dwelt in a rotten wood, now it seems you're here for good!",
+        CRITTER_EETS = "Jumped a little too far from home now, haven't you mortal?",
 
 		CROW =
 		{
@@ -5917,7 +5932,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "The ball took a fall!",
-        VAULT_LOBBY_EXIT = "The way out, no doubt!",
+        VAULT_LOBBY_EXIT = "Should I need to retreat, a rope can't be beat!",
 		VAULT_CHANDELIER_BROKEN = "Oh dear, the chandelier.",
 
 		ANCIENT_HUSK = "Oh my, how they died!",
@@ -6142,6 +6157,104 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "It's got eyes on the bad guys! Hyuyu!",
         WX78_SHADOWDRONE_HARVESTER = "The hardest working collector in this sector!",
+
+        -- Rifts 7
+        STALKER_NPC = "Once a foe, now who knows? Hyuyuyu!",
+
+        MITEGLAND =
+        {
+            GENERIC = "Will a bite warm me up? It just mite!",
+            COLD = "Old and cold!",
+        },
+        MITEGLAND_COOKED = "Fried insides, hyuyu!",
+
+        BROKEN_FUMAROLETOOLITEM = "To make it like new, some heat will do!", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "The cracks are beginning to show, hyuyu!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "What's the harm? It's barely warm!", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps the cold from taking hold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Its heat can't be beat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "The cracks are beginning to show, hyuyu!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "What's the harm? It's barely warm!", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps the cold from taking hold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Its heat can't be beat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "The cracks are beginning to show, hyuyu!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "What's the harm? It's barely warm!", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps the cold from taking hold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Its heat can't be beat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "The cracks are beginning to show, hyuyu!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "What's the harm? It's barely warm!", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps the cold from taking hold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Its heat can't be beat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "The cracks are beginning to show, hyuyu!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "What's the harm? It's barely warm!", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps the cold from taking hold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Its heat can't be beat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "Oh, this could be a very fun prank!", -- When held in the inventory.
+            GENERIC = "Stone cold!", -- Coldest state, the trap is ineffective.
+            WARM = "Rocks so warm, they'll do some harm.", -- Warm, a bit red hot, it does some damage.
+            HOT = "A quick cure for cold feet, hyuyuyu!", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "For when the temperature's higher, or even when there's fire!",
+
+		VAULT_PILLAR_GUARD = "Killer pillar!",
+		VAULT_PILLAR_GUARD_CRAFTED = "It's a tower of great power!",
+		VAULT_PILLAR_GUARD_DORMANT = "That's what I call tall!",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "This tower needs power!",
+		VAULT_PILLAR_GUARD_CONSTR = "I don't mean to harp, but what's under the tarp?",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where to guard? It's not that hard.",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "My my, you just gave me a bright idea...",
+			SOCKETED = "Got it to the spot.",
+		},
+
+        VAULT_DECON_DOOR = "Walls have never posed a problem for me, hyuyu!",
+        VAULT_DECON_MISTER = "Spray your troubles away!",
+		VAULT_KEY_ACTIVATOR = "It's missing that special spark, hyuyu!",
+		VAULT_CRAWLER_LEVER = "Pull the lever, win a prize!",
+        VAULT_KEY = "The key to our salvation, or destruction? Hyuyuyu, I can't wait to find out!",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "I see a key!", -- Keystone is on it, ready to take
+            PICKED = "It's been taken! Shall we be foresaken?", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "For imitation of my teleportaion.",
+        VAULT_PILLAR_GUARD_PIECE = "It won't start until it has every part.",
+        VAULT_REFINER_PEDESTAL = "Be patient! It's ancient!",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "It's in the know on where to go.", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "Alas, I fear it won't work here.", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "The search has ended as I intended.", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "For when it's time to climb!",
+        VAULT_KEY_EXIT = "There's no hope for a rope!",--There's no where to tie a rope. Exit, but no re-entry.
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

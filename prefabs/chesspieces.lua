@@ -61,6 +61,7 @@ local PIECES =
     {name="wagboss_robot",       moonevent=false,    gymweight=4},
     {name="wagboss_lunar",       moonevent=false,    gymweight=4},
     {name="yoth",                moonevent=false,    gymweight=3},
+    {name="vault_pillar_guard",  moonevent=false,    gymweight=4},
 }
 
 local MOON_EVENT_RADIUS = 12

@@ -374,7 +374,9 @@ local function OnExtinguish(inst)
 end
 
 local function OnSave(inst, data)
-	if inst.components.burnable:IsBurning() and not inst.components.inventoryitem:IsHeld() then
+	--V2C: use generic limbo check instead of inventoryitem:IsHeld()
+	--     e.g. wargshrine saves torches in limbo
+	if inst.components.burnable:IsBurning() and not inst:IsInLimbo() --[[inst.components.inventoryitem:IsHeld()]] then
 		if inst.thrower ~= nil then
 			data.thrower = inst.thrower
 		else
@@ -384,7 +386,7 @@ local function OnSave(inst, data)
 end
 
 local function OnLoad(inst, data)
-	if data ~= nil and (data.lit or data.thrower ~= nil) and not inst.components.inventoryitem:IsHeld() then
+	if data ~= nil and (data.lit or data.thrower ~= nil) and not inst:IsInLimbo() --[[inst.components.inventoryitem:IsHeld()]] then
 		inst.AnimState:PlayAnimation("land")
 		inst.thrower = data.thrower
 		IgniteTossed(inst)

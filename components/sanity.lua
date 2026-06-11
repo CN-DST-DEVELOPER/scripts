@@ -487,6 +487,26 @@ end
 
 local SANITYRECALC_MUST_TAGS = { "sanityaura" }
 local SANITYRECALC_CANT_TAGS = { "FX", "NOCLICK", "DECOR","INLIMBO" }
+-- NOTES(JBK): This recalculation happens so many times in one frame we will reuse this table for all sanity components as a scratch pad to not stomp on garbage collection.
+local SCRATCHPAD_AURANAMES = {}
+local SCRATCHPAD_AURANAMES_ENDPOS = 0
+local function SCRATCHPAD_AURANAMES_HasBaseAuraNameBeenUsed(v)
+    local has_baseauraname_beenused = false
+    local baseauraname = v.components.sanityaura.baseauraname
+    if baseauraname then
+        for i = 1, SCRATCHPAD_AURANAMES_ENDPOS do
+            if SCRATCHPAD_AURANAMES[i] == baseauraname then
+                has_baseauraname_beenused = true
+                break
+            end
+        end
+        if not has_baseauraname_beenused then
+            SCRATCHPAD_AURANAMES_ENDPOS = SCRATCHPAD_AURANAMES_ENDPOS + 1
+            SCRATCHPAD_AURANAMES[SCRATCHPAD_AURANAMES_ENDPOS] = baseauraname
+        end
+    end
+    return has_baseauraname_beenused
+end
 function Sanity:Recalc(dt)
 	local dapper_delta = 0
 	if self.dapperness_mult ~= 0 then
@@ -521,32 +541,35 @@ function Sanity:Recalc(dt)
         end
     end
 
+    SCRATCHPAD_AURANAMES_ENDPOS = 0
     local aura_delta = 0
-	if not self.sanity_aura_immune_sources:Get() then
-		local x, y, z = self.inst.Transform:GetWorldPosition()
-	    local ents = TheSim:FindEntities(x, y, z, TUNING.SANITY_AURA_SEACH_RANGE, SANITYRECALC_MUST_TAGS, SANITYRECALC_CANT_TAGS)
-	    for i, v in ipairs(ents) do
-	        if v.components.sanityaura ~= nil and v ~= self.inst then
+    if not self.sanity_aura_immune_sources:Get() then
+        local x, y, z = self.inst.Transform:GetWorldPosition()
+        local ents = TheSim:FindEntities(x, y, z, TUNING.SANITY_AURA_SEACH_RANGE, SANITYRECALC_MUST_TAGS, SANITYRECALC_CANT_TAGS)
+        for i, v in ipairs(ents) do
+            if v.components.sanityaura ~= nil and v ~= self.inst then
                 local is_aura_immune = false
-				if self.sanity_aura_immunities ~= nil then
-					for tag, sources in pairs(self.sanity_aura_immunities) do
-						if not sources:Get() then
-							self.sanity_aura_immunities[tag] = nil
-							if next(self.sanity_aura_immunities) == nil then
-								self.sanity_aura_immunities = nil
-								break
-							end
-						elseif v:HasTag(tag) then
-							is_aura_immune = true
-							break
-						end
-					end
-				end
+                if self.sanity_aura_immunities ~= nil then
+                    for tag, sources in pairs(self.sanity_aura_immunities) do
+                        if not sources:Get() then
+                            self.sanity_aura_immunities[tag] = nil
+                            if next(self.sanity_aura_immunities) == nil then
+                                self.sanity_aura_immunities = nil
+                                break
+                            end
+                        elseif v:HasTag(tag) then
+                            is_aura_immune = true
+                            break
+                        end
+                    end
+                end
 
                 if not is_aura_immune then
-                    local aura_val = v.components.sanityaura:GetAura(self.inst)
-					aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
-					aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
+                    if not SCRATCHPAD_AURANAMES_HasBaseAuraNameBeenUsed(v) then
+                        local aura_val = v.components.sanityaura:GetAura(self.inst)
+                        aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
+                        aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
+                    end
                 end
             end
         end
@@ -554,9 +577,11 @@ function Sanity:Recalc(dt)
 
     local mount = self.inst.components.rider and self.inst.components.rider:IsRiding() and self.inst.components.rider:GetMount() or nil
     if mount ~= nil and mount.components.sanityaura ~= nil then
-        local aura_val = mount.components.sanityaura:GetAura(self.inst)
-		aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
-		aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
+        if not SCRATCHPAD_AURANAMES_HasBaseAuraNameBeenUsed(mount) then
+            local aura_val = mount.components.sanityaura:GetAura(self.inst)
+            aura_val = (aura_val < 0 and (self.neg_aura_absorb > 0 and self.neg_aura_absorb * -aura_val or aura_val) * self:GetAuraMultipliers() or aura_val)
+            aura_delta = aura_delta + ((aura_val < 0 and self.neg_aura_immune_sources:Get()) and 0 or aura_val)
+        end
     end
 
     self:RecalcGhostDrain()

@@ -1,5 +1,5 @@
 
-local Npc_talker = Class(function(self, inst)
+local NPC_Talker = Class(function(self, inst)
     self.inst = inst
     self.queue = {}
     self.soundqueue = {}
@@ -10,7 +10,7 @@ local Npc_talker = Class(function(self, inst)
     --self.inst:ListenForEvent("done_npc_talk", function(inst) self:checknextline() end)
 end)
 
-function Npc_talker:Say(lines, override, stompable, sound)
+function NPC_Talker:Say(lines, override, stompable, sound)
     -- override means it wipes out the old queue
     -- stompable means anything else will remove it. And if there's anything queued already it will be ignored
 
@@ -47,7 +47,7 @@ function Npc_talker:Say(lines, override, stompable, sound)
 
 end
 
-function Npc_talker:Chatter(strtbl, index, chatpriority, override, stompable, sound)
+function NPC_Talker:Chatter(strtbl, index, chatpriority, override, stompable, sound)
     if override or self.stompable then
         self.queue = {}
         self.soundqueue = {}
@@ -88,17 +88,17 @@ function Npc_talker:Chatter(strtbl, index, chatpriority, override, stompable, so
     end
 end
 
-function Npc_talker:haslines()
-    return #(self.queue) > 0
+function NPC_Talker:HasLines()
+    return #self.queue > 0
 end
 
-function Npc_talker:resetqueue()
+function NPC_Talker:ResetQueue()
     self.queue = {}
     self.soundqueue = {}
 end
 
-function Npc_talker:donextline()
-    if #self.queue > 0 then
+function NPC_Talker:DoNextLine()
+    if self:HasLines() then
         local queue_item = self.queue[1]
 
         if type(queue_item) == "table" then
@@ -115,9 +115,14 @@ function Npc_talker:donextline()
         if self.soundqueue[1] and type(self.soundqueue[1]) == "string" then
             self.inst.SoundEmitter:PlaySound(self.soundqueue[1])
         end
-        table.remove(self.soundqueue,1)
-        table.remove(self.queue,1)
+        table.remove(self.soundqueue, 1)
+        table.remove(self.queue, 1)
     end
 end
 
-return Npc_talker
+-- backwards compat, because these functions used to be lowercase :,)
+NPC_Talker.haslines = NPC_Talker.HasLines
+NPC_Talker.resetqueue = NPC_Talker.ResetQueue
+NPC_Talker.donextline = NPC_Talker.DoNextLine
+
+return NPC_Talker

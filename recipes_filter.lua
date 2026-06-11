@@ -570,6 +570,10 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
     "wagpunk_workstation_moonstorm_static_catcher",
     "wagpunk_workstation_security_pulse_cage",
 
+	-- vault_refiner_pedestal
+    "vault_orb_refined",
+	"vault_pillar_guard_constr_plans",
+
 	-- waxwelljournal
 	"shadowlumber_builder",
 	"shadowminer_builder",
@@ -591,7 +595,9 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"critter_glomling_builder",
 	"critter_lunarmothling_builder",
 	"critter_eyeofterror_builder",
+	-- skins for critterlab
     "critter_bulbin_builder",
+    "critter_eets_builder",
 
 	-- Sculpting
 	"chesspiece_hornucopia_builder",
@@ -639,6 +645,7 @@ CRAFTING_FILTERS.CRAFTING_STATION.recipes =
 	"chesspiece_wagboss_robot_builder",
 	"chesspiece_wagboss_lunar_builder",
 	"chesspiece_yoth_builder",
+	"chesspiece_vault_pillar_guard_builder",
 
 	-- wintersfeastoven
 	"wintercooking_berrysauce",
@@ -839,6 +846,11 @@ CRAFTING_FILTERS.TOOLS.recipes =
 	"goldenshovel",
 	"golden_farm_hoe",
 	"goldenpitchfork",
+	"fumaroleaxe",
+	"fumarolepickaxe",
+	"fumaroleshovel",
+	"fumarolehammer",
+	"fumarole_farm_hoe",
 	"moonglassaxe",
     "wx78module_spin",
 	"trap",
@@ -992,6 +1004,7 @@ CRAFTING_FILTERS.WEAPONS.recipes =
 	"trap_teeth",
 	"trap_bramble",
 	"beemine",
+	"trap_fumarole",
 	"waterballoon",
 	"boat_cannon_kit",
 	"cannonball_rock_item",
@@ -1089,6 +1102,7 @@ CRAFTING_FILTERS.RESTORATION.recipes =
 	"bandage_butterflywings",
 	"healingsalve",
 	"healingsalve_acid",
+	"healingsalve_fumarole",
 	"bandage",
 	"tillweedsalve",
 	"compostwrap",
@@ -1135,6 +1149,7 @@ CRAFTING_FILTERS.GARDENING.recipes =
 	"farm_plow_item",
 	"farm_hoe",
 	"golden_farm_hoe",
+	"fumarole_farm_hoe",
 	"wateringcan",
 	"premiumwateringcan",
 	"fertilizer",
@@ -1170,14 +1185,14 @@ CRAFTING_FILTERS.FISHING.recipes =
 	"oceanfishingbobber_canary",
 	"oceanfishingbobber_goose",
 	"oceanfishingbobber_malbatross",
-	
+
 	"oceanfishinglure_spoon_red",
 	"oceanfishinglure_spoon_green",
 	"oceanfishinglure_spoon_blue",
 	"oceanfishinglure_spinner_red",
 	"oceanfishinglure_spinner_green",
 	"oceanfishinglure_spinner_blue",
-	
+
 	"oceanfishinglure_hermit_rain",
 	"oceanfishinglure_hermit_snow",
 	"oceanfishinglure_hermit_drowsy",
@@ -1464,6 +1479,8 @@ CRAFTING_FILTERS.SUMMER.recipes =
 	"grass_umbrella",
 	"umbrella",
 	"featherfan",
+
+	"healingsalve_fumarole",
 
 	"reflectivevest",
 	"hawaiianshirt",

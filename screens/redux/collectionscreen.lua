@@ -237,5 +237,8 @@ end
 function CollectionScreen:OnUpdate(dt)
 end
 
+function CollectionScreen:BarterQueueUpdate()
+	self:RefreshInventory()
+end
 
 return CollectionScreen

@@ -546,7 +546,7 @@ for k, v in pairs(FUELTYPE) do
     table.insert(NOTAGS, v.."_fueled")
 end
 
-local FREEZETARGET_ONEOF_TAGS = { "heatrock", "freezable", "fire", "smolder" }
+local FREEZETARGET_ONEOF_TAGS = { "heatrock", "freezable", "fire", "smolder", "inventoryitemtemperature" }
 local function OnUpdateIceCircle(inst, x, z)
     inst._radius = inst._radius * .98 + TUNING.DEERCLOPSEYEBALL_SENTRYWARD_GROUND_ICE_RADIUS * .02
 
@@ -561,11 +561,9 @@ local function OnUpdateIceCircle(inst, x, z)
                     v.components.freezable:AddColdness(.1, 1, true)
                 end
             end
-            if v.components.temperature ~= nil then
-                local newtemp = math.max(v.components.temperature.mintemp, TUNING.DEER_ICE_TEMPERATURE)
-                if newtemp < v.components.temperature:GetCurrent() then
-                    v.components.temperature:SetTemperature(newtemp)
-                end
+            local ent_temp = GetEntityTemperature(v)
+            if ent_temp and TUNING.DEER_ICE_TEMPERATURE < ent_temp then
+                SetEntityTemperature(v, TUNING.DEER_ICE_TEMPERATURE)
             end
             if v.components.grogginess ~= nil and not v.components.grogginess:IsKnockedOut() then
                 local curgrog = v.components.grogginess.grog_amount

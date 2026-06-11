@@ -45,16 +45,18 @@ function Propagator:OnRemoveFromEntity()
 end
 
 function Propagator:OnRemoveEntity()
-    if not (self.inst.components.heater ~= nil and self.inst.components.heater:IsEndothermic()) then
-        local x, y, z = self.inst.Transform:GetWorldPosition()
-        local prop_range = TheWorld.state.isspring and self.propagaterange * TUNING.SPRING_FIRE_RANGE_MOD or self.propagaterange
-        local ents = TheSim:FindEntities(x, y, z, prop_range, nil, nil, TARGET_MELT_ANY_TAGS)
-        -- OnRemoveEntity callback makes FindEntities return a nil in the first slot if the entity that was just removed is in the callback so ipairs cannot work here.
-        for i = 1, #ents do
-            local v = ents[i]
-            if v then
-                v:PushEvent("stopfiremelt")
-                v:RemoveTag("firemelt")
+    if self.inst:IsValid() then -- NOTES(JBK): Hack check to hide crash case. The component needs a rework on how it handles the fire melt tagging and events.
+        if not (self.inst.components.heater ~= nil and self.inst.components.heater:IsEndothermic()) then
+            local x, y, z = self.inst.Transform:GetWorldPosition()
+            local prop_range = TheWorld.state.isspring and self.propagaterange * TUNING.SPRING_FIRE_RANGE_MOD or self.propagaterange
+            local ents = TheSim:FindEntities(x, y, z, prop_range, nil, nil, TARGET_MELT_ANY_TAGS)
+            -- OnRemoveEntity callback makes FindEntities return a nil in the first slot if the entity that was just removed is in the callback so ipairs cannot work here.
+            for i = 1, #ents do
+                local v = ents[i]
+                if v and v:IsValid() then
+                    v:PushEvent("stopfiremelt")
+                    v:RemoveTag("firemelt")
+                end
             end
         end
     end
@@ -128,6 +130,10 @@ function Propagator:CanSpreadHeat()
     return tile_info == nil or not tile_info.no_fire_spread
 end
 
+function Propagator:AcceptsHeat()
+    return self.acceptsheat and not self.pauseheating
+end
+
 function Propagator:AddHeat(amount,source)
     if self.delay ~= nil or self.inst:HasTag("fireimmune") then
         return
@@ -191,9 +197,7 @@ function Propagator:OnUpdate(dt)
                     local dsq = VecUtil_LengthSq(x - vx, z - vz)
 
                     if v ~= self.inst then
-                        if v.components.propagator ~= nil and
-                            v.components.propagator.acceptsheat and
-                            not v.components.propagator.pauseheating then
+                        if v.components.propagator ~= nil and v.components.propagator:AcceptsHeat() then
                             local percent_heat = math.max(.1, 1 - dsq / prop_range_sq)
                             v.components.propagator:AddHeat(self.heatoutput * percent_heat * dt, self.inst)
                         end
@@ -206,7 +210,7 @@ function Propagator:OnUpdate(dt)
                             end
                         end
 
-                        if not isendothermic and (v:HasTag("frozen") or v:HasTag("meltable")) then
+                        if not isendothermic and v:HasAnyTag("frozen", "meltable") then
                             v:PushEvent("firemelt")
                             v:AddTag("firemelt")
                         end

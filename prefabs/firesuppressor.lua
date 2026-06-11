@@ -361,6 +361,7 @@ local function fn()
     inst.components.wateryprotection.witherprotectiontime = TUNING.FIRESUPPRESSOR_PROTECTION_TIME
     inst.components.wateryprotection.addcoldness = TUNING.FIRESUPPRESSOR_ADD_COLDNESS
     inst.components.wateryprotection:AddIgnoreTag("player")
+    inst.components.wateryprotection:AddIgnoreTag("shadow_fire")
 
     inst:AddComponent("lootdropper")
     inst:AddComponent("workable")

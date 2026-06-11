@@ -429,7 +429,6 @@ local function makebigmist(proxy)
     inst.AnimState:SetBuild("moonglass_bigwaterfall_steam")
     inst.AnimState:SetBank("moonglass_bigwaterfall_steam")
     inst.AnimState:PlayAnimation("steam_small"..math.random(1,2), true)
-    inst.AnimState:SetLightOverride(0.5)
     inst.AnimState:SetFinalOffset(2)
 
     proxy:ListenForEvent("onremove", function() inst:Remove() end)

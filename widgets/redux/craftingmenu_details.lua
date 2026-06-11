@@ -253,6 +253,11 @@ function CraftingMenuDetails:UpdateNameString()
     local namestr = STRINGS.NAMES[string.upper(recipe.nameoverride or recipe.name)] or STRINGS.NAMES[string.upper(recipe.product)]
     if meta.limitedamount and meta.build_state ~= "hint" then
         namestr = subfmt(STRINGS.UI.CRAFTING.LIMITEDAMOUNTFMT, {name = namestr, number = meta.limitedamount})
+	else
+		local numtogive = recipe.override_numtogive_fn and recipe.override_numtogive_fn(recipe, self.owner, true) or recipe.numtogive
+		if numtogive > 1 then
+			namestr = subfmt(STRINGS.UI.CRAFTING.NUMTOGIVEFMT, {name = namestr, number = numtogive})
+		end
     end
 
     local title_width = self.panel_width / 2 - 30

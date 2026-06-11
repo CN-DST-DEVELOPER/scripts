@@ -345,9 +345,7 @@ local function TossItems(inst, dist, radius)
 		z = z - dist * math.sin(rot)
 	end
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, radius + TOSS_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if v.components.mine then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 			TossLaunch(v, inst, 1.2, 0.1)
 		end

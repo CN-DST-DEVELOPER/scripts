@@ -60,7 +60,7 @@ function LunarFissureBurning:OnUpdate(dt)
 	local id = WagBossUtil.TileCoordsToId(TheWorld.Map:GetTileCoordsAtPoint(x, y, z))
 	if WagBossUtil.HasFissure(id) and
 		not (	self.inst:IsInLimbo() or
-				self.inst:HasTag("notarget") or
+				self.inst:HasAnyTag("notarget", "flying") or
 				(self.inst.sg and self.inst.sg:HasAnyStateTag("flight", "invisible", "noattack")) or
 				(self.inst.components.health and self.inst.components.health:IsDead()) or
 				(self.inst.components.combat and not self.inst.components.combat:CanBeAttacked())

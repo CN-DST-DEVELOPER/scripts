@@ -495,10 +495,10 @@ local function basefn()
     inst.AnimState:SetSortOrder(3)
     inst.AnimState:SetBloomEffectHandle("shaders/anim.ksh")
 
-    inst.entity:SetPristine()
-
     inst:AddTag("FX")
     inst:AddTag("NOCLICK")
+
+    inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
