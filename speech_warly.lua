@@ -2231,7 +2231,7 @@ return{
         CRITTER_PERDLING = "I would never eat you.",
 		CRITTER_LUNARMOTHLING = "The light of my life!",
         CRITTER_BULBIN = "It never hurts to have a little onion on hand.",
-        CRITTER_EETS = "Woah! You can jump REALLY high!",
+        CRITTER_EETS = "Mon ami, won't you try my cakes?",
 
 		CROW =
 		{

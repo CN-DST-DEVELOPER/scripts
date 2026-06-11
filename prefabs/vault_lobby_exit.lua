@@ -104,6 +104,36 @@ local function OnHasRopeDirty(inst)
     end
 end
 
+local ARCHIVE_PILLAR_FINDRADIUS = 15
+local ARCHIVE_PILLAR_MUSTTAGS = { "archive_pillar" }
+local ARCHIVE_PILLAR_MUST_NUM_FOUND = 2 -- There should be 2 pillars found
+local function GetAngleAwayFromPillars(target)
+    local x, y, z = target.Transform:GetWorldPosition()
+    local ents = TheSim:FindEntities(x, y, z, ARCHIVE_PILLAR_FINDRADIUS, ARCHIVE_PILLAR_MUSTTAGS)
+    if #ents ~= ARCHIVE_PILLAR_MUST_NUM_FOUND then
+        return false
+    end
+    local xs, zs = 0, 0
+    for i = 1, #ents do
+        local ex, ey, ez = ents[i].Transform:GetWorldPosition()
+		local angle = target:GetAngleToPoint(ex, 0, ez) * DEGREES
+		xs, zs = xs - math.cos(angle), zs - math.sin(angle)
+    end
+    return math.atan2(zs, xs) % TWOPI
+end
+
+local function GetRopeOffset(target)
+    local theta = GetAngleAwayFromPillars(target)
+    if theta then
+        return Vector3(math.cos(theta) * 5, 0, math.sin(theta) * -5)
+    else
+        -- If we don't have the two archive pillars nearby, just do a find walkable offset (means the rope will move around every reload)
+        --  but that's fine if we're in this bad case somehow.
+        return FindWalkableOffset(target:GetPosition(), math.random() * TWOPI, 5, 8, true, false)
+            or Vector3(1, 0, 0) -- Fallback...
+    end
+end
+
 local function AddRope(inst)
     if inst.hasrope:value() then
         return false
@@ -115,12 +145,14 @@ local function AddRope(inst)
     end
 
     local x, y, z = target.Transform:GetWorldPosition()
+    local rope_offset = GetRopeOffset(target)
     local rope = SpawnPrefab("ceiling_rope")
     inst.rope = rope
     rope:ListenForEvent("onremove", inst._onroperemoved)
-    rope.Transform:SetPosition(x, y, z)
+    rope.Transform:SetPosition(x + rope_offset.x, y, z + rope_offset.z)
     rope.persists = false
     rope:SetExitTarget(inst)
+    inst:SetExitTarget(rope)
     if not rope:IsAsleep() then
         rope.AnimState:PlayAnimation("down")
         rope.AnimState:PushAnimation("idle_loop", true)

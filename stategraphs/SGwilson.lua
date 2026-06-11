@@ -4329,7 +4329,8 @@ local states =
                 inst.AnimState:PlayAnimation("idle_inaction")
 			else
                 local itemanimdata = inst.components.skinner:GetItemIdleAnimationData()
-                local anim = itemanimdata and itemanimdata.anim or inst.customidleanim ~= nil and (type(inst.customidleanim) == "string" and inst.customidleanim or inst:customidleanim()) or nil
+                local should_itemanimdata = math.random() < 0.5 -- FIXME(JBK): skinoverrides: Remove when done.
+                local anim = itemanimdata and should_itemanimdata and itemanimdata.anim or inst.customidleanim ~= nil and (type(inst.customidleanim) == "string" and inst.customidleanim or inst:customidleanim()) or nil
 				local state = anim == nil and (inst.customidlestate ~= nil and (type(inst.customidlestate) == "string" and inst.customidlestate or inst:customidlestate())) or nil
                 if anim ~= nil or state ~= nil then
                     if inst.sg.mem.idlerepeats == nil then

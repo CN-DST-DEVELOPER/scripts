@@ -1258,6 +1258,12 @@ function self:OnLoad(data)
     end
     self.version = data.version or 1
     if self.version ~= CURRENT_VERSION then
+
+		--version 1 -> 2 is a major content update, so force the reset on load
+		if self.version < 2 then
+			self.resetting = true
+		end
+
         self:CreateLayout(self.version)
         self:SetPRNGSeed(self:GetPRNGSeed())
     end

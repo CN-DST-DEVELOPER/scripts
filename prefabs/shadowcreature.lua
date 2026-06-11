@@ -63,7 +63,7 @@ local function retargetfn(inst)
 		local x, y, z = inst.Transform:GetWorldPosition()
 		local vaulttarget = inst.components.combat.target
 		if vaulttarget and vaulttarget:HasAllTags(VAULT_TARGET_MUST_TAGS) and IsPriorityVaultTargetAtXZ(inst, vaulttarget, x, z) then
-			inst.ignorecombatonkeeptarget = true
+			inst.keeptargetignoresattackedtime = true
 			return
 		end
 
@@ -76,11 +76,11 @@ local function retargetfn(inst)
 					break
 				end
 			end
-			inst.ignorecombatonkeeptarget = true
+			inst.keeptargetignoresattackedtime = true
 			return vaulttarget, true
 		end
 
-		inst.ignorecombatonkeeptarget = nil
+		inst.keeptargetignoresattackedtime = nil
     end
 
 	local forcechange = inst.forceretarget
@@ -122,7 +122,7 @@ local function keeptargetfn(inst, target)
 	--           -this is fine XD
 	--
 	--Deaggro if target has been sane for 2.5s, hasn't hit us in 6s, and hasn't tried to attack us for 5s
-	if not inst.ignorecombatonkeeptarget and (inst._deaggrotime + 2.5 >= t or
+	if not inst.keeptargetignoresattackedtime and (inst._deaggrotime + 2.5 >= t or
 		inst.components.combat.lastwasattackedbytargettime + 6 >= t or
 		(	target.components.combat and
 			target.components.combat:IsRecentTarget(inst) and

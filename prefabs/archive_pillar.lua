@@ -56,6 +56,8 @@ local function fn()
     inst.AnimState:SetBuild("pillar_archive")
     inst.AnimState:PlayAnimation("idle", true)
 
+    inst:AddTag("archive_pillar")
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
