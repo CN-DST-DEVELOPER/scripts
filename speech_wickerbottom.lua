@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Oh that won't do, the intended arborous recipient appears to be missing.",
             NOTAMONKEY = "I believe they're trying to communicate.",
             QUEENBUSY = "She is occupied with other matters at the moment.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "The mini-golf course requires at least a flaghole to be playable.",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4780,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "How intriguing! I wonder what's inside?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "How intriguing! I wonder what's inside?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "How intriguing! I wonder what's inside?",
 
         CARNIVAL_BALL = "I don't want to see anyone playing with this near any breakables.", --unimplemented
 		CARNIVAL_SEEDPACKET = "A bit of extra fiber added to one's diet never hurts.",
@@ -6235,6 +6237,40 @@ return{
 
         CEILING_ROPE = "A tried and true means of escape.",
         VAULT_KEY_EXIT = "Since there is no place to tie a rope, one may not climb back up.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "An introductory course, no doubt.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "A course of middling difficulty.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "For those up for a challenge.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "One may use this to create a custom, and hopefully delightful, mini-golf course.",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "A token must be deposited before the machine will dispense a ball.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "A token has been inserted. The match is already in play.", -- The game is active and in play
+            INACTIVE = "The mini-golf course requires at least a flaghole to be playable.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The objective of the game is to deposit the ball into that hole with as few strokes as possible.",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where the ball dropper is placed determines where we begin play.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "The flaghole should be positioned sufficiently far from the start to provide an appropriate challenge.",
+
+        CARNIVALGAME_GOLFCLUB = "Essentially an instrument optimized for low-velocity kinetic transfer.",
+        CARNIVALGAME_GOLFBALL = "A near-perfect sphere, optimized for predictable rolling dynamics.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It designates the play area.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Its behavior is simple to describe, but intentionally difficult to accommodate.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "It is both aesthetic marker and deliberate impediment to linear play.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "A wall that rises and falls at set intervals.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It connects to another on the course, enabling instantaneous transfer between them.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "A controlled propulsion platform using stored mechanical energy.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The ball path must be adjusted to account for the wind.", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

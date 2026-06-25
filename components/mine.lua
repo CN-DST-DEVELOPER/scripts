@@ -19,7 +19,12 @@ local function MineTest(inst, self)
 			notags = mine_no_tags
 		end
 
-        local target = FindEntity(inst, self.radius, mine_test_fn, mine_must_tags, notags, mine_test_tags)
+        local target
+        if self.find_must_tags or self.find_oneof_tags then
+            target = FindEntity(inst, self.radius, nil, self.find_must_tags, notags, self.find_oneof_tags)
+        else
+            target = FindEntity(inst, self.radius, mine_test_fn, mine_must_tags, notags, mine_test_tags)
+        end
         if target ~= nil then
             self:Explode(target)
         end
@@ -120,6 +125,11 @@ function Mine:SetReusable(reusable)
     else
         self.inst:AddTag("mine_not_reusable")
     end
+end
+
+function Mine:SetSearchTags(musttags, oneoftags)
+    self.find_must_tags = musttags or nil
+    self.find_oneof_tags = oneoftags or nil
 end
 
 function Mine:Reset()

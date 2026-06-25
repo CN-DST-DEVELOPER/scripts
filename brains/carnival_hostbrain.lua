@@ -8,10 +8,16 @@ local CarnivalHostBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
 
-local GIVE_PLAZAKIT_DIST = 15
-local GIVE_PLAZAKIT_GIVE_DIST = 4
-local MAX_LEASH_DIST = 20
-local INNER_LEASH_DIST = 15
+local CHATTY_ANNOUNCE_CARNIVAL_DELAY = 5
+local CHATTY_ANNOUNCE_CARNIVAL_DELAY_RAND = 10
+local CHATTY_ANNOUNCE_CARNIVAL_ENTERDELAY = 2
+local CHATTY_ANNOUNCE_CARNIVAL_ENTERDELAY_RAND = 3
+
+local CHATTY_DELAY = 15
+local CHATTY_DELAY_RAND = 30
+local CHATTY_ENTERDELAY = 4
+local CHATTY_ENTERDELAY_RAND = 6
+
 local MAX_WANDER_DIST = 15
 
 local function GetFaceTargetFn(inst)
@@ -138,9 +144,9 @@ function CarnivalHostBrain:OnStart()
 				FaceEntity(self.inst, GetFaceTargetFn, KeepFaceTargetFn), -- prototyper activated
 				WhileNode(function() return not self.inst.hassold_plaza or not self.inst.hasbeento_plaza end, "no plaza",
 					ChattyNode(self.inst, "CARNIVAL_HOST_ANNOUNCE_CARNIVAL",
-						Wander(self.inst, GetHomePos, MAX_WANDER_DIST), 5, 10)),
+						Wander(self.inst, GetHomePos, MAX_WANDER_DIST), CHATTY_ANNOUNCE_CARNIVAL_DELAY, CHATTY_ANNOUNCE_CARNIVAL_DELAY_RAND, CHATTY_ANNOUNCE_CARNIVAL_ENTERDELAY, CHATTY_ANNOUNCE_CARNIVAL_ENTERDELAY_RAND)),
 				ChattyNode(self.inst, GetWanderLines,
-					Wander(self.inst, GetHomePos, MAX_WANDER_DIST), 15, 30),
+					Wander(self.inst, GetHomePos, MAX_WANDER_DIST), CHATTY_DELAY, CHATTY_DELAY_RAND, CHATTY_ENTERDELAY, CHATTY_ENTERDELAY_RAND),
 		}, .25))
     }, .25)
 

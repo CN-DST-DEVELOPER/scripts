@@ -52,9 +52,10 @@ local function oneaten_raw(inst, eater)
 end
 
 local function oncooked(inst, cooker, chef)
-    chef.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/death")
-    chef:DoTaskInTime(0.5, function()
-        doareasleep(chef, TUNING.MANDRAKE_SLEEP_RANGE_COOKED, TUNING.MANDRAKE_SLEEP_TIME)
+    local target = chef or cooker
+    target.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/death")
+    target:DoTaskInTime(0.5, function()
+        doareasleep(target, TUNING.MANDRAKE_SLEEP_RANGE_COOKED, TUNING.MANDRAKE_SLEEP_TIME)
     end)
 end
 

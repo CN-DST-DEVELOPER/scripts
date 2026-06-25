@@ -100,7 +100,6 @@ local function DoJoustAoe(inst, targets)
 					Dist2dSq(p3, p2) or
 					Dist2dSq(p3, Vector3(p1.x + dot * (p2.x - p1.x), p1.y + dot * (p2.y - p1.y), 0))
 				if dsq < range * range then
-					targets[guy] = t
 					return true
 				end
 			end
@@ -113,10 +112,14 @@ local function DoJoustAoe(inst, targets)
 	clockwork_common.FindAOETargetsAtXZ(inst, cx, cz, radius + LANCE_PADDING + 3,
 		function(guy, inst)
 			if should_hit(guy, inst) then
+				targets[guy] = t
 				if guy:HasTag("jousting") and should_collide(guy, inst) then
 					guy:PushEventImmediate("joust_collide")
 					collided = true
 				else
+					if guy.components.rider and guy.components.rider.mount then
+						targets[guys.components.rider.mount] = t
+					end
 					inst.components.combat:DoAttack(guy)
 					guy:PushEvent("knockback", { knocker = inst, radius = 6.5, forcelanded = true })
 				end
@@ -127,6 +130,7 @@ local function DoJoustAoe(inst, targets)
 	local knight_rad = inst:GetPhysicsRadius(0)
 	for i, v in ipairs(TheSim:FindEntities(cx, 0, cz, radius + LANCE_PADDING + knight_rad, JOUSTING_TAGS)) do
 		if v ~= inst and should_hit(v, inst) and should_collide(v, inst) then
+			targets[guy] = t
 			v:PushEventImmediate("joust_collide")
 			collided = true
 		end

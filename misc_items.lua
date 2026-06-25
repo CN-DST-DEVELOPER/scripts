@@ -1917,6 +1917,20 @@ MISC_ITEMS =
 		output_items = {  "mushroom_light2_cawnival", "reflectivevest_cawnival", "siestahut_cawnival", "walrushat_cawnival", "bundle_cawnival", "bushhat_cawnival", "hivehat_cawnival", },
 		release_group = 132,
 	},
+	pack_cawnival_items2 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_pack_cawnival_items2.xml",
+		display_tex = "pack_cawnival_items2.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "tophat_minigolf_red", "tophat_minigolf_green", "tophat_minigolf_purple", "body_minigolf_black", "body_minigolf_blacktie", "body_minigolf_red", "body_minigolf_redtie", "body_minigolf_mint", "body_minigolf_minttie", "legs_minigolf_skirt_black", "legs_minigolf_skirt_red", "legs_minigolf_skirt_mint", "legs_minigolf_pants_black", "legs_minigolf_pants_red", "legs_minigolf_pants_purple", "backpack_minigolf", "torch_cawnival", "minisign_cawnival", "mushroom_light_cawnival", },
+		output_items = {  "tophat_minigolf_red", "tophat_minigolf_green", "tophat_minigolf_purple", "body_minigolf_black", "body_minigolf_blacktie", "body_minigolf_red", "body_minigolf_redtie", "body_minigolf_mint", "body_minigolf_minttie", "legs_minigolf_skirt_black", "legs_minigolf_skirt_red", "legs_minigolf_skirt_mint", "legs_minigolf_pants_black", "legs_minigolf_pants_red", "legs_minigolf_pants_purple", "backpack_minigolf", "torch_cawnival", "minisign_cawnival", "mushroom_light_cawnival", },
+		release_group = 183,
+	},
 	pack_character_wanda =
 	{
 		type = "purchase",

@@ -42,6 +42,7 @@ local AVAILABLE_TECH =
     "WORMOFFERING",
     "KNIGHTOFFERING",
     "VAULT_REFINE",
+    "CARNIVAL_GOLFPROPS",
 }
 
 -- NOTES(JBK): These are a cache for a speedup in builder:KnowsRecipe calculations to reduce a spike in garbage collection from string allocations.

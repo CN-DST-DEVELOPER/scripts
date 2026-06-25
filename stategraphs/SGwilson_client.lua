@@ -281,6 +281,7 @@ local actionhandlers =
 			return not (inst.sg:HasStateTag("prehammer") or inst:HasTag("prehammer")) and "hammer_start" or nil
         end),
     ActionHandler(ACTIONS.TERRAFORM, "terraform"),
+    ActionHandler(ACTIONS.TERRAFORM_REMOVE, "terraform"),
     ActionHandler(ACTIONS.DIG,
         function(inst)
             if inst:HasTag("beaver") then
@@ -996,6 +997,13 @@ local actionhandlers =
     ActionHandler(ACTIONS.CLIMB, "climb_pre"),
     ActionHandler(ACTIONS.STARTVAULTORBTELEPORT, "crushitemcast_holding"),
     ActionHandler(ACTIONS.VAULTORBTELEPORT_MAP, "crushitemcast_trigger"),
+
+	-- Crow Carnival 2026
+	ActionHandler(ACTIONS.GOLF_START_AIMING, "club_set"),
+	ActionHandler(ACTIONS.GOLF_START_CHARGING, function(inst)
+		inst.sg.statemem.charging = true
+		return "club_putt_pre"
+	end),
 }
 
 local events =
@@ -8542,6 +8550,123 @@ local states =
 				inst.entity:SetIsPredictingMovement(true)
 				inst:RemoveTag("nopredict_client")
 			end
+		end,
+	},
+
+	State{
+		name = "club_set",
+		tags = { "doing", "busy", "nodragwalk" },
+		server_states = { "club_set" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_set_pre")
+			inst.AnimState:PushAnimation("club_set_loop")
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			end
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.aiming then
+				if not inst:HasTag("golf_aiming") then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				end
+			elseif inst.sg.statemem.synced then
+				if not inst.sg:ServerStateMatches() then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				elseif inst:HasTag("golf_aiming") then
+					inst.sg.statemem.aiming = true
+					ClearCachedServerState(inst)
+				end
+			elseif inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg.statemem.synced = true
+					inst.entity:SetIsPredictingMovement(false)
+					inst.sg:RemoveStateTag("busy")
+					if inst:HasTag("golf_aiming") then
+						inst.sg.statemem.aiming = true
+						ClearCachedServerState(inst)
+					end
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			else
+				inst.sg:RemoveStateTag("overridelocomote")
+			end
+		end,
+
+		ontimeout = function(inst)
+			if not inst.sg.statemem.synced then
+				inst:ClearBufferedAction()
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return inst.sg:HasStateTag("overridelocomote")
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.synced then
+				inst.entity:SetIsPredictingMovement(true)
+
+				if not inst.sg.statemem.charging then
+					local inventory = inst.replica.inventory
+					local club = inventory and inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+					if club and club.components.golfclub_reticule then
+						club.components.golfclub_reticule:CancelTarget_Client()
+					end
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_putt_pre",
+		tags = { "busy" },
+		server_states = { "club_putt_pre", "club_putt", "club_swing" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_putt_pre")
+			inst.AnimState:PushAnimation("club_putt_lag", false)
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("club_set_pst")
+			inst.sg:GoToState("idle", true)
 		end,
 	},
 }

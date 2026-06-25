@@ -81,7 +81,10 @@ local function CreateStationFloor(parent)
 		parent.components.placer:LinkEntity(inst, 0.25)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation("station_place") inst.AnimState:PushAnimation("station_idle", false) end, parent)
+	inst.anim = "station_idle"
+	inst.deploy_anim = "station_place"
+
+	return inst
 end
 
 local function CreateTargetFloor(parent)
@@ -112,7 +115,35 @@ local function CreateTargetFloor(parent)
 		parent.components.placer:LinkEntity(inst, 0.25)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation("targets_place") inst.AnimState:PushAnimation("targets_idle", false) end, parent)
+	inst.anim = "targets_idle"
+	inst.deploy_anim = "targets_place"
+
+	return inst
+end
+
+local function DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("place") then
+		local t = inst.AnimState:GetCurrentAnimationTime()
+		for _, v in ipairs(inst.floor_parts) do
+			v.AnimState:PlayAnimation(v.deploy_anim)
+			v.AnimState:SetTime(t)
+			v.AnimState:PushAnimation(v.anim, false)
+		end
+	end
+end
+
+local function OnEntityWake(inst)
+	inst.OnEntityWake = nil
+	DoSyncAnim(inst)
+end
+
+local function CreateFlooring(parent)
+	parent.floor_parts = {}
+
+	table.insert(parent.floor_parts, CreateStationFloor(parent))
+	table.insert(parent.floor_parts, CreateTargetFloor(parent))
+
+	parent.OnEntityWake = OnEntityWake
 end
 
 local function CreateTargetingArrow(parent)
@@ -168,8 +199,6 @@ local function CreateShootingContollerPlacer(parent)
 		parent.components.placer:LinkEntity(inst, 0.25)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation("place") end, parent)
-
 	return inst
 end
 
@@ -188,8 +217,10 @@ local function OnBuilt(inst, data)
 
 	inst.AnimState:PlayAnimation("place")
 	inst.AnimState:PushAnimation("idle_off", false)
-
 	inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_shooting/place")
+	if inst.floor_parts then
+		DoSyncAnim(inst)
+	end
 end
 
 local function target_turnon(target)
@@ -200,7 +231,6 @@ local function OnActivateGame(inst)
 	inst.AnimState:PlayAnimation("turn_on")
 	inst.AnimState:ClearOverrideSymbol("carnivalgame_ms_number")
 
-	inst.SoundEmitter:PlaySound("turn_on")
 	inst:DoTaskInTime(26*FRAMES, function(i) i.SoundEmitter:PlaySound("summerevent/carnival_games/memory/LP", "loop") end)
 
 	for i, target in ipairs(inst.components.objectspawner.objects) do
@@ -337,7 +367,7 @@ end
 
 local function OnStopPlaying(inst)
 	inst.AnimState:PlayAnimation("spawn_rewards", true)
-		inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_shooting/spawn_rewards", "rewards_loop")
+	inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_shooting/spawn_rewards", "rewards_loop")
 
 	inst.SoundEmitter:KillSound("loop")
 
@@ -380,6 +410,7 @@ local function OnDeactivateGame(inst)
 	inst._picked_enemies = {}
 	inst._picked_friendlies = {}
 
+	inst.SoundEmitter:KillSound("loop")
 	inst.SoundEmitter:KillSound("rewards_loop")
 	inst.SoundEmitter:PlaySound("summerevent/carnival_games/memory/spawn_rewards_endbell")
 
@@ -503,9 +534,7 @@ local function station_common_postinit(inst)
 	inst.Transform:SetEightFaced()
 
 	if not TheNet:IsDedicated() then
-		CreateStationFloor(inst)
-		CreateTargetFloor(inst)
-
+		CreateFlooring(inst)
 		inst.targeting_arrow = CreateTargetingArrow(inst)
 	end
 

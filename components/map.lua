@@ -271,7 +271,7 @@ function Map:IsDeployPointClear(pt, inst, min_spacing, min_spacing_sq_fn, near_o
         if v ~= inst and
             v.entity:IsVisible() and
             v.components.placer == nil and
-			v.entity:GetParent() == nil
+			(v.entity:GetParent() == nil or v:HasTag("childdeployblocker"))
 		then
 			local v_min_spacing_sq = min_spacing_sq_fn and min_spacing_sq_fn(v) or min_spacing_sq
 			if near_other_fn(v, pt, v_min_spacing_sq, (v_min_spacing_sq == min_spacing_sq and min_spacing) or nil) then
@@ -305,7 +305,7 @@ function Map:IsDeployPointClear2(pt, inst, object_size, object_size_fn, near_oth
         if v ~= inst and
             v.entity:IsVisible() and
             v.components.placer == nil and
-            v.entity:GetParent() == nil and
+            (v.entity:GetParent() == nil or v:HasTag("childdeployblocker")) and
             near_other_fn(v, pt, object_size_fn and object_size_fn(v) or object_size) then
             return false
         end
@@ -621,7 +621,7 @@ function Map:CanPlacePrefabFilteredAtPoint(x, y, z, prefab)
     return true
 end
 
-function Map:CanDeployRecipeAtPoint(pt, recipe, rot)
+function Map:CanDeployRecipeAtPoint(pt, recipe, rot, builder)
     local is_valid_ground = false;
     if BUILDMODE.WATER == recipe.build_mode then
         local pt_x, pt_y, pt_z = pt:Get()
@@ -635,8 +635,11 @@ function Map:CanDeployRecipeAtPoint(pt, recipe, rot)
     end
 
     return is_valid_ground
-        and (recipe.testfn == nil or recipe.testfn(pt, rot))
-        and self:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2)
+        and (recipe.testfn == nil or recipe.testfn(pt, rot, builder))
+        and (
+            (recipe.overridecandeployrecipeatpointfn ~= nil and recipe.overridecandeployrecipeatpointfn(pt, recipe, rot, builder)) or
+            (recipe.overridecandeployrecipeatpointfn == nil and self:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2))
+        )
 end
 
 function Map:IsSurroundedByWater(x, y, z, radius)

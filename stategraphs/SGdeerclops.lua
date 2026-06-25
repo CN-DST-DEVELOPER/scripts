@@ -48,6 +48,9 @@ local function DoIceSpikeAOE(inst, target, x, z, data)
 			local range = ICESPIKE_RADIUS + v:GetPhysicsRadius(0)
 			if v:GetDistanceSqToPoint(x, 0, z) < range * range and inst.components.combat:CanTarget(v) then
 				local shouldknockback = inst.hasknockback and v.components.freezable ~= nil and v.components.freezable:IsFrozen()
+				if shouldknockback and v.components.rider and v.components.rider.mount then
+					data.targets[v.components.rider.mount] = true
+				end
 				inst.components.combat:DoAttack(v)
 				if shouldknockback then
 					v:PushEvent("knockback", { knocker = inst, radius = TUNING.DEERCLOPS_ATTACK_RANGE })
@@ -232,6 +235,9 @@ local function DoIceLanceAOE(inst, pt, targets)
 			inst.components.combat:CanTarget(v)
 		then
 			local wasfrozen = v.components.freezable ~= nil and v.components.freezable:IsFrozen()
+			if wasfrozen and v.components.rider and v.components.rider.mount then
+				targets[v.components.rider.mount] = true
+			end
 			inst.components.combat:DoAttack(v)
 			if wasfrozen then
 				v:PushEvent("knockback", { knocker = inst, radius = dist + ICE_LANCE_RADIUS })

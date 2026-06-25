@@ -118,7 +118,7 @@ end
 local POWERPOINT_MUST_TAGS = { "security_powerpoint" }
 local POWERPOINT_CANT_TAGS =  { "INLIMBO", "FX" }
 
-local function FindPowerPoint(inst)
+local function FindPowerPoint(inst) -- keep similar logic to vault_security_desk::IsPowerPointNear
     local hasleader = GetLeader(inst) ~= nil
 
     local x, y, z = inst.Transform:GetWorldPosition()

@@ -173,6 +173,7 @@ local states = {
         },
         onupdate = function(inst, dt)
             if inst.sg.statemem.canhitsomething then
+            	local firsthit = true
                 local x, y, z = inst.Transform:GetWorldPosition()
                 local hitradius = inst:GetPhysicsRadius(0) + TUNING.RABBITKING_ABILITY_DROPKICK_HITRADIUS
                 local ents = TheSim:FindEntities(x, y, z, hitradius + MAX_PHYSICS_RADIUS, DROPKICK_MUSTHAVE_TAGS, DROPKICK_CANT_TAGS, DROPKICK_ONEOF_TAGS)
@@ -180,10 +181,14 @@ local states = {
                     if ent ~= inst and ent:IsValid() and (ent.components.follower == nil or ent.components.follower:GetLeader() ~= inst) and not (ent.components.health ~= nil and ent.components.health:IsDead()) then
                         local range = hitradius + ent:GetPhysicsRadius(0)
                         if ent:GetDistanceSqToPoint(x, y, z) < range * range and DoKnockback(inst, ent) then
+							if firsthit then
+								firsthit = false
+								inst.sg.statemem.canhitsomething = false
+								inst.sg.statemem.hitsomething = true
+								inst.sg:SetTimeout(0)
+							end
                             inst.components.combat:DoAttack(ent)
                             inst.SoundEmitter:PlaySound("rifts4/rabbit_king/dropkick_hit")
-                            inst.sg.statemem.hitsomething = true
-                            inst.sg:SetTimeout(0)
                         end
                     end
                 end

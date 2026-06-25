@@ -52,6 +52,15 @@ end
 
 --------------------------------------------------------------------------
 
+function TryTeleportToLaunchPos(inst, x, y, z)
+	--Don't do the teleport if it would push us out into void in caves
+	if TheWorld.has_ocean or TheWorld.Map:IsLandTileAtPoint(x, y, z) then
+		inst.Physics:Teleport(x, y, z)
+		return true
+	end
+	return false
+end
+
 function Launch(inst, launcher, basespeed)
     if inst ~= nil and inst.Physics ~= nil and inst.Physics:IsActive() and launcher ~= nil then
         local x, y, z = inst.Transform:GetWorldPosition()
@@ -86,12 +95,10 @@ function Launch2(inst, launcher, basespeed, speedmult, startheight, startradius,
 		local sina, cosa = math.sin(angle), math.cos(angle)
 		local speed = basespeed + math.random() * speedmult
 		local vertical_speed = vertical_speed or (speed * 5 + math.random() * 2)
-		inst.Physics:Teleport(x + startradius * cosa, startheight, z + startradius * sina)
+		TryTeleportToLaunchPos(inst, x + startradius * cosa, startheight, z + startradius * sina)
 		inst.Physics:SetVel(cosa * speed, vertical_speed, sina * speed)
-
 		return angle
 	end
-
 	return 0
 end
 
@@ -109,7 +116,7 @@ function LaunchAt(inst, launcher, target, speedmult, startheight, startradius, r
         end
         local sina, cosa = math.sin(angle), math.cos(angle)
         local spd = (math.random() * 2 + 1) * (speedmult or 1)
-        inst.Physics:Teleport(x + (startradius or 0) * cosa, startheight or .1, z + (startradius or 0) * sina)
+		TryTeleportToLaunchPos(inst, x + (startradius or 0) * cosa, startheight or 0.1, z + (startradius or 0) * sina)
         inst.Physics:SetVel(spd * cosa, math.random() * 2 + 4 + 2 * (speedmult or 1), spd * sina)
     end
 end

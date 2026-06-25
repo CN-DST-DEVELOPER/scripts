@@ -721,7 +721,8 @@ function Controls:OnUpdate(dt)
         if controller_target ~= nil then
             local cmds, cmdsoffset
             local textblock = self.playeractionhint.text
-            if self.groundactionhint.shown and distsq(self.owner:GetPosition(), controller_target:GetPosition()) < 1.33 then
+            local keepgroundactionhint = ground_l and ground_l.action.keepgroundactionhint or ground_r and ground_r.action.keepgroundactionhint
+            if self.groundactionhint.shown and not keepgroundactionhint and distsq(self.owner:GetPosition(), controller_target:GetPosition()) < 1.33 then
                 --You're close to your target so we should combine the two text blocks.
                 cmds = ground_cmds
                 cmdsoffset = #cmds
@@ -787,7 +788,8 @@ function Controls:OnUpdate(dt)
                 -- target is highlighted but with no actions
                 -- -> suppress any ground action hints
                 -- -> use target's custom display name to show special action hint
-                if cmds ~= ground_cmds then
+                -- But keep it around if the action really wants it anyway.
+                if cmds ~= ground_cmds and not keepgroundactionhint then
                     self.groundactionhint:Hide()
                     self.groundactionhint:SetTarget(nil)
                 end

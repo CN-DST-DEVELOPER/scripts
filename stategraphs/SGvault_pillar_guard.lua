@@ -196,17 +196,20 @@ local function _AOEAttack(inst, dig, dist, radius, arc, heavymult, mult, forcela
 				(arcx == nil or x + cos_theta * dx - sin_theta * dz > arcx) and
 				inst.components.combat:CanTarget(v)
 			then
+				if targets then
+					targets[v] = repeatdelay == nil or t + repeatdelay
+				end
 				if dig and v.components.locomotor == nil then
 					v.components.health:Kill()
 				else
+					if targets and mult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = targets[v]
+					end
 					inst.components.combat:DoAttack(v)
 					if mult then
 						local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
 						v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = strengthmult, forcelanded = forcelanded })
 					end
-				end
-				if targets then
-					targets[v] = repeatdelay == nil or t + repeatdelay
 				end
 			end
 		end
@@ -314,7 +317,7 @@ local function TossLaunch(inst, launcher, basespeed, startheight, startradius)
 	end
 	local sina, cosa = math.sin(angle), math.cos(angle)
 	local speed = basespeed + math.random()
-	inst.Physics:Teleport(x0 + startradius * cosa, startheight, z0 + startradius * sina)
+	TryTeleportToLaunchPos(inst, x0 + startradius * cosa, startheight, z0 + startradius * sina)
 	inst.Physics:SetVel(cosa * speed, speed * 2.5 + math.random(), sina * speed)
 end
 

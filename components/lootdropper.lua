@@ -325,6 +325,7 @@ function LootDropper:FlingItem(loot, pt)
         local max_speed = self.max_speed or 2
         local y_speed = self.y_speed or 8
         local y_speed_variance = self.y_speed_variance or 4
+        local y_offset = self.y_offset or 0
 
         if loot.Physics ~= nil then
             local angle = (self.flingtargetpos ~= nil and GetRandomWithVariance(self.inst:GetAngleToPoint(self.flingtargetpos), self.flingtargetvariance or 0) * DEGREES)
@@ -332,7 +333,7 @@ function LootDropper:FlingItem(loot, pt)
             local speed = min_speed + math.random() * (max_speed - min_speed)
             if loot:IsAsleep() then
                 local radius = .5 * speed + (self.inst.Physics ~= nil and loot:GetPhysicsRadius(1) + self.inst:GetPhysicsRadius(1) or 0)
-                loot.Transform:SetPosition(
+				TryTeleportToLaunchPos(loot,
                     pt.x + math.cos(angle) * radius,
                     0,
                     pt.z - math.sin(angle) * radius
@@ -340,26 +341,24 @@ function LootDropper:FlingItem(loot, pt)
             else
                 local sinangle = math.sin(angle)
                 local cosangle = math.cos(angle)
-                loot.Physics:SetVel(speed * cosangle, GetRandomWithVariance(y_speed, y_speed_variance), speed * -sinangle)
-
                 if self.inst ~= nil and self.inst.Physics ~= nil then
                     local radius = loot:GetPhysicsRadius(1) + self.inst:GetPhysicsRadius(1)
                     if not self.spawn_loot_inside_prefab then
-                        loot.Transform:SetPosition(
+						TryTeleportToLaunchPos(loot,
                             pt.x + cosangle * radius,
-                            pt.y,
+                            pt.y + y_offset,
                             pt.z - sinangle * radius
                         )
                     else
                         radius = radius * math.random()
-                        loot.Transform:SetPosition(
+						TryTeleportToLaunchPos(loot,
                             pt.x + cosangle * radius,
-                            pt.y + 0.5,
+                            pt.y + y_offset + 0.5,
                             pt.z - sinangle * radius
                         )
                     end
                 end
-
+				loot.Physics:SetVel(speed * cosangle, GetRandomWithVariance(y_speed, y_speed_variance), speed * -sinangle)
             end
         end
     end

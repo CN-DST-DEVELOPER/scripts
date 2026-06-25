@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "There no tree inside for giving to, flurp! Will check later.",
             NOTAMONKEY = "Me not monkey, talk to somebody else!",
             QUEENBUSY = "Glurgh... why she gotta be so busy?",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Glurph! What missing?!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4780,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Open up!",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Open up!",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Open up!",
 
         CARNIVAL_BALL = "Mine!! Hee-hee-hee!", --unimplemented
 		CARNIVAL_SEEDPACKET = "Mmmm, crunchy snack.",
@@ -6235,6 +6237,40 @@ return{
 
         CEILING_ROPE = "Climbing easy.",
         VAULT_KEY_EXIT = "What mean can't climb out?",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "For babies! Flort!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Me beat anyone. Me best!",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Hard one? Glorp! Me still win.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Me make best one.",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Need token to play! Gimme token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Already put token! Flort!", -- The game is active and in play
+            INACTIVE = "Glurph! What missing?!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "Me win! Me always win! Florp!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Me choose where start.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Me choose where finish.",
+
+        CARNIVALGAME_GOLFCLUB = "Why not swing hard?",
+        CARNIVALGAME_GOLFBALL = "Me hit!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Stop ball from running away... good fence.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Wheeeeee!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Me make ball go around it.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Wait for right time, then go fast!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Florp! Make ball disappear... then pop out somewhere else!", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Make ball jump!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Glurph! Bad wind!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "What that?",

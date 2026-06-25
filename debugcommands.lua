@@ -5092,3 +5092,18 @@ function d_spawnfumarolehash()
 
     return inst
 end
+
+function d_golfteleport()
+    local inst = c_sel()
+    if not inst or not EntityScript.is_instance(inst) then
+        print("d_golfteleport needs c_sel() to be an inst!")
+        return
+    end
+    local x, y, z = ConsoleWorldPosition():Get()
+    x, z = math.floor(x + 0.5), math.floor(z + 0.5)
+    if inst.Physics ~= nil then
+        inst.Physics:Teleport(x, y, z)
+    else
+        inst.Transform:SetPosition(x, y, z)
+    end
+end

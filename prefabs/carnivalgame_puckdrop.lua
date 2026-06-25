@@ -55,17 +55,39 @@ local function CreateFloorPart(parent, bank, anim, deploy_anim, offset, rot)
 		inst.Transform:SetRotation(rot)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation(deploy_anim) inst.AnimState:PushAnimation(anim, false) end, parent)
+	inst.anim = anim
+	inst.deploy_anim = deploy_anim
 
 	return inst
 end
 
+local function DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("place") then
+		local t = inst.AnimState:GetCurrentAnimationTime()
+		for _, v in ipairs(inst.floor_parts) do
+			v.AnimState:PlayAnimation(v.deploy_anim)
+			v.AnimState:SetTime(t)
+			v.AnimState:PushAnimation(v.anim, false)
+		end
+	end
+end
+
+local function OnEntityWake(inst)
+	inst.OnEntityWake = nil
+	DoSyncAnim(inst)
+end
+
 local function CreateFlooring(parent)
-	CreateFloorPart(parent, "carnivalgame_puckdrop_floor", "idle", "place")
+	parent.floor_parts = {}
+	table.insert(parent.floor_parts, CreateFloorPart(parent, "carnivalgame_puckdrop_floor", "idle", "place"))
+	parent.OnEntityWake = OnEntityWake
 end
 
 local function OnBuilt(inst)
 	inst.sg:GoToState("place")
+	if inst.floor_parts then
+		DoSyncAnim(inst)
+	end
 end
 
 local function PickCurrentDoor(inst)
@@ -174,7 +196,7 @@ local function station_common_postinit(inst)
 	inst._camerafocus_dist_max = nil
 
 	if not TheNet:IsDedicated() then
-		CreateFlooring(inst, true)
+		CreateFlooring(inst)
 	end
 end
 

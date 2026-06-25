@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "It isn't ready yet? Botheration, even tiny trees take ages to grow!",
             NOTAMONKEY = "Odd, I could have sworn I could speak monkey at some point.",
             QUEENBUSY = "I don't care what her title is, it's no excuse to keep me waiting!",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Oh botheration, I've forgotten the flaghole, haven't I?",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4780,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "I couldn't help it, I looked ahead and took a peek...",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "I couldn't help it, I looked ahead and took a peek...",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "I couldn't help it, I looked ahead and took a peek...",
 
         CARNIVAL_BALL = "A colorful child's toy.", --unimplemented
 		CARNIVAL_SEEDPACKET = "A little snack to keep in my pocket.",
@@ -6235,6 +6237,40 @@ return{
 
         CEILING_ROPE = "Always prudent to have a way back.",
         VAULT_KEY_EXIT = "I can't tie a rope here.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "A nice refresher course.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Nothing too fancy.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Seems we are getting a little fancy.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "I've designed this course before.",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Now where did I put that token?",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "I must have paid the token already.", -- The game is active and in play
+            INACTIVE = "Oh botheration, I've forgotten the flaghole, haven't I?", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "Haven't I played this hole already?",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "The beginning is a good place to start.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "I've seen where this game ends.",
+
+        CARNIVALGAME_GOLFCLUB = "If only everything required a little adjustment to set it right.",
+        CARNIVALGAME_GOLFBALL = "Always rolling toward its next mistake.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It keeps things contained.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Always in motion, like the hands of time.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "They serve no purpose but to slow my progress.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "It's really a matter of timing.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "I do love a shortcut... even if I'm not sure where it leads.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "It turns careful planning into a single irreversible event.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "I thought I felt a draft.", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

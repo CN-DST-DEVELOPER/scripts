@@ -92,7 +92,8 @@ function InventoryItemTemperature:OnEntityWake()
 		end
 		self._entitysleeptime = nil
 	end
-	if self.temperatureupdatetask == nil then
+    -- We might have become invalid from UpdateTemperature
+	if self.temperatureupdatetask == nil and self.inst:IsValid() then
         self.initialtemperatureupdatedelay = math.random() * UPDATE_TIME
 		self.temperatureupdatetask = self.inst:DoPeriodicTask(updated and UPDATE_TIME or SLOW_UPDATE_TIME, DoUpdate, self.initialtemperatureupdatedelay)
 	end

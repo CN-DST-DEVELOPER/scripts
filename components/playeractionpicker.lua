@@ -147,7 +147,7 @@ function PlayerActionPicker:GetUseItemActions(target, useitem, right)
     return self:SortActionList(actions, target, useitem)
 end
 
-function PlayerActionPicker:GetSteeringActions(inst, pos, right)
+function PlayerActionPicker:GetSteeringActions(_, pos, right)
     -- Boat steering
     if self.inst:HasTag("steeringboat") then
         if right then
@@ -162,13 +162,13 @@ function PlayerActionPicker:GetSteeringActions(inst, pos, right)
     return nil
 end
 
-function PlayerActionPicker:GetCannonAimActions(inst, pos, right)
+function PlayerActionPicker:GetCannonAimActions(_, pos, right)
     local boatcannonuser = self.inst.components.boatcannonuser
     if boatcannonuser ~= nil and boatcannonuser:GetCannon() ~= nil then
         if right then
             return self:SortActionList({ ACTIONS.BOAT_CANNON_STOP_AIMING }, pos)
         else
-            if inst == ThePlayer then
+			if self.inst.HUD then
                 pos = boatcannonuser:GetAimPos()
                 if pos == nil then
                     return nil
@@ -179,6 +179,29 @@ function PlayerActionPicker:GetCannonAimActions(inst, pos, right)
     end
 
     return nil
+end
+
+function PlayerActionPicker:GetGolfAimActions(pos, right)
+	if self.inst:HasTag("golf_aiming") then
+		if right then
+			return self:SortActionList({ ACTIONS.GOLF_STOP_AIMING }, pos)
+		end
+
+		local club = self.inst.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		local target = club and club.components.golfclub_reticule and club.components.golfclub_reticule:GetTarget()
+		if target then
+			if self.inst.HUD then
+				pos = self.inst.components.playercontroller.reticule and self.inst.components.playercontroller.reticule.targetpos
+				if pos == nil then
+					return nil
+				end
+			end
+			return self:SortActionList({ ACTIONS.GOLF_START_CHARGING }, pos)
+		end
+		return {}
+	elseif self.inst:HasTag("golf_charging") then
+		return {}
+	end
 end
 
 function PlayerActionPicker:GetPointActions(pos, useitem, right, target)
@@ -300,6 +323,11 @@ function PlayerActionPicker:GetLeftClickActions(position, target)
         return cannon_aim_actions
     end
 
+	local golf_aim_actions = self:GetGolfAimActions(position, false)
+	if golf_aim_actions then
+		return golf_aim_actions
+	end
+
     --if we're specifically using an item, see if we can use it on the target entity
     if useitem ~= nil then
         if useitem:IsValid() then
@@ -379,6 +407,11 @@ function PlayerActionPicker:GetRightClickActions(position, target, spellbook)
     if cannon_aim_actions ~= nil then
         return cannon_aim_actions
     end
+
+	local golf_aim_actions = self:GetGolfAimActions(position, true)
+	if golf_aim_actions then
+		return golf_aim_actions
+	end
 
     local actions = nil
     local useitem = self.inst.replica.inventory:GetActiveItem()

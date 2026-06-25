@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Friend is away... will come back later?",
             NOTAMONKEY = "Don't know how to speak Cheeky",
             QUEENBUSY = "She very busy! Maybe try later",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Friend not finished",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4784,6 +4785,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Surprise",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Surprise",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Surprise",
 
         CARNIVAL_BALL = "Bouncy bounce", --unimplemented
 		CARNIVAL_SEEDPACKET = "Thanks Tweeters!",
@@ -6208,7 +6210,7 @@ return{
 		VAULT_PILLAR_GUARD_CRAFTED = "Tall rock friend nice!",
 		VAULT_PILLAR_GUARD_DORMANT = "Tall rock friend",
 		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "Why friend still sleeping?",
-		VAULT_PILLAR_GUARD_CONSTR = "Baby rock friend soon tall rock friend.",
+		VAULT_PILLAR_GUARD_CONSTR = "Baby rock friend soon tall rock friend",
 		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where put baby rock friend?",
 		VAULT_CRAWLER =
 		{
@@ -6239,6 +6241,40 @@ return{
 
         CEILING_ROPE = "Helpful friend",
         VAULT_KEY_EXIT = "Nowhere tie helpful friend?",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Fun friend",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Middle friend",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Tricky friend",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Make special friend!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Need shiny?",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Already has shiny", -- The game is active and in play
+            INACTIVE = "Friend not finished", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "Ball friend go here",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where start friend?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where end friend?",
+
+        CARNIVALGAME_GOLFCLUB = "Gentle hit ball friend",
+        CARNIVALGAME_GOLFBALL = "Sorry, ball friend",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Keep friend inside",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Dizzy friend", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Fake friend?", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Up friend, down friend", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Eat ball friend?", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Bye ball friend!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Windy friend", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "Friend?",

@@ -561,7 +561,7 @@ end
 
 function TemporarilyRemovePhysics(obj, time)
     local origmask = obj.Physics:GetCollisionMask()
-	obj.Physics:SetCollisionMask(COLLISION.WORLD)
+    RemovePhysicsColliders(obj)
     obj:DoTaskInTime(time, function(obj)
 		obj.Physics:SetCollisionMask(origmask)
     end)

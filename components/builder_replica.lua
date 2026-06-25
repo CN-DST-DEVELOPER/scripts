@@ -418,7 +418,7 @@ function Builder:CanLearn(recipename)
 end
 
 function Builder:CanBuildAtPoint(pt, recipe, rot)
-    return TheWorld.Map:CanDeployRecipeAtPoint(pt, recipe, rot)
+    return TheWorld.Map:CanDeployRecipeAtPoint(pt, recipe, rot, self.inst)
 end
 
 function Builder:MakeRecipeFromMenu(recipe, skin)

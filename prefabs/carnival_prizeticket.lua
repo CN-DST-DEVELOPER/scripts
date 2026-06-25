@@ -5,10 +5,6 @@ local assets =
 	Asset("INV_IMAGE", "carnival_prizeticket_largestack"),
 }
 
-local prefabs =
-{
-}
-
 local MERGE_NO_TAGS = {"INLIMBO"}
 
 local function MergeStacks(inst)
@@ -37,7 +33,7 @@ local function OnStackSizeChanged(inst, data)
 	if data ~= nil then
 		local cur_state = GetAnimStateForStackSize(inst, data.oldstacksize)
 		local new_state = GetAnimStateForStackSize(inst, data.stacksize)
-		if data.stacksize > 1 and not POPULATING then
+		if data.stacksize > 1 and not POPULATING and not inst.components.inventoryitem:IsHeld() then
 			inst.AnimState:PlayAnimation("jostle"..new_state)
 			inst.AnimState:PushAnimation("idle"..new_state, false)
 		else

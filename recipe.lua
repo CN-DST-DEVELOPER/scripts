@@ -118,6 +118,7 @@ Recipe = Class(function(self, name, ingredients, tab, level, placer_or_more_data
 
     
     self.testfn        = testfn					-- custom placer test function if default test isn't enough
+    self.overridecandeployrecipeatpointfn = more_data.overridecandeployrecipeatpointfn -- For overriding CanDeployRecipeAtPoint's default IsDeployPointClear handling.
 	self.canbuild      = more_data.canbuild		-- custom test function to see if we should be allowed to craft this recipe, return a build action fail message if false
 
     if more_data.unlocks_from_skin then -- Boolean flag to enum value based on recipe context.

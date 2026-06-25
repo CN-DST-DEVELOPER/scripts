@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "There's no tree to give anything to yet!",
             NOTAMONKEY = "Um. Sorry, could you repeat that please?",
             QUEENBUSY = "Sorry ma'am, I'll wait until you're ready.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "We can't play until there's a flaghole, Woby!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4822,6 +4823,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "The suspense is killing me!",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "The suspense is killing me!",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "The suspense is killing me!",
 
         CARNIVAL_BALL = "Get the ball Woby! Uh... I guess we'll work on that later.", --unimplemented
 		CARNIVAL_SEEDPACKET = "I guess it's sort of like trail mix. Sort of.",
@@ -6277,6 +6279,40 @@ return{
 
         CEILING_ROPE = "Good thing I have my climbing badge!",
         VAULT_KEY_EXIT = "Looks like a one-way, Woby!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Elementary, my dear Woby!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Promise not to chase the ball, Woby?",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "This will be a tricky one, Woby! But we can do it!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "I can't wait to play our very own custom mini-golf course, Woby!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Now we just need to give it a token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "It has a token already!", -- The game is active and in play
+            INACTIVE = "We can't play until there's a flaghole, Woby!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "And this is where the ball goes, Woby!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where should we start, Woby girl?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where should the flaghole go, Wobes?",
+
+        CARNIVALGAME_GOLFCLUB = "It's all about control, see? Not power. Just careful aim, steady hands and good attitude!",
+        CARNIVALGAME_GOLFBALL = "Remember not to chase this ball, Woby!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "That will keep the ball from rolling off... and you too, Woby!",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Let's take it for a spin!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Wow, neat carving!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Bark when it goes down, Woby!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Maybe it's a shortcut!", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Launch time! Not lunch time, Woby!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Look, Woby! We have a fan!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

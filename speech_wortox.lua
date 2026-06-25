@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Now wait one minute, there's nothing in it!",
             NOTAMONKEY = "I speak in tongues, but not that one.",
             QUEENBUSY = "Her majesty's schedule must be bananas, hyuyu!",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Can't compete until the course is complete!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4800,6 +4801,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Hyuyu, how very mysterious!",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Hyuyu, how very mysterious!",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Hyuyu, how very mysterious!",
 
         CARNIVAL_BALL = "It goes quite nicely with my fur!", --unimplemented
 		CARNIVAL_SEEDPACKET = "I'm sure they won't be offended if I dump these on the ground.",
@@ -6242,7 +6244,7 @@ return{
             GENERIC = "I see a key!", -- Keystone is on it, ready to take
             PICKED = "It's been taken! Shall we be foresaken?", -- No more keystone on it, we already took it, or someone else did.
         },
-        VAULT_ORB_REFINED = "For imitation of my teleportaion.",
+        VAULT_ORB_REFINED = "For imitation of my teleportation.",
         VAULT_PILLAR_GUARD_PIECE = "It won't start until it has every part.",
         VAULT_REFINER_PEDESTAL = "Be patient! It's ancient!",
 
@@ -6255,6 +6257,40 @@ return{
 
         CEILING_ROPE = "For when it's time to climb!",
         VAULT_KEY_EXIT = "There's no hope for a rope!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Oh pleasey, so easy!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Good stuff, not too tough!",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "What the putt?!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "It shall be a design of mine!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "It must be awoken with a token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Hey! The game is in play!", -- The game is active and in play
+            INACTIVE = "Can't compete until the course is complete!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The small ball shall fall!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Oh gee, where goes the tee?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "It depends on where it ends.",
+
+        CARNIVALGAME_GOLFCLUB = "Tap it light, send it right... or out of sight!",
+        CARNIVALGAME_GOLFBALL = "Roll and roam, far from home!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "A tidy frame for a bounded game!",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Use the spin for a skillful win!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "It mocks me as it blocks me!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "The retracting is so distracting!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Where the ball goes? No one knows!", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "I'm dying to send the ball flying!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The ball goes where it blows.", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

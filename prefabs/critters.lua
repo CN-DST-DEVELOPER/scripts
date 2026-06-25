@@ -234,11 +234,13 @@ local function MakeCritter(name, animname, face, diet, flying, data, prefabs)
 
         inst:AddComponent("knownlocations")
 
-        inst:AddComponent("sleeper")
-        inst.components.sleeper:SetResistance(3)
-        inst.components.sleeper.testperiod = GetRandomWithVariance(6, 2)
-        inst.components.sleeper:SetSleepTest(ShouldSleep)
-        inst.components.sleeper:SetWakeTest(ShouldWakeUp)
+        if data == nil or not data.no_sleep then
+            inst:AddComponent("sleeper")
+            inst.components.sleeper:SetResistance(3)
+            inst.components.sleeper.testperiod = GetRandomWithVariance(6, 2)
+            inst.components.sleeper:SetSleepTest(ShouldSleep)
+            inst.components.sleeper:SetWakeTest(ShouldWakeUp)
+        end
 
         inst:AddComponent("eater")
         inst.components.eater:SetDiet(diet, diet)
@@ -395,5 +397,5 @@ return MakeCritter("critter_lamb", "sheepington", 6, standard_diet, false, {favo
        MakeBuilder("critter_eyeofterror"),
        MakeCritter("critter_bulbin", "bulbin", 6, standard_diet, false, {skin_only=true, favoritefood="stuffedeggplant", allow_platform_hopping=true, assets=bulbin_assets}),
        MakeBuilder("critter_bulbin"),
-       MakeCritter("critter_eets", "eets", 4, standard_diet, false, {skin_only=true, favoritefood="butterflymuffin", allow_platform_hopping=true, no_emotes = true, no_traits = true, no_pet = true, no_crafty_emote = true}),
+       MakeCritter("critter_eets", "eets", 4, standard_diet, false, {skin_only=true, favoritefood="butterflymuffin", allow_platform_hopping=true, no_emotes = true, no_traits = true, no_pet = true, no_crafty_emote = true, no_sleep = true}),
        MakeBuilder("critter_eets")

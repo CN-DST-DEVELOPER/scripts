@@ -879,6 +879,7 @@ STRINGS =
         {
             GENERIC = "Cycle",
             TUNE = "Hit",
+            PAR = "Cycle Par",
         },
 
         --Quagmire
@@ -1200,6 +1201,12 @@ STRINGS =
         },
         STARTVAULTORBTELEPORT = "Focus On",
         VAULTORBTELEPORT_MAP = "Portate",
+
+		-- Crow Carnival 2026
+		GOLF_START_AIMING = "Aim",
+		GOLF_STOP_AIMING = "Stop Aiming",
+		GOLF_START_CHARGING = "Putt (Hold)",
+        TERRAFORM_REMOVE = "Uproot",
     },
 
 	WOBY_COMMANDS =
@@ -2631,7 +2638,7 @@ STRINGS =
 		CARNIVAL_CROWKID = "Crow Kid",
 		CARNIVAL_PRIZETICKET = "Prize Tickets",
 		CARNIVAL_GAMETOKEN = "Cawnival Token",
-		CARNIVAL_GAMETOKEN_MULTIPLE = "3 Cawnival Tokens",
+		CARNIVAL_GAMETOKEN_MULTIPLE = "Cawnival Tokens",
 
 		CARNIVAL_PRIZEBOOTH = "Prize Booth",
 		CARNIVAL_PRIZEBOOTH_KIT = "Prize Booth Kit",
@@ -2673,7 +2680,8 @@ STRINGS =
 		CARNIVALDECOR_FIGURE_UNCOMMON = "Uncommon Cawnival Statuette",
 		CARNIVALDECOR_FIGURE_COMMON = "Common Cawnival Statuette",
 		CARNIVALDECOR_FIGURE_KIT = "Green Mystery Box",
-		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Gold Mystery Box",
+		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Yellow Mystery Box",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Red Mystery Box",
 		CARNIVALDECOR_EGGRIDE1 = "Mini Ferris Wheel",
 		CARNIVALDECOR_EGGRIDE1_KIT = "Mini Ferris Wheel Kit",
 		CARNIVALDECOR_EGGRIDE2 = "Mini Swing Carousel",
@@ -2682,6 +2690,10 @@ STRINGS =
 		CARNIVALDECOR_EGGRIDE3_KIT = "Mini Pendulum Ride Kit",
 		CARNIVALDECOR_EGGRIDE4 = "Mini Tower Drop",
 		CARNIVALDECOR_EGGRIDE4_KIT = "Mini Tower Drop Kit",
+		CARNIVALDECOR_EGGRIDE5 = "Mini Spinning Eggcups",
+		CARNIVALDECOR_EGGRIDE5_KIT = "Mini Spinning Eggcups Kit",
+		CARNIVALDECOR_EGGRIDE6 = "Mini Rollercoaster",
+		CARNIVALDECOR_EGGRIDE6_KIT = "Mini Rollercoaster Kit",
 		CARNIVALDECOR_LAMP = "Midsummer Night Light",
 		CARNIVALDECOR_LAMP_KIT = "Midsummer Night Light Kit",
 		CARNIVALCANNON_CONFETTI = "Confetti Cannon",
@@ -4664,6 +4676,55 @@ STRINGS =
 
         CEILING_ROPE = "Rope",
         VAULT_KEY_EXIT = "Chasm",
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Beginner Mini-Golf Kit",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Standard Mini-Golf Kit",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Expert Mini-Golf Kit",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Custom Mini-Golf Kit",
+
+        CARNIVALGAME_GOLF_TEE = "Mini-Golf Ball Dropper",
+        CARNIVALGAME_GOLF_HOLE = "Mini-Golf Flaghole",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Mini-Golf Ball Dropper Kit",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Mini-Golf Flaghole Kit",
+
+        CARNIVALGAME_GOLFCLUB = "Putter",
+        CARNIVALGAME_GOLFBALL = "Golf Ball",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Mini-Golf Boundary Fence",
+
+        CARNIVALGAME_GOLFPROP_SMALLSPINNER_CW = "Clockwise Small Spin Plate",
+        CARNIVALGAME_GOLFPROP_SMALLSPINNER_CCW = "Counter Clockwise Small Spin Plate",
+        CARNIVALGAME_GOLFPROP_MEDIUMSPINNER_CW = "Clockwise Medium Spin Plate",
+        CARNIVALGAME_GOLFPROP_MEDIUMSPINNER_CCW = "Counter Clockwise Medium Spin Plate",
+
+        CARNIVALGAME_GOLFPROP_MOVINGWALL_RED = "Red Pop-up Blocker", -- retracts and emerges
+        CARNIVALGAME_GOLFPROP_MOVINGWALL_BLUE = "Blue Pop-up Blocker", -- retracts and emerges
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Mini Wormhole", -- a fake wormhole, that lets the ball travel to another random wormhole
+        CARNIVALGAME_GOLFPROP_WORMHOLE_LIMITED = "Sick Mini Wormhole", -- a fake sick wormhole, that lets the ball travel to another random sick wormhole, disappears after being used once
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Persistent Directional Springboard", -- spring that pops up to launch the ball in a direction, and resets during the game
+        CARNIVALGAME_GOLFPROP_SPRING_ONETIME = "Directional Springboard", -- spring that pops up to launch the ball in a direction, only resets at end of game
+        CARNIVALGAME_GOLFPROP_SPRING_NOFACED = "Persistent Springboard", -- spring that pops up to launch the ball upwards
+        CARNIVALGAME_GOLFPROP_SPRING_NOFACED_ONETIME = "Springboard", -- spring that pops up to launch the ball upwards, only resets at end of game
+
+        CARNIVALGAME_GOLFPROP_FAN = "Fan", -- fan that blows wind and pushes in a direction
+
+        CARNIVALGAME_GOLFPROP_CUTOUT1 = "Carrot Obstacle", -- carrot
+        CARNIVALGAME_GOLFPROP_CUTOUT2 = "Rose Obstacle", -- rose
+        CARNIVALGAME_GOLFPROP_CUTOUT3 = "Ham Bat Obstacle", -- hambat
+        CARNIVALGAME_GOLFPROP_CUTOUT4 = "Corn Obstacle", -- corn
+        CARNIVALGAME_GOLFPROP_CUTOUT5 = "Mushroom Obstacle", -- red mushroom
+        CARNIVALGAME_GOLFPROP_CUTOUT6 = "Bearger Obstacle", -- bearger
+        CARNIVALGAME_GOLFPROP_CUTOUT7 = "Deerclops Obstacle", -- deerclops
+        CARNIVALGAME_GOLFPROP_CUTOUT8 = "Spider Obstacle", -- spider
+        CARNIVALGAME_GOLFPROP_CUTOUT9 = "Dragonfly Obstacle", -- dragonfly
+        CARNIVALGAME_GOLFPROP_CUTOUT10 = "Tentacle Obstacle", -- tentacle
+
+		CARNIVALGAME_GOLF_SHAPE = "Course Wall",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -5164,9 +5225,12 @@ STRINGS =
 		CARNIVALDECOR_EGGRIDE2_KIT = "Pint-sized eggcitement!",
 		CARNIVALDECOR_EGGRIDE3_KIT = "Get in the swing of summer fun!",
 		CARNIVALDECOR_EGGRIDE4_KIT = "The new height of Cawnival decor.",
+		CARNIVALDECOR_EGGRIDE5_KIT = "A new spin on Canwival decor.",
+        CARNIVALDECOR_EGGRIDE6_KIT = "A little eggstreme decor!",
 		CARNIVALDECOR_LAMP_KIT = "A dreamy light for summer nights.",
 		CARNIVALDECOR_FIGURE_KIT = "What could be inside this mysterious green box?",
-		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "What could be inside this mysterious gold box?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "What could be inside this mysterious yellow box?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "What could be inside this mysterious red box?",
 		CARNIVALCANNON_CONFETTI_KIT = "Start things off with a bang!",
 		CARNIVALCANNON_SPARKLE_KIT = "Add some sparkle to your surroundings.",
 		CARNIVALCANNON_STREAMER_KIT = "Create an explosion... of fun!",
@@ -5905,6 +5969,43 @@ STRINGS =
 
 		VAULT_ORB_REFINED = "It pleases when broken into pieces.",
 		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Something big is coming up!",
+
+        -- Crow Carnival 2026
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Bring on the beginner!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "For the casual mini-golfer.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "For the professional putter.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Create a custom course!",
+
+        CARNIVALGAME_GOLFPROP_MOVINGWALL_RED = "It keeps popping up!", -- retracts and emerges
+        CARNIVALGAME_GOLFPROP_MOVINGWALL_BLUE = "It keeps popping up!", -- retracts and emerges
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It eats up and spits out golf balls.", -- a fake wormhole, that lets the ball travel to another random wormhole
+        CARNIVALGAME_GOLFPROP_WORMHOLE_LIMITED = "It lives to transport your golf ball once only!", -- a fake sick wormhole, that lets the ball travel to another random sick wormhole, disappears after being used once
+
+        CARNIVALGAME_GOLFPROP_SPRING = "It'll spring into action, again and again!", -- spring that pops up to launch the ball in a direction, and resets during the game
+        CARNIVALGAME_GOLFPROP_SPRING_ONETIME = "Launch served once per game.", -- spring that pops up to launch the ball in a direction, only resets at end of game
+        CARNIVALGAME_GOLFPROP_SPRING_NOFACED = "It'll spring into action, again and again!", -- spring that pops up to launch the ball upwards
+        CARNIVALGAME_GOLFPROP_SPRING_NOFACED_ONETIME = "Launch served once per game.", -- spring that pops up to launch the ball upwards, only resets at end of game
+
+        CARNIVALGAME_GOLFPROP_FAN = "It's nice to have fans.", -- fan that blows wind and pushes in a direction
+
+        CARNIVALGAME_GOLFPROP_SMALLSPINNER_CW = "Put a little spin on it.",
+        CARNIVALGAME_GOLFPROP_SMALLSPINNER_CCW = "Put a little spin on it.",
+        CARNIVALGAME_GOLFPROP_MEDIUMSPINNER_CW = "Put a spin on it.",
+        CARNIVALGAME_GOLFPROP_MEDIUMSPINNER_CCW = "Put a spin on it.",
+
+        CARNIVALGAME_GOLFPROP_CUTOUT1 = "A Bunnyman favorite.", -- carrot
+        CARNIVALGAME_GOLFPROP_CUTOUT2 = "A thorn in your side.", -- rose
+        CARNIVALGAME_GOLFPROP_CUTOUT3 = "Ball, meat obstacle.", -- hambat
+        CARNIVALGAME_GOLFPROP_CUTOUT4 = "No need for a corny description.", -- corn
+        CARNIVALGAME_GOLFPROP_CUTOUT5 = "It's just for fungi!", -- red mushroom
+        CARNIVALGAME_GOLFPROP_CUTOUT6 = "It bears a strong resemblance.", -- bearger
+        CARNIVALGAME_GOLFPROP_CUTOUT7 = "More obstructive than destructive.", -- deerclops
+        CARNIVALGAME_GOLFPROP_CUTOUT8 = "Hated by almost everyone.", -- spider
+        CARNIVALGAME_GOLFPROP_CUTOUT9 = "It will still get you heated.", -- dragonfly
+        CARNIVALGAME_GOLFPROP_CUTOUT10 = "Not deadly, but still annoying.", -- tentacle
+
+		CARNIVALGAME_GOLF_SHAPE = "Of course, a course needs walls.",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -10122,6 +10223,7 @@ STRINGS.UI =
         CARPENTRY = "Carpentry",
         HERMITCRAB_TEASHOP = "Tea Brewing",
         VAULT_REFINER_PEDESTAL = "Sanctum Smithy",
+        CARNIVALGAME_GOLFGAME = "Custom Course Shack",
 
         SHADOW = "Codex Umbra",
         FOODPROCESSING = "Seasonings",
@@ -18662,7 +18764,7 @@ STRINGS.SCRAPBOOK = {
         VAULT_CRAWLER_SOCKET = "It looks like an orb could fit right in.",
         VAULT_KEY_ACTIVATOR = "A spark of energy could revitalize it.",
         VAULT_CRAWLER_LEVER = "The urge to pull this lever is... even stronger this time.",
-        VAULT_ORB_REFINED = "A refined piece of a Portation Orb. It can be socketed at the Telelocator Focus, and used to teleport to one by focusing.",
+        VAULT_ORB_REFINED = "A refined piece of a Portation Orb that can be expended to teleport to a fully-socketed Telelocater Focus. A Telelocater Focus must be socketed with three Portation Orbs to become operational.",
         VAULT_COMPASS = "A compass left by one of the last builders of this place. It could lead somewhere important.",
         VAULT_KEY_PEDESTAL = "Maybe this one will help you get home.",
         VAULT_REFINER_PEDESTAL = "Break down some orbs in the mean time.",

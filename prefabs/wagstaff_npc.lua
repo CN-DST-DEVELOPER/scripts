@@ -157,7 +157,9 @@ local function LaunchGameItem(inst, item, angle, minorspeedvariance, target)
 		item.Physics:ClearCollidesWith(COLLISION.OBSTACLES)
 		item:DoTaskInTime(.6, OnRestoreItemPhysics)
 	end
-    item.Physics:Teleport(pos.x, 0.75, pos.z)
+	if not TryTeleportToLaunchPos(item, pos.x, 0.75, pos.z) then
+		item.Physics:Teleport(inst_pos.x, 0.75, inst_pos.z)
+	end
     item.Physics:SetVel(math.cos(angle) * spd, 5, math.sin(angle) * spd)
     item:PushEvent("knockbackdropped", { owner = inst, knocker = inst, delayinteraction = .75, delayplayerinteraction = .5 })
     item:ListenForEvent("onland")

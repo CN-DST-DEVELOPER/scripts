@@ -890,7 +890,8 @@ local function scannerfn()
     inst.GetActivateVerb = GetActivateVerb
 
     inst._showringfx = net_tinybyte(inst.GUID, "showringfx", "showringfxdirty")
-    inst._radarboosters = GetIdealUnsignedNetVarForCount(MAX_CIRCUIT_SLOTS)(inst.GUID, "radarboosters", "radarboostersdirty")
+    local radarboosters_net_enum = GetIdealUnsignedNetVarForCount(MAX_CIRCUIT_SLOTS)
+    inst._radarboosters = radarboosters_net_enum(inst.GUID, "radarboosters", "radarboostersdirty")
     inst._hassignalbooster = net_bool(inst.GUID, "hassignalbooster", "signalboosterdirty")
     if not TheNet:IsDedicated() then
         inst:ListenForEvent("showringfxdirty", OnShowRingFXDirty)

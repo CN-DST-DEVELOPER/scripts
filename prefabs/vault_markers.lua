@@ -41,6 +41,7 @@ local prefabs =
     "vault_key",
 	"vault_key_trial",
 	"vault_security_desk",
+    "vault_invalidtile",
 }
 
 local function UpdateNetvars(inst)

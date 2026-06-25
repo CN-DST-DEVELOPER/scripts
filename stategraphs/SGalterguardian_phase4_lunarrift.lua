@@ -100,6 +100,9 @@ local function _AOEAttack(inst, x, z, radius, heavymult, mult, forcelanded, targ
 		then
 			local range = radius + v:GetPhysicsRadius(0)
 			if v:GetDistanceSqToPoint(x, 0, z) < range * range and inst.components.combat:CanTarget(v) then
+				if mult and v.components.rider and v.components.rider.mount then
+					targets[v.components.rider.mount] = t
+				end
 				inst.components.combat:DoAttack(v)
 				if mult then
 					local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult

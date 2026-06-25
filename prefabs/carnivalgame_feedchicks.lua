@@ -75,9 +75,32 @@ local function CreateFloor(parent)
 		parent.components.placer:LinkEntity(inst, 0.25)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation("place") inst.AnimState:PushAnimation("idle", false) end, parent)
+	inst.anim = "idle"
+	inst.deploy_anim = "place"
 
 	return inst
+end
+
+local function DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("place") then
+		local t = inst.AnimState:GetCurrentAnimationTime()
+		for _, v in ipairs(inst.floor_parts) do
+			v.AnimState:PlayAnimation(v.deploy_anim)
+			v.AnimState:SetTime(t)
+			v.AnimState:PushAnimation(v.anim, false)
+		end
+	end
+end
+
+local function OnEntityWake(inst)
+	inst.OnEntityWake = nil
+	DoSyncAnim(inst)
+end
+
+local function CreateFlooring(parent)
+	parent.floor_parts = {}
+	table.insert(parent.floor_parts, CreateFloor(parent))
+	parent.OnEntityWake = OnEntityWake
 end
 
 local function OnBuilt(inst, data)
@@ -94,8 +117,10 @@ local function OnBuilt(inst, data)
 
 	inst.AnimState:PlayAnimation("place", false)
 	inst.AnimState:PushAnimation("idle_off", false)
-
 	inst.SoundEmitter:PlaySound("summerevent/carnival_games/feedchicks/station/place")
+	if inst.floor_parts then
+		DoSyncAnim(inst)
+	end
 end
 
 
@@ -256,7 +281,7 @@ local function station_common_postinit(inst)
 	inst.AnimState:PlayAnimation("idle_off")
 
 	if not TheNet:IsDedicated() then
-		CreateFloor(inst)
+		CreateFlooring(inst)
 	end
 end
 

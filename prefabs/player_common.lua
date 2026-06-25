@@ -2197,6 +2197,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_gallop_run.zip"),
         Asset("ANIM", "anim/player_lancecharge.zip"),
         Asset("ANIM", "anim/player_lancejab.zip"),
+
+		Asset("ANIM", "anim/player_actions_golf.zip"),
     }
 
     local prefabs =

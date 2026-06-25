@@ -181,7 +181,7 @@ function AOEWeapon_Base:OnToss(doer, target, sourceposition, basespeed, startrad
         end
 
         local speed = (basespeed or 1) + math.random()
-        target.Physics:Teleport(x0 + startradius * cosa, .1, z0 + startradius * sina)
+		TryTeleportToLaunchPos(target, x0 + startradius * cosa, 0.1, z0 + startradius * sina)
         target.Physics:SetVel(cosa * speed, speed * 5 + math.random() * 2, sina * speed)
     end
 end

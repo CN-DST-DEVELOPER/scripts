@@ -68,24 +68,46 @@ local function CreateFloorPart(parent, bank, anim, deploy_anim, offset, rot)
 		inst.Transform:SetRotation(rot)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation(deploy_anim) inst.AnimState:PushAnimation(anim, false) end, parent)
+	inst.anim = anim
+	inst.deploy_anim = deploy_anim
 
 	return inst
 end
 
+local function DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("place") then
+		local t = inst.AnimState:GetCurrentAnimationTime()
+		for _, v in ipairs(inst.floor_parts) do
+			v.AnimState:PlayAnimation(v.deploy_anim)
+			v.AnimState:SetTime(t)
+			v.AnimState:PushAnimation(v.anim, false)
+		end
+	end
+end
+
+local function OnEntityWake(inst)
+	inst.OnEntityWake = nil
+	DoSyncAnim(inst)
+end
+
 local function CreateFlooring(parent)
-	CreateFloorPart(parent, "carnivalgame_herding_floor", "idle", "place")
+	parent.floor_parts = {}
+	table.insert(parent.floor_parts, CreateFloorPart(parent, "carnivalgame_herding_floor", "idle", "place"))
 
 	local r = 8
 	for i = 0, 7 do
-		CreateFloorPart(parent, "carnivalgame_herding_floor", "ring", "place_ring", Vector3(r * math.sin(i * 45*DEGREES), 0, r * math.cos(i * 45*DEGREES)), 180 + 45 * i)
+		table.insert(parent.floor_parts, CreateFloorPart(parent, "carnivalgame_herding_floor", "ring", "place_ring", Vector3(r * math.sin(i * 45*DEGREES), 0, r * math.cos(i * 45*DEGREES)), 180 + 45 * i))
 	end
+	parent.OnEntityWake = OnEntityWake
 end
 
 local function OnBuilt(inst)
 	inst.AnimState:PlayAnimation("place", false)
 	inst.AnimState:PushAnimation("idle_off", true)
 	inst.SoundEmitter:PlaySound("summerevent/carnival_games/herding_station/place")
+	if inst.floor_parts then
+		DoSyncAnim(inst)
+	end
 end
 
 local function SpawnNewChick(inst, launch_angle)

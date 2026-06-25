@@ -22,6 +22,10 @@ local SIZE_SKINNY = 2 * scale + EXTRA_PADDING -- Extra 0.25 to cover internal co
 
 -- Common.
 
+function self:GetMarkerOrigin()
+    return self.vault_origin_x:value(), self.vault_origin_z:value()
+end
+
 function self:IsPointInVaultRoom_Internal(x, y, z)
     -- NOTES(JBK): This function should not be called directly use Map:IsPointInVaultRoom instead!
     if not self.vault_active:value() then

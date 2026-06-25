@@ -508,7 +508,11 @@ function Placer:OnUpdate(dt)
     if self.fixedcameraoffset ~= nil and not rotating_from_boat_center then
         local rot = self.fixedcameraoffset - TheCamera:GetHeading() -- rotate against the camera
         local offset = self.rotationoffset ~= nil and self.rotationoffset or 0
-        self.inst.Transform:SetRotation(rot + offset)
+        rot = rot + offset
+        if self.fixedcameraoffset_nearestangle then
+            rot = math.floor((rot / self.fixedcameraoffset_nearestangle) + 0.5) * self.fixedcameraoffset_nearestangle
+        end
+        self.inst.Transform:SetRotation(rot)
     end
 
     if self.onupdatetransform ~= nil then

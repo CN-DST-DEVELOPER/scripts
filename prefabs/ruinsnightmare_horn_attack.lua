@@ -104,10 +104,14 @@ local function OnUpdate(inst)
             local dz = z1 - z
 
             if (dx * dx + dz * dz) < (range * range) and combat:CanTarget(v) then
-                combat:DoAttack(v)
-
                 if inst.owner.components.planarentity ~= nil then
+					if v.components.rider and v.components.rider.mount then
+						inst.targets[v.combat.rider.mount] = true
+					end
+					combat:DoAttack(v)
                     v:PushEvent("knockback", { knocker = inst, radius = AOE_DAMAGE_RADIUS, strengthmult = .6, forcelanded = true })
+				else
+					combat:DoAttack(v)
                 end
 
                 inst.targets[v] = true

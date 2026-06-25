@@ -31,7 +31,12 @@ function MakePlacer(name, bank, build, anim, onground, snap, metersnap, scale, f
         local placer = inst:AddComponent("placer")
         placer.snaptogrid = snap
         placer.snap_to_meters = metersnap
-        placer.fixedcameraoffset = fixedcameraoffset
+        if type(fixedcameraoffset) == "table" then
+            placer.fixedcameraoffset_nearestangle = fixedcameraoffset.nearestangle
+            placer.fixedcameraoffset = fixedcameraoffset.offset
+        else
+            placer.fixedcameraoffset = fixedcameraoffset
+        end
         placer.onground = onground
 
         -- If the user clicks when the placement is invalid this gets called
@@ -71,7 +76,7 @@ end
 function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets, floatable_data, tags, burnable, deployable_data, stack_size, PostMasterSimfn)
 	deployable_data = deployable_data or {}
 
-	return Prefab(name, function(inst)
+	return Prefab(name, function()
 		local inst = CreateEntity()
 
 		inst.entity:AddTransform()
@@ -131,7 +136,7 @@ function MakeDeployableKitItem(name, prefab_to_deploy, bank, build, anim, assets
 
 		inst._prefab_to_deploy = prefab_to_deploy
 		local deployable = inst:AddComponent("deployable")
-		deployable.ondeploy = deployablekititem_ondeploy
+		deployable.ondeploy = deployable_data.ondeploy or deployablekititem_ondeploy
         if deployable_data.deploymode then
             deployable:SetDeployMode(deployable_data.deploymode)
         end

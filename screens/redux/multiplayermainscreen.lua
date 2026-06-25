@@ -36,7 +36,7 @@ local KitcoonPuppet = require "widgets/kitcoonpuppet"
 local SHOW_DST_DEBUG_HOST_JOIN = BRANCH == "dev"
 local SHOW_QUICKJOIN = false
 
-local IS_BETA = BRANCH == "staging" or BRANCH == "dev"
+local IS_BETA = BRANCH == "staging"-- or BRANCH == "dev"
 local IS_DEV_BUILD = BRANCH == "dev"
 
 local function PlayBannerSound(inst, self, sound)
@@ -313,7 +313,7 @@ end
 --Event banners
 
 local function MakeCawnivalBanner(self, banner_root, uianim)
-	_MakeGenericBanner(uianim, "dst_menu_carnival")
+	_MakeGenericBanner(uianim, "dst_menu_minigolf_carnival")
 end
 
 local function MakeHallowedNightsBanner(self, banner_root, uianim)

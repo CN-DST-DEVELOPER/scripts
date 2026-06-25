@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "I shall await the small tree's return before presenting it with another offering.",
             NOTAMONKEY = "Speak plainly! I understand not thine chittering.",
             QUEENBUSY = "Something else hath caught her attention.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "This arena awaiteth its completion!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4780,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "A box of mystery.",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "A box of mystery.",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "A box of mystery.",
 
         CARNIVAL_BALL = "This may be useful for testing my companions' reflexes.", --unimplemented
 		CARNIVAL_SEEDPACKET = "'Tis food for birds, not Vikings.",
@@ -6235,6 +6237,40 @@ return{
 
         CEILING_ROPE = "With this, I shall make mine ascent!",
         VAULT_KEY_EXIT = "Nowhere to anchor a rope? A true warrior needeth no second plan.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "I couldst defeat this arena whilst I slumber!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Neither gentle meadow, nor cruel gauntlet.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "I stand unshaken before any contest, no matter how arduous.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "A warrior charts her own course!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "It demandeth a tribute!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "The toll is paid, let the proving begin!", -- The game is active and in play
+            INACTIVE = "This arena awaiteth its completion!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "'Tis already waving the flag of surrender!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "To mark the place of the ball's departure.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "I shall decide the ball's destiny!",
+
+        CARNIVALGAME_GOLFCLUB = "A weapon of precision, not brute force.",
+        CARNIVALGAME_GOLFBALL = "Let it roll forth into glory!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It keeps the field of battle contained.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Restless disc of chaos!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "They stand as memories made manifest in timber.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Rise and fall as thou wilt, I shall still prevail!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Thou mayst whisk my ball away, but not mine resolve!", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Upward and onward!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Keep thy cursed winds from mine ball!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

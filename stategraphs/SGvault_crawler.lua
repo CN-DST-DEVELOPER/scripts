@@ -176,7 +176,7 @@ local function TossLaunch(inst, launcher, basespeed, startheight, startradius)
 	end
 	local sina, cosa = math.sin(angle), math.cos(angle)
 	local speed = basespeed + math.random()
-	inst.Physics:Teleport(x0 + startradius * cosa, startheight, z0 + startradius * sina)
+	TryTeleportToLaunchPos(inst, x0 + startradius * cosa, startheight, z0 + startradius * sina)
 	inst.Physics:SetVel(cosa * speed, speed * 2.5 + math.random(), sina * speed)
 end
 

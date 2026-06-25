@@ -171,13 +171,16 @@ local function _AOEAttack(inst, dist, radius, arc, heavymult, mult, forcelanded,
 				(arcx == nil or x + cos_theta * dx - sin_theta * dz > arcx) and
 				inst.components.combat:CanTarget(v)
 			then
+				if targets then
+					targets[v] = true
+					if mult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
+				end
 				inst.components.combat:DoAttack(v)
 				if mult then
 					local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
 					v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = strengthmult, forcelanded = forcelanded })
-				end
-				if targets then
-					targets[v] = true
 				end
 				hit = true
 			end

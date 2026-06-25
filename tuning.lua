@@ -1460,6 +1460,10 @@ function Tune(overrides)
             VAULT_REFINER_PEDESTAL = TechTree.Create({
                 VAULT_REFINE = 1,
             }),
+
+            CARNIVALGAME_GOLFGAME = TechTree.Create({
+                CARNIVAL_GOLFPROPS = 1,
+            }),
 		},
 
         RABBIT_HEALTH = 25 * multiplayer_attack_modifier,
@@ -4267,7 +4271,7 @@ function Tune(overrides)
             {
                 RANGE = 20,
                 PROJECTILE_INITIAL_HEIGHT = 1.1,
-                AIM_ANGLE_WIDTH = 90 / RADIANS, -- must be in radians
+				AIM_ANGLE_WIDTH = 90 * DEGREES, -- must be in radians
             },
 
             BOAT_MAGNET =
@@ -9518,6 +9522,34 @@ function Tune(overrides)
 
         VAULT_PILLAR_GUARD_PIECE_GOLD_VALUE = 15,
         VAULT_PILLAR_GUARD_PIECE_ROCK_VALUE = 18, -- appease value for antlion, 6 days
+
+        -- Crow Carnival 2026
+        CARNIVALGAME_GOLFGAME_CAMERA_FOCUS_MIN = 11,
+		CARNIVALGAME_GOLFGAME_CAMERA_FOCUS_MAX = 11,
+
+        CARNIVALGAME_GOLFGAME_ARENA_RADIUS = 8,
+        CARNIVALGAME_GOLFGAME_DURATION = seg_time * 1.5,
+
+        CARNIVALGAME_GOLF_GAME_DIFFICULTY_SCORES =
+        {
+            ["easy"] = 5,
+            ["medium"] = 10,
+            ["hard"] = 15,
+        },
+        -- go up to a 2x mult when scoring under par
+        CARNIVALGAME_GOLFGAME_SCORE_MINMULT_UNDER_PAR = 1,
+        CARNIVALGAME_GOLFGAME_SCORE_MAXMULT_UNDER_PAR = 1.75,
+        CARNIVALGAME_GOLFGAME_SCORE_MULT_HOLE_IN_ONE = 2.5, -- 2.5x minigame score for a hole in one!
+
+		GOLF_AIM_ARC = 90 * DEGREES, --radians
+		GOLF_MAX_CHARGE_TICKS = 1.5 * 30,
+		GOLF_MIN_SPEED = 0,
+		GOLF_MAX_PUTT_SPEED = 10,
+		GOLF_MAX_SWING_SPEED = 11.99, -- NOTES(JBK): Bullet physics calculates at worst case 30 times a second and the golf ball diameter is 0.4 units meaning ball velocity should be less than 30 * 0.4 = 12 to avoid ball vs triangle mesh being able to teleport inside the mesh.
+		GOLFHOLE_SCORE_RANGE_SQ = 0.05 * 0.05, --ball will fully drop in at this dist
+		GOLFHOLE_MAX_SCORE_SPEED_SQ = 0.75 * 0.75, --ball can't score if faster than this
+		GOLFHOLE_MIN_ACCEL = 0.4, --drop force toward center of hole at outer lip
+		GOLFHOLE_MAX_ACCEL = 0.7, --max drop force toward center of hole
     }
 
     TUNING_MODIFIERS = {}

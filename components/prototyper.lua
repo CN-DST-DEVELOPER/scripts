@@ -65,6 +65,14 @@ function Prototyper:TurnOff(doer)
     end
 end
 
+function Prototyper:CanUsePrototyper(doer)
+    if self.overridecanuseprototyper ~= nil then
+        return self.overridecanuseprototyper(self.inst, doer)
+    end
+
+    return doer:IsNear(self.inst, TUNING.RESEARCH_MACHINE_DIST)
+end
+
 function Prototyper:GetTechTrees()
     return deepcopy(self.trees)
 end

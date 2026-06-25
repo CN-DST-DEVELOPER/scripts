@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Wolfgang will wait for tiny tree to come back, then give present!",
             NOTAMONKEY = "Wolfgang does not speak monkey.",
             QUEENBUSY = "Hairy lady is busy. Wolfgang will wait.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Wolfgang need to finish set up course first.",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4781,6 +4782,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "What is in tiny secret box?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "What is in tiny secret box?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "What is in tiny secret box?",
 
         CARNIVAL_BALL = "Reminds Wolfgang of childhood.", --unimplemented
 		CARNIVAL_SEEDPACKET = "Bird snack.",
@@ -6199,7 +6201,7 @@ return{
             HOT = "Is burny floor. Very bad for walking.", -- Super hot, it's doing full fire damage.
         },
 
-        HEALINGSALVE_FUMAROLE = "Keeps Wolgang's skin from burning!",
+        HEALINGSALVE_FUMAROLE = "Keeps Wolfgang's skin from burning!",
 
 		VAULT_PILLAR_GUARD = "Wolfgang does not like ancient interior decorating.",
 		VAULT_PILLAR_GUARD_CRAFTED = "But is it as mighty as Wolfgang? Of course not!",
@@ -6236,6 +6238,40 @@ return{
 
         CEILING_ROPE = "Wolfgang is mighty climber.",
         VAULT_KEY_EXIT = "Nowhere for Wolfgang to tie rope!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Is for little babies!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "For average mini-golfer, but Wolfgang mightier than average.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Finally, little bit challenge for Wolfgang!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Wolfgang make own course!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "No free game for Wolfgang? Need token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Paid token! Wolfgang play now!", -- The game is active and in play
+            INACTIVE = "Wolfgang need to finish set up course first.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "What was that about bogey-man?",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where Wolfgang begin?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where Wolfgang put flaghole?",
+
+        CARNIVALGAME_GOLFCLUB = "Is puny club but Wolfgang make it work.",
+        CARNIVALGAME_GOLFBALL = "Sorry if Wolfgang swing too mighty, little ball.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Is strong enough to keep Wolfgang ball in?",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Make Wolfgang dizzy.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Get out of Wolfgang way!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Little up and down wall is frustrating Wolfgang!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Where will it send little ball?", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Bouncy bouncy little ball!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Hey, don't blow away Wolfgang ball!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

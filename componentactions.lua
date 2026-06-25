@@ -691,7 +691,7 @@ local COMPONENT_ACTIONS =
         end,
 
         prototyper = function(inst, doer, actions, right)
-			if not right and (doer.player_classified == nil or doer.player_classified.iscraftingenabled:value()) then
+			if not right and (doer.player_classified == nil or doer.player_classified.iscraftingenabled:value()) and not inst:HasTag("hideprototyperaction") then
                 table.insert(actions, ACTIONS.OPEN_CRAFTING)
             end
         end,
@@ -2023,7 +2023,7 @@ local COMPONENT_ACTIONS =
             local x,y,z = pos:Get()
             if right and (TheWorld.Map:IsAboveGroundAtPoint(x,y,z) or TheWorld.Map:GetPlatformAtPoint(x,z) ~= nil) and not TheWorld.Map:IsGroundTargetBlocked(pos) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat") then
                 local doerx, doery, doerz = doer.Transform:GetWorldPosition()
-                if IsTeleportingPermittedFromPointToPoint(x, y, z, doerx, doery, doerz) then
+                if IsTeleportingPermittedFromPointToPoint(doerx, doery, doerz, x, y, z) then
                     table.insert(actions, ACTIONS.BLINK)
                 end
             end
@@ -2033,7 +2033,7 @@ local COMPONENT_ACTIONS =
             if right and (not TheWorld.Map:IsGroundTargetBlocked(pos) or (inst:HasTag("complexprojectile_showoceanaction") and TheWorld.Map:IsOceanAtPoint(pos.x, 0, pos.z))) and not doer:HasTag("steeringboat") and not doer:HasTag("rotatingboat")
                 and (inst.CanTossInWorld == nil or inst:CanTossInWorld(doer, pos))
 				and not (inst.replica.equippable ~= nil and (inst.replica.equippable:IsRestricted(doer) or inst.replica.equippable:ShouldPreventUnequipping()))
-				and not (inst:HasTag("special_action_toss") or inst:HasTag("deployable")) then
+				and not inst:HasAnyTag("special_action_toss", "deployable") then
 				table.insert(actions, ACTIONS.TOSS)
             end
         end,
@@ -2304,6 +2304,12 @@ local COMPONENT_ACTIONS =
 			end
 		end,
 
+		golfclub = function(inst, doer, target, actions, right)
+			if right and target:HasTag("golfable") and not target:HasTag("golfable_occupied") then
+				table.insert(actions, ACTIONS.GOLF_START_AIMING)
+			end
+		end,
+
         gravedigger = function(inst, doer, target, actions, right)
             if right and target:HasTag("gravediggable") and doer:HasTag("gravedigger_user") then
                 table.insert(actions, ACTIONS.GRAVEDIG)
@@ -2431,6 +2437,12 @@ local COMPONENT_ACTIONS =
                 if not crushitemcast or crushitemcast and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) and (doer.replica.inventory == nil or not doer.replica.inventory:IsHeavyLifting()) then
                     table.insert(actions, ACTIONS.CASTSPELL)
                 end
+            end
+        end,
+
+        terraformer = function(inst, doer, target, actions, right)
+            if right and target:HasTag("terraformerremoveable") then
+                table.insert(actions, ACTIONS.TERRAFORM_REMOVE)
             end
         end,
 

@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "I suppose it needs more time to recover from all it has been through.",
             NOTAMONKEY = "I'm sorry... I don't know what you're trying to say...",
             QUEENBUSY = "She doesn't have time for someone like me.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "It's incomplete. Like me.",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4784,6 +4785,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "What secrets does it hide?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "What secrets does it hide?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "What secrets does it hide?",
 
         CARNIVAL_BALL = "Won't you play with me, Abigail?", --unimplemented
 		CARNIVAL_SEEDPACKET = "It tastes like disappointment.",
@@ -6239,6 +6241,40 @@ return{
 
         CEILING_ROPE = "A way out.",
         VAULT_KEY_EXIT = "It's a leap of faith.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "We all start somewhere.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Somewhere in between... just like me.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Not for the faint of heart.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "What should we do, Abigail?",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Nothing in life is free.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "The price has been paid.", -- The game is active and in play
+            INACTIVE = "The course is incomplete. Like me.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "Aww cute, it's like a mini abyss.",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where should we start, Abby?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Let's put the end further away...",
+
+        CARNIVALGAME_GOLFCLUB = "This will do the job.",
+        CARNIVALGAME_GOLFBALL = "It never chooses where it goes. Few things do.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "So that the ball doesn't escape.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "It exists to interfere.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "A lifeless likeness.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "I've known down more than up.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Will the ball end up in a better place?", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Gravity remains inevitable.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "I love the wind, but not while I'm putting.", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

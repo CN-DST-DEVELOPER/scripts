@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Doesn't look like it's taking, maybe I should try again later.",
             NOTAMONKEY = "Excusez-moi, I'm afraid we have a bit of a language barrier.",
             QUEENBUSY = "Pardonnez-moi, I can see you are busy.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "It's missing the key ingredient! The flaghole!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -4780,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "I wonder what could be inside?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "I wonder what could be inside?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "I wonder what could be inside?",
 
         CARNIVAL_BALL = "Perhaps I'll toss it around with the children.", --unimplemented
 		CARNIVAL_SEEDPACKET = "They could use a bit of seasoning.",
@@ -6235,6 +6237,40 @@ return{
 
         CEILING_ROPE = "If you can't take the heat, climb the rope!",
         VAULT_KEY_EXIT = "I cannot climb back up!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "This course is but an appetizer.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Medium! Just the way I like it!",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Now we are spicing things up!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "If I don't arrange it the same as before, will the outcome be different?",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "All I need now is a token.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "The game has already begun!", -- The game is active and in play
+            INACTIVE = "It's missing the key ingredient! The flaghole!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The ball is delivered here!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where should we begin?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where shall we end?",
+
+        CARNIVALGAME_GOLFCLUB = "A gentle instrument!",
+        CARNIVALGAME_GOLFBALL = "Look at those cute little dimples!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Simple, it holds the course together.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "It would make a real mess of dinner!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Aren't you quite the unwelcome guest!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Like a nightmare soufflé.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It has fast digestion.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "I wonder if it can flip crepes.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The wind is an unwelcome guest!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

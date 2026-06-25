@@ -564,6 +564,9 @@ local function _AOEAttack(inst, radius, heavymult, mult, forcelanded, targets)
 						targets[v] = true
 					end
 				elseif not inst.components.commander:IsSoldier(v) and inst.components.combat:CanTarget(v) then
+					if mult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
 					inst.components.combat:DoAttack(v)
 					if mult then
 						local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult

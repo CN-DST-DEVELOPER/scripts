@@ -14,7 +14,8 @@
 
 local function OnCameraFocusDirty(inst)
     if inst._camerafocus:value() then
-        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, inst._camerafocus_dist_min, inst._camerafocus_dist_max, 0)
+		-- camerafocus_redirecttarget is from carnivalgame_golfgame
+        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, inst._camerafocus_dist_min, inst._camerafocus_dist_max, 0, nil, inst._camerafocus_offset, inst.camerafocus_redirecttarget:value())
     else
         TheFocalPoint.components.focalpoint:StopFocusSource(inst)
     end
@@ -67,13 +68,14 @@ local function FlagGameComplete(inst)
     inst._minigametask = inst:DoTaskInTime(spawn_rewards_delay, DoSpawnRewards)
 end
 
+local UPDATE_GAME_TIME = 0.1
 local function UpdateGameFn(inst)
 	if GetTime() > inst.minigame_endtime then
 		FlagGameComplete(inst)
 		return
 	end
 
-	inst:OnUpdateGame()
+	inst:OnUpdateGame(UPDATE_GAME_TIME)
 end
 
 local function StartPlayingGame(inst)
@@ -83,7 +85,7 @@ local function StartPlayingGame(inst)
 
 	inst:OnStartPlaying()
 
-	inst._minigametask = inst:DoPeriodicTask(0.1, UpdateGameFn)
+	inst._minigametask = inst:DoPeriodicTask(UPDATE_GAME_TIME, UpdateGameFn)
 end
 
 local function enable_light(inst, turn_on)
@@ -93,9 +95,13 @@ local function enable_light(inst, turn_on)
 end
 
 local function OnActivateMinigame(inst)
-	inst.components.trader:Disable()
+	if inst.components.trader ~= nil then
+		inst.components.trader:Disable()
+	else
+		inst:AddTag("carnivalgameinplay") -- for golf game music check
+	end
 	inst.components.minigame:SetIsIntro()
-	if inst._camerafocus_dist_min ~= nil then
+	if inst._camerafocus_dist_min ~= nil and not inst._camerafocus_custom_handling then
 		EnableCameraFocus(inst, true)
 	end
 	TheWorld:PushEvent("pausehounded", { source = inst })
@@ -114,7 +120,11 @@ local function OnActivateMinigame(inst)
 end
 
 local function OnDeactivateMinigame(inst)
-	inst.components.trader:Enable()
+	if inst.components.trader ~= nil then
+		inst.components.trader:Enable()
+	else
+		inst:RemoveTag("carnivalgameinplay") -- for golf game music check
+	end
 	EnableCameraFocus(inst, false)
 	TheWorld:PushEvent("unpausehounded", { source = inst })
 
@@ -135,14 +145,16 @@ end
 
 local function UpdateGameMusic(inst)
 	if ThePlayer ~= nil and ThePlayer:IsValid() and ThePlayer:IsNear(inst, TUNING.CARNIVAL_THEME_MUSIC_RANGE) then
-		ThePlayer:PushEvent("playcarnivalmusic", not inst:HasTag("trader"))
+		if inst.isgolf then
+			ThePlayer:PushEvent("playcarnivalmusic", inst:HasTag("carnivalgameinplay") and "GOLF")
+		else
+			ThePlayer:PushEvent("playcarnivalmusic", not inst:HasTag("trader"))
+		end
 	end
 end
 
 local function OnEntityWake(inst)
-	if not TheNet:IsDedicated() then
-		inst._musiccheck = inst:DoPeriodicTask(1, UpdateGameMusic)
-	end
+	inst._musiccheck = inst:DoPeriodicTask(1, UpdateGameMusic)
 end
 
 local function OnEntitySleep(inst)
@@ -194,6 +206,48 @@ local function OnRemoveEntity(inst)
 	inst:OnRemoveGame()
 end
 
+local function SetUpCameraFocus(inst)
+	inst._camerafocus = net_bool(inst.GUID, "pigking._camerafocus", "camerafocusdirty")
+	inst._camerafocus_dist_min = TUNING.CARNIVALGAME_CAMERA_FOCUS_MIN
+	inst._camerafocus_dist_max = TUNING.CARNIVALGAME_CAMERA_FOCUS_MAX
+
+	inst.OnCameraFocusDirty = OnCameraFocusDirty
+	if not TheWorld.ismastersim then
+        inst:ListenForEvent("camerafocusdirty", OnCameraFocusDirty)
+	else
+		inst.EnableCameraFocus = EnableCameraFocus
+	end
+end
+
+local function SetUpMinigameComponent(inst)
+	inst._turnon_time = 1.5
+	inst._game_duration = TUNING.CARNIVALGAME_DURATION
+	inst._minigame_score = 0
+
+	inst:AddComponent("minigame")
+	inst.components.minigame.gametype = "carnivalgame"
+	inst.components.minigame:SetOnActivatedFn(OnActivateMinigame)
+	inst.components.minigame:SetOnDeactivatedFn(OnDeactivateMinigame)
+
+    inst.OnRemoveEntity = OnRemoveEntity
+	inst:ListenForEvent("entitysleep", OnEntitySleep)
+
+	inst.ScorePoints = ScorePoints
+	inst.ActivateRandomCannon = ActivateRandomCannon
+	inst.FlagGameComplete = FlagGameComplete
+end
+
+local function SetUpGameMusic(inst, isgolf)
+	if not TheNet:IsDedicated() then
+		inst.isgolf = isgolf or nil
+		if TheWorld.ismastersim then
+			inst:ListenForEvent("entitywake", OnEntityWake)
+		else
+			inst._musiccheck = inst:DoPeriodicTask(1, UpdateGameMusic)
+		end
+	end
+end
+
 local function carnival_station_fn(common_postinit, master_postinit)
 	local inst = CreateEntity()
 
@@ -219,24 +273,16 @@ local function carnival_station_fn(common_postinit, master_postinit)
 
 	MakeSnowCoveredPristine(inst)
 
-    inst._camerafocus = net_bool(inst.GUID, "pigking._camerafocus", "camerafocusdirty")
-	inst._camerafocus_dist_min = TUNING.CARNIVALGAME_CAMERA_FOCUS_MIN
-	inst._camerafocus_dist_max = TUNING.CARNIVALGAME_CAMERA_FOCUS_MAX
+	SetUpCameraFocus(inst)
+	SetUpGameMusic(inst)
 
 	common_postinit(inst)
 
 	inst.entity:SetPristine()
 
 	if not TheWorld.ismastersim then
-        inst:ListenForEvent("camerafocusdirty", OnCameraFocusDirty)
-		inst._musiccheck = inst:DoPeriodicTask(1, UpdateGameMusic)
-
 		return inst
 	end
-
-	inst._turnon_time = 1.5
-	inst._game_duration = TUNING.CARNIVALGAME_DURATION
-	inst._minigame_score = 0
 
     inst:AddComponent("savedrotation")
 
@@ -247,11 +293,7 @@ local function carnival_station_fn(common_postinit, master_postinit)
     inst.components.trader:SetAbleToAcceptTest(Trader_AbleToAcceptTest)
     inst.components.trader.onaccept = OnAcceptItem
 
-	inst:AddComponent("minigame")
-	inst.components.minigame.gametype = "carnivalgame"
-	inst.components.minigame:SetOnActivatedFn(OnActivateMinigame)
-	inst.components.minigame:SetOnDeactivatedFn(OnDeactivateMinigame)
-
+	SetUpMinigameComponent(inst)
 
 	inst:AddComponent("workable")
 	inst.components.workable:SetWorkAction(ACTIONS.HAMMER)
@@ -264,15 +306,6 @@ local function carnival_station_fn(common_postinit, master_postinit)
 	inst:AddComponent("lootdropper")
 
 	MakeSnowCovered(inst)
-
-	inst.OnEntityWake = OnEntityWake
-	inst.OnEntitySleep = OnEntitySleep
-    inst.OnRemoveEntity = OnRemoveEntity
-
-	inst.ScorePoints = ScorePoints
-	inst.ActivateRandomCannon = ActivateRandomCannon
-
-	inst.FlagGameComplete = FlagGameComplete
 
 	master_postinit(inst)
 
@@ -294,4 +327,11 @@ return
 {
 	CarnivalStationFn = carnival_station_fn,
 	CreateGameBlocker = CreateGameBlocker,
+	--
+	-- specific parts rather than the whole functionality, for the golf game for example.
+	SetUpCameraFocus = SetUpCameraFocus,
+	SetUpMinigameComponent = SetUpMinigameComponent,
+	SetUpGameMusic = SetUpGameMusic,
+
+	EnableCameraFocus = EnableCameraFocus,
 }

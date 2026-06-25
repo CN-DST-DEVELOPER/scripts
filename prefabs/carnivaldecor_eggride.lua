@@ -1,6 +1,7 @@
-
+-- turnon sounds are built into the loops.
 local defs =
 {
+	-- 2021
 	carnivaldecor_eggride1 = {
 		bank = "carnivaldecor_eggride1", build = "carnivaldecor_eggride1",
 		physics_radius = 0.25,
@@ -19,10 +20,24 @@ local defs =
 		sound_fx = {place = "summerevent/egg_rides/3/place", turnon = nil, on = "summerevent/egg_rides/3/LP", turnoff = "summerevent/egg_rides/turn_off"},
 	},
 
+	-- 2022
 	carnivaldecor_eggride4 = {
 		bank = "carnivaldecor_eggride4", build = "carnivaldecor_eggride4",
 		physics_radius = 0.25,
 		sound_fx = {place = "summerevent2022/eggride_eggdrop/place", turnon = nil, on = "summerevent2022/eggride_eggdrop/music_lp", turnoff = "summerevent/egg_rides/turn_off", loop_oneoff ="summerevent2022/eggride_eggdrop/sfx_lp"},
+	},
+
+	-- 2026
+	carnivaldecor_eggride5 = {
+		bank = "carnivaldecor_eggride5", build = "carnivaldecor_eggride5",
+		physics_radius = 0.25,
+		sound_fx = {place = "summerevent/egg_rides/5/place", turnon = nil, on = "summerevent/egg_rides/5/LP", turnoff = "summerevent/egg_rides/turn_off"},
+	},
+
+	carnivaldecor_eggride6 = {
+		bank = "carnivaldecor_eggride6", build = "carnivaldecor_eggride6",
+		physics_radius = 0.5,
+		sound_fx = {place = "summerevent/egg_rides/6/place", turnon = nil, on = "summerevent/egg_rides/6/music_LP", turnoff = "summerevent/egg_rides/turn_off", loop_oneoff = "summerevent/egg_rides/6/sfx" },
 	},
 }
 
@@ -85,7 +100,9 @@ end
 
 local function OnAcceptItem(inst, doer)
 	TurnOnRide(inst, TUNING.CARNIVALDECOR_EGGRIDE_TOKEN_TIME)
-	return true
+	if inst.components.activatable ~= nil then
+		inst.components.activatable.inactive = false
+	end
 end
 
 local function AbleToAcceptTest(inst, item, giver)

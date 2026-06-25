@@ -851,7 +851,7 @@ SPECIAL_EVENTS =
     YOTS = "year_of_the_snake",
     YOTH = "year_of_the_knight",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.CARNIVAL
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -974,10 +974,10 @@ SPECIAL_EVENT_MUSIC =
 	-- crow carnival
     [SPECIAL_EVENTS.CARNIVAL] =
     {
-        bank = "music_frontend.fsb",
-        sound = "dontstarve/music/music_FE_summerevent",
+        bank = "music_frontend_cawnival2026.fsb",
+        sound = "dontstarve/music/music_FE_cawnival2026",
     },
-    
+
     --year of the depths worm
     -- THE BETA HAS THIS EVENT TURNED ON, BUT IS USING THE META 5 BANNER AND MUSIC
     --[[
@@ -1334,6 +1334,8 @@ TECH =
     CARPENTRY_THREE = { CARPENTRY = 3 },
 
     VAULT_REFINE_ONE = { VAULT_REFINE = 1 },
+
+    CARNIVAL_GOLFPROPS_ONE = { CARNIVAL_GOLFPROPS = 1 },
 }
 
 -- See cell_data.h

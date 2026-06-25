@@ -425,7 +425,7 @@ function SocketHolder:GetDebugString()
     local pips = {}
     for i = 1, self.maxsockets do
         local named = self.socketnames[i]:value() ~= 0
-        local name = self.socketmetadata[i] and self.socketmetadata[i].socketname or "n/a"
+		local name = self.socketmetadata and self.socketmetadata[i] and self.socketmetadata[i].socketname or "n/a"
         local socketed = self.socketed[i]:value()
         local quality = self.socketquality[i]:value()
         table.insert(pips, string.format("[%d: Named:%d{%s} Socketed:%d Quality:%d]", i, named and 1 or 0, name, socketed and 1 or 0, quality))

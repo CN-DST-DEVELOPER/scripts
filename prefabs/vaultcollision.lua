@@ -122,7 +122,6 @@ local function BuildPhysicsMesh(points, offset)
     local triangles = {}
     local index_total = #points
     local v0 = points[index_total]
-    local index = 1
     for index = 1, index_total do
         local v1 = points[index]
         local x0, z0 = v0[1], v0[2]

@@ -404,6 +404,66 @@ CLOTHING =
 		rarity_modifier = "Inspired",
 		release_group = 125,
 	},
+	body_minigolf_black =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	body_minigolf_blacktie =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	body_minigolf_mint =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	body_minigolf_minttie =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	body_minigolf_red =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	body_minigolf_redtie =
+	{
+		type = "body",
+		skin_tags = { "CAWNIVAL", "CLOTHING_BODY", "CLOTHING", },
+		symbol_overrides = { "torso", "arm_upper", },
+		torso_tuck = "untucked",
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
 	body_oni_001 =
 	{
 		type = "body",
@@ -8438,7 +8498,8 @@ CLOTHING =
 	{
 		type = "hand",
 		skin_tags = { "CLOTHING_HAND", "CLOTHING", "TWENTIES", },
-		symbol_overrides = { "hand", "arm_lower", "arm_upper", },
+		symbol_overrides = { "hand", "arm_lower", "arm_upper", "arm_upper_skin", },
+		symbol_overrides_by_character = { default = { arm_upper_skin = "arm_upper_skin", },walter = { arm_upper_skin = "arm_upper_skin_walter", },wanda = { arm_upper_skin = "arm_upper_skin_wanda", },warly = { arm_upper_skin = "arm_upper_skin_warly", },waxwell = { arm_upper_skin = "arm_upper_skin_waxwell", },webber = { arm_upper_skin = "arm_upper_skin_webber", },wormwood = { arm_upper_skin = "arm_upper_skin_wormwood", },wortox = { arm_upper_skin = "arm_upper_skin_wortox", },wurt = { arm_upper_skin = "arm_upper_skin_wurt", },wx78 = { arm_upper_skin = "arm_upper_skin_wx78", },},
 		symbol_hides = { "arm_lower_cuff", },
 		rarity = "Spiffy",
 		rarity_modifier = "Woven",
@@ -9370,6 +9431,66 @@ CLOTHING =
 		rarity_modifier = "Inspired",
 		legs_cuff_size = 5,
 		release_group = 125,
+	},
+	legs_minigolf_pants_black =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "torso_pelvis", },
+		symbol_hides = { "skirt", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	legs_minigolf_pants_purple =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "torso_pelvis", },
+		symbol_hides = { "skirt", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	legs_minigolf_pants_red =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "torso_pelvis", },
+		symbol_hides = { "skirt", },
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	legs_minigolf_skirt_black =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "skirt", },
+		symbol_overrides_by_character = { default = { leg = "leg", },walter = { leg = "leg_walter", },wanda = { leg = "leg_wanda", },warly = { leg = "leg_warly", },waxwell = { leg = "leg_waxwell", },webber = { leg = "leg_webber", },wormwood = { leg = "leg_wormwood", },wortox = { leg = "leg_wortox", },wurt = { leg = "leg_wurt", },wx78 = { leg = "leg_wx78", },},
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	legs_minigolf_skirt_mint =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "skirt", },
+		symbol_overrides_by_character = { default = { leg = "leg", },walter = { leg = "leg_walter", },wanda = { leg = "leg_wanda", },warly = { leg = "leg_warly", },waxwell = { leg = "leg_waxwell", },webber = { leg = "leg_webber", },wormwood = { leg = "leg_wormwood", },wortox = { leg = "leg_wortox", },wurt = { leg = "leg_wurt", },wx78 = { leg = "leg_wx78", },},
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
+	},
+	legs_minigolf_skirt_red =
+	{
+		type = "legs",
+		skin_tags = { "CAWNIVAL", "CLOTHING_LEGS", "CLOTHING", },
+		symbol_overrides = { "foot", "leg", "skirt", },
+		symbol_overrides_by_character = { default = { leg = "leg", },walter = { leg = "leg_walter", },wanda = { leg = "leg_wanda", },warly = { leg = "leg_warly", },waxwell = { leg = "leg_waxwell", },webber = { leg = "leg_webber", },wormwood = { leg = "leg_wormwood", },wortox = { leg = "leg_wortox", },wurt = { leg = "leg_wurt", },wx78 = { leg = "leg_wx78", },},
+		rarity = "Spiffy",
+		rarity_modifier = "Woven",
+		release_group = 183,
 	},
 	legs_oni =
 	{

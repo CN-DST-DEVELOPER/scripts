@@ -327,10 +327,14 @@ local function OnAttacked(inst, data)
 		end
 
 		local target = inst.components.combat.target
-		if target and (target.isplayer or target:HasTag("epic")) then
-			local range = TUNING.VAULT_PILLAR_GUARD_ATTACK_RANGE + target:GetPhysicsRadius(0)
-			if target:GetDistanceSqToPoint(x, y, z) < range * range then
-				return --don't switch off priority targets that are within melee range
+		if target then
+			if not data.attacker.isplayer and target.isplayer and inst.components.combat.lastwasattackedbytargettime + 4 >= GetTime() then
+				return --non-player should not take aggro off player actively attacking
+			elseif target.isplayer or target:HasTag("epic") then
+				local range = TUNING.VAULT_PILLAR_GUARD_ATTACK_RANGE + target:GetPhysicsRadius(0)
+				if target:GetDistanceSqToPoint(x, y, z) < range * range then
+					return --don't switch off priority targets that are within melee range
+				end
 			end
 		end
 
@@ -982,7 +986,7 @@ return Prefab("vault_pillar_guard", fn, assets, prefabs),
 				--This recipe exists as a DeconstructionRecipe, but is configured with the proper testfn for use here.
 				local rec = AllRecipes["vault_pillar_guard_constr"]
 				return rec ~= nil
-					and TheWorld.Map:CanDeployRecipeAtPoint(pt, rec, rot)
+					and TheWorld.Map:CanDeployRecipeAtPoint(pt, rec, rot, deployer)
 					and not TheWorld.Map:IsPointInVaultRoom(pt:Get())
 			end,
 			deploymode = DEPLOYMODE.CUSTOM,

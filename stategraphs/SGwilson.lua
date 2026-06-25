@@ -912,6 +912,7 @@ local actionhandlers =
                 or nil
         end),
     ActionHandler(ACTIONS.TERRAFORM, "terraform"),
+    ActionHandler(ACTIONS.TERRAFORM_REMOVE, "terraform"),
     ActionHandler(ACTIONS.DIG,
         function(inst)
             if inst:HasTag("beaver") then
@@ -1731,6 +1732,14 @@ local actionhandlers =
         inst.sg.statemem.continuousaction = true
         return "crushitemcast_trigger"
     end),
+
+	-- Crow Carnival 2026
+	ActionHandler(ACTIONS.GOLF_START_AIMING, "club_set"),
+	ActionHandler(ACTIONS.GOLF_START_CHARGING,
+		function(inst)
+			inst.sg.statemem.charging = true
+			return "club_putt_pre"
+		end),
 }
 
 local events =
@@ -16260,7 +16269,19 @@ local states =
         onupdate = function(inst, dt)
             local item = inst.sg.statemem.item
             if item then
-                if not (item:IsValid() and item.components.inventoryitem:GetGrandOwner() == inst) then
+                local shouldfail = not item:IsValid()
+                if not shouldfail then
+                    local grandowner = item.components.inventoryitem:GetGrandOwner()
+                    if not grandowner then
+                        shouldfail = true
+                    elseif grandowner ~= inst then
+                        -- Check if the item is in a chest the player has open.
+                        if grandowner.components.container == nil or not grandowner.components.container:IsOpenedBy(inst) then
+                            shouldfail = true
+                        end
+                    end
+                end
+                if shouldfail then
                     inst.sg.statemem.item = nil
                     inst.AnimState:PlayAnimation("remotecast_nodir_pst")
                     inst.AnimState:PushAnimation("useitem_pst", false)
@@ -28241,6 +28262,232 @@ local states =
             SerializeUserSession(inst)
         end,
     },
+
+	State{
+		name = "club_set",
+		tags = { "doing", "busy", "nodragwalk" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_set_pre")
+			inst.AnimState:PushAnimation("club_set_loop")
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+			if inst.components.playercontroller and inst.components.playercontroller.isclientcontrollerattached then
+				inst.sg:AddStateTag("overridelocomote")
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst.sg.statemem.set = true
+			if not inst:PerformBufferedAction() then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+				return
+			end
+			inst:AddTag("golf_aiming")
+			inst.sg:RemoveStateTag("busy")
+		end,
+
+		onupdate = function(inst, dt)
+			if inst.sg.statemem.set then
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if not (club and club.components.golfclub and club.components.golfclub:IsAiming()) then
+					inst.sg.statemem.set = false
+					inst.AnimState:PlayAnimation("club_set_pst")
+					inst.sg:GoToState("idle", true)
+					return
+				end
+			end
+			if inst.components.playercontroller and inst.components.playercontroller.isclientcontrollerattached then
+				inst.sg:AddStateTag("overridelocomote")
+			else
+				inst.sg:RemoveStateTag("overridelocomote")
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return inst.sg:HasStateTag("overridelocomote")
+			end),
+		},
+
+		onexit = function(inst)
+			inst:RemoveTag("golf_aiming")
+
+			if inst.sg.statemem.set and not inst.sg.statemem.charging then
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					club.components.golfclub:StopAiming()
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_putt_pre",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_putt_pre")
+			inst:AddTag("golf_charging")
+			inst:PerformBufferedAction()
+			inst.sg:SetTimeout(15 * FRAMES) --min charge time
+		end,
+
+		ontimeout = function(inst)
+			inst.sg.statemem.canrelease = true
+		end,
+
+		onupdate = function(inst, dt)
+			local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if not (club and club.components.golfclub and club.components.golfclub:IsAiming()) then
+				inst.sg.statemem.unset = true
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+				return
+			end
+
+			if not inst.sg.statemem.canrelease then
+				return
+			end
+
+			local charged = inst.AnimState:IsCurrentAnimation("club_putt_charged")
+			if not (inst.components.playercontroller and
+					inst.components.playercontroller:IsAnyOfControlsPressed(
+						CONTROL_PRIMARY,
+						CONTROL_CONTROLLER_ACTION))
+			then
+				inst.sg.statemem.putting = true
+				inst.sg:GoToState(charged and "club_swing" or "club_putt")
+				return
+			end
+
+			if not charged and
+				club.components.golfclub_reticule and
+				club.components.golfclub_reticule:IsMaxCharge()
+			then
+				inst.AnimState:PlayAnimation("club_putt_charged", true)
+			end
+		end,
+
+		onexit = function(inst)
+			if not inst.sg.statemem.putting then
+				inst:RemoveTag("golf_charging")
+			end
+			if not (inst.sg.statemem.putting or inst.sg.statemem.unset) then
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					club.components.golfclub:StopAiming()
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_putt",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_putt_hit")
+			inst.AnimState:PushAnimation("club_putt_pst", false)
+			local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if club and club.components.golfclub then
+				inst.sg.statemem.speedscale = club.components.golfclub:OnStartSwing(inst)
+			else
+				inst.sg.statemem.unset = true
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(1, function(inst)
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					inst.sg.statemem.unset = true
+					local speed = TUNING.GOLF_MIN_SPEED + (TUNING.GOLF_MAX_PUTT_SPEED - TUNING.GOLF_MIN_SPEED) * inst.sg.statemem.speedscale
+					club.components.golfclub:OnSwingHit(inst, speed)
+				end
+				inst.SoundEmitter:PlaySoundWithParams("summerevent/golf_minigame/ball/player_hit", { swing_power = inst.sg.statemem.speedscale < 0.5 and 0.1 or 0.3 })
+			end),
+			FrameEvent(19, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("unequip", function(inst)
+				inst.sg:GoToState("idle")
+			end),
+		},
+
+		onexit = function(inst)
+			inst:RemoveTag("golf_charging")
+
+			if not inst.sg.statemem.unset then
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					club.components.golfclub:StopAiming()
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_swing",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_swing_hit")
+			inst.AnimState:SetFrame(1)
+			inst.AnimState:PushAnimation("club_swing_pst", false)
+			local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			if club and club.components.golfclub then
+				inst.sg.statemem.speedscale = club.components.golfclub:OnStartSwing(inst)
+			else
+				inst.sg.statemem.unset = true
+				inst.sg:GoToState("idle")
+			end
+		end,
+
+		timeline =
+		{
+			FrameEvent(0, function(inst)
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					inst.sg.statemem.unset = true
+					club.components.golfclub:OnSwingHit(inst, TUNING.GOLF_MAX_SWING_SPEED)
+				end
+				inst.SoundEmitter:PlaySoundWithParams("summerevent/golf_minigame/ball/player_hit", { swing_power = 0.5 })
+			end),
+			FrameEvent(19, function(inst)
+				inst.sg:GoToState("idle", true)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("unequip", function(inst)
+				inst.sg:GoToState("idle")
+			end),
+		},
+
+		onexit = function(inst)
+			inst:RemoveTag("golf_charging")
+
+			if not inst.sg.statemem.unset then
+				local club = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+				if club and club.components.golfclub then
+					club.components.golfclub:StopAiming()
+				end
+			end
+		end,
+	},
 }
 
 local hop_timelines =

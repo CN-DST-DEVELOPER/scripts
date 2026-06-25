@@ -65,6 +65,10 @@ local function OnOtherCollide(inst, other)
         RECENTLY_CHARGED[other] = true
         ShakeAllCameras(CAMERASHAKE.SIDE, 0.5, .01, r, inst, 40)
         inst:DoTaskInTime(CLEAR_DELAY, ClearRecentlyCharged, other)
+		if other.components.rider and other.components.rider.mount then
+			RECENTLY_CHARGED[other.components.rider.mount] = true
+			inst:DoTaskInTime(CLEAR_DELAY, ClearRecentlyCharged, other.components.rider.mount)
+		end
         --inst.SoundEmitter:PlaySound("dontstarve/creatures/rook/explo")
         inst.components.combat:DoAttack(other)
         other:PushEvent("knockback", { knocker = inst, radius = 1.5, strengthmult = 1.5, forcelanded = true })

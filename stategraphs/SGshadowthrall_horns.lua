@@ -60,10 +60,16 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 			not (targets ~= nil and targets[v]) and
 			v:IsValid() and not v:IsInLimbo()
 			and not (v.components.health ~= nil and v.components.health:IsDead())
-			then
+		then
 			local range = radius + v:GetPhysicsRadius(0)
 			local dsq = v:GetDistanceSqToPoint(x, y, z)
 			if dsq < range * range and inst.components.combat:CanTarget(v) then
+				if targets then
+					targets[v] = true
+					if (mult or devour == true) and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
+				end
 				inst.components.combat:DoAttack(v)
 				if devour == true and v.sg ~= nil and v:HasAnyTag("player", "devourable") and dsq < AOE_DEVOUR_RADIUS_SQ then
 					--Don't buffer, handle immediately
@@ -75,9 +81,6 @@ local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, tar
 				if mult ~= nil and devour ~= v then
 					local strengthmult = (v.components.inventory ~= nil and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
 					v:PushEvent("knockback", { knocker = inst, radius = radius + dist + 3, strengthmult = strengthmult, forcelanded = forcelanded })
-				end
-				if targets ~= nil then
-					targets[v] = true
 				end
 			end
 		end

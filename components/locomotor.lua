@@ -1464,7 +1464,7 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
 
         local reached_dest, invalid, in_cooldown = nil, nil, false
 		if self.bufferedaction and self.bufferedaction.action.customarrivecheck then
-			reached_dest, invalid = self.bufferedaction.action.customarrivecheck(self.inst, self.dest)
+			reached_dest, invalid = self.bufferedaction.action.customarrivecheck(self.inst, self.dest, self.bufferedaction)
 		else
 			local dsq = distsq(destpos_x, destpos_z, mypos_x, mypos_z)
 			local arrive_dsq = self.arrive_dist * self.arrive_dist

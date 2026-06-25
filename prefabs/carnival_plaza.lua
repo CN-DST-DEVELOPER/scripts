@@ -135,15 +135,6 @@ local function UpdateArtForRank(inst, rank, prev_rank, snap_animations)
 
 end
 
-local function onbuilt(inst, data)
-	local rot = data ~= nil and data.rot or 0
-	inst.Transform:SetRotation(rot)
-
-    inst.AnimState:PlayAnimation("place")
-    inst.AnimState:PushAnimation("idle", true)
-    inst.SoundEmitter:PlaySound("summerevent/plaza/place")
-end
-
 local function onrankchanged(inst, new_rank, prev_rank, snap_animations)
 	if inst._choppeddown then
 		return
@@ -184,7 +175,6 @@ local function onremove(inst)
     end
 end
 
-
 local function CreateFloor(parent)
 	local inst = CreateEntity()
 
@@ -215,9 +205,44 @@ local function CreateFloor(parent)
 		parent.components.placer:LinkEntity(inst, 0.25)
 	end
 
-	inst:ListenForEvent("onbuilt", function() inst.AnimState:PlayAnimation("place") inst.AnimState:PushAnimation("idle", false) end, parent)
+	inst.anim = "idle"
+	inst.deploy_anim = "place"
 
 	return inst
+end
+
+local function DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("place") then
+		local t = inst.AnimState:GetCurrentAnimationTime()
+		for _, v in ipairs(inst.floor_parts) do
+			v.AnimState:PlayAnimation(v.deploy_anim)
+			v.AnimState:SetTime(t)
+			v.AnimState:PushAnimation(v.anim, false)
+		end
+	end
+end
+
+local function OnEntityWake(inst)
+	inst.OnEntityWake = nil
+	DoSyncAnim(inst)
+end
+
+local function CreateFlooring(parent)
+	parent.floor_parts = {}
+	table.insert(parent.floor_parts, CreateFloor(parent))
+	parent.OnEntityWake = OnEntityWake
+end
+
+local function onbuilt(inst, data)
+	local rot = data ~= nil and data.rot or 0
+	inst.Transform:SetRotation(rot)
+
+    inst.AnimState:PlayAnimation("place")
+    inst.AnimState:PushAnimation("idle", true)
+    inst.SoundEmitter:PlaySound("summerevent/plaza/place")
+	if inst.floor_parts then
+		DoSyncAnim(inst)
+	end
 end
 
 local function GetActivateVerb(inst, doer)
@@ -230,13 +255,13 @@ local function UpdateGameMusic(inst)
 	end
 end
 
-local function OnEntityWake(inst)
+local function event_OnEntityWake(inst)
 	if not TheNet:IsDedicated() then
 		inst._musiccheck = inst:DoPeriodicTask(1, UpdateGameMusic)
 	end
 end
 
-local function OnEntitySleep(inst)
+local function event_OnEntitySleep(inst)
 	if inst._musiccheck ~= nil then
 		inst._musiccheck:Cancel()
 		inst._musiccheck = nil
@@ -352,7 +377,7 @@ local function fn()
 	inst.GetActivateVerb = GetActivateVerb
 
 	if not TheNet:IsDedicated() then
-		CreateFloor(inst)
+		CreateFlooring(inst)
 
 		inst:AddComponent("deployhelper")
 		inst.components.deployhelper:AddKeyFilter("carnival_plaza_decor")
@@ -412,9 +437,8 @@ local function fn()
 
 	UpdateArtForRank(inst, 1, 1, true)
 
-	inst.OnEntityWake = OnEntityWake
-	inst.OnEntitySleep = OnEntitySleep
-
+	inst:ListenForEvent("entitywake", event_OnEntityWake)
+	inst:ListenForEvent("entitysleep", event_OnEntitySleep)
     inst:ListenForEvent("onbuilt", onbuilt)
 
 	local r = 5

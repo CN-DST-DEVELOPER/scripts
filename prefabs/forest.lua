@@ -567,6 +567,9 @@ local prefabs =
     "yothknightwarningsound",
 
     "hot_splash",
+
+    -- TODO #FIXME
+    "carnivalgame_golfgame",
 }
 
 local FISH_DATA = require("prefabs/oceanfishdef")

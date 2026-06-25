@@ -352,6 +352,23 @@ return
 			"legs_wes_western",
 			"feet_wes_western",
 		},
+		{
+			"waxwell_western",
+			"body_waxwell_western",
+			"hand_waxwell_western",
+			"legs_waxwell_western",
+		},
+		{
+			"wolfgang_western",
+			"body_wolfgang_western",
+			"legs_wolfgang_western",
+		},
+		{
+			"wurt_western",
+			"body_wurt_western",
+			"hand_wurt_western",
+			"legs_wurt_western",
+		},
 	},
 	emote_yawn =
 	{

@@ -54,9 +54,28 @@ local function OnVacate(inst)
 	EnableSpawning(inst, false)
 end
 
+local POWERPOINT_MUST_TAGS = { "security_powerpoint" }
+local POWERPOINT_CANT_TAGS =  { "INLIMBO", "FX" }
+
+local function IsPowerPointNear(x, y, z) -- keep similar logic to archive_securitypulsebrain.lua::FindPowerPoint
+    local ents = TheSim:FindEntities(x, y, z, 20, POWERPOINT_MUST_TAGS, POWERPOINT_CANT_TAGS)
+    for _, ent in ipairs(ents) do
+        local skip = false
+        if ent.components.health then
+            if ent.components.health:GetPercent() < (ent.MED_THRESHOLD_DOWN or 1) then
+                skip = true
+            end
+        end
+        if not skip and (ent.pulse_findrange == nil or ent:GetDistanceSqToPoint(x, y, z) <= ent.pulse_findrange*ent.pulse_findrange) then
+            return ent
+        end
+    end
+end
+
 local function CanSpawn(inst)
 	if inst.AnimState:IsCurrentAnimation("idle") then
 		local x, y, z = inst.Transform:GetWorldPosition()
+
 		for i, v in ipairs(AllPlayers) do
 			if not IsEntityDeadOrGhost(v) and
 				v.entity:IsVisible() and
@@ -72,6 +91,8 @@ local function CanSpawn(inst)
 				end
 			end
 		end
+
+		return IsPowerPointNear(x, y, z)
 	end
 	return false
 end

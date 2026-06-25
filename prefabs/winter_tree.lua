@@ -541,7 +541,9 @@ local function TransformIntoLeif(inst)
 				local cosangle = math.cos(angle)
 				local sinangle = math.sin(angle)
 				local r = inst:GetPhysicsRadius()
-				loot.Physics:Teleport(x + cosangle * r, SLOT_HEIGHTS[i] or 2 + math.random() * 3, z - sinangle * r)
+				if not TryTeleportToLaunchPos(loot, x + cosangle * r, SLOT_HEIGHTS[i] or 2 + math.random() * 3, z - sinangle * r) then
+					loot.Physics:Teleport(x, SLOT_HEIGHTS[i] or 2 + math.random() * 3, z)
+				end
 
 				local speed = 1 + math.random()
 				local y_speed = 8 + math.random() * 4

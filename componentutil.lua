@@ -1183,6 +1183,7 @@ end
 -------
 -- Teleporting checks for restrictions.
 
+local vaultroom_defs = require("prefabs/vaultroom_defs")
 function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
     local map = TheWorld.Map
 
@@ -1192,7 +1193,10 @@ function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
         end
     end
 
-    if map:IsPointInAnyVault(tx, ty, tz) then
+    if map:IsPointInVaultRoom(tx, ty, tz) then
+        if map:IsPointInVaultRoom(fx, fy, fz) and vaultroom_defs.IsPathClear(fx, fy, fz, tx, ty, tz) then
+            return true
+        end
         return false
     end
 

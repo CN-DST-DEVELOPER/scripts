@@ -87,7 +87,9 @@ local function OnEquip(inst, owner)
         inst.marker_pointer.Follower:FollowSymbol(inst.marker.GUID, "empty", 0, 0, 0)
 
         inst.update_direction_task = inst:DoPeriodicTask(0, OnUpdateDirection)
-        OnUpdateDirection(inst)
+        if not POPULATING then
+            OnUpdateDirection(inst)
+        end
     end
 end
 

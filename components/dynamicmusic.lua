@@ -451,12 +451,27 @@ local function StartFarming(player)
 end
 
 local function StartCarnivalMusic(player, is_game_active)
+    -- is_game_active
+        -- false = ambient carnival music - BUSYTHEMES.CARNIVAL_AMBIENT
+        -- true = regular carnival game music - BUSYTHEMES.CARNIVAL_MINIGAME
+        -- "GOLF" = play golf music - BUSYTHEMES.CARNIVAL_MINIGAME
 	if _dangertask ~= nil or _pirates_near ~= nil or (_busytask ~= nil and _busytheme == BUSYTHEMES.CARNIVAL_MINIGAME and not is_game_active) then
 		return
 	end
 
-	local theme = is_game_active and BUSYTHEMES.CARNIVAL_MINIGAME or BUSYTHEMES.CARNIVAL_AMBIENT
-	StartBusyTheme(player, theme, theme == BUSYTHEMES.CARNIVAL_MINIGAME and "summerevent/music/2" or "summerevent/music/1", 2)
+    local theme, sound = nil, nil
+    if is_game_active == "GOLF" then
+        theme = BUSYTHEMES.CARNIVAL_MINIGAME
+        sound = "dontstarve/music/music_minigolf"
+    elseif is_game_active then
+        theme = BUSYTHEMES.CARNIVAL_MINIGAME
+        sound = "summerevent/music/2"
+    else
+        theme = BUSYTHEMES.CARNIVAL_AMBIENT
+        sound = "summerevent/music/1"
+    end
+
+	StartBusyTheme(player, theme, sound, 2)
 end
 
 local function StartStageplayMusic(player, mood_index)

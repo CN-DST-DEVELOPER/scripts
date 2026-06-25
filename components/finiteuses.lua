@@ -28,6 +28,8 @@ function FiniteUses:SetConsumption(action, uses)
     self.consumption[action] = uses
     if action == ACTIONS.MINE then
         self.consumption[ACTIONS.REMOVELUNARBUILDUP] = uses
+    elseif action == ACTIONS.TERRAFORM then
+        self.consumption[ACTIONS.TERRAFORM_REMOVE] = uses
     end
 end
 

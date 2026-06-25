@@ -747,6 +747,55 @@ function MakePondPhysics(inst, rad, height)
 	return phys
 end
 
+function MakeGolfBallPhysics(inst, rad)
+	local phys = inst.entity:AddPhysics()
+	phys:SetMass(1)
+	phys:SetFriction(0.06)
+	phys:SetDamping(0)
+	phys:SetRestitution(0.9)
+	phys:SetCollisionGroup(COLLISION.ITEMS)
+	phys:SetCollisionMask(COLLISION.WORLD)
+	phys:SetSphere(rad or 0.2)
+	return phys
+end
+
+local function GolfObstacle_OnEntityWake(inst)
+	inst:RemoveEventCallback("entitywake", GolfObstacle_OnEntityWake)
+
+	local fx = CreateEntity()
+
+	fx:AddTag("CLASSIFIED")
+	--[[Non-networked entity]]
+	fx.entity:SetCanSleep(TheWorld.ismastersim)
+	fx.persists = false
+
+	fx.entity:AddTransform()
+	fx.entity:AddPhysics()
+	fx.Physics:SetMass(0)
+	fx.Physics:SetFriction(0.1)
+	fx.Physics:SetDamping(0)
+	fx.Physics:SetRestitution(0.85)
+	fx.Physics:SetCollisionGroup(COLLISION.BOAT_LIMITS)
+	fx.Physics:SetCollisionMask(COLLISION.ITEMS)
+	local rad = inst.Physics:GetRadius()
+	fx.Physics:SetCylinder(rad, rad)
+
+	fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
+	fx:ListenForEvent("onremove", function() fx:Remove() end, inst)
+end
+
+function MakeGolfObstaclePhysics(inst, rad)
+	local phys = inst.entity:AddPhysics()
+	phys:SetMass(0)
+	phys:SetCollisionGroup(COLLISION.SMALLOBSTACLES)
+	phys:SetCollisionMask(COLLISION.ITEMS)
+	phys:SetSphere(rad or 0.2)
+
+	inst:ListenForEvent("entitywake", GolfObstacle_OnEntityWake)
+
+	return phys
+end
+
 function RemovePhysicsColliders(inst)
     local physics = inst.Physics
     if not physics then

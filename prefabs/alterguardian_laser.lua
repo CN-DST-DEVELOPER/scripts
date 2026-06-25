@@ -147,6 +147,9 @@ local function DoDamage(inst, targets, skiptoss, skipscorch, scale, scorchscale,
 
 					--for knockback
 					local strengthmult = mult and ((v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult) or nil
+					if strengthmult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
 
                     if inst.caster ~= nil and inst.caster:IsValid() then
                         inst.caster.components.combat:DoAttack(v)

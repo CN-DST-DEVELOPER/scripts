@@ -2,6 +2,125 @@ local defs = {}
 
 local TILE_SIZE = 4
 
+--------------------------------------------------------------------------
+
+local function GetActualTileCoords(fx, fy, fz) -- For when point is on tile overhang
+    local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(fx, 0, fz)
+    local tilecenter_x, tilecenter_y, tilecenter_z  = TheWorld.Map:GetTileCenterPoint(fx, 0, fz)
+	local actual_tile = TheWorld.Map:GetTile(tx, ty)
+
+    if not TileGroupManager:IsLandTile(actual_tile) then
+		local xpercent = (tilecenter_x - fx) / TILE_SCALE
+		local ypercent = (tilecenter_z - fz) / TILE_SCALE
+
+		local x_min = xpercent > 0.166 and -1 or 0
+		local x_max = xpercent < -0.166 and 1 or 0
+		local y_min = ypercent > 0.166 and -1 or 0
+		local y_max = ypercent < -0.166 and 1 or 0
+
+        for x = x_min, x_max do
+            for y = y_min, y_max do
+				local nx, ny = tx + x, ty + y
+                local tile = TheWorld.Map:GetTile(nx, ny)
+				if TileGroupManager:IsLandTile(tile) then
+                    return nx, ny
+                end
+            end
+        end
+    end
+
+	return tx, ty
+end
+
+local Room = Class(function(self)
+	self.col1 = -5
+	self.col2 = 5
+	self.row1 = -5
+	self.row2 = 5
+	self.width = self.col2 - self.col1 + 1
+	self.height = self.row2 - self.row1 + 1
+	self.origin_tx = nil
+	self.origin_ty = nil
+end)
+
+function Room:GetTileXY()
+	if self.origin_tx == nil then
+		local x, z = TheWorld.net.components.vault_floor_helper:GetMarkerOrigin()
+		self.origin_tx, self.origin_ty = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
+	end
+	return self.origin_tx, self.origin_ty
+end
+
+function Room:IsInvalidTile(col, row)
+	local ox, oy = self:GetTileXY()
+	local tx, ty = ox + col, oy + row
+	return IsVaultTileInvalid(tx, ty) or TileGroupManager:IsInvalidTile(TheWorld.Map:GetTile(tx, ty))
+end
+
+function Room:IsPathClear(fx, fy, fz, tx, ty, tz)
+	local ox, oy = self:GetTileXY()
+	fx, fy = GetActualTileCoords(fx, fy, fz)
+	tx, ty = GetActualTileCoords(tx, ty, tz)
+
+	-- fast checks
+	if self:IsInvalidTile(fx - ox, fy - oy) then
+		return false
+	elseif fx == tx and fy == ty then
+		return true
+	end
+
+	-- TODO should cache result?
+	-- TODO AStar search instead of BFS.
+
+	local visited = {}
+
+	local is_clear = false
+
+	local to_visit_queue = { { fx, fy } }
+	local queue_index = 1
+	while queue_index <= #to_visit_queue do
+		local next_x, next_y = to_visit_queue[queue_index][1], to_visit_queue[queue_index][2]
+        queue_index = queue_index + 1
+
+		local col = next_x - ox
+		local row = next_y - oy
+		local index = (row - self.row1) * self.width + col - self.col1
+		if visited[index] == nil then
+			visited[index] = true
+
+			if next_x == tx and next_y == ty then
+				is_clear = true
+				break
+			end
+
+        	for off_x = -1, 1, 1 do
+        	    for off_y = -1, 1, 1 do
+        	        if off_x ~= 0 or off_y ~= 0 then
+						local nx, ny = next_x + off_x, next_y + off_y
+						if not self:IsInvalidTile(nx - ox, ny - oy) then
+							table.insert(to_visit_queue, { nx, ny })
+							if nx == tx and ny == ty then
+								is_clear = true
+								break
+							end
+						end
+					end
+
+					if is_clear then break end
+				end
+			end
+
+			if is_clear then break end
+		end
+	end
+
+	return is_clear
+end
+
+local vault_room = Room()
+
+--------------------------------------------------------------------------
+
 local Terraformer = Class(function(self)
 	self.col1 = -5
 	self.col2 = 5
@@ -62,6 +181,12 @@ end
 
 defs.ResetTerraformRoomAtXZ = function(inst, x, z)
 	Terraformer():ApplyAtXZ(x, z)
+end
+
+--------------------------------------------------------------------------
+
+defs.IsPathClear = function(fx, fy, fz, tx, ty, tz)
+	return vault_room:IsPathClear(fx, fy, fz, tx, ty, tz)
 end
 
 --------------------------------------------------------------------------
@@ -991,6 +1116,20 @@ defs.decon1.TerraformRoomAtXZ = function(inst, x, z)
 end
 
 defs.decon1.LayoutNewRoomAtXZ = function(inst, x, z)
+	-- Invalid tiles for pathfinding
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x, 0, z)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x + TILE_SCALE, 0, z)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x - TILE_SCALE, 0, z)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x + TILE_SCALE, 0, z + TILE_SCALE)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x - TILE_SCALE, 0, z + TILE_SCALE)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x + TILE_SCALE, 0, z - TILE_SCALE)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x - TILE_SCALE, 0, z - TILE_SCALE)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x, 0, z + TILE_SCALE)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x, 0, z - TILE_SCALE)
+
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x, 0, z + TILE_SCALE * 2)
+	SpawnPrefab("vault_invalidtile").Transform:SetPosition(x, 0, z - TILE_SCALE * 2)
+
     -- Mist generators.
     local mist1 = SpawnPrefab("vault_decon_mister")
     local mist2 = SpawnPrefab("vault_decon_mister")
