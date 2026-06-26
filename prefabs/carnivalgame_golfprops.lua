@@ -676,6 +676,15 @@ local function wormhole_OnBuilt(inst, data)
     if data ~= nil and data.builder ~= nil then -- random rotation only when built by player at first, otherwise onbuilt is also pushed by the golfgame
         inst.Transform:SetRotation(math.random() * 360)
     end
+	if inst.decals then
+		wormhole_DoSyncAnim(inst)
+	end
+end
+
+local function wormhole_SpawnedAsGolfProp(inst)
+	if inst.decals then
+		wormhole_DoSyncAnim(inst) -- to fix up rotations
+	end
 end
 
 local wormholes =
@@ -751,6 +760,7 @@ for i, holedata in ipairs(wormholes) do
             inst.Open = wormhole_Open
             inst:ListenForEvent("ms_golfballentered", wormhole_OnGolfBallEntered)
             inst:ListenForEvent("onbuilt", wormhole_OnBuilt)
+            inst:ListenForEvent("spawnedasgolfprop", wormhole_SpawnedAsGolfProp)
         end,
     })
 end

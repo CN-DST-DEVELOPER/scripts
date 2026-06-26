@@ -649,6 +649,7 @@ STRINGS =
 			STUDY = "Study at",
 			FORGE = "Forge at",
             OPERATE = "Operate",
+            GOLFPROPS = "Get Props at"
 		},
 
         JUMPIN =
@@ -4703,8 +4704,8 @@ STRINGS =
         CARNIVALGAME_GOLFPROP_MOVINGWALL_RED = "Red Pop-up Blocker", -- retracts and emerges
         CARNIVALGAME_GOLFPROP_MOVINGWALL_BLUE = "Blue Pop-up Blocker", -- retracts and emerges
 
-        CARNIVALGAME_GOLFPROP_WORMHOLE = "Mini Wormhole", -- a fake wormhole, that lets the ball travel to another random wormhole
-        CARNIVALGAME_GOLFPROP_WORMHOLE_LIMITED = "Sick Mini Wormhole", -- a fake sick wormhole, that lets the ball travel to another random sick wormhole, disappears after being used once
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Mini Worm Hole", -- a fake wormhole, that lets the ball travel to another random wormhole
+        CARNIVALGAME_GOLFPROP_WORMHOLE_LIMITED = "Sick Mini Worm Hole", -- a fake sick wormhole, that lets the ball travel to another random sick wormhole, disappears after being used once
 
         CARNIVALGAME_GOLFPROP_SPRING = "Persistent Directional Springboard", -- spring that pops up to launch the ball in a direction, and resets during the game
         CARNIVALGAME_GOLFPROP_SPRING_ONETIME = "Directional Springboard", -- spring that pops up to launch the ball in a direction, only resets at end of game
@@ -5971,9 +5972,9 @@ STRINGS =
 		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Something big is coming up!",
 
         -- Crow Carnival 2026
-        CARNIVALGAME_GOLFGAME_KIT_EASY = "Bring on the beginner!",
-        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "For the casual mini-golfer.",
-        CARNIVALGAME_GOLFGAME_KIT_HARD = "For the professional putter.",
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Bring on the beginner!\nComes with four variations!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "For the casual mini-golfer.\nComes with four variations!",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "For the professional putter.\nComes with four variations!",
         CARNIVALGAME_GOLFGAME_KIT_DIY = "Create a custom course!",
 
         CARNIVALGAME_GOLFPROP_MOVINGWALL_RED = "It keeps popping up!", -- retracts and emerges

@@ -37,7 +37,7 @@ local defs =
 	carnivaldecor_eggride6 = {
 		bank = "carnivaldecor_eggride6", build = "carnivaldecor_eggride6",
 		physics_radius = 0.5,
-		sound_fx = {place = "summerevent/egg_rides/6/place", turnon = nil, on = "summerevent/egg_rides/6/music_LP", turnoff = "summerevent/egg_rides/turn_off", loop_oneoff = "summerevent/egg_rides/6/sfx" },
+		sound_fx = {place = "summerevent/egg_rides/6/place", turnon = nil, on = "summerevent/egg_rides/6/music_LP", turnoff = "summerevent/egg_rides/turn_off", loop_oneoff = "summerevent/egg_rides/6/sfx", delay_turnoff_until_anim = true },
 	},
 }
 
@@ -50,26 +50,43 @@ local function onhammered(inst, worker)
     inst:Remove()
 end
 
-local function onloop(inst)
+local function OnLoop(inst)
 	inst.AnimState:PlayAnimation("loop", false)
 	if inst.def.sound_fx.loop_oneoff then
 		inst.SoundEmitter:PlaySound(inst.def.sound_fx.loop_oneoff)
 	end
 end
 
+local function OnStopLoop(inst)
+	if inst.AnimState:IsCurrentAnimation("turn_off") then
+		inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnoff)
+		inst.SoundEmitter:KillSound("loop")
+		if inst.components.activatable ~= nil then
+			inst.components.activatable.inactive = true
+		end
+	end
+	inst:RemoveEventCallback("animover", OnStopLoop)
+end
+
 local function TurnOffRide(inst)
 	inst.AnimState:PushAnimation("turn_off", false)
 	inst.AnimState:PushAnimation("off", false)
 
-	inst:RemoveEventCallback("animover", onloop)
+	inst:RemoveEventCallback("animover", OnLoop)
 
 	if inst.def.sound_fx ~= nil then
-		inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnoff)
-		inst.SoundEmitter:KillSound("loop")
+		if inst.def.sound_fx.delay_turnoff_until_anim then
+			inst:ListenForEvent("animover", OnStopLoop)
+		else
+			inst.SoundEmitter:PlaySound(inst.def.sound_fx.turnoff)
+			inst.SoundEmitter:KillSound("loop")
+		end
 	end
 
-	if inst.components.activatable ~= nil then
-		inst.components.activatable.inactive = true
+	if not (inst.def.sound_fx and inst.def.sound_fx.delay_turnoff_until_anim) then
+		if inst.components.activatable ~= nil then
+			inst.components.activatable.inactive = true
+		end
 	end
 
 	inst.turnofftask = nil
@@ -87,7 +104,7 @@ local function TurnOnRide(inst, duration)
 			inst.SoundEmitter:PlaySound(inst.def.sound_fx.on, "loop")
 		end
 
-		inst:ListenForEvent("animover", onloop)
+		inst:ListenForEvent("animover", OnLoop)
 	end
 
 	inst.turnofftask = inst:DoTaskInTime(duration, TurnOffRide)

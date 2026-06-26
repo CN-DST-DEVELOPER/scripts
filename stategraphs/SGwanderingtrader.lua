@@ -3,6 +3,15 @@ require("stategraphs/commonstates")
 -- NOTES(JBK): The wanderingtrader is very relaxed and slow moving.
 -- Any pending state change should happen in a sluggish way.
 
+local FACE_DIST = TUNING.RESEARCH_MACHINE_DIST
+local function IsPlayerNearby(inst)
+    return FindClosestPlayerToInst(inst, FACE_DIST, true) ~= nil
+end
+
+local function ShouldKeepShowingWares(inst)
+    return inst.sg.mem.trading or IsPlayerNearby(inst)
+end
+
 local events = {
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnHop(),
@@ -31,11 +40,11 @@ local states = {
 
         onupdate = function(inst)
 			if not inst:IsAsleep() then
-				if inst.sg.mem.trading then
+				if ShouldKeepShowingWares(inst) then
 					inst.sg:GoToState("trading_start")
-				elseif inst:HasStock() and inst:IsNearPlayer(TUNING.RESEARCH_MACHINE_DIST, true) then
-					inst:EnablePrototyper(true)
-					inst.sg:GoToState("trading_start")
+                    if inst:HasStock() then
+                        inst:EnablePrototyper(true)
+                    end
 				end
 			end
         end,
@@ -51,7 +60,7 @@ local states = {
 
         events = {
             EventHandler("animover", function(inst)
-                if inst.sg.mem.trading then
+                if ShouldKeepShowingWares(inst) then
                     inst.sg:GoToState("walk_stop")
                 else
                     inst.sg:GoToState("walk")
@@ -69,7 +78,7 @@ local states = {
             inst.AnimState:PlayAnimation("walk_loop")
         end,
         onupdate = function(inst)
-            if inst.sg.mem.trading then
+            if ShouldKeepShowingWares(inst) then
                 inst.sg:GoToState("walk_stop")
             end
         end,
@@ -86,7 +95,7 @@ local states = {
         },
         events = {
             EventHandler("animover", function(inst)
-                if inst.sg.mem.trading then
+                if ShouldKeepShowingWares(inst) then
                     inst.sg:GoToState("walk_stop")
                 else
                     inst.sg:GoToState("walk")
@@ -106,7 +115,7 @@ local states = {
 
         events = {
             EventHandler("animover", function(inst)
-                if inst.sg.mem.trading then
+                if ShouldKeepShowingWares(inst) then
                     inst.sg:GoToState("trading_start")
                 else
                     inst.sg:GoToState("idle")
@@ -128,7 +137,7 @@ local states = {
         events = {
             EventHandler("animover", function(inst)
                 if inst.AnimState:IsCurrentAnimation("reveal") then
-                    if inst.sg.mem.trading then
+                    if ShouldKeepShowingWares(inst) then
                         inst.AnimState:PlayAnimation("trade_pre")
                         inst.SoundEmitter:PlaySound("dontstarve/characters/skincollector/ingame/trade_pre")
                     else
@@ -137,7 +146,7 @@ local states = {
                     end
                 elseif inst.AnimState:IsCurrentAnimation("trade_pre") then
 					inst.sg.statemem.keeprevealed = true
-                    if inst.sg.mem.trading then
+                    if ShouldKeepShowingWares(inst) then
                         inst.sg:GoToState("trading")
                     else
                         inst.sg:GoToState("trading_stop")
@@ -166,14 +175,14 @@ local states = {
 			inst:SetRevealed(true)
         end,
         onupdate = function(inst)
-            if not inst.sg.mem.trading then
+            if not ShouldKeepShowingWares(inst) then
                 inst.sg:GoToState("trading_stop")
             end
         end,
         events = {
             EventHandler("animover", function(inst)
 				inst.sg.statemem.keeprevealed = true
-                if inst.sg.mem.trading then
+                if ShouldKeepShowingWares(inst) then
                     inst.sg:GoToState("trading", {repeating = true,})
                 else
                     inst.sg:GoToState("trading_stop")
@@ -205,7 +214,7 @@ local states = {
         events = {
             EventHandler("animover", function(inst)
                 if inst.AnimState:IsCurrentAnimation("trade_pst") then
-                    if inst.sg.mem.trading then
+                    if ShouldKeepShowingWares(inst) then
                         inst.AnimState:PlayAnimation("trade_pre")
                         inst.SoundEmitter:PlaySound("dontstarve/characters/skincollector/ingame/trade_pre")
                     else
@@ -214,7 +223,7 @@ local states = {
                     end
                 elseif inst.AnimState:IsCurrentAnimation("trade_pre") then
 					inst.sg.statemem.keeprevealed = true
-                    if inst.sg.mem.trading then
+                    if ShouldKeepShowingWares(inst) then
                         inst.sg:GoToState("trading")
                     else
                         inst.sg:GoToState("trading_stop")

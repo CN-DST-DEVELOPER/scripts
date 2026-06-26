@@ -10,8 +10,6 @@ local prefabs =
 	"carnivalgame_golfball",
 }
 
-local CARNIVALGAME_COMMON = require "prefabs/carnivalgame_common"
-
 local function CreateFloorPart(parent, bank, anim, deploy_anim)
 	local inst = CreateEntity()
 
@@ -102,11 +100,11 @@ end
 
 local function SetupGolfClub(inst)
 	ResetLootdropperConfig(inst)
-	local x, y, z = inst.Transform:GetWorldPosition()
 	inst.golfclub = SpawnPrefab("carnivalgame_golfclub")
 	inst.golfclub.tee_owner = inst
 	inst.golfclub.persists = false
 	inst.golfclub:AddTag("irreplaceable")
+	inst.SoundEmitter:PlaySound("dontstarve/common/dropGeneric")
 	inst:ListenForEvent("golfclub_onswinghit", GolfClub_OnSwingHit, inst.golfclub)
 	inst.components.lootdropper:FlingItem(inst.golfclub)
 	ConfigLootDropper(inst)
@@ -121,6 +119,7 @@ local function SetupGolfBall(inst)
 	local yvel = -1
 	local startradius = 0.3
 	local startheight = .25
+	inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_puckdrop/door_open")
 	inst.golfball = SpawnPrefab("carnivalgame_golfball")
 	inst.golfball.golfgame = inst.golfgame
 	inst.golfball.persists = false
@@ -172,7 +171,6 @@ end
 
 -- Called by carnivalgame_golfgame
 local function OnActivateGame(inst)
-	-- TODO golfpropitem component, dont let player take it out
 	inst.spawn_club_task = inst:DoTaskInTime(0.5, SetupGolfClub)
 	inst.spawn_ball_task = inst:DoTaskInTime(1.2, SetupGolfBall)
 
@@ -190,6 +188,15 @@ local function spawnticket(inst)
 	inst:ActivateRandomCannon()
 end
 
+local function spawntoken(inst)
+	ResetLootdropperConfig(inst)
+	inst.components.lootdropper.spawn_loot_inside_prefab = true
+	inst.components.lootdropper.y_offset = 0.8
+	inst.components.lootdropper:SpawnLootPrefab("carnival_gametoken")
+	inst:ActivateRandomCannon()
+	ConfigLootDropper(inst)
+end
+
 local function OnStopPlaying(inst)
 	inst.AnimState:PlayAnimation("spawn_rewards_pre")
 	inst.SoundEmitter:PlaySound("summerevent/golf_minigame/tee/tee_spawnrewards_LP", "rewards_loop")
@@ -205,6 +212,9 @@ local function OnStopPlaying(inst)
 end
 
 local function SpawnRewards(inst, score)
+	if inst.customizable then
+		spawntoken(inst) -- refund the token
+	end
 	for i = 1, score do
 		inst:DoTaskInTime(0.25 * i, spawnticket)
 	end
@@ -335,10 +345,19 @@ local function GetPar(inst)
 	return inst.components.cyclable.step
 end
 
+local function OverrideCanUsePrototyper(inst, doer)
+	return false -- we don't actually want to use this structure as a prototyper
+end
+
 local function SetIsCustomizable(inst)
 	inst.customizable = true -- saving handled by carnivalgame_golfgame
+
 	inst.components.cyclable.cancycle = true
 	inst.components.lootdropper.droprecipeloot = true
+
+	inst:AddComponent("prototyper")
+	inst.components.prototyper.redirect_to_prototyper = inst.golfgame
+	inst.components.prototyper.overridecanuseprototyper = OverrideCanUsePrototyper
 end
 
 local function GetStatus(inst)
@@ -379,6 +398,8 @@ local function teefn()
 	inst:AddTag("structure")
 	inst:AddTag("birdblocker")
 	inst:AddTag("golf_tee")
+
+	inst.override_open_crafting_range = 1.5
 
 	MakeSnowCoveredPristine(inst)
 

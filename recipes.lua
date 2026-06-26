@@ -45,6 +45,7 @@ PROTOTYPER_DEFS =
 
 	vault_refiner_pedestal		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_vault_refiner.tex",		is_crafting_station = true, 	action_str = "OPERATE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.VAULT_REFINER_PEDESTAL},
 	carnivalgame_golfgame 		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carnivalgame_golfprops.tex", is_crafting_station = true, action_str = "OPERATE", 	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARNIVALGAME_GOLFGAME},
+	carnivalgame_golf_tee 		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carnivalgame_golfprops.tex", is_crafting_station = true, action_str = "GOLFPROPS", 	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARNIVALGAME_GOLFGAME},
 }
 PROTOTYPER_DEFS.wargshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.pigshrine = PROTOTYPER_DEFS.perdshrine

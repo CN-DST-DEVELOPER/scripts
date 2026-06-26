@@ -418,14 +418,14 @@ function Builder:EvaluateTechTrees()
 		if self.override_current_prototyper ~= self.current_prototyper then
 			self.override_current_prototyper = nil
 		elseif self.override_current_prototyper ~= old_prototyper then
-            if not self.override_current_prototyper.components.prototyper or not self.override_current_prototyper.components.prototyper.dontopencraftingmenu then
+            if not self.override_current_prototyper.components.prototyper or not self.override_current_prototyper.components.prototyper.dontopencraftingmenuonevaulatetechtrees then
 			    self.inst.replica.builder:OpenCraftingMenu()
             end
 		end
 	end
 end
 
-function Builder:UsePrototyper(prototyper)
+function Builder:UsePrototyper(prototyper, dontopencraftingmenu)
 	if self.inst.player_classified and not self.inst.player_classified.iscraftingenabled:value() then
 		return false
 	elseif prototyper then
@@ -441,7 +441,7 @@ function Builder:UsePrototyper(prototyper)
 
 	self.override_current_prototyper = prototyper
 	if prototyper ~= nil and prototyper == self.current_prototyper then
-        if not prototyper.components.prototyper or not prototyper.components.prototyper.dontopencraftingmenu then
+        if not dontopencraftingmenu then
 		    self.inst.replica.builder:OpenCraftingMenu()
         end
 	end

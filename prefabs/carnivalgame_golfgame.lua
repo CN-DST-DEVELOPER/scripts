@@ -171,14 +171,8 @@ local function SpawnGolfProp(inst, prefab, rot, x, z, ox, oz, orot, isloading)
     prop.Transform:SetPosition(ox + x, 0, oz + z)
 	if isloading then
 		prop.Transform:SetRotation(rot)
-	elseif prop.shapedata then
-        if RoundToNearest(orot, 1) == 90 or RoundToNearest(orot, 1) == -90 then -- have to flip the golf shape around 180
-            prop.Transform:SetRotation(orot + rot + 180)
-        else
-            prop.Transform:SetRotation(orot + rot)
-        end
     else
-        prop.Transform:SetRotation(prop.no_golfgame_rotation_inherit and rot or (orot + rot))
+        prop.Transform:SetRotation(prop.no_golfgame_rotation_inherit and rot or (rot - orot))
     end
     inst:AddGolfProp(prop)
     prop:PushEvent("spawnedasgolfprop")
@@ -383,7 +377,7 @@ local function UpdatePlayerInGolfArea(inst, player)
         local x, y, z = player.Transform:GetWorldPosition()
         if player.components.builder ~= nil then
             if IsWorldCoordsInGolfArea(inst, x, z) then
-                player.components.builder:UsePrototyper(inst)
+                player.components.builder:UsePrototyper(inst, true)
             elseif player.components.builder.override_current_prototyper == inst then
                 player.components.builder.override_current_prototyper = nil
             end
@@ -446,7 +440,7 @@ local function SetIsCustomizable(inst)
 	inst.components.prototyper.onturnofffordoer = OnTurnOffForDoer
 	inst.components.prototyper.overridecanuseprototyper = OverrideCanUsePrototyper
 	inst.components.prototyper.trees = TUNING.PROTOTYPER_TREES.CARNIVALGAME_GOLFGAME
-	inst.components.prototyper.dontopencraftingmenu = true
+	inst.components.prototyper.dontopencraftingmenuonevaulatetechtrees = true -- hack flag :P
 
     local near_dist = math.max(BOUNDARY_MAXX, BOUNDARY_MAXZ) + 3 -- padding
     local playerprox = inst:AddComponent("playerprox")
@@ -961,7 +955,7 @@ local EASY_COURSES =
 local MEDIUM_COURSES =
 {
     -- course walls + lots of pop ups + small shortcut
-    "AQAAABAAAAAkDgAA7wEAAHjapZZRbtswDECvMvTbCkjKEsXTGF6qpgEcO3DttMCwu09WDXTYmkSMAyTIxyNNic+UxjjNY//jF1a+etq3Y3+8tN2hPcXmMHQvzRTjUyWwg+XDnsSKq6Ay9B389tqeY9Md+4gfuIRVBnauwvQtolWwQQ2tgklVx116P4+XSAuOIfEuscbeDcAPyvnv439XU6toq6JJRaOKBhVtlLiuFqNbqNHtolG0KPviF56UPCp50PFKXFmNcrEl71Lizb9jLAfXRc/6P9ZtiK03xNoNsVQcu+wt67xjnXass45V0rHKOVYpx+XGQbXBsA2CbfBrg1537framPXowTI6v+gK/jM5PToVrgefx+HcnIbLsT+8t13XjPE5N7miAvhnN8eFdiralOFrJeZGKft5GuYprFbaUDMSoZANy0CSQEwMDjigvZ0C4fNRO8tOfBBrEVyeamLTHyYHwt5fS/J2HlPVzdDH6Xj65nLpdlYk5akDiOPUSu+8eEZvITh5NGua13VNQZjFp0yS80JaPFhGkPohVahcs/VWcYV+HbrcbVA126YfhUk2jWdVdkPK9FbBF+JrNcpidEu9sY+rVv3w0u7j85de+QoKlIQST+xD0pXT+YTokNh5W3Oy9iGnsHyKrhfb8pkL5UdXnrkr//sP9mWM0Q==",
+    "AQAAABAAAACHDQAA4AEAAHjalZfdbuMgEEZfZdVrUzHDz8DTWN6UppEcO3LttNJq330xRWovNgnfRaJIOXwZ4DAmS1q3Zfr1hzrfPR2GZTpdh/E4nFN/nMfXfk3pqYu6053i/33//jZcUj+epkSfVEiln11H+dVEQ7AihIZghup4SB+25Zp4xylk3mVWmYcD6JNL/mP8ZzUWog1EM0QTRGuIViCO1aKwiSpsFRWwRcUXv/MM8gTyGuNBHKwGnGzLWcq8ipW3TfEFdxhuMdxgODfj+9IIpo1g1ggmjUDOCKSMQMZIuzC6w2zBZMFcwVR5aMr3JGs2tdHlzAH8VzgDB/Q2f1nmS3+er6fp+DGMY7+kl7JHHTfAv8ct7bSDaNWG10rUnVIO2zpva6hSmWCFmCmyCXvXiIGFRTstgcz9CNJfP/VsxEUfojGknSshJn8QdjqK97dC3i9Lrrqfp7SezqleMEyMeagNOjrJG+adj17IGx1cBIJyt7SWQxSJPg+OJUrnKWojpKNtdYDblald8Qb9No9lGzW0iya/AYqY3DahdMVgvAH4RrxWAxaDTfXOOlZ5pvl1OKSXb4nKzU5zdih6Fh+ylJKfG0SOWJw3VrKbrRpRexOsV8T2lqnbnyKlZd7mf6xH/W/l/v4DCjRzXg==",
     -- sectioned zone + spinners + sick wormhole
     "AQAAABAAAADYDwAAqgIAAHjapVbbattAEP2VkmfJ7Nz28jXCddREoIuR7aRQ+u+dlUJSiGXvev2wYDhzOzNzRnN7vszjjz9QuerpsJ/H7m3fv+yHtnmZ+l/N6XV/bJu+G1v4DU9VHczOxJ+zGChIVctOH6PPI8ZcYkwlxqbAuMQWCmyxwLaErJIu3RiP4zwdm6F97i7D6diNYzs3h/enymg89h5J2JEl9MqZE7Y2gA8sBNtpHC7zm+aBW7zjrRoWY4xFgDcrnpJqjnC3W0OkozELTXczX+Cmsru1X/ddB7M0R1LBnAOmZPDVKefHl4sf32ku0BLeHvH3aR5epz66GLpz+6wuPO0YUcg7cYSsVLkQdOiNVadO2XOgg+9ISEBsSufD2vpH5bCA9Pou619ZxnGu0/P8hEMeHPPgicv1vXJbwJoU2HKBLRXYlhyg+tblO7dtFC8tzLJnVp1no3KvjbTGi7XoGVxwWxt2GvZ9/3lD1iOCGp5Y98ixAMSdEsLA5FDES0i8R6svzR2I9PiwFeNdUOeegw8BA+iDaXktrpQFLc+zoJPoSf+j42CJnA/Gbno6zt34ss6sdk9DW/FoCDB2UytFq2qiXAXecnG4nKfLmdYjEZDZoRp40iRiW0BCAAQTyGUoGaBmo8QIGG+ZKqsDljAdq1jVaXv6AaYcMKSt9Idq1lkXMx3NWWjKQmMWGrLQJgtdZ8LzcqnzCq3zWKzzWlTf7/+VY5fo/wtPmfjMe7exHf+pxLJIiiVWiSCVJ5UFHxvt0IIYAbTh+pf4KqLTm6rVu4pfM0eV0GnVoAnon/1lOQTmBnzN0K0aL+LYONUwzYojcQaArNNb4QXuqGkzje25G9bLA9qlaxxGuVsA+olGqo3WWA8gGGN5REvgSW5p5ncuarkukltkaGI15+BVhPHvPzVU71U=",
     -- a bunch of worm holes!

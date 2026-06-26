@@ -263,6 +263,13 @@ local function ExtraWobyForagingDist(doer, dest, bufferedaction)
     return .5 + (doer:HasTag("largecreature") and 1 or 0)
 end
 
+local function ExtraOpenCraftingRange(doer, dest, bufferedaction, arrive_dist)
+    local target = bufferedaction and bufferedaction.target or nil
+    local dist = (target and target.override_open_crafting_range) or TUNING.RESEARCH_MACHINE_DIST - 1
+    return dist > arrive_dist and (dist - arrive_dist)
+        or 0
+end
+
 global("CLIENT_REQUESTED_ACTION")
 CLIENT_REQUESTED_ACTION = nil
 
@@ -426,7 +433,7 @@ ACTIONS =
     TELEPORT = Action({ rmb=true, distance=2 }),
     RESETMINE = Action({ priority=3 }),
     ACTIVATE = Action({ priority=2, invalid_hold_action = true }),
-    OPEN_CRAFTING = Action({priority=2, distance = TUNING.RESEARCH_MACHINE_DIST - 1}),
+    OPEN_CRAFTING = Action({priority=2, distance = nil, extra_arrive_dist=ExtraOpenCraftingRange}),
     MURDER = Action({ priority=1, mount_valid=true }),
     HEAL = Action({ mount_valid=true, extra_arrive_dist=ExtraHealRange }),
     INVESTIGATE = Action(),
@@ -3108,8 +3115,9 @@ end
 
 ACTIONS.OPEN_CRAFTING.fn = function(act)
 	if act.doer.components.builder ~= nil and (act.target == nil or not act.target:HasTag("hideprototyperaction")) then
-		return act.doer.components.builder:UsePrototyper(act.target)
-	end
+        local prototyper = act.target.components.prototyper.redirect_to_prototyper or act.target
+        return act.doer.components.builder:UsePrototyper(prototyper)
+    end
 	return false
 end
 
@@ -3451,9 +3459,13 @@ ACTIONS.DIRECTCOURIER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local within_radius = TUNING.SKILLS.WALTER.COURIER_DETECTION_RADIUS
     local within_radiussq = within_radius * within_radius
-    local act_pos = act:GetActionPoint()
     local act_posx, act_posz
     local mindsq = math.huge
     local mapent
@@ -6716,7 +6728,12 @@ ACTIONS.MAPSCOUTSELECT_MAP.maponly_checkvalidpos_fn = function(act)
 		return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_drone_scout", x, y, z, TUNING.SKILLS.WX78.MAPSCOUTSELECT_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
 		return false, "NOTARGET"
@@ -6754,7 +6771,12 @@ ACTIONS.MAPSCOUT_MAP.maponly_checkvalidpos_fn = function(act)
         return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
     local x1, y1, z1 = act.doer.Transform:GetWorldPosition()
     local validdist = act.target:GetDroneRange(act.doer)
     local dx, dz = x - x1, z - z1
@@ -6820,8 +6842,13 @@ ACTIONS.MAPDELIVER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local fx, fy, fz = mapent.Transform:GetWorldPosition()
-    local tx, ty, tz = act:GetActionPoint():Get()
+    local tx, ty, tz = act_pos:Get()
     if not IsFlyingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz) then
         return false
     end
@@ -6849,7 +6876,12 @@ ACTIONS.SWAPBODIES_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
-    local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_backupbody", x, y, z, TUNING.SKILLS.WX78.REMOTEBODYSWAP_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
         return false, "NOTARGET"
@@ -6957,7 +6989,12 @@ ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
-    local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
     local mapent = TheSim:FindEntities(x, y, z, TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS, MAP_VAULTORB_MUST)[1]
     if mapent == nil then
         return false, "NOTARGET"

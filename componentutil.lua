@@ -2077,9 +2077,18 @@ end
 
 --------------------------------------------------------------------------
 -- Mimics. Search term: itemmimic:TurnEvil(
-
+local function IsItemInReadOnlyContainer(item)
+    return item ~= nil and
+        item.components.inventoryitem ~= nil and
+        item.components.inventoryitem.owner ~= nil and
+        item.components.inventoryitem.owner.components.container ~= nil and
+        item.components.inventoryitem.owner.components.container.readonlycontainer
+end
 function ShouldItemMimicBeRevealedFor(item, user)
     if item == nil then
+        return false
+    end
+    if IsItemInReadOnlyContainer(item) then
         return false
     end
 

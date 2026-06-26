@@ -15,7 +15,7 @@
 local function OnCameraFocusDirty(inst)
     if inst._camerafocus:value() then
 		-- camerafocus_redirecttarget is from carnivalgame_golfgame
-        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, inst._camerafocus_dist_min, inst._camerafocus_dist_max, 0, nil, inst._camerafocus_offset, inst.camerafocus_redirecttarget:value())
+        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, inst._camerafocus_dist_min, inst._camerafocus_dist_max, 0, nil, inst._camerafocus_offset, inst.camerafocus_redirecttarget ~= nil and inst.camerafocus_redirecttarget:value() or nil)
     else
         TheFocalPoint.components.focalpoint:StopFocusSource(inst)
     end

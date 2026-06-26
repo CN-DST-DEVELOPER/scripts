@@ -1006,7 +1006,7 @@ function LocoMotor:GoToEntity(target, bufferedaction, run)
 
         local extra_arrive_dist = (bufferedaction ~= nil and bufferedaction.action ~= nil and bufferedaction.action.extra_arrive_dist) or nil
         if extra_arrive_dist ~= nil then
-            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest, bufferedaction)
+            arrive_dist = arrive_dist + extra_arrive_dist(self.inst, self.dest, bufferedaction, arrive_dist)
         end
 
         if bufferedaction ~= nil and bufferedaction.action.mindistance ~= nil and bufferedaction.action.mindistance > arrive_dist then

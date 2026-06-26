@@ -46,7 +46,7 @@ end)
 --NOTE: aiming reticule repurposed from boatcannon
 local RANGE = 0.1
 
-local function ClampReticulePos(inst, pos, newx, newz)
+local function ClampReticulePos(pos, newx, newz)
 	if ThePlayer then
 		local base_aim_angle = ThePlayer.Transform:GetRotation() * DEGREES
 		local base_aim_facing = Vector3(math.cos(-base_aim_angle), 0 , math.sin(-base_aim_angle))
@@ -72,6 +72,7 @@ local function ClampReticulePos(inst, pos, newx, newz)
 	return pos
 end
 
+local AIM_RANGE = 4.4 --aiming with mouse outside of range indicator should be less stable
 local function reticule_mouse_target_function(inst, mousepos)
 	if mousepos == nil or ThePlayer == nil then
 		return nil
@@ -82,8 +83,35 @@ local function reticule_mouse_target_function(inst, mousepos)
 	local pos = (target or ThePlayer):GetPosition()
 	local dir = pos - mousepos
 	if dir.x ~= 0 or dir.z ~= 0 then
-		dir = dir:GetNormalized()
-		return ClampReticulePos(inst, pos, dir.x, dir.z)
+		local len = math.sqrt(dir.x * dir.x + dir.z * dir.z)
+		if len > AIM_RANGE then
+			local rot = math.atan2(dir.z, -dir.x) * RADIANS
+			len = len - AIM_RANGE
+			len = math.min(10, len * len * 8)
+			local rot1 = rot - len
+			local rot2 = rot + len
+			if ThePlayer then
+				local base_aim_angle = ThePlayer.Transform:GetRotation()
+				local arc = TUNING.GOLF_AIM_ARC * 0.5 * RADIANS
+				rot1 = ReduceAngle(rot1 - base_aim_angle)
+				rot2 = ReduceAngle(rot2 - base_aim_angle)
+				if (rot1 <= -arc and rot2 >= arc) or (rot2 <= -arc and rot1 >= arc) then
+					rot1 = math.clamp(math.abs(rot1) < math.abs(rot2) and rot1 or rot2, -arc, arc)
+					rot2 = rot1
+				else
+					rot1 = math.clamp(rot1, -arc, arc)
+					rot2 = math.clamp(rot2, -arc, arc)
+				end
+				rot1 = base_aim_angle + rot1
+				rot2 = base_aim_angle + rot2
+			end
+			rot = rot1 + (rot2 - rot1) * 0.5 * (math.sin(GetTime() * 10) + 1)
+			rot = rot * DEGREES
+			pos.x = pos.x + RANGE * math.cos(rot)
+			pos.z = pos.z - RANGE * math.sin(rot)
+			return pos
+		end
+		return ClampReticulePos(pos, dir.x / len, dir.z / len)
 	end
 
 	local pt = Vector3(ThePlayer.entity:LocalToWorldSpace(RANGE, 0, 0))
@@ -130,7 +158,7 @@ local function reticule_target_function(inst)
 			local newx = dir.x * costheta - dir.z * sintheta
 			local newz = dir.x * sintheta + dir.z * costheta
 
-			return ClampReticulePos(inst, pos, newx, newz)
+			return ClampReticulePos(pos, newx, newz)
 		end
 	end
 
