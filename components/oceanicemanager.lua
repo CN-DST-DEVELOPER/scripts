@@ -342,7 +342,7 @@ function self:DestroyIceAtPoint(x, y, z, data)
 
                     -- We're testing the overhang, so we need to verify that anything we find isn't
                     -- still on some adjacent dock or land tile or other platform after we remove ourself.
-                    if ent:IsValid() and not has_drownable and not ent.entity:GetParent()
+                    if ent:IsValid() and not has_drownable and (ent.entity:GetParent() == nil or ent:HasTag("childdeployblocker"))
                         and not ent.components.amphibiouscreature
                         and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) and not ent:GetCurrentPlatform() then
 

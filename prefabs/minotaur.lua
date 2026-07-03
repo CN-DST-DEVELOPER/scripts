@@ -456,6 +456,13 @@ local function OnLoad(inst, data)
     end
 end
 
+local function UpdateMiniMapRevealable(inst)
+    if WORLDSTATETAGS.GetTagEnabled("ATRIUM_KEY_FOUND") then
+        inst.MiniMapEntity:SetEnabled(false)
+        inst:RemoveComponent("maprevealable")
+    end
+end
+
 local function OnLoadPostPass(inst, newents, data)
     if not inst.spawnlocation then
         for i,v in pairs(Ents) do
@@ -573,8 +580,8 @@ local function fn()
     inst.components.maprevealable:SetIconPriority(15)
 
     inst:DoTaskInTime(0, rememberhome)
-
     inst:DoTaskInTime(0, function() OnAttacked(inst) end)
+    inst:DoTaskInTime(0, UpdateMiniMapRevealable)
 
     MakeLargeBurnableCharacter(inst, "swap_fire", nil, 1.4)
     MakeMediumFreezableCharacter(inst, "innerds")

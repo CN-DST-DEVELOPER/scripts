@@ -1,10 +1,5 @@
-local prefabs =
-{
-
-}
-
-local GOLF_SHAPE_HEIGHT = 1
-local GOLF_SHAPE_POINTYTOP_HEIGHT = 0.5
+local GOLF_SHAPE_HEIGHT = 0.8
+local GOLF_SHAPE_POINTYTOP_HEIGHT = 0.1
 
 local GOLF_SQUARE_SHAPE = {
     {-0.5, -0.5},
@@ -225,8 +220,7 @@ local function MakeGolfProp(name, data)
         return inst
     end
 
-    return Prefab(name, fn, assets, prefabs)
-
+	return Prefab(name, fn, assets)
 end
 
 ------------------------------------------------------
@@ -343,32 +337,169 @@ for i, data in ipairs(spinplate_sizes) do
 end
 
 -- prop wooden cut outs
-local cutout_smart_radii = { -- NOTES(JBK): Keep in sync with recipes.lua [CGGPCSR]
-    0.5, -- 1, carrot
-    0.5, -- 2, rose
-    0.6, -- 3, hambat
-    0.6, -- 4, corn
-    0.5, -- 5, red mushroom
-    0.6, -- 6, bearger
-    0.6, -- 7, deerclops
-    0.55, -- 8, spider
-    0.55, -- 9, dragonfly
-    0.55, -- 10, tentacle
+local CUTOUT_SMART_RADIUS = 0.5 -- NOTES(JBK): Keep in sync with recipes.lua [CGGPCSR]
+local CUTOUT_BASE_COLORS =
+{
+	"red",		-- 1, carrot
+	"white",	-- 2, rose
+	"blue",		-- 3, hambat
+	"purple",	-- 4, corn
+	"yellow",	-- 5, red mushroom
+	"red",		-- 6, bearger
+	"blue",		-- 7, deerclops
+	"yellow",	-- 8, spider
+	"purple",	-- 9, dragonfly
+	"white",	-- 10, tentacle
 }
+
+local function cutout_CreateSurface(color, level, sort, followparent, followsymbol, rot)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst:AddTag("FX")
+
+	inst.Transform:SetRotation(90 - rot)
+
+	inst.AnimState:SetBank("carnivalgame_golf_props")
+	inst.AnimState:SetBuild("carnivalgame_golf_props")
+	inst.AnimState:PlayAnimation("base_"..level)
+	if color ~= "brown" then
+		inst.AnimState:OverrideSymbol("base_brown", "carnivalgame_golf_props", "base_"..color)
+	end
+	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGroundFixed)
+	if sort > 0 then
+		inst.AnimState:SetFinalOffset(sort)
+	else
+		inst.AnimState:SetSortOrder(sort)
+	end
+
+	if followparent then
+		inst.entity:AddFollower():FollowSymbol(followparent.GUID, followsymbol)
+	end
+
+	return inst
+end
+
+local function cutout_CreateUpper(color, propid, sort, followparent, followsymbol)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("carnivalgame_golf_props")
+	inst.AnimState:SetBuild("carnivalgame_golf_props")
+	inst.AnimState:PlayAnimation("idle_upper")
+	if color then
+		inst.AnimState:OverrideSymbol("props_01", "carnivalgame_golf_props", "base_"..color)
+	elseif propid ~= 1 then
+		inst.AnimState:OverrideSymbol("props_01", "carnivalgame_golf_props", string.format("props_%02d", propid))
+	end
+	inst.AnimState:SetFinalOffset(sort)
+
+	inst.Follower:FollowSymbol(followparent.GUID, followsymbol)
+
+	return inst
+end
+
+local function cutout_PropPostUpdate(prop)
+	prop:RemoveComponent("updatelooper")
+
+	local inst = prop.entity:GetParent()
+	if inst.AnimState:IsCurrentAnimation("place") then
+		prop.AnimState:PlayAnimation("place_upper")
+		prop.AnimState:PushAnimation("idle_upper", false)
+		prop.AnimState:SetTime(inst.AnimState:GetCurrentAnimationTime())
+	end
+end
+
+local function cutout_CreateParts(inst, propid)
+	local rot = inst.Transform:GetRotation()
+	local color = CUTOUT_BASE_COLORS[propid]
+	local parts =
+	{
+		cutout_CreateUpper(nil, propid, 4, inst, "follow_top"),
+		cutout_CreateSurface(color, "top", 3, inst, "follow_top", rot),
+		cutout_CreateUpper(color, nil, 2, inst, "follow_mid"),
+		cutout_CreateSurface(color, "btm", 1, inst, "follow_mid", rot),
+		cutout_CreateSurface("brown", "btm", -1, nil, nil, rot),
+	}
+
+	if inst.components.placer then
+		for _, v in ipairs(parts) do
+			inst.components.placer:LinkEntity(v)
+			v.entity:SetParent(inst.entity)
+		end
+	else
+		inst.highlightchildren = inst.highlightchildren or {}
+
+		for _, v in ipairs(parts) do
+			table.insert(inst.highlightchildren, v)
+			v.entity:SetParent(inst.entity)
+		end
+	end
+
+	local prop = parts[1]
+	prop:AddComponent("updatelooper")
+	prop.components.updatelooper:AddPostUpdateFn(cutout_PropPostUpdate)
+
+	return parts
+end
+
+local function cutout_OnEntityWake(inst)
+	if inst.parts == nil then
+		inst.parts = cutout_CreateParts(inst, inst._propid)
+	end
+
+	if not TheWorld.ismastersim then
+		inst.OnEntityWake = nil
+		inst._propid = nil
+	end
+end
+
+local function cutout_OnEntitySleep(inst)
+	if inst.parts then
+		for _, v in ipairs(inst.parts) do
+			table.removearrayvalue(inst.highlightchildren, v)
+			v:Remove()
+		end
+		inst.parts = nil
+		if #inst.highlightchildren <= 0 then
+			inst.highlightchildren = nil
+		end
+	end
+end
+
 for i = 1, 10 do
     table.insert(defs, {
         name = "carnivalgame_golfprop_cutout"..i,
         bank = "carnivalgame_golf_props",
         build = "carnivalgame_golf_props",
-        idleanim = "idle",
+		idleanim = "height",
         placeanim = "place",
-        phys_rad = .5,
-        deploy_smart_radius = cutout_smart_radii[i],
+		phys_rad = 0.5,
+		deploy_smart_radius = CUTOUT_SMART_RADIUS,
         placer_postinit = function(inst)
-            inst.AnimState:OverrideSymbol("carnivalgame_golf_props_swap", "carnivalgame_golf_props", string.format("props_%02d", i))
+			cutout_CreateParts(inst, i)
         end,
         common_postinit = function(inst)
-            inst.AnimState:OverrideSymbol("carnivalgame_golf_props_swap", "carnivalgame_golf_props", string.format("props_%02d", i))
+			if not TheNet:IsDedicated() then
+				inst._propid = i
+				inst.OnEntityWake = cutout_OnEntityWake
+				if TheWorld.ismastersim then
+					inst.OnEntitySleep = cutout_OnEntitySleep
+				end
+			end
         end,
         master_postinit = function(inst)
             inst.components.inspectable.nameoverride = "CARNIVALGAME_GOLFPROP_CUTOUT"
@@ -377,7 +508,357 @@ for i = 1, 10 do
 end
 
 -- extending and retracting walls walls
+local function movingwall_SetSurfaceGroundSort(inst, isground)
+	if isground then
+		inst.AnimState:SetLayer(LAYER_BACKGROUND)
+		inst.AnimState:SetSortOrder(3)
+	else
+		inst.AnimState:SetLayer(LAYER_WORLD)
+		inst.AnimState:SetSortOrder(0)
+	end
+end
+
+local function movingwall_CreateSurface(build, parent)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("carnivalgame_golf_wall")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:PlayAnimation("surface")
+	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+	inst.AnimState:SetFinalOffset(1)
+
+	inst.SetGroundSort = movingwall_SetSurfaceGroundSort
+
+	inst.Follower:FollowSymbol(parent.GUID, "follow_top")
+
+	return inst
+end
+
+local function movingwall_SetBaseGroundSort(inst, isground)
+	if isground then
+		inst.AnimState:SetLayer(LAYER_BACKGROUND)
+		inst.AnimState:SetSortOrder(3)
+	else
+		inst.AnimState:SetLayer(LAYER_WORLD)
+		inst.AnimState:SetSortOrder(-1)
+	end
+end
+
+local function movingwall_CreateBase(build)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("carnivalgame_golf_wall")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:PlayAnimation("base")
+	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+	inst.AnimState:SetSortOrder(-1)
+
+	inst.SetGroundSort = movingwall_SetBaseGroundSort
+
+	return inst
+end
+
+local function movingwall_CreateFace(build, xoffs, zoffs, rot)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	--V2C: speecial =) must be the 1st tag added b4 AnimState component
+	inst:AddTag("can_offset_sort_pos")
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst:AddTag("FX")
+
+	inst.Transform:SetEightFaced()
+	inst.Transform:SetRotation(rot)
+	inst.Transform:SetPosition(xoffs, 0, zoffs)
+
+	inst.AnimState:SetBank("carnivalgame_golf_wall")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:PlayAnimation("face_idle")
+
+	inst.AnimState:SetSortWorldOffset(-0.05 * xoffs, 0, -0.05 * zoffs)
+
+	inst.syncanimprefix = "face_"
+
+	return inst
+end
+
+local function movingwall_CreateEdgeV(build, xoffs, zoffs, rot)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst:AddTag("FX")
+
+	inst.Transform:SetEightFaced()
+	inst.Transform:SetRotation(rot)
+	inst.Transform:SetPosition(xoffs, 0, zoffs)
+
+	inst.AnimState:SetBank("carnivalgame_golf_wall")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:PlayAnimation("edge_v_idle")
+
+	inst.syncanimprefix = "edge_v_"
+
+	return inst
+end
+
+local function movingwall_CreateEdgeH(build, xoffs, zoffs, rot)
+	local inst = CreateEntity()
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst:AddTag("FX")
+
+	inst.Transform:SetRotation(rot)
+	inst.Transform:SetPosition(xoffs, 0, zoffs)
+
+	inst.AnimState:SetBank("carnivalgame_golf_wall")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:PlayAnimation("edge_h")
+	inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+
+	return inst
+end
+
+local function movingwall_CreateMid(build, parent)
+	local inst = CreateEntity()
+
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.parts =
+	{
+		movingwall_CreateEdgeH(build, 0.5, 0, 0),
+		movingwall_CreateEdgeH(build, -0.5, 0, 180),
+		movingwall_CreateEdgeH(build, 0, 0.5, -90),
+		movingwall_CreateEdgeH(build, 0, -0.5, 90),
+	}
+
+	for _, v in ipairs(inst.parts) do
+		v.entity:SetParent(inst.entity)
+	end
+
+	inst.Follower:FollowSymbol(parent.GUID, "follow_mid")
+
+	return inst
+end
+
+local function movingwall_PartOnAnimOver(part)
+	if not part.AnimState:AnimDone() and part.AnimState:IsCurrentAnimation(part.syncanimprefix.."idle_ground") then
+		for _, v in ipairs(part.entity:GetParent().parts) do
+			if v.SetGroundSort then
+				v:SetGroundSort(true)
+			end
+		end
+	end
+end
+
+local function movingwall_CreateParts(inst, build)
+	if inst.parts == nil then
+		inst.parts =
+		{
+			movingwall_CreateSurface(build, inst),
+			movingwall_CreateBase(build),
+			movingwall_CreateFace(build, 0.5, 0, 0),
+			movingwall_CreateFace(build, -0.5, 0, 180),
+			movingwall_CreateFace(build, 0, 0.5, -90),
+			movingwall_CreateFace(build, 0, -0.5, 90),
+			movingwall_CreateEdgeV(build, 0.5, 0.5, -45),
+			movingwall_CreateEdgeV(build, -0.5, 0.5, -135),
+			movingwall_CreateEdgeV(build, 0.5, -0.5, 45),
+			movingwall_CreateEdgeV(build, -0.5, -0.5, 135),
+			movingwall_CreateMid(build, inst),
+		}
+
+		if inst.components.placer then
+			for _, v in ipairs(inst.parts) do
+				if v.parts then
+					for _, v1 in ipairs(v.parts) do
+						inst.components.placer:LinkEntity(v1)
+					end
+				else
+					inst.components.placer:LinkEntity(v)
+				end
+				v.entity:SetParent(inst.entity)
+			end
+		else
+			inst.highlightchildren = inst.highlightchildren or {}
+
+			local animated_part
+			for _, v in ipairs(inst.parts) do
+				if v.parts then
+					for _, v1 in ipairs(v.parts) do
+						table.insert(inst.highlightchildren, v1)
+					end
+				else
+					table.insert(inst.highlightchildren, v)
+				end
+				v.entity:SetParent(inst.entity)
+
+				if animated_part == nil and v.syncanimprefix then
+					animated_part = v
+				end
+			end
+
+			if animated_part then
+				inst:ListenForEvent("animover", movingwall_PartOnAnimOver, animated_part)
+			end
+		end
+	end
+end
+
+local function movingwall_KillParts(inst)
+	if inst.parts then
+		for _, v in ipairs(inst.parts) do
+			if v.parts then
+				for _, v1 in ipairs(v.parts) do
+					table.removearrayvalue(inst.highlightchildren, v1)
+				end
+			else
+				table.removearrayvalue(inst.highlightchildren, v)
+			end
+			v:Remove()
+		end
+		inst.parts = nil
+		if #inst.highlightchildren <= 0 then
+			inst.highlightchildren = nil
+		end
+	end
+end
+
+local function movingwall_DoSyncAnim(inst)
+	if inst.AnimState:IsCurrentAnimation("flat") then
+		movingwall_KillParts(inst)
+	else
+		movingwall_CreateParts(inst, inst.build)
+
+		if inst.AnimState:IsCurrentAnimation("emerge") then
+			local t = inst.AnimState:GetCurrentAnimationTime()
+			for _, v in ipairs(inst.parts) do
+				if v.syncanimprefix then
+					v.AnimState:PlayAnimation(v.syncanimprefix.."emerge")
+					v.AnimState:SetTime(t)
+					v.AnimState:PushAnimation(v.syncanimprefix.."idle", false)
+				elseif v.SetGroundSort then
+					v:SetGroundSort(false)
+				end
+			end
+		elseif inst.AnimState:IsCurrentAnimation("retract") then
+			local t = inst.AnimState:GetCurrentAnimationTime()
+			for _, v in ipairs(inst.parts) do
+				if v.syncanimprefix then
+					v.AnimState:PlayAnimation(v.syncanimprefix.."retract")
+					v.AnimState:SetTime(t)
+					v.AnimState:PushAnimation(v.syncanimprefix.."idle_ground", false)
+				elseif v.SetGroundSort then
+					v:SetGroundSort(false)
+				end
+			end
+		elseif inst.AnimState:IsCurrentAnimation("idle") then
+			for _, v in ipairs(inst.parts) do
+				if v.syncanimprefix then
+					v.AnimState:PlayAnimation(v.syncanimprefix.."idle")
+				elseif v.SetGroundSort then
+					v:SetGroundSort(false)
+				end
+			end
+		elseif inst.AnimState:IsCurrentAnimation("idle_ground") then
+			for _, v in ipairs(inst.parts) do
+				if v.syncanimprefix then
+					v.AnimState:PlayAnimation(v.syncanimprefix.."idle_ground")
+				elseif v.SetGroundSort then
+					v:SetGroundSort(true)
+				end
+			end
+		end
+	end
+
+	if inst.postupdating then
+		inst.postupdating = nil
+		inst.components.updatelooper:RemovePostUpdateFn(movingwall_DoSyncAnim)
+	end
+end
+
+local function movingwall_OnSyncAnims(inst)
+	if not inst.postupdating then
+		inst.postupdating = true
+		inst.components.updatelooper:AddPostUpdateFn(movingwall_DoSyncAnim)
+	end
+end
+
+local function movingwall_PushSyncAnim(inst)
+	inst.syncanim:push()
+	if not TheNet:IsDedicated() then
+		movingwall_DoSyncAnim(inst)
+	end
+end
+
+local function movingwall_SetFlat(inst, flat)
+	--initial value is nil, which is actually flat
+	if inst.flat ~= flat then
+		if flat then
+			inst.flat = true
+			inst.Transform:SetNoFaced()
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
+		else
+			inst.flat = false
+			inst.Transform:SetEightFaced()
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.BillBoard)
+			inst.AnimState:SetLayer(LAYER_WORLD)
+			inst.AnimState:SetSortOrder(0)
+		end
+	end
+end
+
+local function movingwall_BecomeFlat(inst)
+	movingwall_SetFlat(inst, true)
+	inst.AnimState:PlayAnimation("flat")
+	movingwall_PushSyncAnim(inst)
+end
+
 local function movingwall_DisablePhysics(inst)
+	if inst.disable_physics.becomeflat then
+		movingwall_BecomeFlat(inst)
+	end
+	inst.disable_physics = nil
     inst.Physics:SetActive(false)
 end
 
@@ -393,13 +874,15 @@ local function movingwall_ExtendWall(inst)
         inst.disable_physics = nil
     end
 
+	movingwall_SetFlat(inst, false)
     if inst:IsAsleep() then
-        inst.AnimState:PlayAnimation("idle", true)
+		inst.AnimState:PlayAnimation("idle")
     else
         inst.SoundEmitter:PlaySound("summerevent/golf_minigame/props/retracting_wall_emerge")
         inst.AnimState:PlayAnimation("emerge")
-        inst.AnimState:PushAnimation("idle", true)
+		inst.AnimState:PushAnimation("idle", false)
     end
+	movingwall_PushSyncAnim(inst)
 end
 
 local function movingwall_RetractWall(inst)
@@ -408,15 +891,23 @@ local function movingwall_RetractWall(inst)
     end
     inst.extended = false
 
+	if inst.disable_physics then
+		inst.disable_physics:Cancel()
+		inst.disable_physics = nil
+	end
+
     if inst:IsAsleep() then
-        inst.AnimState:PlayAnimation("idle_ground", true)
+		movingwall_SetFlat(inst, true)
+		inst.AnimState:PlayAnimation("flat")
         inst.Physics:SetActive(false)
     else
+		movingwall_SetFlat(inst, false)
         inst.SoundEmitter:PlaySound("summerevent/golf_minigame/props/retracting_wall_retract")
         inst.AnimState:PlayAnimation("retract")
-        inst.AnimState:PushAnimation("idle_ground", true)
-        inst.disable_physics = inst:DoTaskInTime(8 * FRAMES, movingwall_DisablePhysics)
+		inst.AnimState:PushAnimation("idle_ground", false)
+		inst.disable_physics = inst:DoTaskInTime(4 * FRAMES, movingwall_DisablePhysics)
     end
+	movingwall_PushSyncAnim(inst)
 end
 
 local function movingwall_NextWallState(inst)
@@ -427,30 +918,36 @@ local function movingwall_NextWallState(inst)
     end
 end
 
-local function movingwall_OnStartPlaying(inst)
-    inst.timing = inst.wall_inital_timing
-    if inst.timing == 0 then
-        inst.timing = 1
-        inst:NextWallState()
-    end
-end
-
+local GOLFABLE_TAGS
 local function movingwall_TryPushNearestGolfable(inst)
-    local golfball = FindEntity(inst, 0.5, nil, { "golfable"}, { "INLIMBO" })
-    if golfball then
-        local x, y, z = golfball.Transform:GetWorldPosition()
-        local vx, vy, vz = golfball.Physics:GetVelocity()
-	    local speed = 0.5 + math.random() * 0.5
-	    local vspeed = 10 + math.random()
-	    local theta = math.random() * TWOPI
-        local newvx, newvz = speed * math.cos(theta), -speed * math.sin(theta)
+	if GOLFABLE_TAGS == nil then
+		GOLFABLE_TAGS = { "golfable" }
+	end
+	--V2C: don't bother with { "INLIMBO" } for no tags, since golfballs can't be picked up.
+	--     just do v:IsInLimbo() check for future proofing.
+    local x, y, z = inst.Transform:GetWorldPosition()
+	for i, v in ipairs(TheSim:FindEntities(x, y, z, SQRT2 * 0.5, GOLFABLE_TAGS)) do
+		if not v:IsInLimbo() then
+			local x1, y1, z1 = v.Transform:GetWorldPosition()
+			local dx = x1 - x
+			local dz = z1 - z
+			if y1 < GOLF_SHAPE_HEIGHT and math.abs(dx) < 0.5 and math.abs(dz) < 0.5 then
+				local vx, _, vz = v.Physics:GetVelocity()
+				local theta = dx == 0 and dz == 0 and v.Transform:GetRotation() * DEGREES or math.atan2(-dz, dx)
+				local ay = 8 + math.random()
+				local ax, az = math.cos(theta), -math.sin(theta)
+				local dot = vx * ax + vz * az
+				local speed = 2 + math.random() * 0.5
+				if dot > 0 then
+					speed = math.max(0, speed - dot)
+				end
+				ax, az = ax * speed, az * speed
 
-        vx = math.abs(vx) > math.abs(newvx) and vx or newvx
-        vz = math.abs(vz) > math.abs(newvz) and vz or newvz
-	    golfball.Physics:Teleport(x, y + 0.1, z)
-	    golfball.Physics:SetVel(vx, vy+vspeed, vz)
-        golfball.components.golfable:OnExternalPhysics(inst, theta * RADIANS, speed)
-        TemporarilyRemovePhysics(inst, .5)
+				v.Physics:Teleport(x1, GOLF_SHAPE_HEIGHT + math.max(v:GetPhysicsRadius(0), GOLF_SHAPE_POINTYTOP_HEIGHT), z1)
+				v.Physics:SetVel(vx + ax, ay, vz + az)
+				v.components.golfable:OnExternalPhysics(inst, theta * RADIANS, speed)
+			end
+        end
     end
 end
 
@@ -465,23 +962,39 @@ local function movingwall_OnUpdateGame(inst, dt)
     end
 end
 
+local function movingwall_OnStartPlaying(inst)
+	inst.timing = inst.wall_inital_timing
+	if inst.timing == 0 then
+		if not inst.extended then
+			movingwall_TryPushNearestGolfable(inst)
+		end
+		inst:NextWallState()
+		inst.timing = 1
+	end
+end
+
 local function movingwall_OnStopPlayingOrDeactivate(inst)
     inst:RetractWall()
+	if inst.disable_physics then
+		inst.disable_physics.becomeflat = true
+	else
+		movingwall_BecomeFlat(inst)
+	end
 end
 
 local movingwall_colors =
 {
-    -- { color, timing }
-    { "red",    0 },
-    { "blue",   1 },
+	-- { color, build, timing }
+	{ "red",	"carnivalgame_golf_wall_red",	0 },
+	{ "blue",	"carnivalgame_golf_wall",		1 },
 }
 for i, v in pairs(movingwall_colors) do
-    local color, inittime = v[1], v[2]
+	local color, build, inittime = unpack(v)
     table.insert(defs, {
         name = "carnivalgame_golfprop_movingwall_"..color,
         bank = "carnivalgame_golf_wall",
-        build = "carnivalgame_golf_wall_"..color,
-        idleanim = "idle_ground",
+		build = build,
+		idleanim = "flat",
         placeranim = "idle",
         placer_facing = "eight",
         metersnap = true,
@@ -489,8 +1002,13 @@ for i, v in pairs(movingwall_colors) do
         OnUpdateGame = movingwall_OnUpdateGame,
         OnStopPlaying = movingwall_OnStopPlayingOrDeactivate,
         OnDeactivateGame = movingwall_OnStopPlayingOrDeactivate,
+		placer_postinit = function(inst)
+			movingwall_CreateParts(inst, build)
+		end,
         common_postinit = function(inst)
-            inst.Transform:SetEightFaced()
+			inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetLayer(LAYER_BACKGROUND)
+			inst.AnimState:SetSortOrder(3)
 
             local phys = inst.entity:AddPhysics()
             phys:SetMass(0)
@@ -498,6 +1016,18 @@ for i, v in pairs(movingwall_colors) do
             phys:SetCollisionMask(COLLISION.ITEMS)
             phys:SetTriangleMesh(BuildGolfSquareShapeMesh(GOLF_SQUARE_SHAPE))
             phys:SetActive(false)
+
+			inst.syncanim = net_event(inst.GUID, "carnivalgame_golfprop_movingwall.syncanim")
+
+			if not TheNet:IsDedicated() then
+				inst.build = build
+
+				if not TheWorld.ismastersim then
+					inst:AddComponent("updatelooper")
+					inst:ListenForEvent("carnivalgame_golfprop_movingwall.syncanim", movingwall_OnSyncAnims)
+					movingwall_OnSyncAnims(inst)
+				end
+			end
         end,
         master_postinit = function(inst)
             inst.wall_inital_timing = inittime
@@ -520,7 +1050,7 @@ local function CreateWormHoleDecal(layername, orientation, layer, sortorder, fin
 	inst:AddTag("FX")
 	inst:AddTag("NOCLICK")
 	--[[Non-networked entity]]
-	--inst.entity:SetCanSleep(false) --commented out; follow parent sleep instead
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
 	inst.persists = false
 
 	inst.entity:AddTransform()
@@ -619,15 +1149,15 @@ local function wormhole_Open(inst)
         inst:AddTag("golfhole")
         inst:Show()
         inst.closed = false
+        inst:RemoveEventCallback("animover", inst.Hide)
         if inst:IsAsleep() then
             inst.AnimState:PlayAnimation("hole_idle")
         else
             inst.AnimState:PlayAnimation("hole_place")
             inst.AnimState:PushAnimation("hole_idle", false)
             inst.SoundEmitter:PlaySound("dontstarve/common/teleportworm/open_golf")
-            inst:RemoveEventCallback("animover", inst.Hide)
-            wormhole_PushSyncAnim(inst)
         end
+        wormhole_PushSyncAnim(inst)
     end
 end
 
@@ -766,6 +1296,104 @@ for i, holedata in ipairs(wormholes) do
 end
 
 -- carnivalgame_golf_spring
+local function spring_ResolveAnim(inst, anim)
+	return inst.nofaced and anim.."_nofaced" or anim
+end
+
+local SPRING_DECAL_LAYERS = { "decal_front", "decal_mid", "decal_back" }
+
+local function spring_CreateDecal(build, layer, finaloffset, rotates, nofaced)
+	local inst = CreateEntity()
+
+	inst:AddTag("FX")
+	--[[Non-networked entity]]
+	inst.entity:SetCanSleep(TheWorld.ismastersim)
+	inst.persists = false
+
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+
+	inst.AnimState:SetBank("carnivalgame_golf_spring")
+	inst.AnimState:SetBuild(build)
+	inst.AnimState:Hide("FACE")
+	inst.AnimState:Hide("plate_spring")
+	for _, v in ipairs(SPRING_DECAL_LAYERS) do
+		if v ~= layer then
+			inst.AnimState:Hide(v)
+		end
+	end
+	inst.AnimState:SetLayer(LAYER_BACKGROUND)
+	inst.AnimState:SetSortOrder(3)
+	inst.AnimState:SetFinalOffset(finaloffset)
+
+	if rotates then
+		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+		inst.AnimState:SetScale(1, -1)
+	elseif nofaced then
+		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGroundFixed)
+		inst.AnimState:SetScale(1, -1)
+	else
+		inst.AnimState:SetScale(-1, 1)
+		inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGroundFixed)
+		inst.Transform:SetRotation(90)
+		inst.autofixrotate = true
+	end
+
+	inst.AnimState:PlayAnimation(nofaced and "idle_nofaced" or "idle")
+
+	return inst
+end
+
+local function spring_TrySyncAnim(inst, anim, pushidle, synctime)
+	anim = spring_ResolveAnim(inst, anim)
+	if inst.AnimState:IsCurrentAnimation(anim) then
+		synctime = synctime and inst.AnimState:GetCurrentAnimationTime() or nil
+		pushidle = pushidle and spring_ResolveAnim(inst, "idle") or nil
+		local rot = 90 - inst.Transform:GetRotation()
+		for _, v in ipairs(inst.decals) do
+			v.AnimState:PlayAnimation(anim)
+			if pushidle then
+				v.AnimState:PushAnimation(pushidle, false)
+			end
+			if synctime then
+				v.AnimState:SetTime(synctime)
+			end
+			if v.autofixrotate then
+				v.Transform:SetRotation(rot)
+			end
+		end
+		return true
+	end
+	return false
+end
+
+local function spring_DoSyncAnim(inst)
+	local _ =
+		spring_TrySyncAnim(inst, "place", true, true) or
+		spring_TrySyncAnim(inst, "pop", false, true) or
+		spring_TrySyncAnim(inst, "reset", true, true) or
+		spring_TrySyncAnim(inst, "idle", false, false)
+
+	if inst.postupdating then
+		inst.postupdating = nil
+		inst.components.updatelooper:RemovePostUpdateFn(spring_DoSyncAnim)
+	end
+end
+
+local function spring_OnSyncAnims(inst)
+	if not inst.postupdating then
+		inst.postupdating = true
+		inst.components.updatelooper:AddPostUpdateFn(spring_DoSyncAnim)
+	end
+end
+
+local function spring_PushSyncAnim(inst)
+	inst.syncanim:push()
+	if inst.decals then
+		spring_DoSyncAnim(inst)
+	end
+end
+
 local function spring_OnStartPlaying(inst)
     inst.components.mine:Reset()
 end
@@ -776,46 +1404,43 @@ local function spring_OnStopPlayingOrDeactivateGame(inst)
 end
 
 local function spring_OnAnimOver(inst)
-    if inst.AnimState:IsCurrentAnimation(inst.nofaced and "pop_nofaced" or "pop") then
+	if inst.AnimState:IsCurrentAnimation(spring_ResolveAnim(inst, "pop")) then
         inst.components.mine:Reset()
     end
     inst:RemoveEventCallback("animover", spring_OnAnimOver)
 end
 
 local function spring_OnExplode(inst, target)
-    if inst.nofaced then
-        local x, y, z = target.Transform:GetWorldPosition()
-        local vx, vy, vz = target.Physics:GetVelocity()
-	    local speed = 0.5 + math.random() * 0.5
-	    local vspeed = 10 + math.random()
-	    local theta = math.random() * TWOPI
-        local newvx, newvz = speed * math.cos(theta), -speed * math.sin(theta)
+	local speed, theta
+	if inst.nofaced then
+		speed = 0.5 + math.random() * 0.5
+		theta = math.random() * TWOPI
+	else
+		speed = 5 + math.random() * 0.5
+		theta = inst.Transform:GetRotation() * DEGREES
+	end
 
-        vx = math.abs(vx) > math.abs(newvx) and vx or newvx
-        vz = math.abs(vz) > math.abs(newvz) and vz or newvz
-	    target.Physics:Teleport(x, y + 0.1, z)
-	    target.Physics:SetVel(vx, vy+vspeed, vz)
-        target.components.golfable:OnExternalPhysics(inst, theta * RADIANS, speed)
-    else
-        local x, y, z = target.Transform:GetWorldPosition()
-        local rot = inst.Transform:GetRotation()
-        local theta = rot * DEGREES
-        local vx, vy, vz = target.Physics:GetVelocity()
-        local speed = 5 + math.random() * 0.5
-        local vspeed = 10 + math.random()
+	local x1, y1, z1 = target.Transform:GetWorldPosition()
+	local vx, _, vz = target.Physics:GetVelocity()
+	local ay = 8 + math.random()
+	local ax, az = math.cos(theta), -math.sin(theta)
+	local dot = vx * ax + vz * az
+	if dot > 0 then
+		speed = math.max(0, speed - dot)
+	elseif not inst.nofaced then
+		local min = 1 + math.random()
+		if speed + dot < min then
+			speed = min - dot
+		end
+	end
+	ax, az = ax * speed, az * speed
 
-        vx = (vx * 0.4) + speed * math.cos(theta)
-        vy = vy + vspeed
-        vz = (vz * 0.4) - speed * math.sin(theta)
+	target.Physics:Teleport(x1, math.max(y1, 0.65), z1)
+	target.Physics:SetVel(vx + ax, ay, vz + az)
+	target.components.golfable:OnExternalPhysics(inst, theta * RADIANS, speed)
 
-        target.Physics:Teleport(x, y + 0.1, z)
-	    target.Physics:SetVel(vx, vy, vz)
-        target.components.golfable:OnExternalPhysics(inst, theta * RADIANS, speed)
-    end
-
-	inst.AnimState:SetLayer(LAYER_WORLD)
-	inst.AnimState:SetSortOrder(0)
-    inst.AnimState:PlayAnimation(inst.nofaced and "pop_nofaced" or "pop")
+	inst.AnimState:PlayAnimation(spring_ResolveAnim(inst, "pop"))
+	spring_PushSyncAnim(inst)
     if not inst.onetime then
         inst:ListenForEvent("animover", spring_OnAnimOver)
     end
@@ -823,19 +1448,36 @@ local function spring_OnExplode(inst, target)
 end
 
 local function spring_OnReset(inst)
-	inst.AnimState:SetLayer(LAYER_BACKGROUND)
-	inst.AnimState:SetSortOrder(3)
     if inst:IsAsleep() then
-        inst.AnimState:PlayAnimation(inst.nofaced and "idle_nofaced" or "idle")
-    elseif inst.AnimState:IsCurrentAnimation(inst.nofaced and "pop_nofaced" or "pop") then
-        inst.AnimState:PlayAnimation(inst.nofaced and "reset_nofaced" or "reset")
-        inst.AnimState:PushAnimation(inst.nofaced and "idle_nofaced" or "idle", false)
+		inst.AnimState:PlayAnimation(spring_ResolveAnim(inst, "idle"))
+		spring_PushSyncAnim(inst)
+	elseif inst.AnimState:IsCurrentAnimation(spring_ResolveAnim(inst, "pop")) then
+		inst.AnimState:PlayAnimation(spring_ResolveAnim(inst, "reset"))
+		inst.AnimState:PushAnimation(spring_ResolveAnim(inst, "idle"), false)
+		spring_PushSyncAnim(inst)
         inst.SoundEmitter:PlaySound("summerevent/golf_minigame/props/popup_plate_reset")
     end
 end
 
 local function spring_TestTimeFn() -- we can run constantly, we're only active in an active golf game, so be super simulative
     return 0
+end
+
+local function spring_IsTargetValid(golfball, inst)
+	local x, y, z = golfball.Transform:GetWorldPosition()
+	return y <= 0.2
+end
+
+local function spring_OnBuilt(inst)--, data)
+	if inst.decals then
+		spring_DoSyncAnim(inst)
+	end
+end
+
+local function spring_SpawnedAsGolfProp(inst)
+	if inst.decals then
+		spring_DoSyncAnim(inst) -- to fix up rotations
+	end
 end
 
 local golfsprings =
@@ -848,32 +1490,60 @@ local golfsprings =
 local SPRING_MUST_TAGS = { "golfable" }
 for i, springdata in ipairs(golfsprings) do
     local name, onetime, nofaced = springdata[1], springdata[2], springdata[3]
+	local build = onetime and "carnivalgame_golf_spring_onetime_build" or "carnivalgame_golf_spring"
 
     table.insert(defs, {
         name = "carnivalgame_golfprop_spring"..name,
         bank = "carnivalgame_golf_spring",
-        build = onetime and "carnivalgame_golf_spring_onetime_build" or "carnivalgame_golf_spring",
+        build = build,
+		placeranim = nofaced and "idle_nofaced" or "idle",
         idleanim = nofaced and "idle_nofaced" or "idle",
         placeanim = nofaced and "place_nofaced" or "place",
         deploy_smart_radius = 0.5,
         placerfixedcameraoffset = not nofaced and -90 or nil,
-        placer_facing = not nofaced and "eight" or nil,
+		placer_facing = nofaced and "eight" or nil,
         OnStartPlaying = spring_OnStartPlaying,
         OnStopPlaying = spring_OnStopPlayingOrDeactivateGame,
         OnDeactivateGame = spring_OnStopPlayingOrDeactivateGame,
 
+		placer_postinit = function(inst)
+			inst.AnimState:SetOrientation(nofaced and ANIM_ORIENTATION.OnGroundFixed or ANIM_ORIENTATION.OnGround)
+			inst.AnimState:SetScale(1, -1)
+		end,
         common_postinit = function(inst)
-        	inst.AnimState:SetLayer(LAYER_BACKGROUND)
-	        inst.AnimState:SetSortOrder(3)
+			for _, v in ipairs(SPRING_DECAL_LAYERS) do
+				inst.AnimState:Hide(v)
+			end
 
-            if not nofaced then
-                inst.Transform:SetEightFaced()
-            end
+			inst.nofaced = nofaced
+			inst.Transform:SetEightFaced()
+
+			inst.syncanim = net_event(inst.GUID, "carnivalgame_golfprop_spring.syncanim")
+
+			if not TheNet:IsDedicated() then
+				inst.decals =
+				{
+					spring_CreateDecal(build, "decal_front", 2, false, nofaced),
+					spring_CreateDecal(build, "decal_mid", 1, true, nofaced),
+					spring_CreateDecal(build, "decal_back", 0, false, nofaced),
+				}
+
+				inst.highlightchildren = {}
+				for _, v in ipairs(inst.decals) do
+					v.entity:SetParent(inst.entity)
+					table.insert(inst.highlightchildren, v)
+				end
+
+				if not TheWorld.ismastersim then
+					inst:AddComponent("updatelooper")
+					inst:ListenForEvent("carnivalgame_golfprop_spring.syncanim", spring_OnSyncAnims)
+					spring_OnSyncAnims(inst)
+				end
+			end
         end,
 
         master_postinit = function(inst)
             inst.onetime = onetime
-            inst.nofaced = nofaced
 
             inst.components.inspectable.nameoverride = "CARNIVALGAME_GOLFPROP_SPRING"
 
@@ -881,12 +1551,16 @@ for i, springdata in ipairs(golfsprings) do
             inst.components.mine:SetSearchTags(SPRING_MUST_TAGS)
             inst.components.mine:SetTestTimeFn(spring_TestTimeFn)
             inst.components.mine:SetOnExplodeFn(spring_OnExplode)
+            inst.components.mine:SetSearchTestFn(spring_IsTargetValid)
             inst.components.mine:SetAlignment(nil)
             inst.components.mine:SetRadius(0.5)
             inst.components.mine:SetOnResetFn(spring_OnReset)
             inst.components.mine:Reset()
             inst.components.mine:Deactivate()
             -- inst.components.mine:SetOnSprungFn(SetSprung)
+
+			inst:ListenForEvent("onbuilt", spring_OnBuilt)
+			inst:ListenForEvent("spawnedasgolfprop", spring_SpawnedAsGolfProp)
         end
     })
 end

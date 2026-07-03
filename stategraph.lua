@@ -200,9 +200,9 @@ function SoundTimeEvent(time, sound_event)
     end)
 end
 
-function SoundFrameEvent(frame, sound_event)
+function SoundFrameEvent(frame, sound_event, vol)
     return TimeEvent(frame * FRAMES, function(inst)
-        inst.SoundEmitter:PlaySound(sound_event)
+        inst.SoundEmitter:PlaySound(sound_event, nil, vol)
     end)
 end
 

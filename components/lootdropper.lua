@@ -79,6 +79,11 @@ function LootDropper:AddIfNotChanceLoot(prefab)
     table.insert(self.ifnotchanceloot, { prefab = prefab })
 end
 
+function LootDropper:ClearChanceLoot()
+    self.chanceloot = nil
+    self.ifnotchanceloot = nil
+end
+
 function LootDropper:GetRandomLootTable()
     return (self.inst.components.hauntable and self.inst.components.hauntable.haunted) and self.randomhauntedloot
         or self.randomloot

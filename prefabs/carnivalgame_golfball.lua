@@ -53,64 +53,64 @@ end
 local function OnUpdateRolling(inst, dt)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local vx, vy, vz = inst.Physics:GetVelocity()
-	if y + vy * dt * 1.5 >= 0.05 or vy > 0.1 then -- similar check to inventoryitem:OnUpdate
-		inst.AnimState:Hide("ground")
-		return
-	end
-
-	inst.AnimState:Show("ground")
 	local speedsq = vx * vx + vz * vz
 	local speed
 
-	local hole = FindEntity(inst, GOLFHOLE_RADIUS, nil, GOLFHOLE_TAGS)
-	if hole then
-		local x1, y1, z1 = hole.Transform:GetWorldPosition()
-		local dx = x1 - x
-		local dz = z1 - z
-		local dsq = dx * dx + dz * dz
-		if dsq < TUNING.GOLFHOLE_SCORE_RANGE_SQ and speedsq < TUNING.GOLFHOLE_MAX_SCORE_SPEED_SQ then
-			inst.Physics:Stop()
-			inst.Transform:SetPosition(x1, y1, z1)
-			inst.AnimState:SetDeltaTimeMultiplier(1)
-			if inst.frictiondelay then
-				inst.frictiondelay = nil
-				inst.Physics:SetFriction(0.06)
+	if y + vy * dt * 1.5 >= 0.05 or vy > 0.1 then -- similar check to inventoryitem:OnUpdate
+		inst.AnimState:Hide("ground")
+	else
+		inst.AnimState:Show("ground")
+
+		local hole = FindEntity(inst, GOLFHOLE_RADIUS, nil, GOLFHOLE_TAGS)
+		if hole then
+			local x1, y1, z1 = hole.Transform:GetWorldPosition()
+			local dx = x1 - x
+			local dz = z1 - z
+			local dsq = dx * dx + dz * dz
+			if dsq < TUNING.GOLFHOLE_SCORE_RANGE_SQ and speedsq < TUNING.GOLFHOLE_MAX_SCORE_SPEED_SQ then
+				inst.Physics:Stop()
+				inst.Transform:SetPosition(x1, y1, z1)
+				inst.AnimState:SetDeltaTimeMultiplier(1)
+				if inst.frictiondelay then
+					inst.frictiondelay = nil
+					inst.Physics:SetFriction(0.06)
+				end
+				inst._updating = false
+				inst.components.updatelooper:RemoveOnUpdateFn(OnUpdateRolling)
+				OnEnterHole(inst, hole)
+				return
 			end
+
+			local toholespd = Remap(dsq / GOLFHOLE_RSQ, 0, 1, TUNING.GOLFHOLE_MAX_ACCEL, TUNING.GOLFHOLE_MIN_ACCEL)
+			if speedsq > toholespd * toholespd then
+				speed = math.sqrt(speedsq)
+				local k = (speed - toholespd) / speed
+				vx, vz = k * vx, k * vz
+			else
+				vx, vz = 0, 0
+			end
+
+			local k = toholespd / math.sqrt(dsq)
+			vx = vx + dx * k
+			vz = vz + dz * k
+			inst.Physics:SetVel(vx, vy, vz)
+		elseif speedsq < 0.01 and inst.frictiondelay == nil then
+			ForceStop(inst)
 			inst._updating = false
 			inst.components.updatelooper:RemoveOnUpdateFn(OnUpdateRolling)
-			OnEnterHole(inst, hole)
+			if inst.components.golfpropitem then
+				inst.components.golfpropitem:CheckTeleport()
+			end
 			return
 		end
 
-		local toholespd = Remap(dsq / GOLFHOLE_RSQ, 0, 1, TUNING.GOLFHOLE_MAX_ACCEL, TUNING.GOLFHOLE_MIN_ACCEL)
-		if speedsq > toholespd * toholespd then
-			speed = math.sqrt(speedsq)
-			local k = (speed - toholespd) / speed
-			vx, vz = k * vx, k * vz
-		else
-			vx, vz = 0, 0
-		end
-
-		local k = toholespd / math.sqrt(dsq)
-		vx = vx + dx * k
-		vz = vz + dz * k
-		inst.Physics:SetVel(vx, vy, vz)
-	elseif speedsq < 0.01 and inst.frictiondelay == nil then
-		ForceStop(inst)
-		inst._updating = false
-		inst.components.updatelooper:RemoveOnUpdateFn(OnUpdateRolling)
-		if inst.components.golfpropitem then
-			inst.components.golfpropitem:CheckTeleport()
-		end
-		return
-	end
-
-	if inst.frictiondelay then
-		if inst.frictiondelay > 0 then
-			inst.frictiondelay = inst.frictiondelay - dt
-		else
-			inst.frictiondelay = nil
-			inst.Physics:SetFriction(0.06)
+		if inst.frictiondelay then
+			if inst.frictiondelay > 0 then
+				inst.frictiondelay = inst.frictiondelay - dt
+			else
+				inst.frictiondelay = nil
+				inst.Physics:SetFriction(0.06)
+			end
 		end
 	end
 

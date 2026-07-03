@@ -118,7 +118,7 @@ local function DoJoustAoe(inst, targets)
 					collided = true
 				else
 					if guy.components.rider and guy.components.rider.mount then
-						targets[guys.components.rider.mount] = t
+						targets[guy.components.rider.mount] = t
 					end
 					inst.components.combat:DoAttack(guy)
 					guy:PushEvent("knockback", { knocker = inst, radius = 6.5, forcelanded = true })
@@ -130,7 +130,7 @@ local function DoJoustAoe(inst, targets)
 	local knight_rad = inst:GetPhysicsRadius(0)
 	for i, v in ipairs(TheSim:FindEntities(cx, 0, cz, radius + LANCE_PADDING + knight_rad, JOUSTING_TAGS)) do
 		if v ~= inst and should_hit(v, inst) and should_collide(v, inst) then
-			targets[guy] = t
+			targets[v] = t
 			v:PushEventImmediate("joust_collide")
 			collided = true
 		end

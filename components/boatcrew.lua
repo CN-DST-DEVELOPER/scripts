@@ -181,9 +181,14 @@ function Boatcrew:SetRemoveMemberFn(fn)
     self.removemember = fn
 end
 
+--[[
+NOTE(OMAR):
+This doesn't actually work. The captain is removed as a member on death, so we won't have the link to the boat anymore.
+Leaving it as now, since it makes more sense for the boat to lose these components when all members are gone which is done further down below
+]]
 local function removecaptain(captain)
     local bc = captain.components.crewmember.boat and captain.components.crewmember.boat.components.boatcrew or nil
-    if bc then
+    if bc then -- DOESN'T WORK!
         TheWorld.components.piratespawner:RemoveShipData(bc.inst)
         bc.inst:RemoveComponent("vanish_on_sleep")
         bc.inst:RemoveComponent("boatcrew")
@@ -240,8 +245,9 @@ function Boatcrew:RemoveMember(inst)
         self.members[inst] = nil
 
         if self.membercount < 1 then
-			inst:RemoveComponent("vanish_on_sleep")
-            inst:RemoveComponent("boatcrew")
+            TheWorld.components.piratespawner:RemoveShipData(self.inst)
+			self.inst:RemoveComponent("vanish_on_sleep")
+            self.inst:RemoveComponent("boatcrew")
         end
     end
 end

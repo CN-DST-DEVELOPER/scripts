@@ -83,7 +83,7 @@ function WalkablePlatform:DestroyObjectsOnPlatform(excluding)
     local x, y, z = self.inst.Transform:GetWorldPosition()
     for i, v in ipairs(TheSim:FindEntities(x, y, z, self.platform_radius, nil, IGNORE_WALKABLE_PLATFORM_TAGS_ON_REMOVE)) do
 		if v ~= self.inst and
-			v.entity:GetParent() == nil and
+			(v.entity:GetParent() == nil or v:HasTag("childdeployblocker")) and
 			v.components.amphibiouscreature == nil and
 			v.components.drownable == nil and
 			not (excluding and excluding[v])

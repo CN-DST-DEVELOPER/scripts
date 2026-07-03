@@ -14,10 +14,11 @@ end
 function MigrationPetOwner:GetPet() -- Partial deprecation useful for checking if a pet exists but nothing else.
     if self.get_pet_fn then
         local pets = self.get_pet_fn(self.inst)
-        if type(pets) == "table" then -- Backwards compatability.
+        if EntityScript.is_instance(pets) then -- Backwards compatability.
+            return pets
+        elseif type(pets) == "table" then
             return pets[1]
         end
-        return pets
     end
     return nil
 end
@@ -25,8 +26,8 @@ end
 function MigrationPetOwner:GetAllPets()
     if self.get_pet_fn then
         local pets = self.get_pet_fn(self.inst)
-        if type(pets) ~= "table" then -- Backwards compatability.
-            return {pets}
+        if EntityScript.is_instance(pets) then -- Backwards compatibility
+            return { pets }
         end
         return pets
     end

@@ -3000,14 +3000,22 @@ function d_createscrapbookdata(print_missing_icons)
         if t.components.finiteuses  then
             -- FIXME(JBK): This is a bad assumption for tools that have multiple uses with different use rates but will fix up most cases.
             local count = 0
-            for _ in pairs(t.components.finiteuses.consumption) do
-                count = count + 1
+            for action in pairs(t.components.finiteuses.consumption) do
+                if action ~= ACTIONS.REMOVELUNARBUILDUP and action ~= ACTIONS.TERRAFORM_REMOVE then
+                    count = count + 1
+                end
             end
 
             local rate = 1
             if count == 1 then -- Only apply the modifier for if there is one consumer type.
-                local k, v = next(t.components.finiteuses.consumption)
-                rate = v
+                local k, v
+                while true do
+                    k, v = next(t.components.finiteuses.consumption)
+                    if k ~= ACTIONS.REMOVELUNARBUILDUP and k ~= ACTIONS.TERRAFORM_REMOVE then
+                        rate = v
+                        break
+                    end
+                end
             end
 
             for _, cmpname in ipairs(scrapbook_finiteuses_useamount_modifiers) do

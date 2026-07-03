@@ -1,4 +1,5 @@
 local WAXED_PLANTS = require "prefabs/waxed_plant_common"
+local easing = require "easing"
 
 local DEBUG_MODE = BRANCH == "dev"
 
@@ -777,20 +778,30 @@ local function GolfObstacle_OnEntityWake(inst)
 	fx.Physics:SetRestitution(0.85)
 	fx.Physics:SetCollisionGroup(COLLISION.BOAT_LIMITS)
 	fx.Physics:SetCollisionMask(COLLISION.ITEMS)
-	local rad = inst.Physics:GetRadius()
-	fx.Physics:SetCylinder(rad, rad)
+
+	local r = inst.Physics:GetRadius()
+	local r1 = inst._golfradoverride or r
+	local ht
+	if r1 < r then
+		ht = r + math.sqrt(r * r - r1 * r1)
+	else
+		ht = r
+	end
+	fx.Physics:SetCylinder(r1, ht)
+	inst._golfradoverride = nil
 
 	fx.Transform:SetPosition(inst.Transform:GetWorldPosition())
 	fx:ListenForEvent("onremove", function() fx:Remove() end, inst)
 end
 
-function MakeGolfObstaclePhysics(inst, rad)
+function MakeGolfObstaclePhysics(inst, rad, golfradoverride)
 	local phys = inst.entity:AddPhysics()
 	phys:SetMass(0)
 	phys:SetCollisionGroup(COLLISION.SMALLOBSTACLES)
 	phys:SetCollisionMask(COLLISION.ITEMS)
 	phys:SetSphere(rad or 0.2)
 
+	inst._golfradoverride = golfradoverride
 	inst:ListenForEvent("entitywake", GolfObstacle_OnEntityWake)
 
 	return phys
@@ -2038,6 +2049,11 @@ local function GetFumaroleDamageMultFn(inst, target)
     end
 end
 
+local function fumarole_UpdateTemperatureModifier(inst)
+    local heaterpower = math.clamp(inst.components.inventoryitemtemperature and inst.components.inventoryitemtemperature.externalheaterpower or 0, 0, 1)
+    inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", easing.linear(heaterpower, TUNING.FUMAROLETOOL_TEMP_MODIFIER, math.abs(TUNING.FUMAROLETOOL_TEMP_MODIFIER), 1))
+end
+
 function MakeFumaroleToolPristine(inst)
     inst:AddTag("heatrock")
     --HASHEATER (from heater component) added to pristine state for optimization
@@ -2053,6 +2069,8 @@ function MakeFumaroleTool(inst, heatonuse, onbroken, onrepaired, onupdatetempera
     inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", TUNING.FUMAROLETOOL_TEMP_MODIFIER)
     inst.components.inventoryitem:SetMinTemperature(TUNING.FUMAROLETOOL_MINTEMP)
     inst.components.inventoryitem:SetMaxTemperature(TUNING.FUMAROLETOOL_MAXTEMP)
+    inst.components.inventoryitemtemperature.inherentinsulation = TUNING.INSULATION_MED_LARGE
+    inst:ListenForEvent("temperaturedelta", fumarole_UpdateTemperatureModifier)
     if inst.components.finiteuses ~= nil then
         inst.components.finiteuses:ClearAllConsumptions()
         inst.components.finiteuses:SetIgnoreCombatDurabilityLoss(true)

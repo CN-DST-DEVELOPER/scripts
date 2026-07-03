@@ -167,7 +167,7 @@ function TempTile_HandleTileChange_Ocean(x, y, z)
 
         -- We're testing the overhang, so we need to verify that anything we find isn't
         -- still on some adjacent dock or land tile after we remove ourself.
-        if ent:IsValid() and not has_drownable and ent.entity:GetParent() == nil
+        if ent:IsValid() and not has_drownable and (ent.entity:GetParent() == nil or ent:HasTag("childdeployblocker"))
             and ent.components.amphibiouscreature == nil
             and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
 
@@ -214,7 +214,7 @@ function TempTile_HandleTileChange_Void(x, y, z)
         -- We're testing the overhang, so we need to verify that anything we find isn't
         -- still on some adjacent dock or land tile after we remove ourself.
         local canfallinvoid = drownable and ent.sg and ent.sg.sg.states.abyss_fall ~= nil -- NOTES(JBK): If things do not support the abyss_fall state we should kill it instead.
-        if ent:IsValid() and not canfallinvoid and ent.entity:GetParent() == nil
+        if ent:IsValid() and not canfallinvoid and (ent.entity:GetParent() == nil or ent:HasTag("childdeployblocker"))
             and not _map:IsVisualGroundAtPoint(ent.Transform:GetWorldPosition()) then
 
             if ent.components.inventoryitem ~= nil then

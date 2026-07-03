@@ -697,14 +697,12 @@ CommonStates.AddHopStates(states, true, nil,
 {
     hop_pre =
     {
-        TimeEvent(0, function(inst)
-            -- TODO(DANY):  This is when Chester starts jumping on the boat. There are a few other creatures that can jump on the boat
-            --              but I thought it would make sense to just get chester working properly and then we can look at hooking up
-            --              the other ones after.
-            -- TODO(DANY):  This is when Chester lands on the boat.
-            inst.SoundEmitter:PlaySound("dontstarve/common/dropGeneric")
-        end),
-    }
+        SoundFrameEvent(0, "turnoftides/common/together/boat/jump", .8),
+    },
+    hop_pst =
+    {
+        SoundFrameEvent(0, "turnoftides/common/together/boat/jump_on_small"),
+    },
 })
 
 CommonStates.AddSleepStates(states,

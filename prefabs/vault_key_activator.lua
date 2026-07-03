@@ -87,6 +87,8 @@ local function fn()
 		return inst
 	end
 
+	inst.scrapbook_anim = "scrapbook_activator"
+
 	inst:AddComponent("inspectable")
 
 	inst:ListenForEvent("ms_depositspark", OnDepositSpark)
@@ -190,6 +192,8 @@ local function leverfn()
 		return inst
 	end
 
+	inst.scrapbook_anim = "scrapbook_lever"
+
 	inst:AddComponent("inspectable")
 
 	inst:AddComponent("activatable")
@@ -291,7 +295,7 @@ local function pedestalfn()
 		return inst
 	end
 
-	inst.scrapbook_anim = "pedestal_idle_key"
+	inst.scrapbook_anim = "scrapbook_pedestal"
 
 	inst:AddComponent("inspectable")
 
@@ -411,7 +415,7 @@ local function refinerpedestalfn()
 	end
 
     inst._activetask = nil
-	inst.scrapbook_anim = "refiner_idle"
+	inst.scrapbook_anim = "scrapbook_refiner"
 
 	inst:AddComponent("inspectable")
 

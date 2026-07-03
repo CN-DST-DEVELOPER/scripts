@@ -81,6 +81,7 @@ local function OnFoodGiven(inst, item, giver)
     end
 
     if item.components.perishable ~= nil then
+        inst._wasperishing = item.components.perishable:IsPerishing()
         item.components.perishable:StopPerishing()
     end
 
@@ -122,7 +123,9 @@ local function OnFoodTaken(inst, item, taker, wholestack)
     end
 
     if item.components.perishable ~= nil then
-        item.components.perishable:StartPerishing()
+        if inst._wasperishing then
+            item.components.perishable:StartPerishing()
+        end
     end
 
 	if item.components.propagator then

@@ -3114,8 +3114,11 @@ ACTIONS.OPEN_CRAFTING.strfn = function(act)
 end
 
 ACTIONS.OPEN_CRAFTING.fn = function(act)
-	if act.doer.components.builder ~= nil and (act.target == nil or not act.target:HasTag("hideprototyperaction")) then
-        local prototyper = act.target.components.prototyper.redirect_to_prototyper or act.target
+    if act.doer and act.doer.components.builder then
+        local prototyper = nil
+        if act.target and not act.target:HasTag("hideprototyperaction") then
+            prototyper = (act.target.components.prototyper and act.target.components.prototyper.redirect_to_prototyper) or act.target
+        end
         return act.doer.components.builder:UsePrototyper(prototyper)
     end
 	return false

@@ -63,21 +63,9 @@ local function depleted(inst)
     else
         inst.components.workable:SetWorkable(false)
         inst:PushEvent("death")
-        inst:RemoveTag("spore") -- so crowding no longer detects it
         inst.persists = false
         -- clean up when offscreen, because the death event is handled by the SG
         inst:DoTaskInTime(3, inst.Remove)
-    end
-end
-
-local SPORE_TAGS = {"spore"}
-local function checkforcrowding(inst)
-    local x, y, z = inst.Transform:GetWorldPosition()
-    local spores = TheSim:FindEntities(x,y,z, TUNING.MUSHSPORE_MAX_DENSITY_RAD, SPORE_TAGS)
-    if #spores > TUNING.MUSHSPORE_MAX_DENSITY then
-        inst.components.perishable:SetPercent(0)
-    else
-        inst.crowdingtask = inst:DoTaskInTime(TUNING.MUSHSPORE_DENSITY_CHECK_TIME + math.random()*TUNING.MUSHSPORE_DENSITY_CHECK_VAR, checkforcrowding)
     end
 end
 
@@ -85,10 +73,6 @@ local function onpickup(inst)
     --These last longer when held
     inst.components.perishable:SetLocalMultiplier( TUNING.SEG_TIME * 3/ TUNING.PERISH_SLOW )
     inst.SoundEmitter:KillSound("idle_LP")
-    if inst.crowdingtask ~= nil then
-        inst.crowdingtask:Cancel()
-        inst.crowdingtask = nil
-    end
     if inst.sparktask then
         inst.sparktask:Cancel()
         inst.sparktask = nil
@@ -118,9 +102,6 @@ local function ondropped(inst)
         end
     end
 
-    if inst.crowdingtask == nil then
-        inst.crowdingtask = inst:DoTaskInTime(TUNING.MUSHSPORE_DENSITY_CHECK_TIME + math.random()*TUNING.MUSHSPORE_DENSITY_CHECK_VAR, checkforcrowding)
-    end
     inst.Light:Enable(true)
 
     if not inst.sparktask then
@@ -253,9 +234,6 @@ local function fn()
 
     inst:SetStateGraph("SGspore")
     inst:SetBrain(brain)
-
-    -- note: the first check is faster, because this might be from dropping a stack
-    inst.crowdingtask = inst:DoTaskInTime(1 + math.random()*TUNING.MUSHSPORE_DENSITY_CHECK_VAR, checkforcrowding)
 
     inst.sparktask = inst:DoTaskInTime(5 + math.random()* 10, dospark)
 

@@ -9100,6 +9100,9 @@ function Tune(overrides)
         NONSLIPGRITBOOSTED_NUMBER_OF_POOLS = 25,
         NONSLIPGRITBOOSTED_POOL_TIME = seg_time * 2,
 
+        DESICCANT_HELD_TEMPERATURE = 15, -- if owner isnt dry, this applies
+        DESSICANT_MIN_TEMPERATURE = 20,
+        DESSICANT_THRESHOLD_TEMPERATURE = 55,
         DESICCANT_DRY_RATE = 0.5,
         DESICCANTBOOSTED_DRY_RATE = 0.75,
         MOISTUREABSORBER_RAINED_ON_EFFICIENCY_MULT = 0.07,
@@ -9481,7 +9484,7 @@ function Tune(overrides)
         TRAP_FUMAROLE_MINTEMP = 0,
         TRAP_FUMAROLE_MAXTEMP = 90,
         TRAP_FUMAROLE_MAXTEMP_HELD = 25, -- a little under the threshold so we have time to be placed before changing threshold.
-        TRAP_FUMAROLE_TEMP_MODIFIER = -30,
+        TRAP_FUMAROLE_TEMP_MODIFIER = -20,
         TRAP_FUMAROLE_TEMPS = { 0, 30, 60 },
         TRAP_FUMAROLE_LIGHTOVERRIDES = { 0, .125, .35 },
         TRAP_FUMAROLE_IGNITE_TIME = seg_time * 0.5, -- multiplied by mult below depending on temperature stage, this also cooks stuff.

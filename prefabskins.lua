@@ -2048,6 +2048,9 @@ PREFAB_SKINS = {
 		"walrushat_blue",
 		"walrushat_cawnival",
 		"walrushat_ceremonial",
+		"walrushat_minigolf_green",
+		"walrushat_minigolf_purple",
+		"walrushat_minigolf_red",
 		"walrushat_party",
 	},
 	walter =

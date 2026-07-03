@@ -19,6 +19,16 @@ local prefabs =
 	"carnival_unwrap_fx",
 }
 
+local prefabs_s2 =
+{
+	"carnival_unwrap_fx_s2",
+}
+
+local prefabs_s3 =
+{
+	"carnival_unwrap_fx_s3",
+}
+
 local rarity_weight_map =
 {
 	rare		= 1,
@@ -133,10 +143,10 @@ local function onbuilt(inst, data)
 		end
 	end
 
-	SpawnPrefab("carnival_unwrap_fx").Transform:SetPosition(inst.Transform:GetWorldPosition())
+	local suffix = (inst.carnival_season > 1 and ("_s"..tostring(inst.carnival_season))) or ""
+	SpawnPrefab("carnival_unwrap_fx"..suffix).Transform:SetPosition(inst.Transform:GetWorldPosition())
 
     inst.SoundEmitter:PlaySound("dontstarve/common/together/packaged")
-    
 end
 
 local function GetStatus(inst)
@@ -260,9 +270,9 @@ end
 return Prefab("carnivaldecor_figure", fn_season1, assets, prefabs),
 	MakeDeployableKitItem("carnivaldecor_figure_kit", "carnivaldecor_figure", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, deployable_data),
 	MakePlacer("carnivaldecor_figure_kit_placer", "carnivaldecor_statue", "carnivaldecor_statue", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn),
-	Prefab("carnivaldecor_figure_season2", fn_season2, assets_s2, prefabs),
+	Prefab("carnivaldecor_figure_season2", fn_season2, assets_s2, prefabs_s2),
 	MakeDeployableKitItem("carnivaldecor_figure_kit_season2", "carnivaldecor_figure_season2", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, deployable_data),
 	MakePlacer("carnivaldecor_figure_kit_season2_placer", "carnivaldecor_statue_season2", "carnivaldecor_statue_season2", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn),
-	Prefab("carnivaldecor_figure_season3", fn_season3, assets_s3, prefabs),
+	Prefab("carnivaldecor_figure_season3", fn_season3, assets_s3, prefabs_s3),
 	MakeDeployableKitItem("carnivaldecor_figure_kit_season3", "carnivaldecor_figure_season3", "carnivaldecor_statue_season3", "carnivaldecor_statue_season3", "kit_item", nil, {size = "small", scale = 1.1}, nil, {fuelvalue = TUNING.SMALL_FUEL}, deployable_data),
 	MakePlacer("carnivaldecor_figure_kit_season3_placer", "carnivaldecor_statue_season3", "carnivaldecor_statue_season3", "kit_item", nil, nil, nil, nil, nil, nil, placer_postinit_fn)

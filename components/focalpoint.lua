@@ -144,7 +144,7 @@ function FocalPoint:CameraUpdate(dt)
 			end
 			local fn = best_focus.updater and best_focus.updater.UpdateFn or UpdateFocus
 			fn(dt, best_focus, parent, best_dist_sq)
-		else
+		elseif self.current_focus then
 			self:Reset(true)
 		end
 	elseif self.current_focus ~= nil then

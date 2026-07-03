@@ -83,7 +83,7 @@ local function ResetLootdropperConfig(inst)
 end
 
 local function ConfigLootDropper(inst)
-	inst.components.lootdropper.min_speed = 1
+	inst.components.lootdropper.min_speed = 1.5
 	inst.components.lootdropper.max_speed = 2
 	inst.components.lootdropper.y_offset = 6
 	inst.components.lootdropper.spawn_loot_inside_prefab = true
@@ -115,9 +115,9 @@ local function SetupGolfBall(inst)
 	local x, y, z = inst.Transform:GetWorldPosition()
 	local theta = inst.Transform:GetRotation() * DEGREES
 	local vx, vz = math.cos(theta), -math.sin(theta)
-	local speed = 1
-	local yvel = -1
-	local startradius = 0.3
+	local speed = 1.5
+	local yvel = 0
+	local startradius = 0.5
 	local startheight = .25
 	inst.SoundEmitter:PlaySound("summerevent2022/carnivalgame_puckdrop/door_open")
 	inst.golfball = SpawnPrefab("carnivalgame_golfball")
@@ -140,7 +140,7 @@ local function ClearGolfClub(inst)
 	end
 	if inst.golfclub ~= nil then
 		if inst.golfclub:IsValid() then
-			if not inst.golfclub:IsInLimbo() then
+			if not inst.golfclub:IsInLimbo() and not inst:IsAsleep() then
 				SpawnPrefab("dirt_puff").Transform:SetPosition(inst.golfclub.Transform:GetWorldPosition())
 			end
 			inst.golfclub:Remove()
@@ -157,7 +157,7 @@ local function ClearGolfBall(inst)
 	end
 	if inst.golfball ~= nil then
 		if inst.golfball:IsValid() then
-			if not inst.golfball:IsInLimbo() and not inst.golfball._inhole then
+			if not inst.golfball:IsInLimbo() and not inst.golfball._inhole and not inst:IsAsleep() then
 				SpawnPrefab("dirt_puff").Transform:SetPosition(inst.golfball.Transform:GetWorldPosition())
 			end
 			if not inst.golfball._inhole then
@@ -192,6 +192,8 @@ local function spawntoken(inst)
 	ResetLootdropperConfig(inst)
 	inst.components.lootdropper.spawn_loot_inside_prefab = true
 	inst.components.lootdropper.y_offset = 0.8
+	inst.components.lootdropper.min_speed = 1.75
+	inst.components.lootdropper.max_speed = 2
 	inst.components.lootdropper:SpawnLootPrefab("carnival_gametoken")
 	inst:ActivateRandomCannon()
 	ConfigLootDropper(inst)
@@ -212,9 +214,6 @@ local function OnStopPlaying(inst)
 end
 
 local function SpawnRewards(inst, score)
-	if inst.customizable then
-		spawntoken(inst) -- refund the token
-	end
 	for i = 1, score do
 		inst:DoTaskInTime(0.25 * i, spawnticket)
 	end
@@ -229,16 +228,18 @@ end
 local function OnDeactivateGame(inst)
 	if inst.customizable then
 		inst.components.cyclable.cancycle = true
+		spawntoken(inst) -- refund the token
 	end
 	inst.SoundEmitter:KillSound("rewards_loop")
-	inst.SoundEmitter:PlaySound("summerevent/golf_minigame/tee/tee_spawnrewards_pst")
-	inst.AnimState:PlayAnimation("spawn_rewards_pst")
-	inst.AnimState:PushAnimation("idle_active", true)
-
-	inst:DoTaskInTime(8 * FRAMES, enable_light, false)
-
-	-- inst.SoundEmitter:KillSound("loop")
-	-- inst.SoundEmitter:PlaySound("summerevent/carnival_games/feedchicks/station/spawnrewards_pst")
+	if inst:IsAsleep() then
+		inst.AnimState:PushAnimation("idle_active", true)
+		enable_light(inst, false)
+	else
+		inst.SoundEmitter:PlaySound("summerevent/golf_minigame/tee/tee_spawnrewards_pst")
+		inst.AnimState:PlayAnimation("spawn_rewards_pst")
+		inst.AnimState:PushAnimation("idle_active", true)
+		inst:DoTaskInTime(8 * FRAMES, enable_light, false)
+	end
 end
 
 local function Trader_AbleToAcceptTest(inst, item, giver)
@@ -358,6 +359,7 @@ local function SetIsCustomizable(inst)
 	inst:AddComponent("prototyper")
 	inst.components.prototyper.redirect_to_prototyper = inst.golfgame
 	inst.components.prototyper.overridecanuseprototyper = OverrideCanUsePrototyper
+	inst:RemoveTag("prototyper") -- we don't actually want to be a prototyper ourselves :)
 end
 
 local function GetStatus(inst)
@@ -382,7 +384,7 @@ local function teefn()
 	inst.entity:AddLight()
     inst.entity:AddNetwork()
 
-	MakeGolfObstaclePhysics(inst, .25)
+	MakeGolfObstaclePhysics(inst, 0.25, 0.14)
 	inst:SetDeploySmartRadius(DEPLOYSPACING_RADIUS[DEPLOYSPACING.PLACER_DEFAULT] / 2) --match kit item
 
     inst.AnimState:SetBank("carnivalgame_golf_tee")

@@ -199,6 +199,9 @@ end
 local function onloadpostpass(inst, newents, savedata)
     inst.ghost = nil
     if savedata then
+        if inst.mound and savedata.mounddata then
+            inst.mound:LoadPostPass(newents, savedata.mounddata.data)
+        end
         if savedata.ghost_id and newents[savedata.ghost_id] then
             inst.ghost = newents[savedata.ghost_id].entity
             inst.ghost:LinkToHome(inst)

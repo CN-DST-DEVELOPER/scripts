@@ -235,7 +235,7 @@ function BoatLeak:SetState(state, skip_open)
         self:ChangeToRepaired("boat_repair_build")
 
 	elseif state == "repaired_tape" then
-        self:ChangeToRepaired("boat_repair_tape_build")
+        self:ChangeToRepaired("boat_repair_tape_build", "dontstarve/characters/winona/tape_fix")
 
     elseif state == "repaired_treegrowth" then
         self:ChangeToRepaired("treegrowthsolution","waterlogged2/common/repairgoop")

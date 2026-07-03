@@ -38,7 +38,15 @@ local InventoryItemTemperature = Class(function(self, inst)
     self.inst = inst
 
     self._replica = nil
-    --Don't initialize .temperature, .mintemp, .maxtemp, .maxmoisturepenalty, self.save_min_and_max_temp until we have a link to inventoryitem replica
+    --Don't initialize:
+        -- .temperature
+        -- .mintemp
+        -- .maxtemp
+        -- .maxmoisturepenalty
+        -- .inherentinsulation
+        -- .inherentsummerinsulation
+        -- .save_min_and_max_temp
+    --until we have a link to inventoryitem replica
 
     inst:AddTag("inventoryitemtemperature")
 end,
@@ -56,9 +64,12 @@ function InventoryItemTemperature:AttachReplica(replica)
     self.maxtemp = TUNING.MAX_ENTITY_TEMP
     self.mintemp = TUNING.MIN_ENTITY_TEMP
     self.maxmoisturepenalty = TUNING.MOISTURE_TEMP_PENALTY
+    self.inherentinsulation = 0
+    self.inherentsummerinsulation = 0
     --self.save_min_and_max_temp = nil
     --Cached update values
     self.totalmodifiers = 0
+    self.externalheaterpower = 0
 end
 
 function InventoryItemTemperature:OnRemoveFromEntity()
@@ -107,6 +118,14 @@ function InventoryItemTemperature:DiluteTemperature(item, count)
 end
 
 function InventoryItemTemperature:DoDelta(delta)
+    local winterInsulation, summerInsulation = self:GetInsulation()
+
+    if delta > 0 then
+        delta = delta * (TUNING.SEG_TIME / (TUNING.SEG_TIME + summerInsulation))
+    else
+        delta = delta * (TUNING.SEG_TIME / (TUNING.SEG_TIME + winterInsulation))
+    end
+
     self:SetTemperature(self.temperature + delta)
 end
 
@@ -129,6 +148,10 @@ end
 
 function InventoryItemTemperature:SetMaxMoisturePenalty(moisturepenalty)
     self.maxmoisturepenalty = moisturepenalty
+end
+
+function InventoryItemTemperature:SetNoWetPenalty(nopenalty)
+    self.nowetpenalty = nopenalty
 end
 
 function InventoryItemTemperature:SetPercentAtMost(percent)
@@ -175,6 +198,12 @@ function InventoryItemTemperature:RemoveModifier(name)
     end
 end
 
+function InventoryItemTemperature:GetInsulation()
+    local winterInsulation = self.inherentinsulation
+    local summerInsulation = self.inherentsummerinsulation
+    return math.max(0, winterInsulation), math.max(0, summerInsulation)
+end
+
 function InventoryItemTemperature:GetMoisturePenalty()
     return -Lerp(0, self.maxmoisturepenalty, self.inst.components.inventoryitem:GetMoisturePercent())
 end
@@ -185,19 +214,22 @@ local HEATER_MUST_TAGS = { "HASHEATER" }
 local HEATER_NO_TAGS = { "heatrock", "INLIMBO" }
 
 -- TODO
-function InventoryItemTemperature:GetTargetTemperature() -- returns target temp and rate
+function InventoryItemTemperature:GetTargetDeltaTemperature() -- returns target temp and rate
+    self.externalheaterpower = 0
+
     local owner = self.inst.components.inventoryitem ~= nil and self.inst.components.inventoryitem.owner or nil
     local inside_pocket_container = owner ~= nil and owner:HasTag("pocketdimension_container")
     local ambient_temperature = inside_pocket_container and TheWorld.state.temperature or GetLocalTemperature(self.inst)
+    local totaltemperature = (ambient_temperature + self.totalmodifiers + self:GetMoisturePenalty())
 
 	if owner ~= nil and owner:HasTag("fridge") and not owner:HasTag("nocool") then
-		return math.min(0, ambient_temperature), owner:HasTag("lowcool") and -.5 * TUNING.WARM_DEGREES_PER_SEC or TUNING.WARM_DEGREES_PER_SEC
+        return 0 - self.temperature, owner:HasTag("lowcool") and -.5 * TUNING.WARM_DEGREES_PER_SEC or -TUNING.WARM_DEGREES_PER_SEC
 	end
 
-	local target_temp = ambient_temperature + self.totalmodifiers + self:GetMoisturePenalty()
+	local delta = totaltemperature - self.temperature
 
     if self.inst.components.floater ~= nil and self.inst.components.floater:IsFloating() then
-        target_temp = target_temp + TUNING.OCEAN_AMBIENT_TEMPERATURE_PENALTY
+        delta = delta - (self.temperature + TUNING.OCEAN_AMBIENT_TEMPERATURE_PENALTY)
     end
 
 	local heat_factor_penalty = TUNING.WET_HEAT_FACTOR_PENALTY -- Cache.
@@ -206,7 +238,7 @@ function InventoryItemTemperature:GetTargetTemperature() -- returns target temp 
 		for i, v in ipairs(TheSim:FindEntities(x, y, z, ZERO_DISTANCE, HEATER_MUST_TAGS, HEATER_NO_TAGS)) do
 			if v ~= self.inst and not v:IsInLimbo() and v.components.heater then
 				local heat = v.components.heater:GetHeat(self.inst)
-				--V2C: GetHeat first. Some heaters update thermics in their heatfn.
+				-- GetHeat first. Some heaters update thermics in their heatfn.
 				if heat and (v.components.heater:IsExothermic() or v.components.heater:IsEndothermic()) then
                     local heatfactor, dsqtoinst
                     if v.components.heater:ShouldFalloff() then
@@ -225,7 +257,7 @@ function InventoryItemTemperature:GetTargetTemperature() -- returns target temp 
                     end
 
                     if heatfactor > 0 then
-                        if self.inst:GetIsWet() then -- NOTES(JBK): Leave this in the loop because the entity could go out of IsWet status in this loop.
+                        if self.inst:GetIsWet() and not self.nowetpenalty then -- NOTES(JBK): Leave this in the loop because the entity could go out of IsWet status in this loop.
                             if heat > 0 then
                                 heatfactor = heatfactor * heat_factor_penalty
                             elseif heat_factor_penalty ~= 0 then -- In case of mods setting the tuning to 0.
@@ -237,15 +269,15 @@ function InventoryItemTemperature:GetTargetTemperature() -- returns target temp 
                             -- heating heatfactor is relative to 0 (freezing)
                             local warmingtemp = heat * heatfactor
                             if warmingtemp > self.temperature then
-                                target_temp = target_temp + warmingtemp
+                                delta = delta + warmingtemp - self.temperature
                             end
-                            -- self.externalheaterpower = self.externalheaterpower + heatfactor
+                            self.externalheaterpower = self.externalheaterpower + heatfactor
                         else--if v.components.heater:IsEndothermic() then
                             -- cooling heatfactor is relative to overheattemp
-							local overheattemp = 90 -- TODO
+							local overheattemp = self.maxtemp - 20
                             local coolingtemp = (heat - overheattemp) * heatfactor + overheattemp
                             if coolingtemp < self.temperature then
-                                target_temp = target_temp + coolingtemp
+                                delta = delta + coolingtemp - self.temperature
                             end
                         end
                     end
@@ -254,22 +286,38 @@ function InventoryItemTemperature:GetTargetTemperature() -- returns target temp 
 		end
 	end
 
-	return target_temp
+	return delta
+end
+
+function InventoryItemTemperature:GetTargetTemperature()
+    local target_delta = self:GetTargetDeltaTemperature()
+    return self.temperature + target_delta
 end
 
 function InventoryItemTemperature:UpdateTemperature(dt)
-    local target_temp, temperature_rate = self:GetTargetTemperature()
-	local target_delta = target_temp - self.temperature
-    -- TODO custom rates
+    local target_delta, override_rate = self:GetTargetDeltaTemperature()
+	local target_temp = self.temperature + target_delta
+    local temperature_rate = 1
+
+    if override_rate then
+        temperature_rate = override_rate
+    elseif target_delta > 0 then
+        local winterInsulation, summerInsulation = self:GetInsulation()
+        temperature_rate = math.min(target_delta, TUNING.SEG_TIME / (TUNING.SEG_TIME + summerInsulation))
+    elseif target_delta < 0 then
+        local winterInsulation, summerInsulation = self:GetInsulation()
+        temperature_rate = math.max(target_delta, -TUNING.SEG_TIME / (TUNING.SEG_TIME + winterInsulation))
+    end
+
     -- only update if we have enough of a difference,
     -- otherwise, also update if reaching a whole number (e.g. if current temp is 0.06, and target temp is 0, we want to get to 0 anyways for stuff that listens for 0)
     -- in that case, make sure when using inventoryitemtemperature to always set things like mintemp, maxtemp, or certain behaviours to check for whole number of temperature
     if (target_delta > TARGET_DELTA_THRESHOLD)
         or (target_delta > 0 and (target_temp % 1 == 0)) then
-        self:SetTemperature(math.min(target_temp, self.temperature + dt))
+        self:SetTemperature(math.min(target_temp, self.temperature + temperature_rate * dt))
     elseif (target_delta < -TARGET_DELTA_THRESHOLD)
         or (target_delta < 0 and (target_temp % 1 == 0)) then
-        self:SetTemperature(math.max(target_temp, self.temperature - 0.5 * dt))
+        self:SetTemperature(math.max(target_temp, self.temperature + temperature_rate * dt))
 	else
 		return false --not enough change
     end

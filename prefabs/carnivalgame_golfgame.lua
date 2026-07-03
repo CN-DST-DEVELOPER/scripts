@@ -99,6 +99,7 @@ end
 local function AddGolfProp(inst, prop)
     prop.persists = false
     prop.golfgame = inst
+    prop.proxy_destroy_entity = inst
     table.insert(inst.courseparts, prop)
     inst:ListenForEvent("onremove", OnRemoveGolfProp, prop)
 
@@ -502,6 +503,7 @@ local function TrackUnparentedVisual(inst, visual)
     end
 
     visual.persists = false
+    visual.proxy_destroy_entity = inst
     inst.visuals[visual] = function() inst:UntrackUnparentedVisual(visual) end
     visual:ListenForEvent("onremove", inst.visuals[visual])
 end
@@ -512,6 +514,7 @@ local function UntrackUnparentedVisual(inst, visual)
 
     if visual:IsValid() then
         visual.persists = true
+        visual.proxy_destroy_entity = nil
         visual:RemoveEventCallback("onremove", inst.visuals[visual])
     end
     inst.visuals[visual] = nil
@@ -619,6 +622,25 @@ local function OnTerraformerRemoved(inst, doer)
     if kitprefab then
         local kit = SpawnPrefab(kitprefab)
         if kit then
+            if kit._available_courses then
+                if inst._available_courses then
+                    kit._available_courses = inst._available_courses
+                else
+                    kit:ResetAvailableCourses()
+                end
+                if inst._coursecode_index then
+                    for i, v in ipairs(kit._available_courses) do
+                        if v == inst._coursecode_index then
+                            table.remove(inst._available_courses, i)
+                            break
+                        end
+                    end
+
+                    if #kit._available_courses == 0 then
+                        kit:ResetAvailableCourses(inst._coursecode_index)
+                    end
+                end
+            end
             Launch2(kit, inst, 1, 1, 0.2, 0, 4)
         end
     end
@@ -745,6 +767,7 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
+    inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
 
     inst.AnimState:SetBank("carnivalgame_golfgame_turf")
@@ -753,6 +776,8 @@ local function fn()
     inst.AnimState:SetLayer(LAYER_BACKGROUND)
     inst.AnimState:SetSortOrder(-3)
     inst.AnimState:PlayAnimation("turf")
+
+    inst.MiniMapEntity:SetIcon("carnivalgame_golfgame.png")
 
     inst:AddTag("NOBLOCK")
     inst:AddTag("hideprototyperaction")
@@ -850,6 +875,7 @@ local function fn()
         local blocker = SpawnPrefab("carnivalgame_placementblocker_golfgame")
         blocker.entity:SetParent(inst.entity)
         blocker.Transform:SetPosition(dx, 0, dz)
+        blocker.proxy_destroy_entity = inst
     end
 
     inst:ListenForEvent("buildstructure", OnBuildStructure)
@@ -905,6 +931,15 @@ local deployable_data = {
     end,
 }
 
+local function kit_ResetAvailableCourses(inst, excludeindex)
+    inst._available_courses = {}
+    for i = 1, inst._num_coursecodes do
+        if i ~= excludeindex then
+            table.insert(inst._available_courses, i)
+        end
+    end
+end
+
 local function MakeGolfCourseKit(name, coursecodes_or_customize)
     local function OnDeploy(inst, pt, deployer, rotation)
         rotation = math.floor((rotation / GOLFGAME_NEARESTANGLE) + 0.5) * GOLFGAME_NEARESTANGLE
@@ -916,7 +951,12 @@ local function MakeGolfCourseKit(name, coursecodes_or_customize)
         if coursecodes_or_customize == "CUSTOMIZABLE" then
             golfgame:SetIsCustomizable()
         else
-			golfgame:LoadCourseData(coursecodes_or_customize[math.random(#coursecodes_or_customize)], false)
+            golfgame._available_courses = inst._available_courses
+            if inst._available_courses then
+                local index = inst._available_courses[math.random(#inst._available_courses)]
+                golfgame._coursecode_index = index
+                golfgame:LoadCourseData(coursecodes_or_customize[index], false)
+            end
             golfgame:SetDifficulty(name)
         end
         golfgame:PushEvent("onbuilt", { builder = deployer, pos = pt, rot = rotation, deployable = inst })
@@ -928,6 +968,13 @@ local function MakeGolfCourseKit(name, coursecodes_or_customize)
 
     local deployable_data_custom = shallowcopy(deployable_data)
     deployable_data_custom.ondeploy = OnDeploy
+    deployable_data_custom.master_postinit = function(inst)
+        if coursecodes_or_customize ~= "CUSTOMIZABLE" then
+            inst._num_coursecodes = #coursecodes_or_customize
+            inst.ResetAvailableCourses = kit_ResetAvailableCourses
+            inst:ResetAvailableCourses()
+        end
+    end
 
     return MakeDeployableKitItem("carnivalgame_golfgame_kit_"..name, "carnivalgame_golfgame", "carnivalgame_golfgame_kits", "carnivalgame_golfgame_kits", name, kit_assets, {size = "med", scale = 0.77}, {"usedeploystring"}, {fuelvalue = TUNING.MED_FUEL}, deployable_data_custom)
 end
@@ -970,9 +1017,9 @@ local HARD_COURSES =
     -- "Two Worlds"
     "AQAAABAAAADyCQAAqgIAAHjanVbZbhpBEPyViOdl1df08TUI4Y2NxCUMtqUo/56ehaDY4dj1CvFCdW1Nd3UN++5w3G9+/MJGmslivt8s3+ar5/m6mz1vVz9nry/zXTdbHPdvHX3QpEGHZlra0kw5vwYUeLSRj4sJEmIzlTvFh66bNNOAFupjSsGR6PzQ7XetlpsOP/CsTSs93dP2GU/fweNwvH4HD4PwcOrjQPRF/Ug4joPTMFtcGXIWDvQUnFx0Hb3bb3ez9+1+/bJdVYHr5aF7yhciYBuizmASBaur+Fb54njYHg90bnGwm3AJZHDNA4JgiSLF09Vyn0LOYsFCUFhNrXhOgDBCAL2UVORjvAHjrDTSeXS7pacDlf5A2iJa6kdiEI0UBahQiEQh2B5w4JkDjKKEZzoAcSqNkiySnYpsz4jJljaLIkxZ3M0aTforZ65V/Zvp6u89++tuv9w8n1FTHAS7iVp3T8vj+nW33Gy6/WzxXvHQchAgFwnvW5fZAEgBHlzNcPPcr+v5anXhOpHl5msOwVgA3DywjltDDTWtWkKGkfVcWQksaKFu1TaacQ3izI9NHqdGtEiKaXEL80LV9Vku5/E+4rCeI1+bq2aGiJ5WaJKC84B5d1Rf+X0KrRRyffb/JEhv+K+3Un+jycP0uSwLjsBDzz4Q/F8u4s3aT+swSZBlMAHm4FXJq3un/LhsGhmjRsxCHiVzMR2qwB4GIUZaA8/JyKCAOdIAJVMspU0TUFGiUiKDmtOWCMmR2upY2ZgU/u7AQ8a0QCV08uoHT8IMnzArHKDUj4KsOqeUtP0joyDUoXALTMIpULFk/lDLKDXWOJ0Hep/CKwO1cgn1bE2/AgNC8EssnNYvp+dpewMQDun/klBdbMXAVMMjNjmpcoshFxmw3japipO0XkC1Wb//AGJGDsE=",
     -- spider horde vs tentacles
-    "AQAAABAAAACWDQAAFAMAAHjapVbbbhpLEPyVIz/vrvo+01+DiEMcSxgsbJxI0fn3U7M4yhHCZsLywNNUX6q7qveweT0edv/84kGGu/v1Yff4tt4+rJ82q4f99tvqdbO5G5Imar8Skpo++KCX3r58Xz9vVvfHw9tGfsrdUHNK/KoVY2EebPJhVPx9iN0+7jb8k++G8Txlg41+G1YWYHkBlhZgx0XgJVWPS+gal8xptCVgvwqeN3NGc6VhjOk95QXA9/0Wez8/Ujb3TA0XtTaX8ELckporXxLC82H/vHravz3uHn6st9vVYfO1xUI063j9ZXs8pbbL78+Z+NNLn7T+vJeL7+d6fuwPTycOxoJnURvTqeYFHH/Sx/9wTGViM5JSKDNQXheuojQhZIRthAPGfemwD8LOYVznKqULxlwmz1o0Q1Dq0JeMHWujpTILSBn6Uo0VFWZojcK1NEcLdvEioVy18QO3LEQJwtS0dozy3GD546leg9Lt0HEJdkHJJ6O6EasLsHYVe+Y0fnsy+Ytc59i/6LGVGTc8548t5P74uj++RrOymGqqcM00Noq2MagwpHLRin/9PAbT7IcyWanCZJaIVbHtysGJOJFw4q4YwMCMikUhY+gdIkQJXsOgxHolRn0vgxj+b0LhphCOuMMGHPHYQ3tCtCrMWUg0xedOVDE3Ld4Dp6lw81UjEALLw4dV4D4F7hSVq2z+LiFhQ8SltS3eQjB82tNgSLDdrjJgf6EJf5/zgkyLIHSi7hbZEwP846qyUvVs3YMJL6B1vq3iXTP1ieCXlFqLUIFiMufZwGxrH6GGQ6Ve2915b6RYcuDbAv1wFxkxMXtFWmxCzdp0a2L4Zmi3j7KnkbZbndsjOKwcTppNTZglpVWrodI5fgiQgqAmVxXS2cSzeFWi0z5cj0FTxQK2xSN1ni91G4QXnOBoUugcnmBhQqGopuK5u6gGjToGktY3PsFRNbgBmpLZlRLMlxP1Fy/phRiqkWaY4bwC7aiVrNdk+fJ8wHfbarf/tr4/feW1dXS4L4QBehQbnfAKI3wrQPTl80AnTQz+739b2RGn",
+    "AQAAABAAAACmCgAAdQIAAHjanVXtattAEHyVkt+S2O+7fRrjusoHKLZR7CRQ+u7dk+sEihvdFYx+WHOj3dmZvXk8nef9t5/YUXe32877p9ft9LB9HjcPh+l+cxrHu86h045vvX553B7Hze48v470TgtSBu16jsc/4dPTfsR3vOv6gBdkr9VwaoNjGxza4H0rvrGcvrHbvlHMXhrxuopfrLAcwBwHrByQ2wceD1N4awExiqo7mxJLkdU0AZKzizLect5xPhw3z4fXp/3D23aaNt+n84VMym+9nc/q6qz6iacq/NV71WhoQveN8LZaLr6rh3MbXFbhf7lIm/ipgf66gKjaBPYfcLwJXyy8O58O55MV69qQnQmzu6CAlRkLklHGxDme/DUHwuJ/GiRlQhDx4MrhQkZDDx7zyFIVR5wB9ySWQBAoJLIoQbMJacorHPlPGYCRYCEwFQ53kyol1+BDNa6hKFWIIgGxky6dMHsWTlpzHIYUMlISCEEULS4miw1jsWkgrap5LcFTTBFTaZu0UGACV5dEplZXBlIy9pRg+W6IKWYQnbCqmNdwhP6xF5Ehq5fuQwlNIeuyHUmrZqoDsMRYOSeCFCFxX2ZDbrlOUBlQWLPSRyNJHA2SRT9YJYYNiJrjs+GE7LlEVUhi64fdDLymkeKtOt0jQxBJUGaCMH7840kzA1xmuc4BQw7zFNMAa7i2+CFE1GQSbePa/D+Epxi2caShJHDxtWWJfGmI6VInPbO5SGi3SF/Wf/K8FoeX4xz342Z/uN/uxh9XGyghhiGjNQ4neWRUAJEibOlroosXO61LTiwfdIn8eQR4iVK2bLGTKDJEFVf6fCmZov1fvwHn4kh4",
     -- windy and dragonfly + bearger attack, a little shortcut exists
-    "AQAAABAAAADsDQAAhgIAAHjapVfbbtpAEP2VKs+2NTM7l92vQS5xCJLByIEkUtV/79hGapsAvhkheDhndq5n1m11vrTHH78wi9nTtmyP+/ey3pWHarNr6pfN22t5qjbbS/te4Sc+ZXmCArrHlFJIkuWhkIz8e5dc748DF7KcHYhzwDAHnM9Dz3IkfxhjnyDq4BhhwPaJGTf/PaGdW/2RS8iwgryGu8ZpGuU+78tdcyzrnh9TkfyJbIyEmIXRZP9H/3b8eHUfHi+jrfRgevR+157a5rR5O7X7427THKvz/lAN3SVFEP9VZVDqMk8BYgQLFoDtnqVD8+6WPsq63rTVc9fW7vp0MNwHby/n5nLWflI046mhdOiCGJIkVOMIXSNETf5fIykajY4bXcdNpo+bo2203t/QOAs9TYW+9tGgMryMG1ZwaQUXV3BhOXcFdYXHKxI1Xp+/IvGVqw+4r03dj5IWbAGDJsAo0vc3kQZlDGJMtMDlFe0o96n/KEa6Ou7qZQCiKBS8sslcGAOxgUHAqWqSe6BuDBMKe8gJAdULBlHdliQyCzzTlphGJGNGF1qvoIu2SAjMRqqzbEkBISViJZRI7haxMBgCc7pZm68i/LO+VINk8ww0jIrxsXkpt4PA55bJDOnmwhOqRsIaopp3S3AVN48RUrDJllj6fYjJ1xdH7aQcyTNDFIG6kgW3G4M8sjl0U+jdcnq3TpgpenpTJ1AGKUZW7wq5uR035+q6WB3s8+Ifwy4m6uXNUOPQT6JTpvd6+6Nps349duql+KaG4mIJxcUKisukjKZTIaPJLxa3PAyLsxKWlyLMu8l5jPfgH017GMQ9R5EiiV/xMEkEj24KK2ERKCU0nyxDlyAf2d9/AF6pTFI=",
+    "AQAAABAAAACZDAAAaQIAAHjalZZNbuMwDIWvMujaNvgjUtJpDE/qpgGcOHCTtsBg7j6UnWLQNq6lRZBFPlEk9fjCqb9cp9OvP1iF6mHXTafDazfsu2Pf7sfhqX157s59u7tOrz2+40NVR6hqbqQi+6zyw+G04AY7A7EEhhK4LqOLEql/rHHuCSUcAyzs3Jjt8HMPUybzLZk8lPGFeGE2tIk/Hrr9eOqG+Yid4M32fDqRLtl+gq+XyOYTfxayrgvoPI3n9uU8HU77djz1l8OxXx5aGhb7VnWglJRNDCFKjAqRw1qk4/hqkd66YWin/jEpDCvJh2Ed3l0v4/Wis2i1crmlJLohB5Y5qncB0kQHjRpidGi18aby6aZ8yVe+0X7zVb/RWETnGUL8mHGXjXMZTmU4luFQhJfRZamU1bndxP8j+jGhK/jzOMxC1sZ5RtYIGERmdREp+8jRif2Ql1iZGGSdvjtuNbJYohhRHIuPCKjWOQgq6Jk5BucKY4nXgOTdPK3WV/AqGhTMnkSLYkkDHCM5JZRAlhY5cUSsTOFu+7661O/h2i+e5gpo2HSr0/jU7RYHrH0lBd7mGs9OPYlTDurtddlszluN5tI+O5KTZG9I4JEoAFlQ6zRjYPkpzOLJPGdix5PFOkfBI8Q06B6iuWwEYnf3H6O99Lc/G4MdmoTRYyqDZpvwqGGR0N13/jZGNy+ivKG7XZu7s314EZZYEZY4EWabBeXTC0wleXBJhVzUPC5bQSz5NfxtnI6LL9ZJHZhDxrSK1Nn2sziGj2axDDLvQVYy+aiRb+7DPw9GTP33DQDFaJNEIBAshCqp2AqC82b19x/GgA31",
 }
 
 local PLACER_FIXEDCAMERAOFFSET = {offset = 90, nearestangle = GOLFGAME_NEARESTANGLE}

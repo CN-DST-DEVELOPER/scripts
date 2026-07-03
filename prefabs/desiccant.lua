@@ -37,12 +37,36 @@ local function ApplyDrying_Boosted(inst, rate, dt)
     inst.components.inventoryitemmoisture:DoDelta(TUNING.DESICCANTBOOSTED_DRY_RATE * dt)
 end
 
-local function OnFireMelt(inst)
-    inst.components.inventoryitemmoisture:SetExternallyControlled(false)
+local function GetOwnerMoisture(inst) -- returns moisture and moisture rate(without desiccant bonus)
+    local owner = inst.components.inventoryitem:GetGrandOwner()
+    local moisture = owner and owner.components.moisture
+    if moisture then
+        local moisturerate = moisture:GetMoistureRate()
+        local dryingrate = moisture:GetDryingRate(moisturerate)
+        local equippedmoisturerate = moisture:GetEquippedMoistureRate(dryingrate)
+        local externalbonuses = moisture:GetRateBonus()
+        return moisture:GetMoisture(), moisturerate + equippedmoisturerate - dryingrate + externalbonuses
+    end
+    return 0, 0
 end
 
-local function OnStopFireMelt(inst)
-    inst.components.inventoryitemmoisture:SetExternallyControlled(true)
+local function OnUpdateExternallyControlled(inst)
+    local temperature = inst.components.inventoryitem:GetTemperature()
+    local target_temperature = inst.components.inventoryitemtemperature:GetTargetTemperature()
+
+    local owner_moisture, owner_moisture_rate = GetOwnerMoisture(inst)
+    local is_owner_dry = owner_moisture <= 0 and owner_moisture_rate <= 0
+
+    -- these values felt good.
+    inst.components.inventoryitemmoisture:SetExternallyControlled(
+        not (temperature >= TUNING.DESSICANT_MIN_TEMPERATURE
+            and (temperature > TUNING.DESSICANT_THRESHOLD_TEMPERATURE or target_temperature > TUNING.DESSICANT_THRESHOLD_TEMPERATURE)
+            and is_owner_dry)
+    )
+
+    if not is_owner_dry and temperature > TUNING.DESICCANT_HELD_TEMPERATURE then
+        inst.components.inventoryitem:SetTemperature(TUNING.DESICCANT_HELD_TEMPERATURE)
+    end
 end
 
 local function OnIsDampDirty(inst)
@@ -121,9 +145,13 @@ local function fn_common(boosted)
     inst:AddComponent("inspectable")
 
     inst:AddComponent("inventoryitem")
+    inst.components.inventoryitem:EnableTemperature(true)
+    inst.components.inventoryitem:SetTemperatureMaxMoisturePenalty(0)
+    inst.components.inventoryitem:SetNoWetTemperaturePenalty(true)
     inst.components.inventoryitemmoisture:SetExternallyControlled(true) -- Must be after inventoryitem.
     inst.components.inventoryitemmoisture:SetOnlyWetWhenSaturated(true)
     inst.components.inventoryitemmoisture:SetOnMoistureDeltaCallback(OnMoistureDeltaCallback)
+    inst.components.inventoryitemtemperature.inherentinsulation = TUNING.INSULATION_TINY
 
     local moistureabsorbersource = inst:AddComponent("moistureabsorbersource")
     if boosted then
@@ -134,9 +162,8 @@ local function fn_common(boosted)
         moistureabsorbersource:SetApplyDryingFn(ApplyDrying)
     end
 
-    inst:ListenForEvent("firemelt", OnFireMelt)
-    inst:ListenForEvent("stopfiremelt", OnStopFireMelt)
-    inst:ListenForEvent("onputininventory", OnStopFireMelt)
+    inst:ListenForEvent("temperaturedelta", OnUpdateExternallyControlled)
+    inst:ListenForEvent("onputininventory", OnUpdateExternallyControlled)
 
     MakeHauntableLaunch(inst)
 

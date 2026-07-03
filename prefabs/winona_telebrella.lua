@@ -54,7 +54,12 @@ local function OnEquip(inst, owner)
 	owner.AnimState:Show("ARM_carry")
 	owner.AnimState:Hide("ARM_normal")
 
-	owner.DynamicShadow:SetSize(2.2, 1.4)
+	if not (owner.components.rider ~= nil and owner.components.rider:IsRiding()) then
+		owner.DynamicShadow:SetSize(2.2, 1.4)
+	end
+
+	inst.on_dismounted = function() owner.DynamicShadow:SetSize(2.2, 1.4) end
+	inst:ListenForEvent("dismounted", inst.on_dismounted, owner)
 	SetFxOwner(inst, owner)
 
 	inst.components.fueled:StartConsuming()
@@ -64,7 +69,15 @@ local function OnUnequip(inst, owner)
 	owner.AnimState:Hide("ARM_carry")
 	owner.AnimState:Show("ARM_normal")
 
-	owner.DynamicShadow:SetSize(1.3, 0.6)
+	if owner.components.rider ~= nil and owner.components.rider:IsRiding() then
+		owner.DynamicShadow:SetSize(6, 2)
+	else
+		owner.DynamicShadow:SetSize(1.3, 0.6)
+	end
+	if inst.on_dismounted ~= nil then
+		inst:RemoveEventCallback("dismounted", inst.on_dismounted, owner)
+		inst.on_dismounted = nil
+	end
 	SetFxOwner(inst, nil)
 
 	inst.components.fueled:StopConsuming()

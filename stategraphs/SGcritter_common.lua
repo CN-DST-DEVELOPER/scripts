@@ -4,8 +4,12 @@ SGCritterStates = {}
 
 
 --------------------------------------------------------------------------
+
+local function OnEat(inst, data)
+	inst.sg:GoToState("eat", data)
+end
 SGCritterEvents.OnEat = function()
-    return EventHandler("oneat", function(inst) inst.sg:GoToState("eat") end)
+    return EventHandler("oneat", OnEat)
 end
 
 SGCritterEvents.OnAvoidCombat = function()
@@ -105,12 +109,12 @@ SGCritterStates.AddIdle = function(states, num_emotes, timeline, idle_anim_fn)
 end
 
 --------------------------------------------------------------------------
-SGCritterStates.AddEat = function(states, timeline, fns, nothankyou)
+SGCritterStates.AddEat = function(states, timeline, fns, queuestate)
     table.insert(states, State{
         name = "eat",
         tags = { "busy" },
 
-        onenter = function(inst, pushanim)
+        onenter = function(inst, data)
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
@@ -118,6 +122,8 @@ SGCritterStates.AddEat = function(states, timeline, fns, nothankyou)
             inst.AnimState:PlayAnimation("eat_pre")
             inst.AnimState:PushAnimation("eat_loop", false)
             inst.AnimState:PushAnimation("eat_pst", false)
+
+			inst.sg.statemem.food = data ~= nil and data.food or nil
 
             if fns ~= nil and fns.onenter ~= nil then
                 fns.onenter(inst)
@@ -130,7 +136,9 @@ SGCritterStates.AddEat = function(states, timeline, fns, nothankyou)
         {
             EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
-					local dest_state = (inst.sg.mem.queuethankyou and not nothankyou) and "emote_cute" or "idle"
+					local dest_state = inst.sg.mem.queuethankyou and "emote_cute"
+						or FunctionOrValue(queuestate, inst, inst.sg.statemem.food)
+						or "idle"
 					inst.sg.mem.queuethankyou = nil
                     inst.sg:GoToState(dest_state)
                 end

@@ -1369,19 +1369,7 @@ end
 local function GenericGolfCanPlace(pt, recipe, rot, builder)
     return TheWorld.Map:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2, nil, nil, nil, GOLFGAME_DEPLOY_IGNORE_TAGS)
 end
-local cutout_smart_radii = { -- NOTES(JBK): Keep in sync with carnivalgame_golfprops.lua [CGGPCSR]
-    0.5, -- 1, carrot
-    0.5, -- 2, rose
-    0.6, -- 3, hambat
-    0.6, -- 4, corn
-    0.5, -- 5, red mushroom
-    0.6, -- 6, bearger
-    0.6, -- 7, deerclops
-    0.55, -- 8, spider
-    0.55, -- 9, dragonfly
-    0.55, -- 10, tentacle
-}
-
+local CUTOUT_SMART_RADIUS = 0.5 -- NOTES(JBK): Keep in sync with carnivalgame_golfprops.lua [CGGPCSR]
 
 Recipe2("carnivalgame_golf_shape_curve1x1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve1x1, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve1x1_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
 Recipe2("carnivalgame_golf_shape_curve1x2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve1x2, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve1x2_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
@@ -1401,16 +1389,16 @@ Recipe2("carnivalgame_golfprop_spring",					{}, TECH.CARNIVAL_GOLFPROPS_ONE, {no
 Recipe2("carnivalgame_golfprop_spring_onetime",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_onetime_placer"})
 Recipe2("carnivalgame_golfprop_spring_nofaced",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_nofaced_placer"})
 Recipe2("carnivalgame_golfprop_spring_nofaced_onetime",	{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_nofaced_onetime_placer"})
-Recipe2("carnivalgame_golfprop_cutout1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[1] * 2, placer="carnivalgame_golfprop_cutout1_placer"})
-Recipe2("carnivalgame_golfprop_cutout2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[2] * 2, placer="carnivalgame_golfprop_cutout2_placer"})
-Recipe2("carnivalgame_golfprop_cutout3",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[3] * 2, placer="carnivalgame_golfprop_cutout3_placer"})
-Recipe2("carnivalgame_golfprop_cutout4",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[4] * 2, placer="carnivalgame_golfprop_cutout4_placer"})
-Recipe2("carnivalgame_golfprop_cutout5",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[5] * 2, placer="carnivalgame_golfprop_cutout5_placer"})
-Recipe2("carnivalgame_golfprop_cutout6",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[6] * 2, placer="carnivalgame_golfprop_cutout6_placer"})
-Recipe2("carnivalgame_golfprop_cutout7",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[7] * 2, placer="carnivalgame_golfprop_cutout7_placer"})
-Recipe2("carnivalgame_golfprop_cutout8",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[8] * 2, placer="carnivalgame_golfprop_cutout8_placer"})
-Recipe2("carnivalgame_golfprop_cutout9",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[9] * 2, placer="carnivalgame_golfprop_cutout9_placer"})
-Recipe2("carnivalgame_golfprop_cutout10",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[10] * 2, placer="carnivalgame_golfprop_cutout10_placer"})
+Recipe2("carnivalgame_golfprop_cutout1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout1_placer"})
+Recipe2("carnivalgame_golfprop_cutout2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout2_placer"})
+Recipe2("carnivalgame_golfprop_cutout3",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout3_placer"})
+Recipe2("carnivalgame_golfprop_cutout4",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout4_placer"})
+Recipe2("carnivalgame_golfprop_cutout5",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout5_placer"})
+Recipe2("carnivalgame_golfprop_cutout6",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout6_placer"})
+Recipe2("carnivalgame_golfprop_cutout7",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout7_placer"})
+Recipe2("carnivalgame_golfprop_cutout8",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout8_placer"})
+Recipe2("carnivalgame_golfprop_cutout9",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout9_placer"})
+Recipe2("carnivalgame_golfprop_cutout10",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = CUTOUT_SMART_RADIUS * 2, placer="carnivalgame_golfprop_cutout10_placer"})
 
 -- HALLOWED_NIGHTS
 Recipe2("madscience_lab",				{Ingredient("cutstone", 2), Ingredient("transistor", 2)},																TECH.HALLOWED_NIGHTS,			{placer="madscience_lab_placer", min_spacing=2.5, hint_msg = "NEEDSHALLOWED_NIGHTS"})

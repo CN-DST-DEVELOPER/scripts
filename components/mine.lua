@@ -21,9 +21,9 @@ local function MineTest(inst, self)
 
         local target
         if self.find_must_tags or self.find_oneof_tags then
-            target = FindEntity(inst, self.radius, nil, self.find_must_tags, notags, self.find_oneof_tags)
+            target = FindEntity(inst, self.radius, self.search_test_fn or nil, self.find_must_tags, notags, self.find_oneof_tags)
         else
-            target = FindEntity(inst, self.radius, mine_test_fn, mine_must_tags, notags, mine_test_tags)
+            target = FindEntity(inst, self.radius, self.search_test_fn or mine_test_fn, mine_must_tags, notags, mine_test_tags)
         end
         if target ~= nil then
             self:Explode(target)
@@ -130,6 +130,10 @@ end
 function Mine:SetSearchTags(musttags, oneoftags)
     self.find_must_tags = musttags or nil
     self.find_oneof_tags = oneoftags or nil
+end
+
+function Mine:SetSearchTestFn(searchtestfn)
+    self.search_test_fn = searchtestfn or nil
 end
 
 function Mine:Reset()

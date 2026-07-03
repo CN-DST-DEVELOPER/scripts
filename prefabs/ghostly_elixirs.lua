@@ -292,8 +292,8 @@ local potion_tunings =
 				leader.components.ghostlybond:SetBondLevel(3)
 			end
 		end,
-		fx = "ghostlyelixir_retaliation_fx",
-		dripfx = "ghostlyelixir_retaliation_dripfx",
+		fx = "ghostlyelixir_revive_fx",
+		dripfx = "ghostlyelixir_revive_dripfx",
 		skill_modifier_long_duration = true,
 
 		--PLAYER CONTENT
@@ -312,8 +312,8 @@ local potion_tunings =
 				target.components.health:DeltaPenalty(TUNING.MAX_HEALING_NORMAL)
 			end
 		end,
-		fx_player = "ghostlyelixir_player_retaliation_fx",
-		dripfx_player = "ghostlyelixir_player_retaliation_dripfx",
+		fx_player = "ghostlyelixir_player_revive_fx",
+		dripfx_player = "ghostlyelixir_player_revive_dripfx",
 	},
 
 	ghostlyelixir_shadow =

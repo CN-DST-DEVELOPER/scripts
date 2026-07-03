@@ -93,7 +93,7 @@ local function wantstobepet(inst)
 end
 
 local function OnCrafty(self, chance)
-	if not self.no_crafty_emote and self:IsDominantTrait("crafty") and math.random() <= chance then
+	if self:IsDominantTrait("crafty") and math.random() <= chance then
 		self.inst.sg.mem.queuecraftyemote = true
 	end
 end

@@ -1,5 +1,6 @@
 require "prefabutil"
 local SourceModifierList = require("util/sourcemodifierlist")
+local easing = require("easing")
 
 local assets =
 {
@@ -426,6 +427,9 @@ local function OnTemperatureDelta(inst, data)
         inst._temperaturerange = temprange
         OnChangeTemperatureRange(inst, temprange)
     end
+
+    local heaterpower = math.clamp(inst.components.inventoryitemtemperature and inst.components.inventoryitemtemperature.externalheaterpower or 0, 0, 1)
+    inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", easing.linear(heaterpower, TUNING.TRAP_FUMAROLE_TEMP_MODIFIER, math.abs(TUNING.TRAP_FUMAROLE_TEMP_MODIFIER), 1))
 end
 
 local function OnEntityWake(inst) -- For non-dedicated
@@ -460,13 +464,13 @@ local function SetTrap(inst)
 end
 
 local function SetItem(inst)
+    inst.MiniMapEntity:SetEnabled(false) -- has to always run because RemoveFromScene/ReturnToScene call SetEnabled
     if inst.settrap then
         inst.components.inventoryitem:SetMaxTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP_HELD)
         ClearPlayIdleTask(inst)
         inst:RemoveTag("mineactive")
         inst:RemoveTag("canpourwateron")
         inst.components.inventoryitem.nobounce = false
-        inst.MiniMapEntity:SetEnabled(false)
         inst.AnimState:PlayAnimation("item")
         PushSyncAnim(inst)
         inst.settrap = nil
@@ -556,6 +560,7 @@ local function fn()
 
     inst.MiniMapEntity:SetIcon("trap_fumarole.png")
     inst.MiniMapEntity:SetPriority(-1)
+    inst.MiniMapEntity:SetEnabled(false)
 
     inst.AnimState:SetBank("trap_fumarole")
     inst.AnimState:SetBuild("trap_fumarole")
@@ -619,6 +624,7 @@ local function fn()
 	inst:ListenForEvent("onpickup", OnPickup)
 	inst:ListenForEvent("ondropped", SetItem)
     inst:ListenForEvent("temperaturedelta", OnTemperatureDelta)
+	inst:ListenForEvent("floater_startfloating", SetItem)
 
     --
     inst._temperaturerange = UpdateTemperatureRange(inst)

@@ -11779,7 +11779,7 @@ table.insert(prefs, CreatePrefabSkin("tophat_minigolf_green",
 	init_fn = function(inst, skin_custom) tophat_init_fn(inst, "tophat_minigolf_green", skin_custom) end,
 	skin_tags = { "CAWNIVAL", "TOPHAT", "CRAFTABLE", },
 	release_group = 183,
-	granted_items = { "researchlab4_minigolf_green", },
+	granted_items = { "researchlab4_minigolf_green", "walrushat_minigolf_green", },
 }))
 
 table.insert(prefs, CreatePrefabSkin("tophat_minigolf_purple",
@@ -11791,7 +11791,7 @@ table.insert(prefs, CreatePrefabSkin("tophat_minigolf_purple",
 	init_fn = function(inst, skin_custom) tophat_init_fn(inst, "tophat_minigolf_purple", skin_custom) end,
 	skin_tags = { "CAWNIVAL", "TOPHAT", "CRAFTABLE", },
 	release_group = 183,
-	granted_items = { "researchlab4_minigolf_purple", },
+	granted_items = { "researchlab4_minigolf_purple", "walrushat_minigolf_purple", },
 }))
 
 table.insert(prefs, CreatePrefabSkin("tophat_minigolf_red",
@@ -11803,7 +11803,7 @@ table.insert(prefs, CreatePrefabSkin("tophat_minigolf_red",
 	init_fn = function(inst, skin_custom) tophat_init_fn(inst, "tophat_minigolf_red", skin_custom) end,
 	skin_tags = { "CAWNIVAL", "TOPHAT", "CRAFTABLE", },
 	release_group = 183,
-	granted_items = { "researchlab4_minigolf_red", },
+	granted_items = { "researchlab4_minigolf_red", "walrushat_minigolf_red", },
 }))
 
 table.insert(prefs, CreatePrefabSkin("tophat_spiked",
@@ -13125,6 +13125,39 @@ table.insert(prefs, CreatePrefabSkin("walrushat_ceremonial",
 	skin_tags = { "WALRUSHAT", "CRAFTABLE", },
 	skin_sound = { ["equip"] = "skin_sfx/common/walrushat_ceremonial", },
 	release_group = 168,
+}))
+
+table.insert(prefs, CreatePrefabSkin("walrushat_minigolf_green",
+{
+	base_prefab = "walrushat",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst, skin_custom) walrushat_init_fn(inst, "walrushat_minigolf_green", skin_custom) end,
+	skin_tags = { },
+	release_group = 183,
+}))
+
+table.insert(prefs, CreatePrefabSkin("walrushat_minigolf_purple",
+{
+	base_prefab = "walrushat",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst, skin_custom) walrushat_init_fn(inst, "walrushat_minigolf_purple", skin_custom) end,
+	skin_tags = { },
+	release_group = 183,
+}))
+
+table.insert(prefs, CreatePrefabSkin("walrushat_minigolf_red",
+{
+	base_prefab = "walrushat",
+	type = "item",
+	rarity = "Distinguished",
+	rarity_modifier = "Woven",
+	init_fn = function(inst, skin_custom) walrushat_init_fn(inst, "walrushat_minigolf_red", skin_custom) end,
+	skin_tags = { },
+	release_group = 183,
 }))
 
 table.insert(prefs, CreatePrefabSkin("walrushat_party",

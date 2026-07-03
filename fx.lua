@@ -1201,11 +1201,19 @@ local fx =
         fn = FinalOffset3,
     },
     {
+        name = "ghostlyelixir_revive_fx",
+        bank = "abigail_vial_fx",
+        build = "abigail_vial_fx",
+        anim = "buff_revive",
+        sound = "dontstarve/characters/wendy/abigail/buff/retaliation", -- TODO unique sound at some point?
+        fn = FinalOffset3,
+    },
+    {
         name = "ghostlyelixir_shadow_fx",
         bank = "abigail_vial_fx",
         build = "abigail_vial_fx",
         anim = "buff_shadow",
-        --sound = "dontstarve/characters/wendy/abigail/buff/shadow", --[[TODO]]
+        sound = "meta5/abigail/abigail_shadow_buff",
         fn = FinalOffset3,
     }, 
     {
@@ -1213,7 +1221,7 @@ local fx =
         bank = "abigail_vial_fx",
         build = "abigail_vial_fx",
         anim = "buff_lunar",
-        --sound = "dontstarve/characters/wendy/abigail/buff/lunar", --[[TODO]]
+        sound = "meta5/abigail/abigail_lunar_buff",
         fn = FinalOffset3,
     },        
     {
@@ -1273,6 +1281,16 @@ local fx =
         anim = "abigail_buff_drip",
         fn = function(inst)
 	        inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_retaliation_02")
+		    inst.AnimState:SetFinalOffset(3)
+		end,
+    },
+    {
+        name = "ghostlyelixir_revive_dripfx",
+        bank = "abigail_buff_drip",
+        build = "abigail_vial_fx",
+        anim = "abigail_buff_drip",
+        fn = function(inst)
+	        inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_revive_02")
 		    inst.AnimState:SetFinalOffset(3)
 		end,
     },
@@ -1347,21 +1365,29 @@ local fx =
         fn = FinalOffset3,
     },
     {
+        name = "ghostlyelixir_player_revive_fx",
+        bank = "player_vial_fx",
+        build = "player_vial_fx",
+        anim = "buff_revive",
+        sound = "dontstarve/characters/wendy/abigail/buff/retaliation",
+        fn = FinalOffset3,
+    },
+    { -- NOTE: (Omar): This is unused.
         name = "ghostlyelixir_player_shadow_fx",
         bank = "player_vial_fx",
         build = "player_vial_fx",
         anim = "buff_shadow",
-        --sound = "dontstarve/characters/wendy/abigail/buff/shadow", --[[TODO]]
+        --sound = "dontstarve/characters/wendy/abigail/buff/shadow",
         fn = FinalOffset3,
     }, 
-    {
+    { -- NOTE: (Omar): This is unused.
         name = "ghostlyelixir_player_lunar_fx",
         bank = "player_vial_fx",
         build = "player_vial_fx",
         anim = "buff_lunar",
-        --sound = "dontstarve/characters/wendy/abigail/buff/lunar", --[[TODO]]
+        --sound = "dontstarve/characters/wendy/abigail/buff/lunar",
         fn = FinalOffset3,
-    },        
+    },
     {
         name = "ghostlyelixir_player_slowregen_dripfx",
         bank = "player_elixir_buff_drip",
@@ -1419,6 +1445,16 @@ local fx =
         anim = "player_elixir_buff_drip",
         fn = function(inst)
             inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_retaliation_02")
+            inst.AnimState:SetFinalOffset(3)
+        end,
+    },
+    {
+        name = "ghostlyelixir_player_revive_dripfx",
+        bank = "player_elixir_buff_drip",
+        build = "player_vial_fx",
+        anim = "player_elixir_buff_drip",
+        fn = function(inst)
+            inst.AnimState:OverrideSymbol("fx_swap", "abigail_vial_fx", "fx_revive_02")
             inst.AnimState:SetFinalOffset(3)
         end,
     },
@@ -2323,6 +2359,20 @@ local fx =
         bank = "carnival_unwrap",
         build = "carnival_unwrap",
         anim = "unwrap",
+        fn = FinalOffset1,
+    },
+    {
+        name = "carnival_unwrap_fx_s2", -- yellow box
+        bank = "carnival_unwrap",
+        build = "carnival_unwrap",
+        anim = "unwrap_yellow",
+        fn = FinalOffset1,
+    },
+    {
+        name = "carnival_unwrap_fx_s3", -- red box
+        bank = "carnival_unwrap",
+        build = "carnival_unwrap",
+        anim = "unwrap_red",
         fn = FinalOffset1,
     },
     {

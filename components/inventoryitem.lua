@@ -265,11 +265,18 @@ function InventoryItem:SetTemperatureMaxMoisturePenalty(moisturepenalty)
     end
 end
 
+function InventoryItem:SetNoWetTemperaturePenalty(nopenalty)
+    if self.inst.components.inventoryitemtemperature ~= nil then
+        self.inst.components.inventoryitemtemperature:SetNoWetPenalty(nopenalty)
+    end
+end
+
 function InventoryItem:SetTemperaturePercentAtMost(percent) -- percent is between min and max temperatures
 	if self.inst.components.inventoryitemtemperature ~= nil then
 		self.inst.components.inventoryitemtemperature:SetPercentAtMost(percent)
 	end
 end
+--
 
 function InventoryItem:SetOwner(owner)
     self.owner = owner

@@ -1005,7 +1005,7 @@ function PlayerController:OnRemoteControllerActionButtonPoint(actioncode, positi
 			end
 		elseif spell_id == nil then
 			if actioncode == ACTIONS.BOAT_CANNON_SHOOT.code then
-				lmb = self.inst.components.playeractionpicker:GetCannonAimActions(position, false)[1]
+				lmb = self.inst.components.playeractionpicker:GetCannonAimActions(self.inst, position, false)[1]
 			elseif actioncode == ACTIONS.GOLF_START_CHARGING.code then
 				lmb = self.inst.components.playeractionpicker:GetGolfAimActions(position, false)[1]
             else

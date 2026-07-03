@@ -389,7 +389,7 @@ local function AddCaveGelSpawns(inst)
                         z = (ty + 0.5 - height / 2) * TILE_SCALE
                     end
                     local id, index = map:GetTopologyIDAtPoint(x, 0, z)
-                    if id and not id:find("Archive") and not id:find("Labyrinth") and not id:find("Atrium") then
+                    if id and not id:find("Archive") and not id:find("Labyrinth") and not id:find("Atrium") and not id:find("Vault") then
                         local bucketx, bucketz = math.floor(x / BUCKET_SIZE), math.floor(z / BUCKET_SIZE)
                         local bucketindex = bucketx + bucketz * BUCKET_WIDTH
                         buckets[bucketindex] = buckets[bucketindex] or {
