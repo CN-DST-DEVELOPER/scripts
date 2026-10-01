@@ -5477,6 +5477,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/w_radio_basic.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/wagdrone_rolling_fancy.zip"),
 	Asset("PKGREF", "anim/dynamic/wagdrone_rolling_fancy.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/wagdrone_rolling_fire.zip"),
+	Asset("PKGREF", "anim/dynamic/wagdrone_rolling_fire.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/wagdrone_rolling_spikey.zip"),
 	Asset("PKGREF", "anim/dynamic/wagdrone_rolling_spikey.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/wall_dreadstone_relic.zip"),

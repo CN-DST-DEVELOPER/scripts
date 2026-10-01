@@ -1965,6 +1965,7 @@ PREFAB_SKINS = {
 	wagdrone_rolling =
 	{
 		"wagdrone_rolling_fancy",
+		"wagdrone_rolling_fire",
 		"wagdrone_rolling_spikey",
 	},
 	walkingplank =

@@ -381621,6 +381621,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.wagdrone_rolling_fancy"
 msgid "It's almost too fancy for its task."
 msgstr "華麗得幾乎不適合幹活。"
 
+#. STRINGS.SKIN_DESCRIPTIONS.wagdrone_rolling_fire
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.wagdrone_rolling_fire"
+msgid "It's the hottest new Terramite!"
+msgstr "最火的新款蟎地爬！"
+
 #. STRINGS.SKIN_DESCRIPTIONS.wagdrone_rolling_spikey
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.wagdrone_rolling_spikey"
 msgid "It's covered in spikes, and full of spikes!"
@@ -401765,6 +401770,11 @@ msgstr "B.U.D.D.Y."
 msgctxt "STRINGS.SKIN_NAMES.wagdrone_rolling_fancy"
 msgid "Gilded Terramite"
 msgstr "鍍金蟎地爬"
+
+#. STRINGS.SKIN_NAMES.wagdrone_rolling_fire
+msgctxt "STRINGS.SKIN_NAMES.wagdrone_rolling_fire"
+msgid "Alit Terramite"
+msgstr "烈火蟎地爬"
 
 #. STRINGS.SKIN_NAMES.wagdrone_rolling_spikey
 msgctxt "STRINGS.SKIN_NAMES.wagdrone_rolling_spikey"

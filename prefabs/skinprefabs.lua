@@ -12697,6 +12697,16 @@ table.insert(prefs, CreatePrefabSkin("wagdrone_rolling_fancy",
 	release_group = 167,
 }))
 
+table.insert(prefs, CreatePrefabSkin("wagdrone_rolling_fire",
+{
+	base_prefab = "wagdrone_rolling",
+	type = "item",
+	rarity = "Loyal",
+	init_fn = function(inst, skin_custom) wagdrone_rolling_init_fn(inst, "wagdrone_rolling_fire", skin_custom) end,
+	skin_tags = { "WAGDRONE_ROLLING", },
+	release_group = 185,
+}))
+
 table.insert(prefs, CreatePrefabSkin("wagdrone_rolling_spikey",
 {
 	base_prefab = "wagdrone_rolling",
