@@ -3,7 +3,7 @@ local assets =
 	Asset("ANIM", "anim/sharkboi_build.zip"),
 	Asset("ANIM", "anim/sharkboi_build_brows.zip"),
 	Asset("ANIM", "anim/sharkboi_build_manes.zip"),
-	Asset("ANIM", "anim/sharkboi_basic_water.zip"),
+	--Asset("ANIM", "anim/sharkboi_basic_water.zip"),
 }
 
 local prefabs =

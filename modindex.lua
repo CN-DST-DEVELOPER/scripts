@@ -238,6 +238,12 @@ function GetWorkshopIdNumber(modname)
 	return string.sub(modname, workshop_prefix:len() + 1)
 end
 
+-- False under STEAM_DISABLE_MOD_DOWNLOADS - the engine downloads nothing
+-- subscribe, download, update and clean bindings still exist but do nothing
+function CanDownloadWorkshopMods()
+	return TheSim.CanDownloadWorkshopMods == nil or TheSim:CanDownloadWorkshopMods()
+end
+
 function ModIndex:GetTempEnabledMods()
 	local moddirs = {}
 	for name, data in pairs(self.savedata.known_mods) do

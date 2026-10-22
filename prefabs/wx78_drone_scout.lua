@@ -360,6 +360,7 @@ local globalicon, revealableicon =
 			selectedicon = "wx78_drone_scout_selected",
 			selectedpriority = MINIMAP_DECORATION_PRIORITY,
 			fogrevealer = true,
+            alwaysoutsidevrs = true,
 		},
 		global_common_postinit = function(inst)
 			inst:SetPrefabNameOverride("wx78_drone_scout")

@@ -305,3 +305,13 @@ function Shard_CreateTransaction_TransferInventoryItem(shardid, item, migrationd
 end
 
 ---------------------------------
+
+function Shard_SyncCharlieDefeated(isdefeated, shardid) -- NOTES(JBK): Flipped shardid argument order to make calling this easier elsewhere.
+    if Shard_IsMaster() then
+        if TheWorld then
+            TheWorld:PushEvent("master_charlieinfoupdate", { isdefeated = isdefeated })
+        end
+    else
+        SendRPCToShard(SHARD_RPC.SyncCharlieDefeated, SHARDID.MASTER, isdefeated)
+    end
+end

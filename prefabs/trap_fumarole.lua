@@ -609,6 +609,7 @@ local function fn()
     inst.components.inventoryitem:SetTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP_HELD)
     inst.components.inventoryitem:SetTemperatureModifier("fumaroletool_mod", TUNING.TRAP_FUMAROLE_TEMP_MODIFIER)
     inst.components.inventoryitem:SetSaveMinAndMaxTemperature(true)
+    inst.components.inventoryitemtemperature.inherentinsulation = TUNING.INSULATION_LARGE
 
     inst:AddComponent("stackable")
     inst.components.stackable.maxsize = TUNING.STACK_SIZE_LARGEITEM

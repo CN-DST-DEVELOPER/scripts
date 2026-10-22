@@ -17,6 +17,10 @@ local function SetId(inst, id)
 	end
 end
 
+local function GetStalkerInspectOverride(inst)
+	return "vault_rune_"..inst.id
+end
+
 local function OnSave(inst, data)
 	data.id = inst.id ~= "lobby" and inst.id or nil
 end
@@ -55,6 +59,9 @@ local function fn()
 
 	inst:AddComponent("inspectable")
 	inst.components.inspectable.descriptionfn = GetDescription
+
+	inst:AddComponent("stalkerinspectable")
+	inst.components.stalkerinspectable:SetNameOverride(GetStalkerInspectOverride)
 
 	inst.id = "lobby"
 

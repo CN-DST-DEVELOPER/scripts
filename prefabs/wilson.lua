@@ -35,9 +35,8 @@ local function GetPointSpecialActions(inst, pos, useitem, right)
 			end
 		end
 		if useitem and
-			useitem.prefab == "torch" and
 			inst.components.skilltreeupdater:IsActivated("wilson_torch_7") and
-			useitem:HasTag("special_action_toss")
+			useitem:HasTags("torch", "special_action_toss")
 		then
 			return { ACTIONS.TOSS }
 		end

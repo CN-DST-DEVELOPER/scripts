@@ -21,10 +21,7 @@ local function IsPlayerMelee(data) --"attacked" event data
 		and data.attacker ~= nil
 		and data.attacker:HasTag("player")
 		and (data.damage or 0) > 0
-		and (data.weapon == nil or (
-				(data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil) and
-				data.weapon.components.projectile == nil
-			))
+		and not IsRangedWeapon(data.weapon)
 end
 
 local function hit_recovery_skip_cooldown_fn(inst, last_t, delay)

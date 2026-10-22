@@ -1030,6 +1030,7 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         inst:AddTag("character")
         inst:AddTag("merm")
         inst:AddTag("wet")
+        inst:AddTag("canwearhat")
 
         inst:AddTag("merm_npc")
 

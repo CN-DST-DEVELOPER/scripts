@@ -75,18 +75,18 @@ function HoverText:OnUpdate()
             end
 
             if colour == nil then
-                if lmb.target ~= nil then
-                    if lmb.invobject ~= nil and not (lmb.invobject:HasTag("weapon") or lmb.invobject:HasTag("tool")) then
+                if lmb.target ~= nil and lmb.target:IsValid() then
+                    if lmb.invobject ~= nil and lmb.invobject:IsValid() and not lmb.invobject:HasAnyTag("weapon", "tool") then
                         colour = lmb.invobject:GetIsWet() and WET_TEXT_COLOUR or NORMAL_TEXT_COLOUR
                     else
                         colour = lmb.target:GetIsWet() and WET_TEXT_COLOUR or NORMAL_TEXT_COLOUR
                     end
-                elseif lmb.invobject ~= nil then
+                elseif lmb.invobject ~= nil and lmb.invobject:IsValid() then
                     colour = lmb.invobject:GetIsWet() and WET_TEXT_COLOUR or NORMAL_TEXT_COLOUR
                 end
             end
 
-            if not overriden and lmb.target ~= nil and lmb.invobject == nil and lmb.target ~= lmb.doer then
+            if not overriden and lmb.target ~= nil and lmb.target:IsValid() and lmb.invobject == nil and lmb.target ~= lmb.doer then
                 local name = lmb.target:GetDisplayName()
                 if name ~= nil then
                     local adjective = lmb.target:GetAdjective()
@@ -127,7 +127,7 @@ function HoverText:OnUpdate()
     else
         self.strFrames = self.strFrames - 1
         if self.strFrames <= 0 then
-            if lmb ~= nil and lmb.target ~= nil and lmb.target:HasTag("player") then
+            if lmb ~= nil and lmb.target ~= nil and lmb.target:IsValid() and lmb.target.isplayer then
                 self.text:SetColour(unpack(lmb.target.playercolour))
             else
                 self.text:SetColour(unpack(colour or NORMAL_TEXT_COLOUR))

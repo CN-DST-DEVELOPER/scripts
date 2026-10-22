@@ -180,14 +180,12 @@ local function OnDeath(inst, data)
         inst.components.lootdropper:SetChanceLootTable(nil)
     end
 
-    -- no loot in key room
-    local vaultroommanager = TheWorld.components.vaultroommanager
-    if vaultroommanager ~= nil
-        and vaultroommanager:GetVaultRoomId() == "key1"
-        and TheWorld.Map:IsPointInVaultRoom(inst.Transform:GetWorldPosition())
+    if TheWorld.Map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, inst.Transform:GetWorldPosition())
+        and TheWorld.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.VAULT):GetCurrentRoomName() == "key1"
         and (data.afflicter == nil or not data.afflicter.isplayer) then
-		inst.components.lootdropper:SetLoot({})
-		inst.components.lootdropper:SetChanceLootTable(nil)
+        -- no loot in key room
+        inst.components.lootdropper:SetLoot({})
+        inst.components.lootdropper:SetChanceLootTable(nil)
     end
 end
 

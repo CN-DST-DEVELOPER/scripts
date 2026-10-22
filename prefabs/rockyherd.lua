@@ -13,19 +13,28 @@ local function CanSpawn(inst)
     end
 
     local x, y, z = inst.Transform:GetWorldPosition()
-    return #TheSim:FindEntities(x, y, z, inst.components.herd.gatherrange, { "herdmember", inst.components.herd.membertag },ROCKY_CANT) < TUNING.ROCKYHERD_MAX_IN_RANGE
+    return #TheSim:FindEntities(x, y, z, inst.components.herd.gatherrange, { "herdmember", inst.components.herd.membertag }, ROCKY_CANT) < TUNING.ROCKYHERD_MAX_IN_RANGE
+end
+
+local function NoHoles(pt)
+    return not TheWorld.Map:IsPointNearHole(pt)
 end
 
 local function OnSpawned(inst, newent)
+    local pos = inst:GetPosition()
+    local offset =
+        FindWalkableOffset(pos, TWOPI*math.random(), 8, 8, true, false, NoHoles, false, false) or
+        FindWalkableOffset(pos, TWOPI*math.random(), 12, 8, true, false, NoHoles, false, false) or
+        FindWalkableOffset(pos, TWOPI*math.random(), 16, 8, true, false, NoHoles, false, false)
+    if offset then
+        newent.Transform:SetPosition((pos+offset):Get())
+    end
+
     if inst.components.herd ~= nil then
         inst.components.herd:AddMember(newent)
         newent.components.scaler:SetScale(TUNING.ROCKY_MIN_SCALE)
     end
 end
-
---local function OnFull(inst)
-    --TODO: mark some beefalo for death
---end
 
 local function SeasonalSpawningChanges(inst, season)
     local spawndelay = SpringGrowthMod(TUNING.ROCKY_SPAWN_DELAY, season == SEASONS.SPRING)
@@ -48,8 +57,7 @@ local function fn()
     inst.components.herd:SetGatherRange(TUNING.ROCKYHERD_RANGE)
     inst.components.herd:SetUpdateRange(20)
     inst.components.herd:SetOnEmptyFn(inst.Remove)
-    --inst.components.herd:SetOnFullFn(OnFull)
-    inst.components.herd.maxsize = 6
+    inst.components.herd:SetMaxSize(TUNING.ROCKYHERD_MAX_SIZE)
 
     inst:AddComponent("periodicspawner")
     inst.components.periodicspawner:SetPrefab("rocky")
@@ -60,6 +68,8 @@ local function fn()
     inst.components.periodicspawner:SetOnlySpawnOffscreen(true)
     SeasonalSpawningChanges(inst, TheWorld.state.season)
     inst:WatchWorldState("season", SeasonalSpawningChanges)
+
+    TheWorld:PushEvent("ms_registerrockyherd", inst)
 
     return inst
 end

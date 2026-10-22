@@ -9,6 +9,11 @@ architect
 mason
 ]]
 
+
+local function GetStalkerInspectOverride(inst)
+	return "ANCIENT_HUSK_"..string.upper(inst.id)
+end
+
 local function SetId(inst, id)
 	if id ~= inst.id then
 		inst.id = id
@@ -54,6 +59,8 @@ local function fn()
 	end
 
 	inst:AddComponent("inspectable")
+	inst:AddComponent("stalkerinspectable")
+	inst.components.stalkerinspectable:SetNameOverride(GetStalkerInspectOverride)
 
 	inst.id = "handmaid"
 

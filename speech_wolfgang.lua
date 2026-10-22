@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "Wolfgang does not speak monkey.",
             QUEENBUSY = "Hairy lady is busy. Wolfgang will wait.",
             CARNIVALGAME_GOLFGAME_NOTREADY = "Wolfgang need to finish set up course first.",
+            KINGSTAFF_COOLDOWN = "Too stuck for even mighty Wolfgang?!", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1255,6 +1256,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Need more Thermal Balm!",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Aw, little spark ball follow Wolfgang!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Show yourself!",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "Ow! It got me!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "Big red eye is so squishy!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "Going to explode because Wolfgang too enlightened.", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -1704,7 +1716,12 @@ return{
 		CAVE_BANANA = "Is tasty!",
 		CAVE_BANANA_COOKED = "Is warm and tasty!",
 		CAVE_BANANA_TREE = "Hello, upside-down tree.",
-		ROCKY = "He is mighty! Like me!",
+        ROCKY =
+        {
+            GENERIC = "He is mighty! Like me!",
+            BOULDER = "Everyone watch! Wolfgang will deadlift!", -- in boulder state, it looks like a normal boulder
+            ACID = "Haha! Mighty lobster becoming crusty shrimp!", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1721,7 +1738,11 @@ return{
 
         HOUNDSTOOTH = "Puppy tooth!",
         ARMORSNURTLESHELL = "Is sticky inside.",
-        BAT = "Flying mousey!",
+        BAT =
+        {
+            GENERIC = "Flying mousey!",
+            ACID = "Why flying mousey eyes glowing like that?!", -- in acid form
+        },
         BATBAT = "This club makes me feel funny.",
         BATWING = "Is all hairy and gross.",
         BATWING_COOKED = "Crispy!",
@@ -2192,6 +2213,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "Wolfgang not understand what, how... and most of all, why.",
         CHESSPIECE_YOTH = "Tough little horsey.",
         CHESSPIECE_VAULT_PILLAR_GUARD = "It is only little mighty now.",
+        CHESSPIECE_BATBOSS_SHADOW = "Is too small to bite head now.",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "Look at little shadowy claw! Cute!",
+        CHESSPIECE_WORMBOSS_SHADOW = "Mama worm took Wolfgang to dark place.",
+        CHESSPIECE_CHARLIE_BOSS = "Is pity what happen to scary night lady.",
+        CHESSPIECE_SHROUDEN = "Aw, little red eye is kind of cute, no?",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",
@@ -3510,6 +3536,7 @@ return{
 			CHARGING = "Looks very scary now!",
 			DESTABILIZING = "Is going to blow!",
 			COOLDOWN = "Is needing to recharge.",
+            RITUAL_SUMMONING = "Such big eye! Such rude eye!", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "Little key is for make door.",
 		LIFEINJECTOR = "EeeeEEeeEEE!!",
@@ -4530,6 +4557,8 @@ return{
 			LORE1 = "Is very tragic.",
 			LORE2 = "Is just bugs. Why Wolfgang heart breaking?",
 			LORE3 = "Lucky they are statue, or Wolfgang squish them all!",
+            --
+            LORE1_STALKER = "Is even more tragic now.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5365,7 +5394,12 @@ return{
 		SHADOWTHRALL_WINGS = "Scary flapper!",
 		SHADOWTHRALL_MOUTH = "That smile make Wolfgang uncomfortable.",
 
-        CHARLIE_NPC = "Wolfgang has seen that face in the dark...",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Wolfgang has seen that face in the dark...", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Scary night lady need Wolfgang help.", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Scary night lady need Wolfgang help.", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "Is needing something, yes?",
 
         NITRE_FORMATION = "It grew from burny rain?",
@@ -6272,6 +6306,68 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "Hey, don't blow away Wolfgang ball!", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Mighty claw? Meet Wolfgang mighty fists!",
+            BOULDER = "Should Wolfgang deadlift?", -- in boulder form
+            ACID = "Look at big lobster guy shell.",
+        },
+		ROCKY_BOSS_SHADOW = "Wolfgang supposed to be scared of big shadow lobster guy?",
+        BAT_BOSS =
+        {
+            GENERIC = "Wolfgang punch fangs out!",
+            ACID = "Big bat have crazy glowing eyes!",
+        },
+		BAT_BOSS_SHADOW = "Is hard to see at night!",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Big eyes staring at Wolfgang.", -- boss bat is inside,
+            VACANT = "Nobody home?", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "Mama worm is full of shadow.",
+
+        ARMOR_ROCKY = "Is Wolfgang honor to wear mighty lobster guy shell!",
+        BAT_BOSSCORPSEHAT = "Wolfgang not a big bat hat kind of guy.",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "So much for mighty claw.",
+            IN_RITUAL = "How does yucky thing float by itself?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "Giant bat throat?",
+            IN_RITUAL = "How does yucky thing float by itself?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Is squishy and stinky.",
+            IN_RITUAL = "How does yucky thing float by itself?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "Remember Wolfgang helped you?",
+		SHROUDEN =
+		{
+			GENERIC = "Finally... a match for Mighty Wolfgang.",
+			PUDDLE = "Now is time for Wolfgang squish big red eye!",
+		},
+
+        CHARLIEARENA_SPIKE = "Just what Wolfgang need... more scary spiky rock!",
+
+        KING_CANE =
+        {
+            GENERIC = "A mighty staff for mighty king!", -- has a gem slotted in
+            EMPTY = "It lack power of mighty gem!", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "A nice night light! But Wolfgang no need.",
+        
+        CHARLIEARENA_TELEPORTER = "Remember to bring all Wolfgang things.",
+
+        MASK_CHARLIE_BOSSHAT = "All that is left of scary night lady. So sad.",
     },
 
     DESCRIBE_GENERIC = "What is this thing?",
@@ -6296,6 +6392,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

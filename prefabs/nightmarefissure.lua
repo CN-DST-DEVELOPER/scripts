@@ -229,6 +229,8 @@ local states =
         inst.AnimState:HideSymbol("stack_over")
         inst.AnimState:HideSymbol("stack_red")
 
+        inst:RemoveTag("nightmarecorruptable")
+
         if instant then
             inst.AnimState:PlayAnimation("idle_open_rift", true)
             inst.fx.AnimState:PlayAnimation("open_2", false) -- open_2 intentional
@@ -268,7 +270,7 @@ local function ShowPhaseState(inst, phase, instant)
     inst._oldfissurestate = phase
 end
 
-local function OnNightmarePhaseChanged(inst, phase, instant)
+local function OnNightmarePhaseChanged(inst, phase, instant, instanttask)
     local shadowthrallmanager = TheWorld.components.shadowthrallmanager
     if shadowthrallmanager and shadowthrallmanager:GetControlledFissure() == inst then
         -- Force phase to controlled if it is being controlled and do not play any animations.
@@ -287,6 +289,8 @@ local function OnNightmarePhaseChanged(inst, phase, instant)
     end
     if instant or inst:IsAsleep() then
         ShowPhaseState(inst, phase, true)
+    elseif instanttask then
+        ShowPhaseState(inst, phase)
     else
         inst._phasetask = inst:DoTaskInTime(math.random() * 2, ShowPhaseState, phase)
     end
@@ -396,6 +400,7 @@ local function OnReleasedFromControl_Animation(inst)
 	inst.AnimState:SetSymbolLightOverride("fx_spiral", 0)
 	inst.AnimState:SetSymbolLightOverride("stack_red", 0)
 
+    inst:AddTag("nightmarecorruptable")
     inst:OnNightmarePhaseChanged(TheWorld.state.nightmarephase, false)
     if inst.temp then
         inst:ListenForEvent("animqueueover", ErodeAway)
@@ -498,12 +503,13 @@ local function Make(name, build, lightcolour, fxname, masterinit)
         inst._lightmaxframe = MAX_LIGHT_OFF_FRAME
         inst._lightframe:set(inst._lightmaxframe)
         inst._lighttask = nil
-        
+
         if AllowShadowThralls[name] then
             inst.displaynamefn = displaynamefn
         end
 
         inst:AddTag("okayforarena")
+        inst:AddTag("nightmarecorruptable")
 
         inst.entity:SetPristine()
 

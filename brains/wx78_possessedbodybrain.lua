@@ -362,7 +362,7 @@ local function IsWeaponBetter(inst, weapon1, weapon2, target)
     return (itemdmg + itemspdmg) > (dmg + spdmg)
 end
 -- Keep in sync with wagdrone_projectile::WX78_DRONE_ZAP_TARGET_NOTAGS_PVP
-local WX78_DRONE_ZAP_TARGET_NOTAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "brightmare", "brightmareboss", "electric_connector", "wall", "companion" }
+local WX78_DRONE_ZAP_TARGET_NOTAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "shadowboss", "brightmare", "brightmareboss", "electric_connector", "wall", "companion" }
 local function EquipBestWeapon(inst, target)
     -- Prioritize zap drone!
     local heldweapon = GetTool(inst)

@@ -148,12 +148,8 @@ local function KeepTarget(inst, target)
         return false
     end
 
-    if (inst.components.teamattacker.teamleader and not inst.components.teamattacker.teamleader:CanAttack())
-        or inst.components.teamattacker.orders == "ATTACK" then
-        return true
-    else
-        return false
-    end
+    return (inst.components.teamattacker.teamleader and not inst.components.teamattacker.teamleader:CanAttack())
+        or inst.components.teamattacker.orders == ORDERS.ATTACK
 end
 
 local function ShareTargetFn(dude)
@@ -216,6 +212,8 @@ local function OnInit(inst)
     inst.OnEntityWake = CheckAutoRemove
     inst.OnEntitySleep = CheckAutoRemove
 end
+
+local DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE }
 
 local function fn()
     local inst = CreateEntity()
@@ -291,8 +289,7 @@ local function fn()
     inst.components.teamattacker.leashdistance = 99999
 
     inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
-    inst.components.eater:SetCanEatHorrible()
+    inst.components.eater:SetDiet(DIET, DIET)
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
 
     inst:AddComponent("sleeper")
@@ -432,8 +429,7 @@ local function mutated_fn()
     inst.components.teamattacker.leashdistance = 99999
 
     local eater = inst:AddComponent("eater")
-    eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
-    eater:SetCanEatHorrible()
+    eater:SetDiet(DIET, DIET)
     eater:SetStrongStomach(true) -- can eat monster meat!
 
     inst:AddComponent("sleeper")

@@ -402,6 +402,7 @@ local function fn()
     inst:AddTag("scarytoprey")
     inst:AddTag("fruitdragon")
     inst:AddTag("lunar_aligned")
+    inst:AddTag("plantcreature")
 
     inst.entity:SetPristine()
 

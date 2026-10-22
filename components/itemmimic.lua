@@ -128,7 +128,9 @@ local ItemMimic = Class(function(self, inst)
     end
 
     self._on_owner_attacked = function(owner, data)
-        self.inst:DoTaskInTime(5*FRAMES, turn_evil_redirect, owner)
+		if ShouldProcOnAttackedOrBlocked(inst, owner, data) then
+			self.inst:DoTaskInTime(5*FRAMES, turn_evil_redirect, owner)
+		end
     end
     inst:ListenForEvent("equipped", on_equipped)
     inst:ListenForEvent("unequipped", on_unequipped)

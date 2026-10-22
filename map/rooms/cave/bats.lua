@@ -53,7 +53,7 @@ AddRoom("BattyCave", {
 AddRoom("FernyBatCave", {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
     value = WORLD_TILES.CAVE,
-    tags = {"Hutch_Fishbowl"},
+    tags = {"Hutch_Fishbowl", "BatBossCave_Spawner"},
     type = NODE_TYPE.Room,
     contents =  {
         distributepercent = .25,
@@ -72,7 +72,6 @@ AddRoom("FernyBatCave", {
         }
     }
 })
-
 local bgbatcave = {
     colour={r=0.3,g=0.2,b=0.1,a=0.3},
     value = WORLD_TILES.CAVE,

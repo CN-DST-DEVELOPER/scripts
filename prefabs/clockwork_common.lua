@@ -176,6 +176,54 @@ local function OnAttacked(inst, data)
 	end
 end
 
+local function DoShadowFx(inst)
+	local x, y, z = inst.Transform:GetWorldPosition()
+	local fx = SpawnPrefab("statue_transition_2")
+	fx.Transform:SetPosition(x, y, z)
+
+	local isrook = inst:HasTag("rook")
+	local s = isrook and 2.2 or 1.2
+	fx.Transform:SetScale(s, s, s)
+
+	y = isrook and (y + 1.5) or y
+	fx = SpawnPrefab("shadow_despawn")
+	local platform = inst:GetCurrentPlatform()
+	if platform ~= nil then
+		fx.entity:SetParent(platform.entity)
+		fx.Transform:SetPosition(platform.entity:WorldToLocalSpace(x, y, z))
+		fx:ListenForEvent("onremove", function()
+			fx.Transform:SetPosition(fx.Transform:GetWorldPosition())
+			fx.entity:SetParent(nil)
+		end, platform)
+	else
+		fx.Transform:SetPosition(x, y, z)
+	end
+end
+
+local function GetShadowChessPrefab(inst)
+	return inst:HasTag("rook") and "shadow_rook"
+		or inst:HasTag("bishop") and "shadow_bishop"
+		-- or inst:HasTag("knight")
+		or "shadow_knight"
+end
+
+local function OnBecomeShadowChess(inst)
+	DoShadowFx(inst)
+
+	local creature = SpawnPrefab(GetShadowChessPrefab(inst))
+    creature.Transform:SetPosition(inst.Transform:GetWorldPosition())
+    creature.Transform:SetRotation(inst.Transform:GetRotation())
+	creature.AnimState:MakeFacingDirty() -- not needed for clients
+    creature.sg:GoToState("taunt")
+
+    local target = inst.components.combat.target or creature:GetNearestPlayer(true)
+    if target ~= nil and creature:IsNear(target, 20) then
+        creature.components.combat:SetTarget(target)
+    end
+
+	inst:Remove()
+end
+
 local function OnNewCombatTarget(inst, data)
 	inst._targetwasally = data and data.target and IsAlly(inst, data.target) or nil
 end
@@ -374,4 +422,5 @@ return {
 	sgTryClearBefriendable = sgTryClearBefriendable,
 	MakeHealthRegen = MakeHealthRegen,
 	WaitForTrader = WaitForTrader,
+	OnBecomeShadowChess = OnBecomeShadowChess,
 }

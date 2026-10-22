@@ -120,6 +120,7 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 			if CLOTHING[name] ~= nil then
 				local src_symbols = nil
 				local src_symbols_alt = nil
+                local src_priority_over_alt = false
 
 				--wolfgang
 				if skintype == "wimpy_skin" and CLOTHING[name].symbol_overrides_skinny then
@@ -174,7 +175,10 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 				--wanda
 				elseif skintype == "old_skin" and CLOTHING[name].symbol_overrides_old then
 					src_symbols = CLOTHING[name].symbol_overrides_old
-
+                    src_priority_over_alt = true
+				elseif skintype == "young_skin" and CLOTHING[name].symbol_overrides_young then
+					src_symbols = CLOTHING[name].symbol_overrides_young
+                    src_priority_over_alt = true
 				end
 
 				--A secondary set of alternate src_symbols
@@ -214,12 +218,16 @@ function SetSkinsOnAnim( anim_state, prefab, base_skin, clothing_names, monkey_c
 							--print("skip symbol and leave it at base:", sym)
 						else
 							local src_sym = sym
-							if src_symbols then
-								src_sym = src_symbols[sym] or sym
-							end
-							if src_symbols_alt then
-								src_sym = src_symbols_alt[sym] or src_sym
-							end
+                            local highpriority, lowpriority = src_symbols_alt, src_symbols
+                            if src_priority_over_alt then
+                                highpriority, lowpriority = lowpriority, highpriority
+                            end
+                            if lowpriority then
+                                src_sym = lowpriority[sym] or src_sym
+                            end
+                            if highpriority then
+                                src_sym = highpriority[sym] or src_sym
+                            end
 
 							local real_build = GetBuildForItem(name)
 							if sym == "torso" then

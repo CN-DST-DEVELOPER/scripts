@@ -23,19 +23,19 @@ local function ActiveStargate(gate)
 end
 
 local STARGET_TAGS = { "stargate" }
-local STALKER_TAGS = { "stalker" }
-local SHADOWHEART_TAGS = {"shadowheart"}
+local SHADOWHEART_TAGS = { "shadowheart", "shadowheart_infused" }
 local function ItemTradeTest(inst, item, giver)
-    if item == nil or item.prefab ~= "shadowheart" or
+    if item == nil or (item.prefab ~= "shadowheart" and item.prefab ~= "shadowheart_infused") or
         giver == nil or giver.components.areaaware == nil then
         return false
     elseif inst.form ~= 1 then
         return false, "WRONGSHADOWFORM"
-    elseif not TheWorld.state.isnight then
-        return false, "CANTSHADOWREVIVE"
-    elseif giver.components.areaaware:CurrentlyInTag("Atrium")
-        and (   FindEntity(inst, ATRIUM_RANGE, ActiveStargate, STARGET_TAGS) == nil or
-                GetClosestInstWithTag(STALKER_TAGS, inst, 40) ~= nil   ) then
+    elseif
+        (TheWorld.components.stalkermanager ~= nil and TheWorld.components.stalkermanager:StalkerExists()) or
+        (item.prefab == "shadowheart_infused" and not TheWorld:HasTag("cave")) or
+        (not TheWorld.state.isnight) or
+        (giver.components.areaaware:CurrentlyInTag("Atrium") and FindEntity(inst, ATRIUM_RANGE, ActiveStargate, STARGET_TAGS) == nil)
+    then
         return false, "CANTSHADOWREVIVE"
     end
 
@@ -43,8 +43,9 @@ local function ItemTradeTest(inst, item, giver)
 end
 
 local function OnAccept(inst, giver, item)
+    local stalker
+
     if item.prefab == "shadowheart" then
-        local stalker
         if not TheWorld:HasTag("cave") then
             stalker = SpawnPrefab("stalker_forest")
         elseif not giver.components.areaaware:CurrentlyInTag("Atrium") then
@@ -61,7 +62,13 @@ local function OnAccept(inst, giver, item)
                 stalker = SpawnPrefab("stalker")
             end
         end
+    elseif item.prefab == "shadowheart_infused" then
+        if TheWorld:HasTag("cave") then
+            stalker = SpawnPrefab("stalker_npc")
+        end
+    end
 
+    if stalker ~= nil then
         local x, y, z = inst.Transform:GetWorldPosition()
         local rot = inst.Transform:GetRotation()
         inst:Remove()
@@ -80,7 +87,7 @@ local function CountAllEntities(inst, range, tags)
     -- We only care about the count.
     -- If this function is moved to a core util make it much more generic than this.
     local x, y, z = inst.Transform:GetWorldPosition()
-    return TheSim:CountEntities(x, y, z, range, tags)
+    return TheSim:CountEntities(x, y, z, range, nil, nil, tags)
 end
 
 local function UpdateFossileMound(inst, size, checkforwrong)

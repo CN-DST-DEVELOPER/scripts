@@ -3955,6 +3955,45 @@ local fx =
 			inst.AnimState:SetScale(math.random() < .5 and scale or -scale, scale)
 		end,
     },
+    {
+        name = "charlie_circle_spawn_fx",
+        bank = "charlie_basic",
+        build = "charlie_basic",
+        anim = "circle_spawn_fx",
+    },
+    {
+        name = "charlie_circle_spawn_ground_fx",
+        bank = "charlie_basic",
+        build = "charlie_basic",
+        anim = "circle_spawn_fx_ground",
+        fn = GroundOrientation,
+    },
+	{
+		name = "atrium_portal_fx",
+		bank = "atrium_portal_fx",
+		build = "atrium_portal_fx",
+		anim = "activate",
+        fn = function(inst)
+            local parent = inst.entity:GetParent()
+            if parent and ThePlayer and ThePlayer == parent then
+                ThePlayer:PushEvent("shroudensummoned")
+                inst.Transform:SetPosition(inst.Transform:GetWorldPosition())
+                inst.entity:SetParent(nil)
+            end
+        end,
+	},
+	{
+		name = "goo_vines_break_fx",
+		bank = "charlie_boss_vines",
+		build = "charlie_boss_vines",
+		anim = "vine_break",
+		sound = "rifts/lunarthrall/vine_death",
+		fn = function(inst)
+			inst.AnimState:SetFinalOffset(2)
+			inst.AnimState:SetLightOverride(1)
+			--inst.AnimState:SetSymbolLightOverride("cb_vine_red", 1)
+		end,
+	},
 }
 
 for cratersteamindex = 1, 4 do

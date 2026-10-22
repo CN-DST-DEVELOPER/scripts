@@ -57,9 +57,13 @@ function TeamLeader:SetUp(target, first_member)
         self.team_type = teamattacker.team_type
         self:NewTeammate(first_member)
     end
+	self:CenterLeader()
 end
 
 local function teamleader_sort(t1, t2)
+	if t1.components.teamleader.lifetime == t2.components.teamleader.lifetime then
+		return t1.GUID > t2.GUID
+	end
 	return t1.components.teamleader.lifetime > t2.components.teamleader.lifetime
 end
 function TeamLeader:OrganizeTeams()
@@ -137,9 +141,12 @@ function TeamLeader:NewTeammate(member)
 		member.deathfn = function() self:OnLostTeammate(member) end
 		member.attackedfn = function() self:BroadcastDistress(member) end
 		member.attackedotherfn = function()
-			self.chasetime = 0
-			member.components.combat:DropTarget()
-			member.components.teamattacker.orders = ORDERS.HOLD
+			local team_size = self:GetTeamSize()
+			if team_size >= math.max(2, self.min_team_size) then -- atleast above min team size or 2
+				self.chasetime = 0
+				member.components.combat:DropTarget()
+				member.components.teamattacker.orders = ORDERS.HOLD
+			end
 		end
 
 		self.team[member] = member
@@ -273,6 +280,7 @@ end
 function TeamLeader:SetNewThreat(threat)
 	if self.threat then
 		self.inst:RemoveEventCallback("onremove", self._onthreatremoved, self.threat)
+		self.inst:RemoveEventCallback("death", self._onthreatremoved, self.threat)
 		self._onthreatremoved = nil
 	end
 
@@ -285,6 +293,7 @@ function TeamLeader:SetNewThreat(threat)
 			self._onthreatremoved = nil
 		end
 		self.inst:ListenForEvent("onremove", self._onthreatremoved, threat) --The threat has died
+		self.inst:ListenForEvent("death", self._onthreatremoved, threat) --The threat has died
 	end
 end
 

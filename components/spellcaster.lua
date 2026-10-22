@@ -138,6 +138,7 @@ function SpellCaster:CastSpell(target, pos, doer)
         if self.onspellcast ~= nil then
             self.onspellcast(self.inst, target, pos, doer)
         end
+        self.inst:PushEvent("onspellcast", { target = target, pos = pos, doer = doer })
     end
 end
 

@@ -95,7 +95,7 @@ function Armor:SetCondition(amount)
 		return
 	end
 
-    self.condition = math.min(amount, self.maxcondition)
+	self.condition = math.clamp(amount, 0, self.maxcondition)
     self.inst:PushEvent("percentusedchange", { percent = self:GetPercent() })
 
     if self.condition <= 0 then

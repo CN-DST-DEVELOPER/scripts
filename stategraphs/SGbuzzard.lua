@@ -52,6 +52,8 @@ local function SpawnBreathFX(inst, angle, dist, targets)
 	if fx == nil then
 		fx = SpawnPrefab("warg_mutated_breath_fx")
 		fx:SetFXOwner(inst)
+    elseif fx:IsInLimbo() then
+        fx:ReturnToScene()
 	end
 
 	local scale = (0.85 + math.random() * 0.15)
@@ -97,6 +99,19 @@ local function FlyAwayToSky(inst)
         --V2C: Debug spawned?
         inst:Remove()
     end
+end
+
+local function ConfigureFlying(inst, enable)
+	if enable then
+        RaiseFlyingCreature(inst)
+		inst:AddTag("notraptrigger")
+		inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+		-- inst:PushEvent("ms_escape_rooted") -- stays rooted
+	else
+		LandFlyingCreature(inst)
+		inst:RemoveTag("notraptrigger")
+		inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+	end
 end
 
 local events =
@@ -565,7 +580,7 @@ local states =
             inst.AnimState:PlayAnimation("atk_flame_pre")
             inst:SwitchToEightFaced()
 
-            RaiseFlyingCreature(inst)
+            ConfigureFlying(inst, true)
             ChangeToFlyingCharacterPhysics(inst, 15, .25)
 
             if target and target:IsValid() then
@@ -608,6 +623,8 @@ local states =
 
         onexit = function(inst)
 			if not inst.sg.statemem.attacking then
+                inst:SwitchToFourFaced()
+                ConfigureFlying(inst, false)
                 LandFlyingCreature(inst)
                 ChangeToCharacterPhysics(inst, 15, .25)
 				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
@@ -618,7 +635,7 @@ local states =
 
     State{
 		name = "flamethrower_loop",
-		tags = { "attack", "busy", "flight", "noelectrocute", "flamethrowering" }, -- To dodge electric fence.
+		tags = { "attack", "busy", "noattack", "noelectrocute", "flamethrowering" }, -- To dodge electric fence.
 
 		onenter = function(inst, targets)
             inst.components.locomotor:Stop()
@@ -683,6 +700,7 @@ local states =
 		onexit = function(inst)
 			if not inst.sg.statemem.attacking then
 				inst:SwitchToFourFaced()
+                ConfigureFlying(inst, false)
                 ChangeToCharacterPhysics(inst, 15, .25)
 				inst.components.combat:SetDefaultDamage(TUNING.MUTATEDBUZZARD_DAMAGE)
 				inst.SoundEmitter:KillSound("loop")
@@ -702,6 +720,7 @@ local states =
             inst.components.locomotor:Stop()
             inst.AnimState:PlayAnimation("atk_flame_pst")
 
+            ConfigureFlying(inst, false)
             ChangeToCharacterPhysics(inst, 15, .25)
 
             inst:SwitchToEightFaced()
@@ -842,8 +861,7 @@ local states =
 
     State{
         name = "fall",
-        -- Well, not really 'flying', more so falling with style!
-		tags = { "flight", "busy", "noelectrocute", "nosleep" },
+		tags = { "noattack", "busy", "noelectrocute", "nosleep" },
         onenter = function(inst)
             inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)

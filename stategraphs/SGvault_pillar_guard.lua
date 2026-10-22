@@ -1,4 +1,5 @@
 require("stategraphs/commonstates")
+local AOEUtil = require("aoeutil")
 
 local function IsAlly_Crafted(v, inst)
 	if not inst.components.combat:IsAlly(v) then
@@ -152,223 +153,80 @@ end
 
 --------------------------------------------------------------------------
 
-local AOE_RANGE_PADDING = 3
-local AOE_TARGET_MUSTHAVE_TAGS = { "_combat" }
-local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack" }
-local AOE_TRIAL_CANT_TAGS = ConcatArrays({ "vault_key_trial_guardian" }, AOE_TARGET_CANT_TAGS)
-
-local function _AOEAttack(inst, dig, dist, radius, arc, heavymult, mult, forcelanded, targets, repeatdelay)
-	inst.components.combat.ignorehitrange = true
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local arcx, cos_theta, sin_theta
-	if dist ~= 0 or arc then
-		local theta = inst.Transform:GetRotation() * DEGREES
-		cos_theta = math.cos(theta)
-		sin_theta = math.sin(theta)
-		if dist ~= 0 then
-			x = x + dist * cos_theta
-			z = z - dist * sin_theta
+local AOE_TAGSET, AOE_TRIAL_TAGSET
+local function GetAOEAttackTagSet(inst)
+	if inst.trial then
+		if AOE_TRIAL_TAGSET == nil then
+			AOE_TRIAL_TAGSET = AOEUtil.AttackTagSet()
+			AOE_TRIAL_TAGSET:AppendCantTags("vault_key_trial_guardian")
 		end
-		if arc then
-			--min-x for testing points converted to local space
-			arcx = x + math.cos(arc / 2 * DEGREES) * radius
-		end
+		return AOE_TRIAL_TAGSET
+	elseif AOE_TAGSET == nil then
+		AOE_TAGSET = AOEUtil.AttackTagSet()
 	end
-	local t = repeatdelay and GetTime()
-	for i, v in ipairs(TheSim:FindEntities(x, y, z, radius + AOE_RANGE_PADDING, AOE_TARGET_MUSTHAVE_TAGS, inst.trial and AOE_TRIAL_CANT_TAGS or AOE_TARGET_CANT_TAGS)) do
-		if v ~= inst and
-			not (	targets and
-					targets[v] and
-					not (repeatdelay and type(targets[v]) == "number" and targets[v] < t)
-				) and
-			v:IsValid() and not v:IsInLimbo() and
-			not (v.components.health and v.components.health:IsDead()) and
-			(	inst.trial or --trial doesn't need ally check; excludes by tag "vault_key_trial_guardian"
-				not IsAlly_Crafted(v, inst)
-			)
-		then
-			local range = radius + v:GetPhysicsRadius(0)
-			local x1, y1, z1 = v.Transform:GetWorldPosition()
-			local dx = x1 - x
-			local dz = z1 - z
-			if dx * dx + dz * dz < range * range and
-				--convert to local space x, and test against arcx
-				(arcx == nil or x + cos_theta * dx - sin_theta * dz > arcx) and
-				inst.components.combat:CanTarget(v)
-			then
-				if targets then
-					targets[v] = repeatdelay == nil or t + repeatdelay
-				end
-				if dig and v.components.locomotor == nil then
-					v.components.health:Kill()
-				else
-					if targets and mult and v.components.rider and v.components.rider.mount then
-						targets[v.components.rider.mount] = targets[v]
-					end
-					inst.components.combat:DoAttack(v)
-					if mult then
-						local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
-						v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = strengthmult, forcelanded = forcelanded })
-					end
-				end
-			end
-		end
-	end
-	inst.components.combat.ignorehitrange = false
+	return AOE_TAGSET
 end
 
-local WORK_RADIUS_PADDING = 0.5
-local COLLAPSIBLE_WORK_ACTIONS =
+local _temp_aoe_params =
 {
-	CHOP = true,
-	HAMMER = true,
-	MINE = true,
+	attack_filterfn = function(target, inst)
+		return inst.trial --trial doesn't need ally check; excludes by tag "vault_key_trial_guardian"
+			or not IsAlly_Crafted(target, inst)
+	end,
+	work_filterfn = function(target, inst)
+		return target.prefab ~= "vault_key_pedestal"
+	end,
 }
-local COLLAPSIBLE_TAGS = { "NPC_workable" }
-for k, v in pairs(COLLAPSIBLE_WORK_ACTIONS) do
-	table.insert(COLLAPSIBLE_TAGS, k.."_workable")
+local function GetAOEParams(dist, radius, arc, knockback_str, knockback_heavystr, knockback_forcelanded)
+	_temp_aoe_params.dist = dist
+	_temp_aoe_params.radius = radius
+	_temp_aoe_params.arc = arc
+	_temp_aoe_params.knockback_str = knockback_str
+	_temp_aoe_params.knockback_heavystr = knockback_heavystr
+	_temp_aoe_params.knockback_forcelanded = knockback_forcelanded
+	return _temp_aoe_params
 end
 
-local COLLAPSIBLE_WORK_AND_DIG_ACTIONS = shallowcopy(COLLAPSIBLE_WORK_ACTIONS)
-local COLLAPSIBLE_DIG_TAGS = shallowcopy(COLLAPSIBLE_TAGS)
-COLLAPSIBLE_WORK_AND_DIG_ACTIONS["DIG"] = true
-table.insert(COLLAPSIBLE_DIG_TAGS, "pickable")
-table.insert(COLLAPSIBLE_DIG_TAGS, "DIG_workable")
-
-local NON_COLLAPSIBLE_TAGS = { "FX", --[["NOCLICK",]] "DECOR", "INLIMBO" }
-
-local function _AOEWork(inst, dig, dist, radius, arc, targets)
-	local actions = dig and COLLAPSIBLE_WORK_AND_DIG_ACTIONS or COLLAPSIBLE_WORK_ACTIONS
-	local x, y, z = inst.Transform:GetWorldPosition()
-	local arcx, cos_theta, sin_theta
-	if dist ~= 0 or arc then
-		local theta = inst.Transform:GetRotation() * DEGREES
-		cos_theta = math.cos(theta)
-		sin_theta = math.sin(theta)
-		if dist ~= 0 then
-			x = x + dist * cos_theta
-			z = z - dist * sin_theta
-		end
-		if arc then
-			--min-x for testing points converted to local space
-			arcx = x + math.cos(arc / 2 * DEGREES) * radius
-		end
-	end
-	for i, v in ipairs(TheSim:FindEntities(x, y, z, radius + WORK_RADIUS_PADDING, nil, NON_COLLAPSIBLE_TAGS, dig and COLLAPSIBLE_DIG_TAGS or COLLAPSIBLE_TAGS)) do
-		if not (targets and targets[v]) and v:IsValid() and not v:IsInLimbo() then
-			local inrange = true
-			if arcx then
-				--convert to local space x, and test against arcx
-				local x1, y1, z1 = v.Transform:GetWorldPosition()
-				inrange = x + cos_theta * (x1 - x) - sin_theta * (z1 - z) > arcx
-			end
-			if inrange then
-				local isworkable = false
-				if v.components.workable then
-					local work_action = v.components.workable:GetWorkAction()
-					--V2C: nil action for NPC_workable (e.g. campfires)
-					isworkable =
-						(	work_action == nil and v:HasTag("NPC_workable")	) or
-						(	v.components.workable:CanBeWorked() and
-							work_action and
-							actions[work_action.id] and
-							not (dig and (v.components.spawner or v.components.childspawner))
-						)
-				end
-				if isworkable then
-					v.components.workable:Destroy(inst)
-					if dig and v:IsValid() and v:HasTag("stump") then
-						v:Remove()
-					end
-					if targets then
-						targets[v] = true
-					end
-				elseif dig and
-					v.components.pickable and
-					v.components.pickable:CanBePicked() and
-					not v:HasTag("intense") and
-					v.prefab ~= "vault_key_pedestal"
-				then
-					v.components.pickable:Pick(inst)
-					if targets then
-						targets[v] = true
-					end
-				end
-			end
-		end
-	end
-end
-
-local TOSSITEM_MUST_TAGS = { "_inventoryitem" }
-local TOSSITEM_CANT_TAGS = { "locomotor", "INLIMBO" }
-
-local function TossLaunch(inst, launcher, basespeed, startheight, startradius)
-	local x0, y0, z0 = launcher.Transform:GetWorldPosition()
-	local x1, y1, z1 = inst.Transform:GetWorldPosition()
-	local dx, dz = x1 - x0, z1 - z0
-	local dsq = dx * dx + dz * dz
-	local angle
-	if dsq > 0 then
-		local dist = math.sqrt(dsq)
-		angle = math.atan2(dz / dist, dx / dist) + (math.random() * 20 - 10) * DEGREES
-		startradius = math.max(dist, startradius)
-	else
-		angle = TWOPI * math.random()
-	end
-	local sina, cosa = math.sin(angle), math.cos(angle)
-	local speed = basespeed + math.random()
-	TryTeleportToLaunchPos(inst, x0 + startradius * cosa, startheight, z0 + startradius * sina)
-	inst.Physics:SetVel(cosa * speed, speed * 2.5 + math.random(), sina * speed)
-end
-
-local function TossItems(inst, dist, radius, targets)
-	local x, y, z = inst.Transform:GetWorldPosition()
-	if dist ~= 0 then
-		local theta = inst.Transform:GetRotation() * DEGREES
-		x = x + dist * math.cos(theta)
-		z = z - dist * math.sin(theta)
-	end
-	for i, v in ipairs(TheSim:FindEntities(x, 0, z, radius + WORK_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if not (targets and targets[v]) then
-			DeactivateInventoryItemBeforeLaunch(v)
-			if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
-				TossLaunch(v, inst, radius * 0.4, 0.5, radius)
-			end
-			if targets then
-				targets[v] = true
-			end
-		end
-	end
+local _temp_toss_params = { startheight = 0.5 }
+local function GetTossParams(radius)
+	_temp_toss_params.radius = radius
+	_temp_toss_params.basespeed = radius * 0.4
+	_temp_toss_params.verticalspeed = (_temp_toss_params.basespeed + 0.5) * 2.5
+	_temp_toss_params.startradius = radius
+	return _temp_toss_params
 end
 
 local function DoWalkCollide(inst)
-	_AOEWork(inst, false, 0, 2.5)
+	AOEUtil.Work(inst, 2.5)
 end
 
 local function DoWalkStomp(inst)
-	_AOEWork(inst, false, 0, 2.5)
-	TossItems(inst, 0, 2.5)
+	AOEUtil.Work(inst, 2.5)
+	AOEUtil.TossItems(inst, GetTossParams(2.5))
 end
 
 local function DoActivateStomp(inst, r)
-	_AOEWork(inst, false, 0, r)
-	TossItems(inst, 0, r)
+	AOEUtil.Work(inst, r)
+	AOEUtil.TossItems(inst, GetTossParams(r))
 end
 
 local function DoPunchAOE(inst)
-	_AOEWork(inst, false, 1, 4, 180, inst.sg.statemem.targets)
-	_AOEAttack(inst, false, 1, 4, 180, 1, 1.25, true, inst.sg.statemem.targets)
+	local params = GetAOEParams(1, 4, 180, 1.25, 1, true)
+	AOEUtil.Work(inst, params, inst.sg.statemem.targets)
+	AOEUtil.Attack(inst, params, GetAOEAttackTagSet(inst), inst.sg.statemem.targets)
 end
 
 local function DoSmashAOE(inst)
-	_AOEWork(inst, true, 0, 4, nil, inst.sg.statemem.targets)
-	_AOEAttack(inst, true, 0, 4, nil, nil, 1, nil, inst.sg.statemem.targets)
-	TossItems(inst, 0, 4, inst.sg.statemem.tosstargets)
+	local params = GetAOEParams(0, 4, nil, 1)
+	AOEUtil.WorkAndDig(inst, params, inst.sg.statemem.targets)
+	AOEUtil.AttackAndDig(inst, params, GetAOEAttackTagSet(inst), inst.sg.statemem.targets)
+	AOEUtil.TossItems(inst, GetTossParams(4), inst.sg.statemem.tosstargets)
 end
 
 local function DoSpinAOE(inst)
-	_AOEWork(inst, false, 0, 5.6, nil, inst.sg.statemem.targets)
-	_AOEAttack(inst, false, 0, 5.6, nil, 0.8, 1, true, inst.sg.statemem.targets, 0.5)
+	local params = GetAOEParams(0, 5.6, nil, 1, 0.8, true)
+	AOEUtil.Work(inst, params, inst.sg.statemem.targets)
+	AOEUtil.Attack(inst, params, GetAOEAttackTagSet(inst), inst.sg.statemem.targets, 0.5)
 end
 
 --------------------------------------------------------------------------

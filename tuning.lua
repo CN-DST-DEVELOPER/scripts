@@ -106,6 +106,7 @@ function Tune(overrides)
         DARK_SPAWNCUTOFF = 0.1,
 
 		DEFAULT_ATTACK_RANGE = 2,
+		DEFAULT_HIT_ARC = 180, --legacy content does not have hit arc by default; but use this as default value when adding one.
 		DEFAULT_HIT_RECOVERY = .75,
 		DEFAULT_PROJECTILE_HIT_RECOVERY_MULTIPLIER = 2,
 		DEFAULT_PROJECTILE_MAX_HITREACTS_MULTIPLIER = 0,
@@ -631,6 +632,7 @@ function Tune(overrides)
         SLURTLE_TARGET_DIST = 10,
         SLURTLE_SHELL_ABSORB = 0.95,
         SLURTLE_DAMAGE_UNTIL_SHIELD = 150,
+        SLURTLE_HIT_ARC = 120,
 
         SLURTLE_EXPLODE_DAMAGE = 300,
         SLURTLESLIME_EXPLODE_DAMAGE = 50,
@@ -980,6 +982,8 @@ function Tune(overrides)
         BAT_HEALTH = 50,
         BAT_ATTACK_PERIOD = 1,
         BAT_ATTACK_DIST = 1.5,
+		BAT_HIT_DIST = 1,
+		BAT_HIT_ARC = 120,
         BAT_WALK_SPEED = 8,
         BAT_TARGET_DIST = 8,
         BAT_ESCAPE_TIME = 60,
@@ -1909,6 +1913,11 @@ function Tune(overrides)
         ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_MAX_HITS = 6,
         ARMOR_VOIDCLOTH_SETBONUS_PLANARDAMAGE_DECAY_TIME = 3,
 
+        ARMOR_ROCKY = wilson_health*10*multiplayer_armor_durability_modifier,
+        ARMOR_ROCKY_ABSORPTION = .95*multiplayer_armor_absorption_modifier,
+        ARMOR_ROCKY_SLOW = 0.7,
+        ARMOR_ROCKY_KNOCKBACK_BLOCKED_DAMAGE = (wilson_health*10*multiplayer_armor_durability_modifier) / 20,
+
         PANFLUTE_SLEEPTIME = 20,
         PANFLUTE_SLEEPRANGE = 15,
         PANFLUTE_USES = 10,
@@ -2211,6 +2220,7 @@ function Tune(overrides)
 
         MOISTURE_SANITY_PENALTY_MAX = -100/(day_time*6), -- Was originally 10 days
 
+        CRAZINESS_TINY = -100/(day_time*4),
         CRAZINESS_SMALL = -100/(day_time*2),
         CRAZINESS_MED = -100/(day_time),
 
@@ -2377,18 +2387,21 @@ function Tune(overrides)
         ROCKY_SPAWN_DELAY = 4*total_day_time,
         ROCKY_SPAWN_VAR = 0,
 
-        ROCKY_DAMAGE = 75,
+		ROCKY_DAMAGE = 75, -- scaled with size
+		ROCKY_ATTACK_RANGE = 2, -- scaled with size
+		ROCKY_HIT_RANGE = 3, -- scaled with size
         ROCKY_HEALTH = 1500 * 2, -- harder for multiplayer
-        ROCKY_WALK_SPEED = 2,
+		ROCKY_WALK_SPEED = 2.7, -- scaled with size
         ROCKY_MAX_SCALE = 1.2,
         ROCKY_MIN_SCALE = .75,
-        ROCKY_GROW_RATE = (1.2-.75) / (total_day_time*40),
+		ROCKY_GROW_RATE = (1.2 - 0.75) / (total_day_time * 4.8),
         ROCKY_ACIDRAIN_SHRINK_RATE = (1.2-0.75) / total_day_time,
         ROCKY_LOYALTY = seg_time*6,
         ROCKY_POLITENESS_LOYALTY_BONUS = seg_time * 2,
         ROCKY_ABSORB = 0.95,
         ROCKY_REGEN_AMOUNT = 10,
         ROCKY_REGEN_PERIOD = 1,
+		ROCKY_STAGGER_TIME = 4,
         ROCKYHERD_RANGE = 40,
         ROCKYHERD_MAX_IN_RANGE = 12,
 
@@ -2871,6 +2884,7 @@ function Tune(overrides)
 		VOIDCLOTH_BOOMERANG_SHADOW_LEVEL = 3,
 		--T4
 		THURIBLE_SHADOW_LEVEL = 4,
+        KING_CANE_SHADOW_LEVEL = 4,
 
         LIVINGTREE_CHANCE = 0.55,
         LIVINGTREE_YOUNG_WORK = 15,
@@ -8333,14 +8347,17 @@ function Tune(overrides)
 
         -- Rifts 4
         WORM_BOSS_HEALTH = 5000,
-        WORM_BOSS_DAMAGE = 14,
-        WORM_BOSS_SPINES = 14,
+        WORM_BOSS_DAMAGE = 20, -- affected by playerdamagepercent
+        WORM_BOSS_SPINES = 20, -- affected by playerdamagepercent
         WORM_BOSS_MELEE_RANGE = 6,
         WORM_BOSS_TARGET_DIST = 40,
         WORM_BOSS_EAT_CREATURE_RANGE = 1.5,
         WORM_BOSS_EAT_RANGE = 2,
         WORM_BOSS_KNOCKBACK_RANGE = 2,
         WORM_BOSS_DAYS = 25,
+        WORM_BOSS_PLAYERDAMAGEPERCENT = 0.5,
+        WORM_BOSS_STAGGER_TIME = 6,
+        WORM_BOSS_EXPLOSIVE_MULT = 1.5, -- 50% more damage from explosives when SWALLOWED
 
         SPAWN_GELBLOBS = true, -- For world settings.
         MIN_GELBLOBS_PER_SPAWNER = 5,
@@ -9472,7 +9489,8 @@ function Tune(overrides)
         FUMAROLEPICKAXE_HEAT_ON_USE = -0.2 * 3, -- 3x more
         FUMAROLESHOVEL_HEAT_ON_USE = -0.2 * 4, -- 4x more
         FUMAROLEHAMMER_HEAT_ON_USE = -0.2 * (4/3), -- 1.33x more
-        FUMAROLEHOE_HEAT_ON_USE = -0.2, -- 4x more
+        FUMAROLEHOE_HEAT_ON_USE = -0.2 * 4, -- 4x more
+        FUMAROELWEAPON_HEAT_ON_USE = -0.2,
 
         FUMAROLEAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
         FUMAROLEPICKAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
@@ -9553,6 +9571,218 @@ function Tune(overrides)
 		GOLFHOLE_MAX_SCORE_SPEED_SQ = 0.75 * 0.75, --ball can't score if faster than this
 		GOLFHOLE_MIN_ACCEL = 0.4, --drop force toward center of hole at outer lip
 		GOLFHOLE_MAX_ACCEL = 0.7, --max drop force toward center of hole
+
+        -- Rifts 8
+
+        FUMAROLEWEAPON_DAMAGE = wilson_attack, -- wilson_attack*.8
+        FUMAROLEWEAPON_SEARINGDAMAGE = { 0, 0, wilson_attack * 0.5, wilson_attack }, -- added on top of regular damage
+
+		ROCKY_BOSS_SCALE = 1.4,
+		ROCKY_BOSS_DASH_RANGE = 9, -- scaled with size
+        ROCKY_BOSS_DASH_RANGE_ACID = 6, -- scaled with size
+		ROCKY_BOSS_DAMAGE = 100,
+		ROCKY_BOSS_HEALTH = 4000,
+		ROCKY_TARGETRANGE = 10,
+		ROCKY_BOSS_DASH_CD = 4,
+
+		ROCKY_BOSS_SHADOW_HEALTH = 5000,
+		ROCKY_BOSS_SHADOW_PLANAR_DAMAGE = 20,
+
+        ROCKY_BOSS_ACIDINFUSED_MULTS =
+        {
+            DAMAGE = 0.75,
+            DAMAGE_TAKEN = 1.25,
+            SPEED = 0.75,
+        },
+
+        ROCKY_ACIDRAIN_NITRE_STARTS_PERCENT = 0.5, -- What percentage of the acid level of the rocky should it be for nitre to grow.
+        -- natural shielding, not combat shielding
+        ROCKY_SHIELD_TIME = seg_time * 2,
+        ROCKY_SHIELD_TIME_VARIANCE = seg_time * 0.5,
+
+        ROCKY_SHIELD_COOLDOWN = seg_time * 2,
+        ROCKY_SHIELD_COOLDOWN_VARIANCE = seg_time * 4,
+
+        ROCKYHERD_MAX_SIZE = 6,
+
+		BAT_BOSS_HEALTH = 1500,
+		BAT_BOSS_WALK_SPEED = 7, --Bat is 8, but scaled by 0.75
+		BAT_BOSS_DAMAGE = 50,
+		BAT_BOSS_ATTACK_PERIOD = 2,
+		BAT_BOSS_ATTACK_DIST = 2.1,
+		BAT_BOSS_HIT_DIST = 1.4,
+		BAT_BOSS_CHOMP_RANGE = 4,
+		BAT_BOSS_CHOMP_CD = 5,
+		BAT_BOSS_CHOMP_DAMAGE = 5,
+		BAT_BOSS_CHOMP_INITIAL_MULT = 2,
+		BAT_BOSS_MANNEQUINTIME = 1,
+		BAT_BOSS_NPCTIME = { 5, 8 },
+		BAT_BOSS_DRAIN_MULT = 3,
+		BAT_BOSS_STAGGER_TIME = 3,
+		BAT_BOSS_FAST_UNEQUIP_TIME = 2.5,
+		BAT_BOSS_SUMMON_PERIOD = 15,
+        BAT_BOSS_NEARBY_PLAYERS_DIST = 30,
+        BAT_BOSS_SEE_BATS_DIST = 20, -- distance of 20 to see other bats and batcaves
+        BAT_BOSS_MIN_SPAWN_TO_HOWL = 2, -- howl if we're going to at least spawn two or more
+        BAT_BOSS_BASE_NUM_SPAWN = 3,
+        BAT_BOSS_NUM_SPAWN_PER_PLAYER = 2,
+        BAT_BOSS_ACID_PERISH_INVENTORY_RATE = 8,
+
+		BAT_BOSS_SHADOW_HEALTH = 3000,
+		BAT_BOSS_SHADOW_PLANAR_DAMAGE = 20,
+		BAT_BOSS_SHADOW_CHOMP_PLANAR_DAMAGE = 2,
+		BAT_BOSS_SHADOW_CHOMP_CD = 6,
+		BAT_BOSS_SHADOW_CLONE_THRESHOLD = 0.5, --hp below this %
+		BAT_BOSS_SHADOW_CLONE_DELAY = 3, --min seconds after previous clone dies
+		BAT_BOSS_SHADOW_PERISH_PERCENT = 0.01,
+
+        ROCKY_BOSS_SPAWNDELAY_BASE = total_day_time * 15,
+        ROCKY_BOSS_SPAWNDELAY_RANDOM = total_day_time * 5,
+
+        ROCKY_BOSS_SPAWNDELAY_RETRY_BASE = total_day_time * 1.5,
+        ROCKY_BOSS_SPAWNDELAY_RETRY_RANDOM = total_day_time * 0.5,
+        SPAWN_ROCKY_BOSS = true,
+
+        BAT_BOSS_CORPSEHAT_TICK_RATE = 0.6,
+        BAT_BOSS_CORPSEHAT_TICK_VALUE = -3,
+        BAT_BOSS_CORPSEHAT_LIFESTEAL = wilson_attack * 0.2, -- same as bat bat
+        BAT_BOSS_CORPSEHAT_DAMAGE_ON_EQUIP = 10,
+        BAT_BOSS_CORPSEHAT_REGEN_PERISH_MULT = 0.0006, -- regen 0.1% per second. (0.06% per tick)
+
+        BATBOSSCAVE_REGEN_PERIOD = total_day_time * 10,
+        BATBOSSCAVE_SPAWN_PERIOD = 20,
+        BATBOSSCAVE_MAX_CHILDREN = 1,
+        BATBOSSCAVE_ENABLED = true,
+
+        BATBAT_SANITY_DRAIN_MULT = 0.5,
+        BATBAT_SETBONUS_SANITY_DRAIN_MULT = 0.25,
+
+        ACIDBATWAVE_BATBOSS_BATCOUNT = 5, -- 5 or above in a wave will also spawn the bat boss
+
+        WORM_BOSS_SHADOW_HEALTH = 6000,
+        WORM_BOSS_SHADOW_PLANAR_DAMAGE = 10,
+        WORM_BOSS_SHADOW_ENRAGED_THRESHOLD = 0.5, -- when below 50% health
+        WORM_BOSS_SHADOW_ENRAGED_STAGGER_TIME = 2,
+
+        WORM_BOSS_MAX_SPEED = 1,
+        WORM_BOSS_SHADOW_ENRAGED_MAX_SPEED = 1.5,
+
+        WORM_BOSS_RITUAL_WAVE_TIME_MULT = 0.75, -- worm boss comes in 3 quarters of the usual time
+        SHROUDEN_RITUAL_TIME = 14,
+        SHROUDEN_RITUAL_NOCHARLIE_TIME = 6,
+
+        -- tile width * SQRT2 * TILE_SCALE / 2
+        -- .5 to account for overhang
+        CHARLIE_ARENA_RADIUS = 9.5 * math.sqrt(2) * 4 / 2, -- used for temperatureoverrider
+        CHARLIE_ARENA_TEMPERATURE_OVERRIDE = 35, -- STARTING_TEMP
+
+		CHARLIE_BOSS_HEALTH = 18500,
+		CHARLIE_BOSS_WALKSPEED = 5,
+		CHARLIE_BOSS_HIT_RECOVERY = 1,
+		CHARLIE_BOSS_ATTACK_PERIOD = 3,
+		CHARLIE_BOSS_ATTACK_PERIOD2 = 2,
+		CHARLIE_BOSS_ATTACK_RANGE = 4.5,
+		CHARLIE_BOSS_COUNTERATTACK_RANGE = 8,
+		CHARLIE_BOSS_PLAYERDAMAGEPERCENT = 0.75,
+		CHARLIE_BOSS_DAMAGE = 150,
+		CHARLIE_BOSS_PLANAR_DAMAGE = 30,
+		CHARLIE_BOSS_VINE_DAMAGE = 75, --NOTE: weapons unaffected by PLAYERDAMAGEPERCENT
+		CHARLIE_BOSS_VINE_SPEED = { 9, 6 },
+		CHARLIE_BOSS_MINION_DAMAGE = 90, --NOTE: weapons unaffected by PLAYERDAMAGEPERCENT
+		CHARLIE_BOSS_PROJECTILE_DAMAGE = 25, --NOTE: weapons unaffected by PLAYERDAMAGEPERCENT
+		CHARLIE_BOSS_PROJECTILE_SPEED = { 6, 12 },
+		CHARLIE_BOSS_PROJECTILE_LIFETIME = { 16, 20 }, --seconds
+		CHARLIE_BOSS_AGGRO_DIST = 15,
+		CHARLIE_BOSS_KEEP_AGGRO_DIST = 12,
+		CHARLIE_BOSS_DEAGGRO_DIST = 30, --backup value; only used if c_spawned outside of arena
+		CHARLIE_BOSS_MODE_SWITCH_HP = 0.1, --min hp loss between mode switches
+		CHARLIE_BOSS_MODE_SWITCH_MINTIME = { 4, 6 }, --min time btwn mode switches
+		CHARLIE_BOSS_TAUNT_INTERVAL = 13, --if you take too long to trigger mode switch
+
+        SHADOWHAND_SPEED = 2,
+        SHADOWHAND_SHROUDED_SPEED = 3,
+        SHADOWHAND_SHROUDED_MAX_OUTATONCE = 3,
+        SHADOWHAND_SHROUDED_FINDLIGHT_RADIUS = 16,
+
+        CHARLIE_BOSS_RUNNER_MAXCOUNT = 12,
+        CHARLIE_BOSS_RUNNER_BASE_AMOUNT = 2, -- per tick
+        CHARLIE_BOSS_RUNNER_AMOUNT_PER_PLAYER = 0.5,
+        CHARLIE_BOSS_RUNNER_WALKSPEED = 0.8,
+        CHARLIE_BOSS_RUNNER_RUNSPEED = 9,
+        CHARLIE_BOSS_RUNNER_HEALTH = 1,
+        CHARLIE_BOSS_RUNNER_DAMAGE = 50,
+		CHARLIE_BOSS_RUNNER_TARGET_RANGE = 8,
+		CHARLIE_BOSS_RUNNER_POUNCE_RANGE = 2.5,
+
+		SHROUDEN_HEALTH = 16000,
+		SHROUDEN_WALKSPEED = 3,
+		SHROUDEN_OPTIC_BLAST_SPEED = { 9, 12 },
+		SHROUDEN_TELEPORT_SPEED = 12,
+		SHROUDEN_HIT_RECOVERY = 1.5,
+		SHROUDEN_ATTACK_PERIOD = { 3, 2.75, 2.5 }, --threat levels
+		SHROUDEN_ATTACK_RANGE = 11,
+		SHROUDEN_COUNTERATTACK_RANGE = 16,
+		SHROUDEN_DAMAGE = 225,
+		SHROUDEN_PLANAR_DAMAGE = 35,
+		SHROUDEN_SUMMONS_BONUS_PLANAR_DAMAGE = 5,
+		SHROUDEN_OPTIC_BLAST_PLANAR_DAMAGE = 40,
+		SHROUDEN_PLAYERDAMAGEPERCENT = 0.75,
+		SHROUDEN_AGGRO_DIST = 15,
+		SHROUDEN_KEEP_AGGRO_DIST = 12,
+		SHROUDEN_DEAGGRO_DIST = 30, --backup value; only used if c_spawned outside of arena
+		SHROUDEN_PORTAL_CD = { 5, 4, 3 }, --threat levels
+		SHROUDEN_OPTIC_BLAST_CD = 29,
+		SHROUDEN_TELEPORT_CD = 19,
+		SHROUDEN_TAUNT_INTERVAL = 15, --affects portal ex-summons frequency
+
+        KING_CANE_SPEED_MULT = 1.3,
+        KING_CANE_DAMAGE = wilson_attack*.5,
+        KING_CANE_MAX_CORRUPTION = 100,
+        KING_CANE_CORRUPTION_LOW = 33,
+        KING_CANE_CORRUPTION_MED = 67,
+        KING_CANE_CORRUPTION_HIGH = 100,
+        KING_CANE_CORRUPTION_DECAY_PERIOD = 12,
+        KING_CANE_CORRUPTION_DECAY_AMOUNT = -1,
+
+        KING_CANE_CORRUPTION =
+        {
+            ["redgem"] = 3,
+            ["bluegem"] = 3,
+            ["purplegem"] = 15,
+            ["orangegem"] = 5,
+            ["yellowgem"] = 15,
+            ["greengem"] = 20,
+        },
+
+        -- red and blue values aren't used, just here to say that these don't have any cooldown.
+        KING_CANE_RED_COOLDOWN = 0,
+        KING_CANE_BLUE_COOLDOWN = 0,
+        KING_CANE_PURPLE_COOLDOWN = seg_time*3,
+        KING_CANE_ORANGE_COOLDOWN = 10,
+        KING_CANE_YELLOW_COOLDOWN = seg_time*3,
+        KING_CANE_GREEN_COOLDOWN = seg_time*4,
+
+        KING_CANE_CORRUPT_NIGHTMARE_COOLDOWN = 3,
+        KING_CANE_CORRUPT_BLIGHTED_COOLDOWN = seg_time * 1,
+        KING_CANE_CORRUPT_CHESSPIECE_COOLDOWN = seg_time * 1,
+        KING_CANE_CORRUPT_FISSURE_COOLDOWN = seg_time * 4,
+
+        CHARLIEARENA_SPIKE_WORK = 4,
+        CHARLIEARENA_SPIKE_DAMAGE = 100, -- affected by playerdamagepercent
+        CHARLIEARENA_SPIKE_EXPLOSION_PLANAR_DAMAGE = 40, -- PLANAR
+		CHARLIEARENA_SPIKE_SANITY_CD = { 4, 13 },
+		CHARLIEARENA_SPIKE_LUNACY_CD = { 13, 8 },
+
+        QUEEN_TORCH_RADIUS = 16,
+        QUEEN_TORCH_RADIUS_SQ = 16*16,
+
+        SANITYMONSTERS_CHARLIEARENA_MAXPOP = 3,
+        SANITYMONSTERS_CHARLIEARENA_CHANCES = {
+            inc = 0.75,
+            dec = 0.2,
+        },
+        SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_INTERVAL = 7,
+        SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_VARIANCE = 7,
     }
 
     TUNING_MODIFIERS = {}

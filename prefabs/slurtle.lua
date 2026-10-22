@@ -202,6 +202,7 @@ local function makeslurtle()
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "shell"
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
+    inst.components.combat:SetHitArc(TUNING.SLURTLE_HIT_ARC)
 
     inst:AddComponent("health")
 
@@ -241,6 +242,7 @@ local function makesnurtle()
     inst:AddComponent("combat")
     inst.components.combat.hiteffectsymbol = "shell"
     inst.components.combat:SetKeepTargetFunction(KeepTarget)
+    inst.components.combat:SetHitArc(TUNING.SLURTLE_HIT_ARC)
 
     inst:AddComponent("health")
 

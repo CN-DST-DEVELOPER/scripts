@@ -31,6 +31,10 @@ local _poptask = nil
 --------------------------------------------------------------------------
 
 local function GetTuningLevelForPlayer(player)
+	if _map:IsPointInCharlieBossArena(player.Transform:GetWorldPosition()) then
+		return 0, nil
+	end
+
     local sanity = player.components.sanity:IsLunacyMode() and player.components.sanity:GetPercentWithPenalty() or 0
 	if sanity >= TUNING.GESTALT_MIN_SANITY_TO_SPAWN then
 		for k, v in ipairs(TUNING.GESTALT_POPULATION_LEVEL) do
@@ -54,6 +58,10 @@ end
 local SPAWN_ONEOF_TAGS = {"brightmare_gestalt", "player", "playerghost"}
 local function FindGestaltSpawnPtForPlayer(player, wantstomorph)
 	local x, y, z = player.Transform:GetWorldPosition()
+	if _map:IsPointInCharlieBossArena(x, y, z) then
+		return nil
+	end
+
 	local function IsValidGestaltSpawnPt(offset)
 		local x1, z1 = x + offset.x, z + offset.z
 		return #TheSim:FindEntities(x1, 0, z1, 6, nil, nil, SPAWN_ONEOF_TAGS) == 0

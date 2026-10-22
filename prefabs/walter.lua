@@ -629,13 +629,8 @@ local function OnTimerDone(inst, data)
 end
 
 local function OnAttacked(inst, data)
-    if not inst.components.rider:IsRiding() then
-		return
-	end
-
 	local mount = inst.components.rider:GetMount()
-
-	if not mount:HasTag("woby") then
+	if not (mount and mount:HasTag("woby")) or IsEquipmentOnAttackedOrBlocked(inst, inst, data) then
 		return
 	end
 

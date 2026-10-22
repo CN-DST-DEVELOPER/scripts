@@ -196,6 +196,12 @@ local prefabs =
     "vault_lobby_exit",
     "vault_chandelier",
     "vault_teleporter",
+
+	-- Rifts 8
+	"rocky_boss",
+    "batbosscave",
+
+    "atriummarker_gate_center",
 }
 
 local monsters =
@@ -209,6 +215,8 @@ for i, v in ipairs(monsters) do
     end
 end
 monsters = nil
+
+local obj_layout = require("map/object_layout")
 
 local assets =
 {
@@ -254,14 +262,19 @@ local wormspawn =
         crazy       = function() return TUNING.TOTAL_DAY_TIME * 10, math.random() * TUNING.TOTAL_DAY_TIME * 2.5 end,
     },
 
-    specialupgradecheck = function(wave_pre_upgraded, wave_override_chance, _wave_override_settings)
+    specialupgradecheck = function(wave_pre_upgraded, wave_override_chance, _wave_override_settings, wave_upgraded_record)
         wave_pre_upgraded = nil
 
         local chance = wave_override_chance * (_wave_override_settings["worm_boss"] or 1)
 
-        if _wave_override_settings["worm_boss"] ~= 0 and (math.random() < chance or _wave_override_settings["worm_boss"] == 9999) then
+        if _wave_override_settings["worm_boss"] ~= 0 and (
+                math.random() < chance or
+                _wave_override_settings["worm_boss"] == 9999 or
+                TheWorld.components.atriumritualorgantracker:NeedsRitualOrgan("atrium_ritual_organ_worm") or
+                (wave_upgraded_record ~= nil)
+            ) then
             wave_pre_upgraded = "available"
-        end        
+        end
 
         if wave_pre_upgraded == "available" then
             wave_override_chance = 0
@@ -471,6 +484,37 @@ local function AddCaveGelSpawns(inst)
     --print("Added", validspawncount, "gelblobspawningground entities to the world.")
 end
 
+local function CreateLayout_Vault()
+    local markers = TheWorld.components.virtualroommanager:GetVirtualRoomEntities(VIRTUALROOMSETS.LOBBYVAULT, VIRTUALROOMCONTEXT.MARKER)
+    local archive_portal = FindFirstPrefabInArray(markers, "archive_portal")
+    if not archive_portal then
+        print("CreateLayout_Vault is unable to place down an important set piece because the world is missing the Archive Portal!")
+        return false
+    end
+
+    local Vault_Lobby = obj_layout.LayoutForDefinition("Vault_Lobby")
+    local Vault_Vault = obj_layout.LayoutForDefinition("Vault_Vault")
+    if not Vault_Lobby or not Vault_Vault then
+        print("CreateLayout_Vault is unable to place down an important set piece because the world is missing definitions for the static layouts!", Vault_Lobby, Vault_Vault)
+        return false
+    end
+
+    local x, y, z = archive_portal.Transform:GetWorldPosition()
+    local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, y, z)
+
+    if not StaticLayoutPlacer.TryToPlaceStaticLayoutNear(Vault_Lobby, tx, ty, StaticLayoutPlacer.ScanForStaticLayoutPosition_Spiral, StaticLayoutPlacer.TileFilter_Impassable, StaticLayoutPlacer.CreateVRSPositionFilter(VIRTUALROOMSETS.LOBBYVAULT)) then
+        print("CreateLayout_Vault failed to place required static layout Vault_Lobby!")
+        return false
+    end
+
+    if not StaticLayoutPlacer.TryToPlaceStaticLayoutNear(Vault_Vault, tx, ty, StaticLayoutPlacer.ScanForStaticLayoutPosition_Spiral, StaticLayoutPlacer.TileFilter_Impassable, StaticLayoutPlacer.CreateVRSPositionFilter(VIRTUALROOMSETS.VAULT)) then
+        print("CreateLayout_Vault failed to place required static layout Vault_Vault!")
+        return false
+    end
+
+    return true
+end
+
 local function master_postinit(inst)
     --Spawners
     inst:AddComponent("shadowcreaturespawner")
@@ -512,6 +556,7 @@ local function master_postinit(inst)
     inst:AddComponent("ropebridgemanager")
     inst:AddComponent("gelblobspawner")
     inst:DoTaskInTime(0, AddCaveGelSpawns)
+    inst.components.worldstaticlayouts:RegisterLayout(VIRTUALROOMSETS.VAULT, CreateLayout_Vault)
 
     --anr update retrofitting
     inst:AddComponent("retrofitcavemap_anr")
@@ -529,8 +574,9 @@ local function master_postinit(inst)
     -- Meta 5
     inst:AddComponent("decoratedgrave_ghostmanager")
 
-    -- Rifts 6
-    inst:AddComponent("vaultroommanager")
+    -- Rifts 8
+    inst:AddComponent("rockybossspawner")
+    inst:AddComponent("atriumritualorgantracker")
 
     return inst
 end

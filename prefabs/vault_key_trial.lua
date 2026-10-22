@@ -32,7 +32,11 @@ local function RevealKey(inst)
 	inst.task = nil
 	local pedestal = inst.components.entitytracker:GetEntity("keypedestal")
 	if pedestal and pedestal.activator == nil then
-		pedestal:OpenPlate("vault_key_pedestal")
+		if WORLDSTATETAGS.GetTagEnabled("VAULT_KEY_FOUND") then
+			pedestal:OpenPlate("vault_refiner_pedestal")
+		else
+			pedestal:OpenPlate("vault_key_pedestal")
+		end
 	end
 end
 

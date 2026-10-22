@@ -99,10 +99,44 @@ function PushAwayItemsOnBoatPlace(inst)
 end
 
 --------------------------------------------------------------------------
+
+function IsRangedWeapon(ent)
+	return ent ~= nil and
+		(	ent.components.projectile ~= nil or
+			(ent.components.weapon ~= nil and ent.components.weapon:CanRangedAttack()) or
+			ent:HasTag("pseudorangedweapon")
+		)
+end
+
+--Use this check during "attacked" or "blocked" events to check if you should trigger procs.
+--e.g. shouldn't while mounted (will be redirected)
+--     shouldn't from "monsterhat"
+function ShouldProcOnAttackedOrBlocked(inst, owner, data) --data from "attacked" or "blocked" event
+	return data ~= nil
+		and not data.redirected
+		and data.attacker ~= nil
+		and (	data.attacker.components.inventoryitem and
+				data.attacker.components.inventoryitem:GetGrandOwner() or
+				data.attacker
+			) ~= owner
+end
+
+--Use this check during "attacked" or "blocked" events to check if the hit came from your own equipment.
+--e.g. bat_bosscorpsehat
+function IsEquipmentOnAttackedOrBlocked(inst, owner, data) --data from "attacked" or "blocked" event
+	return data ~= nil
+		and data.attacker ~= nil
+		and data.attacker.components.inventoryitem ~= nil
+		and data.attacker.components.inventoryitem:GetGrandOwner() == owner
+		and data.attacker:HasTag("nodangermusic")
+end
+
+--------------------------------------------------------------------------
 --Tags useful for testing against combat targets that you can hit,
 --but aren't really considered "alive".
 
 -- Lifedrain (Batbat, mauler) uses this list
+-- This is also concatenated into SOULLESS_TARGET_TAGS
 NON_LIFEFORM_TARGET_TAGS =
 {
 	"structure",
@@ -110,8 +144,8 @@ NON_LIFEFORM_TARGET_TAGS =
 	"balloon",
 	"groundspike",
 	"smashable",
-	"veggie", --stuff like lureplants... not considered life?
     "deck_of_cards",
+    "nolife",
 }
 
 --Shadows and Gestalts don't have souls.
@@ -145,7 +179,13 @@ PURE_SHADOW_TARGET_TAGS = {
     "stalker",
     "stalkerminion",
     "shadowthrall",
+	"shadowboss",
 }
+
+function IsLifeDrainable(target)
+	return (not target:HasAnyTag(NON_LIFEFORM_TARGET_TAGS) or target:HasTag("lifedrainable"))
+        and not target:HasTag("nolifedrainable")
+end
 
 --------------------------------------------------------------------------
 local IGNORE_DROWNING_ONREMOVE_TAGS = {"ignorewalkableplatforms", "ignorewalkableplatformdrowning", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO"}
@@ -1183,7 +1223,170 @@ end
 -------
 -- Teleporting checks for restrictions.
 
-local vaultroom_defs = require("prefabs/vaultroom_defs")
+local function GetActualTileCoords_Internal(map, fx, fy, fz) -- For when point is on tile overhang
+    local tx, ty = map:GetTileCoordsAtPoint(fx, 0, fz)
+    local tilecenter_x, tilecenter_y, tilecenter_z  = map:GetTileCenterPoint(fx, 0, fz)
+    local actual_tile = map:GetTile(tx, ty)
+
+    if not TileGroupManager:IsLandTile(actual_tile) then
+        local xpercent = (tilecenter_x - fx) / TILE_SCALE
+        local ypercent = (tilecenter_z - fz) / TILE_SCALE
+
+        local x_min = xpercent > 0.166 and -1 or 0
+        local x_max = xpercent < -0.166 and 1 or 0
+        local y_min = ypercent > 0.166 and -1 or 0
+        local y_max = ypercent < -0.166 and 1 or 0
+
+        for x = x_min, x_max do
+            for y = y_min, y_max do
+                local nx, ny = tx + x, ty + y
+                local tile = map:GetTile(nx, ny)
+                if TileGroupManager:IsLandTile(tile) then
+                    return nx, ny
+                end
+            end
+        end
+    end
+
+    return tx, ty
+end
+local function IsPathClear_Internal(map, roomsethash, IsTileInvalidForPathing, fx, fy, fz, tx, ty, tz)
+    if IsTileInvalidForPathing == nil then
+        return true
+    end
+
+    local minx, miny, maxx, maxy = map:GetVirtualRoomSetBoundingBox(roomsethash)
+	local width = maxx - minx + 1
+
+    fx, fy = GetActualTileCoords_Internal(map, fx, fy, fz)
+    tx, ty = GetActualTileCoords_Internal(map, tx, ty, tz)
+
+    -- fast checks
+    if IsTileInvalidForPathing(map, fx, fy) then
+        return false
+    elseif fx == tx and fy == ty then
+        return true
+    end
+
+    -- TODO should cache result?
+    -- TODO AStar search instead of BFS.
+
+    local visited = {}
+
+    local is_clear = false
+
+    local to_visit_queue = { { fx, fy } }
+    local queue_index = 1
+    while queue_index <= #to_visit_queue do
+        local next_x, next_y = to_visit_queue[queue_index][1], to_visit_queue[queue_index][2]
+        queue_index = queue_index + 1
+
+        local col = next_x
+        local row = next_y
+        local index = (row - miny) * width + col - minx
+        if visited[index] == nil then
+            visited[index] = true
+
+            if next_x == tx and next_y == ty then
+                is_clear = true
+                break
+            end
+
+            for off_x = -1, 1, 1 do
+                for off_y = -1, 1, 1 do
+                    if off_x ~= 0 or off_y ~= 0 then
+                        local nx, ny = next_x + off_x, next_y + off_y
+                        if not IsTileInvalidForPathing(map, nx, ny) then
+                            table.insert(to_visit_queue, { nx, ny })
+                            if nx == tx and ny == ty then
+                                is_clear = true
+                                break
+                            end
+                        end
+                    end
+
+                    if is_clear then break end
+                end
+            end
+
+            if is_clear then break end
+        end
+    end
+
+    return is_clear
+end
+
+local ISTILEINVALIDFORPATHING_HASHES = {}
+function AddIsTileInvalidForPathing_VirtualRoomSet(roomsetname, fn)
+    -- NOTES(JBK): This uses the hash of the roomsetname for networking on clients.
+    ISTILEINVALIDFORPATHING_HASHES[hash(roomsetname)] = fn
+end
+
+local function GetRoomSetHashes(map, virtualroomsethashes, fx, fy, fz, tx, ty, tz)
+    -- NOTES(JBK): Keep function in sync with VirtualRoomSet on the engine side. [VRSTCMHG]
+    local from_roomsethash, to_roomsethash
+    for _, roomsethash in ipairs(virtualroomsethashes) do
+        if not from_roomsethash and map:IsPointInVirtualRoomSet(roomsethash, fx, fy, fz) then
+            from_roomsethash = roomsethash
+            if to_roomsethash then
+                break
+            end
+        end
+        if not to_roomsethash and map:IsPointInVirtualRoomSet(roomsethash, tx, ty, tz) then
+            to_roomsethash = roomsethash
+            if from_roomsethash then
+                break
+            end
+        end
+    end
+    return from_roomsethash, to_roomsethash
+end
+local function CanVRSTeleportToVRS(map, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz, ignorepathing)
+    -- NOTES(JBK): Keep function in sync with VirtualRoomSet on the engine side. [VRSTCMM]
+    local permitted = true
+    local same_vrs = from_roomsethash == to_roomsethash
+    if same_vrs then
+        if from_roomsethash then
+            -- Teleporting from inside to inside of the VRS.
+            -- Check if the path is clear to allow this.
+            if ignorepathing then
+                permitted = true
+            else
+                local IsTileInvalidForPathing = ISTILEINVALIDFORPATHING_HASHES[from_roomsethash]
+                permitted = IsPathClear_Internal(map, from_roomsethash, IsTileInvalidForPathing, fx, fy, fz, tx, ty, tz)
+            end
+        else
+            -- Teleporting outside to outside of any VRS has no effect here.
+            permitted = true
+        end
+    else
+        -- Different VRS needs to check permissions from each.
+        local from_canleave, to_canjoin = true, true
+        if from_roomsethash then
+            -- Teleporting from inside to outside of the VRS.
+            if map:IsVirtualRoomSetInLobby(from_roomsethash) then
+                -- Some VRS permit teleporting into its lobby which also allows teleporting outside.
+                from_canleave = not map:IsVirtualRoomSetTeleportingInLobbyProhibited(from_roomsethash)
+            else
+                -- Optional if a VRS locks down teleporting out if it is permitted.
+                from_canleave = not map:IsVirtualRoomSetTeleportingOutProhibited(from_roomsethash)
+            end
+        end
+        if to_roomsethash then
+            -- Teleporting from outside to inside of the VRS.
+            if map:IsVirtualRoomSetInLobby(to_roomsethash) then
+                -- Some VRS permit teleporting into its lobby.
+                to_canjoin = not map:IsVirtualRoomSetTeleportingInLobbyProhibited(to_roomsethash)
+            else
+                -- Nothing is permitted to go from out to inside a VRS.
+                to_canjoin = false
+            end
+        end
+        permitted = from_canleave and to_canjoin
+    end
+
+    return permitted
+end
 function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
     local map = TheWorld.Map
 
@@ -1193,14 +1396,42 @@ function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
         end
     end
 
-    if map:IsPointInVaultRoom(tx, ty, tz) then
-        if map:IsPointInVaultRoom(fx, fy, fz) and vaultroom_defs.IsPathClear(fx, fy, fz, tx, ty, tz) then
-            return true
+    local virtualroomsethashes = map:GetVirtualRoomSetHashes()
+    if virtualroomsethashes[1] --[[#virtualroomsethashes > 0 optimization]] then
+        local from_roomsethash, to_roomsethash = GetRoomSetHashes(map, virtualroomsethashes, fx, fy, fz, tx, ty, tz)
+        if not CanVRSTeleportToVRS(map, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz, false) then
+            return false
         end
-        return false
     end
 
     return true
+end
+
+local function IsVisibleRespectingVRSFromVRSToVRS(map, alwaysoutsidevrs, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz)
+    -- NOTES(JBK): Keep function in sync with uses on the engine side. [VRSIVRP2P]
+    local visible = true
+
+    if alwaysoutsidevrs then
+        to_roomsethash = nil -- Check against the outside VRS world.
+    else
+        -- to_roomsethash = to_roomsethash not needed but here for engine line consistency.
+    end
+
+    if from_roomsethash ~= to_roomsethash then
+        visible = CanVRSTeleportToVRS(map, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz, true)
+    end
+
+    return visible
+end
+function IsVisibleRespectingVRSFromPointToPoint(alwaysoutsidevrs, fx, fy, fz, tx, ty, tz)
+    local map = TheWorld.Map
+    local visible = true
+    local virtualroomsethashes = map:GetVirtualRoomSetHashes()
+    if virtualroomsethashes[1] --[[#virtualroomsethashes > 0 optimization]] then
+        local from_roomsethash, to_roomsethash = GetRoomSetHashes(map, virtualroomsethashes, fx, fy, fz, tx, ty, tz)
+        visible = IsVisibleRespectingVRSFromVRSToVRS(map, alwaysoutsidevrs, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz)
+    end
+    return visible
 end
 
 function IsTeleportLinkingPermittedFromPoint(fx, fy, fz)
@@ -1210,7 +1441,11 @@ function IsTeleportLinkingPermittedFromPoint(fx, fy, fz)
         return false
     end
 
-    if map:IsPointInAnyVault(fx, fy, fz) then
+    if map:IsPointInVaultRoom(fx, fy, fz) then
+        return false
+    end
+
+    if map:IsPointInCharlieBossArena(fx, fy, fz) then
         return false
     end
 
@@ -1423,6 +1658,7 @@ function GetCreatureImpactSound(inst, weaponmod)
     weaponmod = weaponmod or "dull"
 
     local tgttype =
+		inst.override_combat_impact_sound or
 		(inst:HasAnyTag("hive", "eyeturret", "houndmound") and "hive_") or
         (inst:HasTag("ghost") and "ghost_") or
 		(inst:HasAnyTag("insect", "spider") and "insect_") or
@@ -1432,10 +1668,9 @@ function GetCreatureImpactSound(inst, weaponmod)
         (inst:HasTag("mound") and "mound_") or
 		(inst:HasAnyTag("shadow", "shadowminion", "shadowchesspiece") and "shadow_") or
 		(inst:HasAnyTag("tree", "wooden") and "tree_") or
-        (inst:HasAnyTag("veggie", "hedge") and "vegetable_") or
+        (inst:HasAnyTag("veggie", "hedge", "plantcreature") and "vegetable_") or
         (inst:HasTag("shell") and "shell_") or
 		(inst:HasAnyTag("rocky", "fossil") and "stone_") or
-        inst.override_combat_impact_sound or
         nil
 
     return
@@ -1495,17 +1730,13 @@ function GetPlayerDeathDescription(inst, viewer)
         -- Permanent translations for death cause.
         if inst.cause == "unknown" then
             inst.cause = "shenanigans"
-
         elseif inst.cause == "moose" then
             inst.cause = math.random() < .5 and "moose1" or "moose2"
         end
 
         -- Viewer based temp translations for death cause.
-        local cause =
-            inst.cause == "nil"
-            and (
-                (viewer == "waxwell" or viewer == "winona") and "charlie" or "darkness"
-            )
+        local cause = inst.cause == "nil" -- if charlie is defeated, this will be "darkness"
+            and (CHARACTER_KNOWS_CHARLIE[viewer.prefab] and "charlie" or "darkness")
             or inst.cause
 
         return string.format(desc, name, STRINGS.NAMES[string.upper(cause)] or STRINGS.NAMES.SHENANIGANS)
@@ -1597,7 +1828,7 @@ end
 
 function RemoveComponentInventoryItemSource(cmp, owner)
     local self = cmp
-    local owner = owner or self.inst
+    owner = owner or self.inst
 
     self.inst:RemoveEventCallback("onputininventory", self.itemsource_topocket, owner)
     self.inst:RemoveEventCallback("ondropped", self.itemsource_toground, owner)
@@ -2108,7 +2339,7 @@ function ShouldItemMimicBeRevealedFor(item, user)
     local userprocsmimics = user.components.socket_shadow_mimicry == nil
     if itemisamimic then
         -- Special cases to always force mimic reveals.
-        if item.prefab == "greenstaff" then
+        if item:HasTag("castonrecipes") then
             -- Ingredients must be earned.
             return true
         end
@@ -2190,4 +2421,43 @@ function GetEntityTemperature(inst) -- Purposely defaulting to nil. Account for 
     return (inst.components.temperature ~= nil and inst.components.temperature:GetCurrent())
         or (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetTemperature())
         or nil
+end
+
+--------------------------------------------------------------------------
+-- VirtualRoomSet helpers.
+
+function GetPlayersInfoForVirtualRoomSetName(roomsetname)
+    local virtualroommanager = TheWorld.components.virtualroommanager
+    if virtualroommanager then
+        local virtualroomset = virtualroommanager:GetVirtualRoomSet(roomsetname)
+        if virtualroomset then
+            return virtualroomset:GetPlayersInfo()
+        end
+    end
+
+    return nil, 0
+end
+
+--------------------------------------------------------------------------
+
+function FindFirstPrefabInArray(entityarray, prefab)
+    if not entityarray then
+        return nil
+    end
+
+    for _, v in ipairs(entityarray) do
+        if v.prefab == prefab then
+            return v
+        end
+    end
+
+    return nil
+end
+
+--------------------------------------------------------------------------
+
+function IsStalkerCorruptable(inst, corrupter)
+    -- check just one state
+    return (inst.sg and inst.sg:HasState("stalker_corruption_pre") and inst.sg.mem.canstalkercorrupt)
+        or (inst.CanStalkerCorrupt and inst:CanStalkerCorrupt(corrupter)) -- batbosscave
 end

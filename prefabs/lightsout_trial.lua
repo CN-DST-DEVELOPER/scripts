@@ -167,9 +167,9 @@ end
 
 local function GetNearestPlayerDistSq(x, z)
 	local dsq = math.huge
-	local vaultroommanager = TheWorld.components.vaultroommanager
-	if vaultroommanager then
-		for k in pairs(vaultroommanager.players) do
+    local players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.VAULT)
+    if players then
+        for k in pairs(players) do
 			local x1, _, z1 = k.Transform:GetWorldPosition()
 			dsq = math.min(dsq, distsq(x, z, x1, z1))
 		end
@@ -250,23 +250,23 @@ local function TryHelpBrokenTorch(inst, torch)
 			inst.hand:SetTargetFire(torch, ACTIONS.TURNOFF)
 			inst:ListenForEvent("onremove", inst._onhandremoved, inst.hand)
 
-			local players = {}
-			local vaultroommanager = TheWorld.components.vaultroommanager
-			if vaultroommanager then
-				for k in pairs(vaultroommanager.players) do
+			local nearplayers = {}
+            local players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.VAULT)
+			if players then
+				for k in pairs(players) do
 					if IsPlayerNear(k, x, z) then
-						table.insert(players, k)
+						table.insert(nearplayers, k)
 					end
 				end
 			else
 				for _, v in ipairs(AllPlayers) do
 					if IsPlayerNear(v, x, z) then
-						table.insert(players, v)
+						table.insert(nearplayers, v)
 					end
 				end
 			end
 
-			inst.hand:DoTaskInTime(1 + math.random(), DoPlayerAnnounce, players, inst, x, z)
+			inst.hand:DoTaskInTime(1 + math.random(), DoPlayerAnnounce, nearplayers, inst, x, z)
 		end
 		return true --breaks out of ForEach
 	end
@@ -277,9 +277,9 @@ local function OnHandDelayOver(inst)
 	if not inst.helped then
 		local x, _, z = inst.Transform:GetWorldPosition()
 		local playernear
-		local vaultroommanager = TheWorld.components.vaultroommanager
-		if vaultroommanager then
-			for k in pairs(vaultroommanager.players) do
+        local players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.VAULT)
+		if players then
+			for k in pairs(players) do
 				if IsPlayerNear(k, x, z) then
 					playernear = true
 					break

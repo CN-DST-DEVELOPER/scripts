@@ -417,6 +417,11 @@ end
 
 ValidateLineNumber(418)
 function FrontEnd:OnControl(control, down)
+    if control == CONTROL_SEND_FEEDBACK and TheSim:FeedbackEnabled() then
+		local feedback = require "feedback"
+		feedback.StartFeedback()
+	end
+
     -- if there is a textedit that is currently editing, stop editing if the player clicks somewhere else
     if self.textProcessorWidget ~= nil and not self.textProcessorWidget.focus and not down and control == CONTROL_PRIMARY then
         self:SetForceProcessTextInput(false, self.textProcessorWidget)
@@ -494,7 +499,7 @@ function FrontEnd:OnControl(control, down)
     end
     self.isprimary = false
 end
-ValidateLineNumber(497)
+ValidateLineNumber(502)
 
 function FrontEnd:ShowTitle(text,subtext)
 	self.title:SetString(text)
@@ -1651,5 +1656,14 @@ function FrontEnd:CheckCachedError()
 		-- Pushing screens is not allowed after creating the error widget, so
 		-- assign it last.
 		global_error_widget = widget
+	end
+end
+
+-- Pass a Screen subclass or instance.
+function FrontEnd:FindScreen(screen_class)
+	for i, screen in ipairs(self.screenstack) do
+		if screen == screen_class or screen:is_a(screen_class) then
+			return screen, i
+		end
 	end
 end

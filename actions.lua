@@ -452,9 +452,9 @@ ACTIONS =
     TAKEITEM = Action(),
     TAKESINGLEITEM = Action(),
     MAKEBALLOON = Action({ mount_valid=true }),
-    CASTSPELL = Action({ priority=-1, rmb=true, distance=20, mount_valid=true }),
+    CASTSPELL = Action({ priority=-1, rmb=true, distance=20, mount_valid=true, invalid_hold_action=true }),
 	CAST_POCKETWATCH = Action({ priority=-1, rmb=true, mount_valid=true }), -- to actually use the mounted action, the pocket watch will need the pocketwatch_mountedcast tag
-    BLINK = Action({ priority=HIGH_ACTION_PRIORITY, rmb=true, distance=36, mount_valid=true, encumbered_valid=true }),
+    BLINK = Action({ priority=HIGH_ACTION_PRIORITY, rmb=true, distance=36, mount_valid=true, encumbered_valid=true, invalid_hold_action=true }),
     BLINK_MAP = Action({ priority=HIGH_ACTION_PRIORITY, customarrivecheck=ArriveAnywhere, rmb=true, mount_valid=true, encumbered_valid=true, map_action=true, }),
     COMBINESTACK = Action({ mount_valid=true, extra_arrive_dist=ExtraPickupRange }),
 	TOGGLE_DEPLOY_MODE = Action({ priority=HIGH_ACTION_PRIORITY, instant=true, mount_valid=true, floating_valid=true }),
@@ -482,11 +482,11 @@ ACTIONS =
 	STOPCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
 	APPLYCONSTRUCTION = Action({ priority=1, instant=true, distance=2 }),
 	--channeling for scene entity
-    STARTCHANNELING = Action({ priority=2, distance=2.1 }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
-    STOPCHANNELING = Action({ instant=true, distance=2.1 }),
+    STARTCHANNELING = Action({ priority=2, distance=2.1, invalid_hold_action=true, }), -- Keep higher priority over smother for waterpump but do something else if channelable is added to more things.
+    STOPCHANNELING = Action({ instant=true, distance=2.1, invalid_hold_action=true, }),
 	--channeling for equipped item
-	START_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
-	STOP_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true }),
+	START_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true, invalid_hold_action=true, }),
+	STOP_CHANNELCAST = Action({ priority=-1, rmb=true, do_not_locomote=true, invalid_hold_action=true, }),
 	--
 	APPLYPRESERVATIVE = Action(),
     COMPARE_WEIGHABLE = Action({ encumbered_valid=true, priority=HIGH_ACTION_PRIORITY }),
@@ -738,6 +738,9 @@ ACTIONS =
 	GOLF_STOP_AIMING = Action({ instant = true }),
 	GOLF_START_CHARGING = Action({ distance = 9999, do_not_locomote = true, invalid_hold_action = true }),
     TERRAFORM_REMOVE = Action({ customarrivecheck = CheckInsideGolfGame, rmb = true, invalid_hold_action = true, keepgroundactionhint = true, }),
+
+    -- Rifts 8
+    CORRUPTNIGHTMARE = Action({ distance = 20, mount_valid = true, invalid_hold_action = true, }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -895,7 +898,7 @@ ACTIONS.PICKUP.fn = function(act)
             act.target.components.inventoryitem.grabbableoverridetag ~= nil and act.doer:HasTag(act.target.components.inventoryitem.grabbableoverridetag)
         ) and
         not (act.target:IsInLimbo() or
-			(act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.target.components.lighter == nil) or
+			(act.target.components.burnable ~= nil and act.target.components.burnable:IsBurning() and act.target.components.lighter == nil and not act.target:HasTag("torch")) or
             (act.target.components.projectile ~= nil and act.target.components.projectile:IsThrown())) then
 
         if act.doer.components.itemtyperestrictions ~= nil and not act.doer.components.itemtyperestrictions:IsAllowed(act.target) then
@@ -3434,6 +3437,9 @@ ACTIONS.CASTSPELL.fn = function(act)
     local staff = act.invobject or act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
 	local act_pos = act:GetActionPoint()
     if staff and staff.components.spellcaster then
+        if staff:HasTag("nomagiccast") then
+            return false
+        end
         if ShouldItemMimicBeRevealedFor(staff, act.doer) then
             return false, "ITEMMIMIC"
         end
@@ -3558,6 +3564,9 @@ end
 ACTIONS.BLINK.fn = function(act)
 	local act_pos = act:GetActionPoint()
     if act.invobject ~= nil then
+        if act.invobject:HasTag("nomagiccast") then
+            return false
+        end
         if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
             return false, "ITEMMIMIC"
         end
@@ -6273,6 +6282,7 @@ ACTIONS.WOBY_PICKUP.fn = function(act)
             return false, "NO_HEAVY_LIFTING"
         end
 
+        act.target.components.inventoryitem:OnPickupStopSmoldering(act.doer)
         act.doer:PushEvent("onpickupitem", { item = act.target })
 
         act.doer.components.container:GiveItem(act.target, nil, act.target:GetPosition())
@@ -7082,11 +7092,23 @@ ACTIONS.GOLF_START_CHARGING.fn = function(act)
 	return true
 end
 
-
 ACTIONS.TERRAFORM_REMOVE.fn = function(act)
     if act.invobject and act.target then
         if act.invobject.components.terraformer and not act.invobject.components.terraformer.plow and act.target.components.terraformerremoveable then
             return act.target.components.terraformerremoveable:TryToRemove(act.doer)
         end
+    end
+end
+
+ACTIONS.CORRUPTNIGHTMARE.fn = function(act)
+    if act.invobject and act.invobject.components.corruption then
+        if act.invobject:HasTag("nomagiccast") then
+            return false
+        end
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+            return false, "ITEMMIMIC"
+        end
+
+        return act.invobject.components.corruption:CorruptEnt(act.target, act.doer)
     end
 end

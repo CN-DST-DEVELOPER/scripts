@@ -435756,3 +435756,48 @@ msgctxt "STRINGS.YOTB_TOO_LATE_PRIZE"
 msgid "Sorry, can't wait any longer. Bye now."
 msgstr "Lamento, não posso esperar mais. Tchau."
 
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE"
+msgid "Don't Starve Together Crash Reporter"
+msgstr "Relator de travamentos do Don't Starve Together"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE"
+msgid "It appears Don't Starve Together has crashed.\nPlease visit our support page for fixes to common problems: <a>https://support.klei.com</a>"
+msgstr "Parece que o Don't Starve Together travou.\nVisite nossa página de suporte para soluções de problemas comuns: <a>https://support.klei.com</a>"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND"
+msgid "Crash report failed to send"
+msgstr "Falha ao enviar relatório de travamento"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND"
+msgid "Send"
+msgstr "Enviar"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR"
+msgid "Error"
+msgstr "Erro"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL"
+msgid "Cancel"
+msgstr "Cancelar"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS"
+msgid "Success"
+msgstr "Sucesso"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS"
+msgid "Crash report sent. Thank you!"
+msgstr "Relatório de travamento enviado. Obrigado!"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER"
+msgid "Report includes platform information for diagnostic purposes."
+msgstr "O relatório inclui informações da plataforma para fins de diagnóstico."
+

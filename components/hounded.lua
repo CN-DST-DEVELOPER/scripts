@@ -17,6 +17,7 @@ local SourceModifierList = require("util/sourcemodifierlist")
 --------------------------------------------------------------------------
 
 local SPAWN_DIST = 30
+local UPGRADEDSPAWN_NOTKILLED_DELAY_MULT = 1 / 6 -- 6th of the time if the worm boss was stored and not killed
 
 --------------------------------------------------------------------------
 --[[ Member variables ]]
@@ -99,6 +100,7 @@ local _spawninfo = nil
 local _wave_pre_upgraded = nil  -- You can trigger a wave upgrade when the sounds are chosen. Used for the Worm Boss. 
 local _wave_override_chance = 0 -- used for special custom wave overide like worm_boss.
 local _wave_override_settings = {}
+local _wave_upgraded_record = nil -- save record of despawned upgraded like worm_boss
 --for players who leave during the warning when spawns are queued
 local _delayedplayerspawninfo = {}
 local _missingplayerspawninfo = {}
@@ -157,16 +159,16 @@ local function ClearLocationImmunity()
 	end
 end
 
-local function PlanNextAttack()
+local function PlanNextAttack(force, data)
 	ClearLocationImmunity()
-	if _timetoattack > 0 then
+	if _timetoattack > 0 and not force then
 		-- we came in through a savegame that already had an attack scheduled
 		return
 	end
 	-- if there are no players then try again later
 	if #_activeplayers <= 0 then
 		_attackplanned = false
-		self.inst:DoTaskInTime(1, PlanNextAttack)
+		self.inst:DoTaskInTime(1, function() PlanNextAttack(force) end)
 		return
 	end
 
@@ -177,10 +179,21 @@ local function PlanNextAttack()
 	if _spawnmode ~= "never" then
 		_wave_pre_upgraded = nil
 		if _spawndata.specialupgradecheck then
-			_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings)
-		end			
+			_wave_pre_upgraded, _wave_override_chance = _spawndata.specialupgradecheck(_wave_pre_upgraded, _wave_override_chance, _wave_override_settings, _wave_upgraded_record)
+		end
 		local timetoattackbase, timetoattackvariance = _attackdelayfn()
-		_timetoattack = timetoattackbase + timetoattackvariance	
+		local timetoattack = timetoattackbase + timetoattackvariance
+		if _wave_upgraded_record then
+			timetoattack = timetoattack * UPGRADEDSPAWN_NOTKILLED_DELAY_MULT
+		end
+		if data and data.multtimetoattack then
+			timetoattack = timetoattack * data.multtimetoattack
+		end
+		if data and data.choosemintime then
+			_timetoattack = math.min(_timetoattack, timetoattack)
+		else
+			_timetoattack = timetoattack
+		end
 		_warnduration = _warndurationfn(_wave_pre_upgraded)
 		_attackplanned = true
 
@@ -410,7 +423,13 @@ end
 local function SummonSpawn(pt, upgrade, radius_override)
 	local spawn_pt = GetSpawnPoint(pt, radius_override)
 	if spawn_pt ~= nil then
-		local spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
+		local spawn
+		if upgrade and _wave_upgraded_record then
+            spawn = SpawnSaveRecord(_wave_upgraded_record, {})
+            _wave_upgraded_record = nil
+		else
+			spawn = SpawnPrefab(GetSpawnPrefab(upgrade))
+		end
 		if spawn ~= nil then
 
 			if spawn.hounded_overridelocation then
@@ -602,10 +621,12 @@ local function CheckForLocationImmunity(player)
 	if not _targetableplayers[player.GUID] then
 		-- block hound wave targeting when target is on water.. for now.
 		local x,y,z = player.Transform:GetWorldPosition()
-		if TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x,y,z) then
+		if TheWorld.Map:IsPointInWagPunkArenaAndBarrierIsUp(x, y, z) then
 			_targetableplayers[player.GUID] = "arena"
-        elseif TheWorld.Map:IsPointInAnyVault(x,y,z) then
+        elseif TheWorld.Map:IsPointInAnyVault(x, y, z) then
             _targetableplayers[player.GUID] = "vault"
+		elseif TheWorld.Map:IsPointInCharlieBossArena(x, y, z) then
+			_targetableplayers[player.GUID] = "charliearena"
 		elseif TheWorld.Map:IsVisualGroundAtPoint(x,y,z) then
 			_targetableplayers[player.GUID] = "land"
 		else
@@ -667,6 +688,15 @@ local function SetWinterVariant(src, enabled)
 	end
 end
 
+local function OnStoreUpgradedSpawn(src, upgradedspawn)
+	_wave_upgraded_record = upgradedspawn ~= nil and upgradedspawn:GetSaveRecord() or nil
+	PlanNextAttack(true)
+end
+
+local function ForcePlanNewAttack(src, data)
+	PlanNextAttack(true, data)
+end
+
 --------------------------------------------------------------------------
 --[[ Initialization ]]
 --------------------------------------------------------------------------
@@ -687,6 +717,9 @@ inst:ListenForEvent("hounded_setdifficulty", SetDifficulty)
 inst:ListenForEvent("hounded_setsummervariant", SetSummerVariant)
 inst:ListenForEvent("hounded_setwintervariant", SetWinterVariant)
 inst:ListenForEvent("hounds_worm_boss_setdifficulty", SetWormBossDifficulty)
+
+inst:ListenForEvent("hounded_storeupgraded", OnStoreUpgradedSpawn)
+inst:ListenForEvent("hounded_forceplannewattack", ForcePlanNewAttack)
 
 
 self.inst:StartUpdatingComponent(self)
@@ -907,7 +940,7 @@ local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 
 		if _spawndata.upgrade_spawn and _spawndata.ShouldUpgrade then
 
-				local local_wave_pre_upgraded = _wave_pre_upgraded	
+				local local_wave_pre_upgraded = _wave_pre_upgraded
 				if _delayedplayerspawninfo[target] then
 					local_wave_pre_upgraded = _delayedplayerspawninfo[target]._wave_pre_upgraded
 				end
@@ -920,7 +953,7 @@ local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 					end
 					for key, data in pairs(_missingplayerspawninfo) do
 						data._wave_pre_upgraded = nil
-					end					
+					end
 				end
 		end
 
@@ -1099,6 +1132,7 @@ function self:OnSave()
 		missingplayerspawninfo = missingspawninfo,
 		wave_override_chance = _wave_override_chance,
 		wave_pre_upgraded = _wave_pre_upgraded,
+		wave_upgraded_record = _wave_upgraded_record,
 	}
 end
 
@@ -1110,6 +1144,7 @@ function self:OnLoad(data)
 	_missingplayerspawninfo = data.missingplayerspawninfo or {}
 	_wave_override_chance = data.wave_override_chance or 0
 	_wave_pre_upgraded = data.wave_pre_upgraded or nil
+	_wave_upgraded_record = data.wave_upgraded_record or nil
 
 	if _timetoattack > _warnduration then
 		-- in case everything went out of sync
@@ -1131,7 +1166,7 @@ end
 
 function self:GetDebugString()
 	if _timetoattack > 0 then
-		return string.format("%s spawns are coming in %2.2f  _wave_override_chance: %2f, _wave_pre_upgraded: %s", (_warning and "WARNING") or (_pausesources:Get() and "BLOCKED") or "WAITING", _timetoattack, _wave_override_chance, _wave_pre_upgraded or "NO")
+		return string.format("%s spawns are coming in %2.2f  _wave_override_chance: %2f, _wave_pre_upgraded: %s, _wave_upgraded_record: %s", (_warning and "WARNING") or (_pausesources:Get() and "BLOCKED") or "WAITING", _timetoattack, _wave_override_chance, _wave_pre_upgraded or "NO", _wave_upgraded_record ~= nil and _wave_upgraded_record.prefab or "<nil>")
 	end
 
 	local s = "DORMANT"

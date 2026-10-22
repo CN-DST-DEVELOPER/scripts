@@ -96,7 +96,7 @@ local function ShouldWake(inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "bat", "INLIMBO", "FX", "notarget", "noattack", "DECOR" }
+local RETARGET_CANT_TAGS = { "bat", "batdisguise", "INLIMBO", "FX", "notarget", "noattack", "DECOR" }
 local RETARGET_ONEOF_TAGS = { "character", "monster", "smallcreature" }
 local function Retarget(inst)
     local closest_bug = nil

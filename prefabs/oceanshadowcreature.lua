@@ -42,7 +42,7 @@ local function update(inst)
     local current_boat = inst._current_boat
 
     if current_boat == nil then
-        if not inst.sg:HasStateTag("teleporting") and not BrainCommon.ShouldTriggerPanicShadowCreature(inst) then
+        if not inst.sg:HasStateTag("teleporting") and not BrainCommon.ShouldTriggerPanicShadowCreature(inst) and not FindClosestQueenTorch(inst) then
             local x, y, z = inst.Transform:GetWorldPosition()
             local boats = TheSim:FindEntities(x, y, z, TUNING.MAX_WALKABLE_PLATFORM_RADIUS + ATTACH_OFFSET_PADDING, findboattags)
             if boats ~= nil then
@@ -119,15 +119,13 @@ local function AttachToBoat(inst, boat)
 end
 
 local function DetachFromBoat(inst)
-    local x, y, z = inst.Transform:GetWorldPosition()
+    inst.Transform:SetPosition(inst.Transform:GetWorldPosition())
 
     local pivot = inst.entity:GetParent()
     if pivot ~= nil then
         inst.entity:SetParent(nil)
         pivot:Remove()
     end
-
-    inst.Transform:SetPosition(x, y, z)
 
     inst._should_teleport_time = GetTime()
 

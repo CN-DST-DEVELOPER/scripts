@@ -640,6 +640,23 @@ HapticEffects =
 	{ event="rifts6/rock_pillar/wobble_lp", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	{ event="rifts6/rock_pillar/fall", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="ENVIRONMENT" },	
 	-- Rifts6 effects end   ----------------------------------------------------------------------------------------------------------------------
+
+	-- Rifts8 effects start ----------------------------------------------------------------------------------------------------------------------
+	{ event="rifts8/charlie/attack_aoe", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/charlie/ground_hit", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/charlie/rise_pst_1", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/taunt", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/taunt2", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/opticblast_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/opticblast_big_LP", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/portal_punch_pre", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/death_a", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/death_b", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/charlie_death", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts8/shrouden/spawn", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="rifts2/shrouden/pillar_explode", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	{ event="terraria1/mini_eyeofterror/egg_crack", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="BOSS" },	
+	-- Rifts8 effects end   ----------------------------------------------------------------------------------------------------------------------
 	
 	-- Winter 2025 effects start -----------------------------------------------------------------------------------------------------------------
 	{ event="hookline_2/common/hotspring/use", vibration=true, audio=true, vibration_intensity=1.0, audio_intensity=1.0, category="PLAYER" },		

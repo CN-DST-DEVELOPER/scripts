@@ -167,8 +167,30 @@ local function OnRiftAddedToPool(inst, data)
     end
 end
 
+local function ReleaseFissureWithCombatCooldowns()
+    if _spawn_thralls_task == nil and (_thrall_hands == nil or _thrall_horns == nil or _thrall_wings == nil) then
+        -- One of the trio is dead combat must have happened.
+        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS)
+    else
+        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_WALKED_AWAY)
+    end
+end
+function self:OnFissureRemoved(inst)
+    if inst == _fissure then
+        ReleaseFissureWithCombatCooldowns()
+        if _thrall_combatcheck_task ~= nil then
+            _thrall_combatcheck_task:Cancel()
+            _thrall_combatcheck_task = nil
+        end
+    end
+    _potential_fissures[inst] = nil
+end
+
 function self:RegisterFissure(inst)
-    _potential_fissures[inst] = true
+    _potential_fissures[inst] = function()
+        self:OnFissureRemoved(inst)
+    end
+    inst:ListenForEvent("onremove", _potential_fissures[inst])
 
     if inst == _fissure then
         if _thrall_combatcheck_task ~= nil then
@@ -176,6 +198,10 @@ function self:RegisterFissure(inst)
             _thrall_combatcheck_task = nil
         end
     end
+end
+
+function self:IsRegisteredFissure(inst)
+    return _potential_fissures[inst] ~= nil
 end
 
 local function TrackOtherThralls(thrall, other1name, other1, other2name, other2)
@@ -198,9 +224,14 @@ function self:OnSpawnThralls()
             local angles = { angle - 50 - math.random() * 10, angle - 5 + math.random() * 10, angle + 50 + math.random() * 10 }
             local delays = { 0, .6, 1.2 }
             local prefab_hands, prefab_horns, prefab_wings
-            if self.thralltype == THRALL_TYPES.SHADOW.TRIO then
+            local thralltype = self.thralltype
+            if thralltype == nil then
+                -- we got here because we corrupted forcefully with King's Staff
+                thralltype = math.random() < 0.5 and THRALL_TYPES.SHADOW.TRIO or THRALL_TYPES.SHADOW.MOUTH
+            end
+            if thralltype == THRALL_TYPES.SHADOW.TRIO then
                 prefab_hands, prefab_horns, prefab_wings = "shadowthrall_hands", "shadowthrall_horns", "shadowthrall_wings"
-            elseif self.thralltype == THRALL_TYPES.SHADOW.MOUTH then
+            elseif thralltype == THRALL_TYPES.SHADOW.MOUTH then
                 prefab_hands, prefab_horns, prefab_wings = "shadowthrall_mouth", "shadowthrall_mouth", "shadowthrall_mouth"
             end
 
@@ -274,14 +305,6 @@ function self:SafeToReleaseFissure()
     return true
 end
 
-local function ReleaseFissureWithCombatCooldowns()
-    if _spawn_thralls_task == nil and (_thrall_hands == nil or _thrall_horns == nil or _thrall_wings == nil) then
-        -- One of the trio is dead combat must have happened.
-        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_DEFEATED_ANY_THRALLS)
-    else
-        self:ReleaseFissure(TUNING.FISSURE_COOLDOWN_WALKED_AWAY)
-    end
-end
 local function CheckIfSafeToReleaseFissure()
     if self:SafeToReleaseFissure() then
         ReleaseFissureWithCombatCooldowns()
@@ -301,7 +324,11 @@ function self:UnregisterFissure(inst)
             _thrall_combatcheck_task = self.inst:DoPeriodicTask(CHECK_FISSURE_INTERVAL, CheckIfSafeToReleaseFissure)
         end
     end
-    _potential_fissures[inst] = nil
+
+    if _potential_fissures[inst] then
+        inst:RemoveEventCallback("onremove", _potential_fissures[inst])
+        _potential_fissures[inst] = nil
+    end
 end
 
 ----------
@@ -387,7 +414,9 @@ function self:ReleaseFissure(cooldown)
         local fissure = _fissure -- Local copy which stops GetControlledFissure from returning things during shutdown sequence.
         _fissure = nil
         --print("ReleaseFissure", _fissure)
-        fissure:OnReleasedFromControl()
+        if fissure:IsValid() then
+            fissure:OnReleasedFromControl()
+        end
 
         if _miasmas then
             for miasma in pairs(_miasmas) do
@@ -439,7 +468,10 @@ function self:SpawnThrallFromPoint(prefabname, x, z, angle, delay)
 end
 
 function self:OnDreadstoneMineCooldown(fromload)
-    _dreadstone_regen_task = nil
+    if _dreadstone_regen_task ~= nil then
+        _dreadstone_regen_task:Cancel()
+        _dreadstone_regen_task = nil
+    end
     if _fissure then
         _fissure:OnDreadstoneMineCooldown(fromload)
     end
@@ -500,11 +532,14 @@ end
 
 function self:ControlFissure(fissure)
     if not _fissure then
-        fissure:OnNightmarePhaseChanged("controlled", false)
+        fissure:OnNightmarePhaseChanged("controlled", false, true)
         _fissure = fissure -- After OnNightmarePhaseChanged.
         _fissure_animating = true
         --print("ControlFissure", _fissure)
+        return true
     end
+
+    return false
 end
 
 function self:GetControlledFissure()

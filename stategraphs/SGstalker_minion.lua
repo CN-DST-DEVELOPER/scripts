@@ -17,8 +17,13 @@ local function EmergeLaunch(inst, launcher, basespeed, startheight, startradius)
     end
     local sina, cosa = math.sin(angle), math.cos(angle)
     local speed = basespeed + math.random()
-	TryTeleportToLaunchPos(inst, x0 + startradius * cosa, startheight, z0 + startradius * sina)
+	if not TryTeleportToLaunchPos(inst, x0 + startradius * cosa, startheight, z0 + startradius * sina) then
+		inst.Physics:Teleport(x1, math.max(y1, startheight), z1)
+	end
     inst.Physics:SetVel(cosa * speed, speed * 5 + math.random() * 2, sina * speed)
+	if inst.components.inventoryitem then
+		inst.components.inventoryitem:SetLanded(false, true)
+	end
 end
 
 local COLLAPSIBLE_WORK_ACTIONS =

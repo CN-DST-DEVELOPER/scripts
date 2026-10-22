@@ -72,12 +72,19 @@ function TextEdit:SetForceEdit(force)
     self.force_edit = force
 end
 
+function TextEdit:SetChanged()
+	if self.onchange then
+		self.onchange()
+	end
+end
+
 function TextEdit:SetString(str)
     str = self:FormatString(str)
     if self.inst and self.inst.TextEditWidget then
         self.inst.TextEditWidget:SetString(str or "")
     end
     self:_TryUpdateTextPrompt()
+	self:SetChanged()
 end
 
 function TextEdit:SetAllowNewline(allow_newline)
@@ -118,6 +125,7 @@ function TextEdit:SetEditing(editing)
     elseif not editing and self.editing then
         self.editing = false
         self.editing_enter_down = false
+        self._clicked_inside = false
 
         if self.focus then
             self:DoHoverImage()
@@ -149,6 +157,40 @@ end
 function TextEdit:OnMouseButton(button, down, x, y)
 -- disabling this because it is conflicing with OnControl()
 --  self:SetEditing(true)
+
+	-- inform text widget of mousepos
+	if down and button == MOUSEBUTTON_LEFT then
+		self._clicked_inside = true
+
+		-- Only update cursor position if the field is already active (editing).
+		-- If it's not active yet, keep the cursor where it was last time.
+		if not self.editing then
+			return true
+		end
+
+		-- convert click pos to local space
+		local wp = self:GetWorldPosition()
+		x = x - wp.x
+		y = y - wp.y
+
+	    local w, h = TheSim:GetScreenSize()
+		local sx = x / w
+		local sy = y / h
+		-- and to UI space
+		sx = sx * RESOLUTION_X
+		sy = sy * RESOLUTION_Y
+		
+		-- and to our internal space
+		local rx, ry = self:GetRegionSize()
+		sx = sx + rx / 2
+		sy = sy + ry / 2
+
+        local new_cursor = self.inst.TextWidget:GetCursorAtLocalPoint(sx,sy, false)
+		if new_cursor >= 0 then
+			self.inst.TextEditWidget:SetEditCursorPos(new_cursor)
+		end
+		return true
+	end
 end
 
 function TextEdit:ValidateChar(text)
@@ -224,6 +266,7 @@ function TextEdit:OnTextInput(text)
     end
 
     self.inst.TextEditWidget:OnTextInput(text)
+	self:SetChanged()
 
 	if self.editing and self.prediction_widget ~= nil then
 		self.prediction_widget:RefreshPredictions(true)
@@ -289,8 +332,40 @@ function TextEdit:OnRawKey(key, down)
                 self.pasting = false
             elseif self.allow_newline and key == KEY_ENTER and down then
                 self:OnTextInput("\n")
+			elseif key == KEY_HOME then
+				if TheInput:IsCTRLDown() or not self.allow_newline then
+					self.inst.TextEditWidget:SetEditCursorPos(0)
+				else
+					local x,y = self.inst.TextWidget:GetCursorPoint()
+					local cursorpos = self.inst.TextWidget:GetCursorAtLocalPoint(x - 8192,y, false) or 1
+					self.inst.TextEditWidget:SetEditCursorPos(cursorpos)
+				end
+			elseif key == KEY_END then
+				if TheInput:IsCTRLDown() then
+					local cursorpos = self:GetString():len()
+					self.inst.TextEditWidget:SetEditCursorPos(cursorpos)
+				else
+					local x,y = self.inst.TextWidget:GetCursorPoint()
+					local cursorpos = self.inst.TextWidget:GetCursorAtLocalPoint(x + 8192,y, false) or 1
+					self.inst.TextEditWidget:SetEditCursorPos(cursorpos)
+				end
+			elseif key == KEY_DOWN then
+				local x,y = self.inst.TextWidget:GetCursorPoint()
+				y = y - self:GetSize()
+				local new_cursor = self.inst.TextWidget:GetCursorAtLocalPoint(x,y, false)
+				if new_cursor >= 0 then
+					self.inst.TextEditWidget:SetEditCursorPos(new_cursor)
+				end
+			elseif key == KEY_UP then
+				local x,y = self.inst.TextWidget:GetCursorPoint()
+				y = y + self:GetSize()
+				local new_cursor = self.inst.TextWidget:GetCursorAtLocalPoint(x,y, false)
+				if new_cursor >= 0 then
+					self.inst.TextEditWidget:SetEditCursorPos(new_cursor)
+				end
             else
                 self.inst.TextEditWidget:OnKeyDown(key)
+				self:SetChanged()
             end
             self.editing_enter_down = key == KEY_ENTER
         elseif key == KEY_ENTER and not self.focus then
@@ -358,8 +433,13 @@ function TextEdit:OnControl(control, down)
     end
 
     if self.enable_accept_control and not down and control == CONTROL_ACCEPT then
+        local was_clicked_inside = self._clicked_inside
+        self._clicked_inside = false
         if not self.editing then
             self:SetEditing(true)
+            return not self.pass_controls_to_screen[control]
+        elseif was_clicked_inside then
+            -- Click was inside the text edit, just reposition cursor (already handled in OnMouseButton)
             return not self.pass_controls_to_screen[control]
         else
             -- Previously this was being done only in the OnRawKey, but that doesnt handle controllers very well, this does.
@@ -614,6 +694,12 @@ function TextEdit:_TryUpdateTextPrompt()
             self.prompt:Show()
         end
     end
+	self:SetChanged()
+end
+
+function TextEdit:SetFn(fn)
+	self.onchange = fn
+	return self
 end
 
 return TextEdit

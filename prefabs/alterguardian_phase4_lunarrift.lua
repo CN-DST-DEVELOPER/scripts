@@ -817,13 +817,13 @@ local function CalcSanityAura(inst, observer)
 	local map = TheWorld.Map
 	inst._sanityaura_inarena = map:IsPointInWagPunkArenaAndBarrierIsUp(inst.Transform:GetWorldPosition())
 	if inst._sanityaura_inarena then
-		return map:IsPointInWagPunkArena(observer.Transform:GetWorldPosition()) and TUNING.SANITYAURA_HUGE or 0
+		return map:IsPointInWagPunkArena(observer.Transform:GetWorldPosition()) and TUNING.SANITYAURA_LARGE or 0
 	end
-	return inst.components.combat:HasTarget() and TUNING.SANITYAURA_HUGE or TUNING.SANITYAURA_LARGE
+	return inst.components.combat:HasTarget() and TUNING.SANITYAURA_LARGE or TUNING.SANITYAURA_MED
 end
 
 local function SanityAuraFalloff(inst, observer, distsq)
-	return not inst._sanityaura_inarena and distsq > ENTER_DOMAIN_RANGE_SQ and math.huge or nil
+	return not inst._sanityaura_inarena and distsq > ENTER_DOMAIN_RANGE_SQ and math.huge or 1
 end
 
 --------------------------------------------------------------------------

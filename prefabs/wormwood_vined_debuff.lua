@@ -24,6 +24,7 @@ local function OnAttached(inst, target, followsymbol, followoffset)
     inst:ListenForEvent("enterlimbo", on_target_removed, target)
     inst:ListenForEvent("teleported", on_target_removed, target)
     inst:ListenForEvent("onremove", on_target_removed, target)
+    inst:ListenForEvent("ms_escape_rooted", on_target_removed, target)
 
     inst:ListenForEvent("newstate", function(t)
         local t_sg = t.sg

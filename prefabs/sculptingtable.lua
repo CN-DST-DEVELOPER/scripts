@@ -355,9 +355,9 @@ local function fn()
         inst.OnEntitySleep = CheckChessMoonEventKnockOff
 		inst:WatchWorldState("isfullmoon", CheckChessMoonEventKnockOff)
         inst:WatchWorldState("isnewmoon", CheckChessMoonEventKnockOff)
-
-        inst:ListenForEvent("shadowchessroar", DoChessMoonEventKnockOff)
     end
+
+    inst:ListenForEvent("shadowchessroar", DoChessMoonEventKnockOff) -- can occur in caves due to kings staff
 
     return inst
 end

@@ -20,8 +20,13 @@ local function ShowFlame(inst, torch)
             local fx = SpawnPrefab(fx_prefab)
             fx.entity:SetParent(inst.entity)
             fx.entity:AddFollower()
-            fx.Follower:FollowSymbol(inst.GUID, "swap_torch", 0, fx.fx_offset, 0)
+            local offset = fx.fx_offset_wargshrine or fx.fx_offset
+            local offset_x = fx.fx_offset_wargshrine_x or fx.fx_offset_x or 0
+			fx.Follower:FollowSymbol(inst.GUID, "swap_torch", offset_x, offset, 0)
             fx:AttachLightTo(inst)
+			if fx.AssignSkinData ~= nil then
+				fx:AssignSkinData(torch)
+			end
 
             table.insert(inst.fires, fx)
         end

@@ -113,13 +113,14 @@ function GetKilledByFromMorgueRow(data)
         return data.killed_by
     end
 
+    data.killed_by = string.upper(data.killed_by)
     local killed_by =
-        (data.killed_by == "nil" and ((data.character == "waxwell" or data.character == "winona") and "charlie" or "darkness")) or
-        (data.killed_by == "unknown" and "shenanigans") or
-        (data.killed_by == "moose" and ((data.morgue_random or math.random()) < .5 and "moose1" or "moose2")) or
+        (data.killed_by == "NIL" and (CHARACTER_KNOWS_CHARLIE[data.character] and "CHARLIE" or "DARKNESS")) or
+        (data.killed_by == "UNKNOWN" and "SHENANIGANS") or
+        (data.killed_by == "MOOSE" and ((data.morgue_random or math.random()) < .5 and "MOOSE1" or "MOOSE2")) or
         data.killed_by
 
-    killed_by = STRINGS.NAMES[string.upper(killed_by)] or STRINGS.NAMES.SHENANIGANS
+    killed_by = STRINGS.NAMES[killed_by] or STRINGS.NAMES.SHENANIGANS
 
     return killed_by:gsub("(%a)([%w_']*)", tchelper)
 end

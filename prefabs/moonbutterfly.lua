@@ -141,6 +141,7 @@ local function fn()
     inst:AddTag("small_livestock")
     inst:AddTag("deployedplant")
     inst:AddTag("lunar_aligned")
+    inst:AddTag("plantcreature")
 
     inst:DoPeriodicTask(.1, OnUpdateFlicker, nil, GetTime())
     OnUpdateFlicker(inst)

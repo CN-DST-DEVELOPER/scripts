@@ -145,6 +145,8 @@ local function fn()
     inst.components.inspectable.getstatus = rune_getstatus
     inst.components.inspectable.descriptionfn = rune_getdescription
 
+    inst:AddComponent("stalkerinspectable")
+
     inst.growfn = grow
 
     inst:DoTaskInTime(0, SpawnCrack)

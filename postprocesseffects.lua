@@ -6,6 +6,8 @@ if TheNet:IsDedicated() then
     function PostProcessor__index:SetOverlayTex(tex) end
     function PostProcessor__index:SetColourModifier(mod) end
     function PostProcessor__index:SetOverlayBlend(blend) end
+    function PostProcessor__index:SetLineDistortLineParams(p1x, p1y, p2x, p2y) end
+    function PostProcessor__index:SetLineDistortDistortionParams(width, displacement) end
     function PostProcessor__index:SetDistortionEffectTime(time) end
     function PostProcessor__index:SetDistortionFactor(factor) end
     function PostProcessor__index:SetDistortionRadii(inner, outer) end
@@ -18,6 +20,11 @@ if TheNet:IsDedicated() then
     function PostProcessor__index:SetLunacyEnabled(enabled) end
     function PostProcessor__index:SetLunacyIntensity(intensity) end
     function PostProcessor__index:SetZoomBlurEnabled(enabled) end
+	function PostProcessor__index:SetRingDistortPoints(p1x, p1y, p2x, p2y) end
+    function PostProcessor__index:SetRingDistortRadii(inner_radius, outer_radius, ring_width_inner, ring_width_outer) end
+    function PostProcessor__index:SetRingDistortShapeParams(spacing_power, inner_fade_amount, displacement_strength, aspect_ratio) end
+    function PostProcessor__index:SetRingDistortRingCount(ring_count) end
+    function PostProcessor__index:SetRingDistortPhase(phase) end
     return
 end
 
@@ -54,6 +61,41 @@ end
 
 function PostProcessor__index:SetOverlayBlend(blend)
     self:SetUniformVariable(UniformVariables.OVERLAY_BLEND, blend)
+end
+
+function PostProcessor__index:SetLineDistortLineParams(p1x, p1y, p2x, p2y, aspect_ratio)
+    self:SetUniformVariable(UniformVariables.LINEDISTORT_LINE_CORRECTED_PARAMS, p1x * aspect_ratio, p1y, p2x * aspect_ratio, p2y)
+
+    local dx, dy = p2x - p1x, p2y - p1y
+    local len = math.sqrt(dx * dx + dy * dy)
+    if len > 0 then
+        dx, dy = dx / len, dy / len
+    end
+    self:SetUniformVariable(UniformVariables.LINEDISTORT_LINE_DIR_PARAMS, dx, dy, aspect_ratio)
+end
+
+function PostProcessor__index:SetLineDistortDistortionParams(width, displacement)
+    self:SetUniformVariable(UniformVariables.LINEDISTORT_DISTORTION_PARAMS, width, displacement)
+end
+
+function PostProcessor__index:SetRingDistortPoints(p1x, p1y, p2x, p2y)
+    self:SetUniformVariable(UniformVariables.RINGDISTORT_POINTS, p1x, p1y, p2x, p2y)
+end
+
+function PostProcessor__index:SetRingDistortRadii(inner_radius, outer_radius, ring_width_inner, ring_width_outer)
+    self:SetUniformVariable(UniformVariables.RINGDISTORT_RADII, inner_radius, outer_radius, ring_width_inner, ring_width_outer)
+end
+
+function PostProcessor__index:SetRingDistortShapeParams(spacing_power, inner_fade_amount, displacement_strength, aspect_ratio)
+    self:SetUniformVariable(UniformVariables.RINGDISTORT_SHAPE_PARAMS, spacing_power, inner_fade_amount, displacement_strength, aspect_ratio)
+end
+
+function PostProcessor__index:SetRingDistortRingCount(ring_count)
+    self:SetUniformVariable(UniformVariables.RINGDISTORT_RING_PARAMS, ring_count)
+end
+
+function PostProcessor__index:SetRingDistortPhase(phase)
+    self:SetUniformVariable(UniformVariables.RINGDISTORT_RING_PARAMS, nil, phase)
 end
 
 function PostProcessor__index:SetDistortionEffectTime(time)
@@ -166,6 +208,15 @@ function BuildColourCubeShader()
     UniformVariables.CC_LERP_PARAMS = PostProcessor:AddUniformVariable("CC_LERP_PARAMS", 3)
     UniformVariables.CC_LAYER_PARAMS = PostProcessor:AddUniformVariable("CC_LAYER_PARAMS", 2)
     UniformVariables.INTENSITY_MODIFIER = PostProcessor:AddUniformVariable("INTENSITY_MODIFIER", 1)
+    UniformVariables.LINEDISTORT_LINE_CORRECTED_PARAMS = PostProcessor:AddUniformVariable("LINEDISTORT_LINE_CORRECTED_PARAMS", 4)
+    UniformVariables.LINEDISTORT_LINE_DIR_PARAMS = PostProcessor:AddUniformVariable("LINEDISTORT_LINE_DIR_PARAMS", 3)
+    UniformVariables.LINEDISTORT_DISTORTION_PARAMS = PostProcessor:AddUniformVariable("LINEDISTORT_DISTORTION_PARAMS", 2)
+
+    UniformVariables.RINGDISTORT_POINTS = PostProcessor:AddUniformVariable("RINGDISTORT_POINTS", 4)
+    UniformVariables.RINGDISTORT_RADII = PostProcessor:AddUniformVariable("RINGDISTORT_RADII", 4)
+    UniformVariables.RINGDISTORT_SHAPE_PARAMS = PostProcessor:AddUniformVariable("RINGDISTORT_SHAPE_PARAMS", 4)
+    UniformVariables.RINGDISTORT_RING_PARAMS = PostProcessor:AddUniformVariable("RINGDISTORT_RING_PARAMS", 2)
+
     PostProcessor:SetColourModifier(1)
 
     SamplerEffects.CombineColourCubes = PostProcessor:AddSamplerEffect("shaders/combine_colour_cubes.ksh", SamplerSizes.Static, 1024, 32, SamplerColourMode.RGB, SamplerEffectBase.Texture, TexSamplers.CC0_SOURCE)
@@ -181,6 +232,26 @@ function BuildColourCubeShader()
 
     PostProcessorEffects.ColourCube = PostProcessor:AddPostProcessEffect("shaders/postprocess_colourcube.ksh")
     PostProcessor:AddSampler(PostProcessorEffects.ColourCube, SamplerEffectBase.Shader, SamplerEffects.CombineColourCubes)
+    PostProcessor:SetEffectUniformVariables(PostProcessorEffects.ColourCube,
+        UniformVariables.LINEDISTORT_LINE_CORRECTED_PARAMS, UniformVariables.LINEDISTORT_LINE_DIR_PARAMS, UniformVariables.LINEDISTORT_DISTORTION_PARAMS,
+        UniformVariables.RINGDISTORT_POINTS, UniformVariables.RINGDISTORT_RADII, UniformVariables.RINGDISTORT_SHAPE_PARAMS,
+        UniformVariables.RINGDISTORT_RING_PARAMS)
+
+    PostProcessorEffects.ColourCubeLineDistort = PostProcessor:AddPostProcessEffect("shaders/postprocess_colourcube_linedistort.ksh")
+    PostProcessor:AddSampler(PostProcessorEffects.ColourCubeLineDistort, SamplerEffectBase.Shader, SamplerEffects.CombineColourCubes)
+    PostProcessor:SetEffectUniformVariables(PostProcessorEffects.ColourCubeLineDistort,
+        UniformVariables.LINEDISTORT_LINE_CORRECTED_PARAMS, UniformVariables.LINEDISTORT_LINE_DIR_PARAMS, UniformVariables.LINEDISTORT_DISTORTION_PARAMS,
+        UniformVariables.RINGDISTORT_POINTS, UniformVariables.RINGDISTORT_RADII, UniformVariables.RINGDISTORT_SHAPE_PARAMS,
+        UniformVariables.RINGDISTORT_RING_PARAMS)
+
+--[[
+    PostProcessorEffects.ColourCubeRingDistort = PostProcessor:AddPostProcessEffect("shaders/postprocess_colourcube_ringdistort.ksh")
+    PostProcessor:AddSampler(PostProcessorEffects.ColourCubeRingDistort, SamplerEffectBase.Shader, SamplerEffects.CombineColourCubes)
+    PostProcessor:SetEffectUniformVariables(PostProcessorEffects.ColourCubeRingDistort,
+        UniformVariables.LINEDISTORT_LINE_CORRECTED_PARAMS, UniformVariables.LINEDISTORT_LINE_DIR_PARAMS, UniformVariables.LINEDISTORT_DISTORTION_PARAMS,
+        UniformVariables.RINGDISTORT_POINTS, UniformVariables.RINGDISTORT_RADII, UniformVariables.RINGDISTORT_SHAPE_PARAMS,
+        UniformVariables.RINGDISTORT_RING_PARAMS)
+]]
 end
 
 function BuildZoomBlurShader()
@@ -276,21 +347,24 @@ function SortAndEnableShaders()
     PostProcessor:SetBasePostProcessEffect(PostProcessorEffects.ColourCube)
     --bool PostProcessor:SetPostProcessEffectBefore(source_effect_id, target_effect_id) returns true if successfully added into the sorted post processor list.
     --bool PostProcessor:SetPostProcessEffectAfter(source_effect_id, target_effect_id) returns true if successfully added into the sorted post processor list.
-    PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.Distort, PostProcessorEffects.ColourCube)
+--    PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.ColourCubeRingDistort , PostProcessorEffects.ColourCube)
+--    PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.ColourCubeLineDistort, PostProcessorEffects.ColourCubeRingDistort)
+    PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.ColourCubeLineDistort, PostProcessorEffects.ColourCube)
+
+	PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.Distort, PostProcessorEffects.ColourCubeLineDistort)
     PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.Bloom, PostProcessorEffects.Distort)
     PostProcessor:SetPostProcessEffectBefore(PostProcessorEffects.ZoomBlur, PostProcessorEffects.Bloom)
     PostProcessor:SetPostProcessEffectAfter(PostProcessorEffects.Lunacy, PostProcessorEffects.ColourCube)
     PostProcessor:SetPostProcessEffectAfter(PostProcessorEffects.MoonPulse, PostProcessorEffects.Lunacy)
     PostProcessor:SetPostProcessEffectAfter(PostProcessorEffects.MoonPulseGrading, PostProcessorEffects.MoonPulse)
 
-    --bool PostProcessor:EnablePostProcessEffect(effect_id, enabled) returns true if it successfully enabled/disabled the shader.
-    PostProcessor:EnablePostProcessEffect(PostProcessorEffects.ColourCube, true)
+    SetVisualEffect(nil) -- enables ColourCube, disables ColourCubeRingDistort/ColourCubeLineDistort
     --[[
     CurrentOrder:
     ZoomBlur
     Bloom
     Distort
-    ColourCube --Base Effect
+    ColourCube --Base Effect (including special effect variations)
     Lunacy
     MoonPulse
     MoonPulseGrading
@@ -301,3 +375,115 @@ function SortAndEnableShaders()
         fn()
     end
 end
+
+local activeVisualEffect
+
+function SetVisualEffect(effect)
+	local target = effect or PostProcessorEffects.ColourCube
+	if target == activeVisualEffect then
+		return
+	end
+--	local specialEffects = { PostProcessorEffects.ColourCube, PostProcessorEffects.ColourCubeRingDistort, PostProcessorEffects.ColourCubeLineDistort }
+	local specialEffects = { PostProcessorEffects.ColourCube, PostProcessorEffects.ColourCubeLineDistort }
+	for _, id in ipairs(specialEffects) do
+		PostProcessor:EnablePostProcessEffect(id, id == target)
+	end
+	activeVisualEffect = target
+end
+
+--------------------------------------------------------------------------
+
+local _visualeffect_guid = 0
+function GetNextVisualEffectGUID()
+	_visualeffect_guid = _visualeffect_guid + 1
+	return _visualeffect_guid
+end
+
+function PushLineDistortion(guid, x1, y1, x2, y2, aspect_ratio, width, displacement)
+	if guid ~= _visualeffect_guid then
+		return false
+	end
+	local distortion_modifier = Profile:GetDistortionModifier()
+	if distortion_modifier <= 0 then
+		PostProcessor:SetLineDistortDistortionParams(0, 0)
+		SetVisualEffect(nil)
+		return false
+	end
+
+	SetVisualEffect(PostProcessorEffects.ColourCubeLineDistort)
+
+	PostProcessor:SetLineDistortLineParams(x1, y1, x2, y2, aspect_ratio)
+	PostProcessor:SetLineDistortDistortionParams(width * distortion_modifier, displacement * distortion_modifier)
+
+	return true
+end
+
+function ClearLineDistortion(guid)
+	if guid == _visualeffect_guid then
+		PostProcessor:SetLineDistortDistortionParams(0, 0)
+		SetVisualEffect(nil)
+	end
+end
+
+--------------------------------------------------------------------------
+
+function PushRingDistortion(guid, x1, y1, x2, y2, aspect_ratio,
+	inner_radius, outer_radius, ring_width_inner, ring_width_outer,
+	spacing_power, inner_fade_amount, displacement_strength,
+	ring_count, phase)
+
+	if guid ~= _visualeffect_guid then
+		return false
+	end
+	local distortion_modifier = Profile:GetDistortionModifier()
+	if distortion_modifier <= 0 then
+		SetVisualEffect(nil)
+		return false
+	end
+
+	SetVisualEffect(PostProcessorEffects.ColourCubeRingDistort)
+
+	PostProcessor:SetRingDistortPoints(x1, y1, x2, y2)
+	PostProcessor:SetRingDistortRadii(inner_radius, outer_radius, ring_width_inner, ring_width_outer)
+	PostProcessor:SetRingDistortShapeParams(spacing_power, inner_fade_amount, displacement_strength, aspect_ratio)
+	PostProcessor:SetRingDistortRingCount(ring_count)
+	PostProcessor:SetRingDistortPhase(phase)
+
+	return true
+end
+
+
+function ClearRingDistortion(guid)
+	if guid == _visualeffect_guid then
+		SetVisualEffect(nil)
+	end
+end
+
+------------------------------- Effect Template --------------------------
+local easing = require("easing")
+
+-- a large ripple where outer size eases outQuad and inner inQuad, 5 rings, no phasing
+function Effect_BossRipple(t, scale)
+    scale = scale or 1
+
+    local start_radius = 0.05 -- shared starting radius for both inner and outer
+    local max_radius = 1.5
+    local ring_width_inner = 0.006
+    local start_ring_width_outer = 0.01
+    local end_ring_width_outer = 0.2
+    local spacing_power = 2.0
+    local inner_fade_amount = 1.0
+    local displacement_strength = 0.1
+    local ring_count = 5
+    local phase = 0
+
+    local outer_t = easing.outQuad(t, 0, 1, 1)
+    local inner_t = easing.inQuad(t, 0, 1, 1)
+
+    local inner_radius = start_radius + (max_radius - start_radius) * inner_t
+    local outer_radius = start_radius + (max_radius - start_radius) * outer_t
+    local ring_width_outer = start_ring_width_outer + (end_ring_width_outer - start_ring_width_outer) * outer_t
+
+    return inner_radius * scale, outer_radius * scale, ring_width_inner * scale, ring_width_outer * scale, spacing_power, inner_fade_amount, displacement_strength * scale, ring_count, phase
+end
+

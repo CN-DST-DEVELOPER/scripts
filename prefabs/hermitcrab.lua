@@ -1961,9 +1961,7 @@ local function fn()
 
     ------------------------------------------
     inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
-    inst.components.eater:SetCanEatHorrible()
-    inst.components.eater:SetCanEatRaw()
+    inst.components.eater:SetDiet({ FOODGROUP.OMNI, FOODTYPE.HORRIBLE, FOODTYPE.RAW }, { FOODGROUP.OMNI, FOODTYPE.HORRIBLE, FOODTYPE.RAW })
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
 
     ------------------------------------------

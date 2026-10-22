@@ -106,6 +106,10 @@ function GroupTargeter:GetTargets()
     return self.targets
 end
 
+function GroupTargeter:GetNumTargets()
+	return self.num_targets
+end
+
 function GroupTargeter:IsTargeting(target)
     return target ~= nil and self.targets[target] ~= nil
 end

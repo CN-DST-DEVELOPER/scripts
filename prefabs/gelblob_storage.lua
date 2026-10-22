@@ -138,6 +138,16 @@ local function OnFoodTaken(inst, item, taker, wholestack)
 	item.Follower:StopFollowing()
 end
 
+local function OnSave(inst, data)
+    data.wasperishing = inst._wasperishing
+end
+
+local function OnLoad(inst, data)
+    if data and data.wasperishing then
+        inst._wasperishing = data.wasperishing or nil
+    end
+end
+
 ---------------------------------------------------------------------------------------------------------------
 
 local function GetStatus(inst)
@@ -198,6 +208,9 @@ local function StorageFn()
     inst.components.inventoryitemholder:SetAcceptStacks(true)
     inst.components.inventoryitemholder:SetOnItemGivenFn(OnFoodGiven)
     inst.components.inventoryitemholder:SetOnItemTakenFn(OnFoodTaken)
+
+    inst.OnSave = OnSave
+    inst.OnLoad = OnLoad
 
     MakeHauntableWork(inst)
 

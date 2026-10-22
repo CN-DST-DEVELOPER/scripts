@@ -95,9 +95,9 @@ local function fn()
 
     inst:AddTag("eyeplant")
     inst:AddTag("veggie")
-	inst:AddTag("lifedrainable")
     inst:AddTag("smallcreature")
     inst:AddTag("hostile")
+    inst:AddTag("plantcreature")
 
     inst.entity:SetPristine()
 

@@ -1,4 +1,4 @@
-local NOTAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "burnt", "player", "monster", "shadow_fire"}
+local NOTAGS = { "FX", "NOCLICK", "DECOR", "INLIMBO", "burnt", "player", "monster", "shadow_fire", "gestaltflame" }
 local EMERGENCYTAGS = { "structure", "wall", "tree", "pickable", "witherable", "readyforharvest", "notreadyforharvest" }
 local NONEMERGENCYTAGS = {"witherable", "fire", "smolder"}
 local NONEMERGENCY_FIREONLY_TAGS = {"fire", "smolder"}

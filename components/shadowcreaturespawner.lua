@@ -132,13 +132,10 @@ function self:SpawnShadowCreature(player, params)
     else
         _failed_ocean_spawn_attempts = 0
 
-        local angle = math.random() * TWOPI
-        x = x + 15 * math.cos(angle)
-        z = z - 15 * math.sin(angle)
-        if _map:IsPassableAtPoint(x, 0, z) then
+        local offset = FindWalkableOffset(Vector3(x, 0, z), math.random() * TWOPI, 15, 8, false, true, nil, false, true)
+        if offset then
             local ent = SpawnLandShadowCreature(player)
-
-            ent.Transform:SetPosition(x, 0, z)
+            ent.Transform:SetPosition(x + offset.x, 0, z + offset.z)
             StartTracking(player, params, ent)
         end
     end
@@ -220,16 +217,18 @@ local function UpdatePopulation(player, params)
         --Shorter reschedule for population update due to induced insanity
         params.poptask = player:DoTaskInTime(5 + math.random(), UpdatePopulation, params)
     else
+        local x, y, z = player.Transform:GetWorldPosition()
         local maxpop = 0
         local inc_chance = 0
         local dec_chance = 0
         local targetpop = params.targetpop
         local sanity = is_insanity_mode and player.components.sanity:GetPercent() or 1
+        local incharliearena = TheWorld.Map:IsPointInCharlieBossArena(x, y, z)
 
         if sanity > 0.5 then
             --We're pretty sane. Clean up the monsters
             maxpop = 0
-        elseif sanity > 0.1 then
+        elseif sanity > 0.1 and not incharliearena then -- being in the arena is always max force
             --Have at most one monster, sometimes
             maxpop = TUNING.SANITYMONSTERS_MAXPOP[1]
             if targetpop >= maxpop then
@@ -238,14 +237,26 @@ local function UpdatePopulation(player, params)
                 inc_chance = TUNING.SANITYMONSTERS_CHANCES[1].inc
             end
         else
-            maxpop = TUNING.SANITYMONSTERS_MAXPOP[2]
-            if targetpop >= maxpop then
-                dec_chance = TUNING.SANITYMONSTERS_CHANCES[2].dec
-            elseif targetpop <= 0 then
-                inc_chance = TUNING.SANITYMONSTERS_CHANCES[2].inc
+            if incharliearena then
+                maxpop = TUNING.SANITYMONSTERS_CHARLIEARENA_MAXPOP
+                if targetpop >= maxpop then
+                    dec_chance = TUNING.SANITYMONSTERS_CHARLIEARENA_CHANCES.dec
+                elseif targetpop <= 0 then
+                    inc_chance = TUNING.SANITYMONSTERS_CHARLIEARENA_CHANCES.inc
+                else
+                    inc_chance = TUNING.SANITYMONSTERS_CHARLIEARENA_CHANCES.inc
+                    dec_chance = TUNING.SANITYMONSTERS_CHARLIEARENA_CHANCES.dec
+                end
             else
-                inc_chance = TUNING.SANITYMONSTERS_CHANCES[2].inc
-                dec_chance = TUNING.SANITYMONSTERS_CHANCES[2].dec
+                maxpop = TUNING.SANITYMONSTERS_MAXPOP[2]
+                if targetpop >= maxpop then
+                    dec_chance = TUNING.SANITYMONSTERS_CHANCES[2].dec
+                elseif targetpop <= 0 then
+                    inc_chance = TUNING.SANITYMONSTERS_CHANCES[2].inc
+                else
+                    inc_chance = TUNING.SANITYMONSTERS_CHANCES[2].inc
+                    dec_chance = TUNING.SANITYMONSTERS_CHANCES[2].dec
+                end
             end
         end
 
@@ -272,7 +283,9 @@ local function UpdatePopulation(player, params)
         local schedule_time
 
         local area_data = player.components.areaaware ~= nil and player.components.areaaware:GetCurrentArea() or nil
-        if area_data ~= nil and area_data.id ~= nil and area_data.id:find("Vault") and TheWorld.Map:IsPointInVaultRoom(player.Transform:GetWorldPosition()) then
+        if incharliearena then
+            schedule_time = TUNING.SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_INTERVAL + TUNING.SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_VARIANCE * math.random()
+        elseif area_data ~= nil and area_data.id ~= nil and area_data.id:find("Vault") and TheWorld.Map:IsPointInVaultRoom(x, y, z) then
             schedule_time = KEY_ROOM_DESPAWN_INTERVAL + KEY_ROOM_DESPAWN_VARIANCE * math.random()
         elseif is_insanity_mode then
             schedule_time = TUNING.SANITYMONSTERS_POP_CHANGE_INTERVAL + TUNING.SANITYMONSTERS_POP_CHANGE_VARIANCE * math.random()

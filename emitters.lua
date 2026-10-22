@@ -145,7 +145,7 @@ function CreateSphereEmitter( radius )
 
 	return function()
 		local z = 2.0 * rand() - 1.0
-		local t = 2.0 * PI * rand()
+		local t = TWOPI * rand()
 		local w = sqrt( 1.0 - z * z )
 		local x = w * cos( t )
 		local y = w * sin( t )

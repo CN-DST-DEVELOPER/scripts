@@ -28,6 +28,7 @@ local function onequip(inst, owner)
         inst.fx:Remove()
     end
     inst.fx = SpawnPrefab("armor_voidcloth_fx")
+    inst.fx.owningitem = inst
     inst.fx:AttachToOwner(owner)
 
 	if owner.components.sanity ~= nil then
@@ -173,17 +174,12 @@ local function fx_OnRemoveEntity(inst)
     end
 end
 
-local function fx_OnUpdate(inst)
-    local moving = inst.owner:HasTag("moving")
-    if moving ~= inst.wasmoving then
-        inst.wasmoving = moving
-        if not moving then
-            for i, v in ipairs(inst.fx) do
-                v.AnimState:PlayAnimation("settle"..tostring(i))
-                v.AnimState:PushAnimation("idle"..tostring(i), false)
-            end
-        end
-    end
+local function fx_OnJiggleOneShotFn(inst)
+	for i, v in ipairs(inst.fx) do
+		i = tostring(i)
+		v.AnimState:PlayAnimation("settle"..i)
+		v.AnimState:PushAnimation("idle"..i, false)
+	end
 end
 
 local function fx_ColourChanged(inst, r, g, b, a)
@@ -194,7 +190,6 @@ end
 
 local function fx_SpawnFxForOwner(inst, owner)
     inst.owner = owner
-    inst.wasmoving = false
     inst.fx = {}
     local frame
     for i = 1, 9 do
@@ -206,8 +201,9 @@ local function fx_SpawnFxForOwner(inst, owner)
     end
 	inst.components.colouraddersync:SetColourChangedFn(fx_ColourChanged)
     if owner:HasTag("locomotor") then
-        inst:AddComponent("updatelooper")
-        inst.components.updatelooper:AddOnUpdateFn(fx_OnUpdate)
+		inst:AddComponent("autojiggle")
+		inst.components.autojiggle:SetOnJiggleOneShotFn(fx_OnJiggleOneShotFn)
+		inst.components.autojiggle:SetOwner(owner)
     end
     inst.OnRemoveEntity = fx_OnRemoveEntity
 end
@@ -224,9 +220,30 @@ local function fx_AttachToOwner(inst, owner)
 	if owner.components.colouradder ~= nil then
 		owner.components.colouradder:AttachChild(inst)
 	end
+    if inst.owningitem and inst.skinbuildhash then
+        local skinbuild = inst.owningitem.AnimState:GetSkinBuild()
+        if skinbuild then
+            inst.skinbuildhash:set(skinbuild)
+        end
+    end
     --Dedicated server does not need to spawn the local fx
     if not TheNet:IsDedicated() then
         fx_SpawnFxForOwner(inst, owner)
+    end
+end
+
+local function fx_skinhashdirty(inst)
+    if inst.fx ~= nil then
+        local skinbuildhash = inst.skinbuildhash:value()
+        if skinbuildhash ~= 0 then
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetSkin(skinbuildhash, fx.build)
+            end
+        else
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetBuild(fx.build)
+            end
+        end
     end
 end
 
@@ -240,8 +257,13 @@ local function fxfn()
 
 	inst:AddComponent("colouraddersync")
 
+    inst.skinbuildhash = net_hash(inst.GUID, "armor_voidcloth_fx.skinbuildhash", "skinhashdirty")
+
     inst.entity:SetPristine()
 
+    if not TheNet:IsDedicated() then
+        inst:ListenForEvent("skinhashdirty", fx_skinhashdirty)
+    end
     if not TheWorld.ismastersim then
         inst.OnEntityReplicated = fx_OnEntityReplicated
 

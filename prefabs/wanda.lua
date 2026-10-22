@@ -200,7 +200,7 @@ end
 
 local function GetEquippableDapperness(owner, equippable)
     local dapperness = equippable:GetDapperness(owner, owner.components.sanity.no_moisture_penalty)
-    if equippable.inst:HasTag("shadow_item") then
+    if equippable.inst:HasTag("shadow_item") and dapperness < 0 then
         if owner.age_state == "old" then
             return dapperness * TUNING.WANDA_SHADOW_RESISTANCE_OLD
         elseif owner.age_state == "normal" then

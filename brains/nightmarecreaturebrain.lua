@@ -43,6 +43,7 @@ function NightmareCreatureBrain:OnStart()
     local root = PriorityNode(
     {
         BrainCommon.PanicTriggerShadowCreature(self.inst),
+        BrainCommon.RunAwayFromQueenTorch(self.inst),
         WhileNode(function() return ShouldAttack(self) end, "Attack", ChaseAndAttack(self.inst, 40)),
         WhileNode(function() return ShouldHarass(self) end, "Harass",
             PriorityNode({

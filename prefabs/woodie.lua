@@ -907,6 +907,12 @@ local function OnMooseFighting(inst, data)
     end
 end
 
+local function OnAttacked_MooseFighting(inst, data)
+	if not IsEquipmentOnAttackedOrBlocked(inst, inst, data) then
+		OnMooseFighting(inst, data)
+	end
+end
+
 local function OnDodgeAttack(inst)
     local fx = SpawnPrefab("weregoose_transform_fx")
 
@@ -917,8 +923,8 @@ end
 local function SetWereFighter(inst, mode)
     inst:RemoveEventCallback("onattackother", OnMooseFighting)
     inst:RemoveEventCallback("onmissother", OnMooseFighting)
-    inst:RemoveEventCallback("attacked", OnMooseFighting)
-    inst:RemoveEventCallback("blocked", OnMooseFighting)
+	inst:RemoveEventCallback("attacked", OnAttacked_MooseFighting)
+	inst:RemoveEventCallback("blocked", OnAttacked_MooseFighting)
 
     if inst.components.attackdodger then
         inst:RemoveComponent("attackdodger")
@@ -928,8 +934,8 @@ local function SetWereFighter(inst, mode)
     if mode == WEREMODES.MOOSE then
         inst:ListenForEvent("onattackother", OnMooseFighting)
         inst:ListenForEvent("onmissother", OnMooseFighting)
-        inst:ListenForEvent("attacked", OnMooseFighting)
-        inst:ListenForEvent("blocked", OnMooseFighting)
+		inst:ListenForEvent("attacked", OnAttacked_MooseFighting)
+		inst:ListenForEvent("blocked", OnAttacked_MooseFighting)
         ResetMooseFightingLevel(inst)
 
         local healthregen_skill = skilltreeupdater:IsActivated("woodie_curse_moose_2")

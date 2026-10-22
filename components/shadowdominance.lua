@@ -46,6 +46,10 @@ local ShadowDominance = Class(function(self, inst)
 	inst:ListenForEvent("equipped", OnEquipped)
 	inst:ListenForEvent("unequipped", OnUnequipped)
 	inst:ListenForEvent("onremove", OnRemove) --ShadowDomninace.OnRemoveEntity is too late
+
+	if inst.components.equippable and inst.components.equippable:IsEquipped() then
+		OnEquipped(inst, { owner = inst.components.inventoryitem.owner })
+	end
 end)
 
 function ShadowDominance:OnRemoveFromEntity()

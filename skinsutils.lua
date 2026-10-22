@@ -816,6 +816,26 @@ function GetTypeForItem(item)
 end
 
 
+function GetPrefabSkinsForReleaseGroup(releasegroup)
+    local allprefabskins = {}
+
+    for prefab, skins in pairs(PREFAB_SKINS) do
+        for _, skin in ipairs(skins) do
+            if GetReleaseGroup(skin) == releasegroup then
+                local prefabskins = allprefabskins[prefab]
+                if not prefabskins then
+                    prefabskins = {}
+                    allprefabskins[prefab] = prefabskins
+                end
+                table.insert(prefabskins, skin)
+            end
+        end
+    end
+
+    return allprefabskins
+end
+
+
 function DoesItemHaveTag(item, tag)
 	local tags = nil
 	if CLOTHING[item] then
@@ -2006,7 +2026,7 @@ function GetBoxPopupLayoutDetails( num_item_types )
 	elseif num_item_types == 38 or num_item_types == 30 then
 		columns = 10
 		resize_root_small = true
-	elseif num_item_types == 41 or num_item_types == 42 or num_item_types == 47 then
+	elseif num_item_types == 41 or num_item_types == 42 or num_item_types == 47 or num_item_types == 49 then
 		columns = 10
 		resize_root_small_higher = true
     elseif num_item_types == 64 or num_item_types == 50 then

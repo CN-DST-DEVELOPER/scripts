@@ -645,11 +645,8 @@ local function taser_onblockedorattacked(wx, data, inst)
         if data.attacker.components.combat ~= nil
                 and (data.attacker.components.health ~= nil and not data.attacker.components.health:IsDead())
                 and (data.attacker.components.inventory == nil or not data.attacker.components.inventory:IsInsulated())
-                and (data.weapon == nil or
-                        (data.weapon.components.projectile == nil
-                        and (data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil))
-                ) then
-
+				and not IsRangedWeapon(data.weapon)
+		then
             SpawnElectricHitSparks(wx, data.attacker, true)
 
             local damage_mult = IsEntityElectricImmune(data.attacker) and 1
@@ -1596,6 +1593,7 @@ local SHIELDING_MODULE_DATA =
 table.insert(module_definitions, SHIELDING_MODULE_DATA)
 
 AddCreatureScanDataDefinition("rocky", "shielding", 4)
+AddCreatureScanDataDefinition("rocky_boss", "shielding", 8)
 AddCreatureScanDataDefinition("slurtle", "shielding", 4)
 AddCreatureScanDataDefinition("snurtle", "shielding", 6)
 

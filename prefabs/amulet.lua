@@ -62,8 +62,8 @@ local function onequip_blue(inst, owner)
         owner.AnimState:OverrideSymbol("swap_body", "torso_amulets", "blueamulet")
     end
 
-    inst.freezefn = function(attacked, data)
-        if data and data.attacker and data.attacker.components.freezable then
+	inst.freezefn = function(owner, data)
+		if data and data.attacker and data.attacker.components.freezable and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
             data.attacker.components.freezable:AddColdness(0.67)
             data.attacker.components.freezable:SpawnShatterFX()
             inst.components.fueled:DoDelta(-0.03 * inst.components.fueled.maxfuel)

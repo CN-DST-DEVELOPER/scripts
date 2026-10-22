@@ -103,20 +103,40 @@ end
 local NEARFIRE_MUST_TAGS = { "fire" }
 local NEARFIRE_CANT_TAGS = { "_equippable", "shadow_fire" }
 
+local function ShouldRescheduleForVirtualRooms(player, params)
+    local players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.VAULT)
+    if players and players[player] then
+        -- World guaranteed to have the virtualroomset from the players table existing.
+        local virtualroomset = TheWorld.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.VAULT)
+        if virtualroomset:GetCurrentRoomName() == "puzzle2" then
+            --lights out puzzle room has its own shadow hand
+            return true
+        end
+    end
+
+    players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.ATRIUM)
+    if players and players[player] then
+        -- World guaranteed to have the virtualroomset from the players table existing.
+        local virtualroomset = TheWorld.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.ATRIUM)
+        if not virtualroomset:IsCurrentRoomLobby() then
+            -- charliearena has its own shadow hand controller
+            return true
+        end
+    end
+
+    return false
+end
 local function SpawnHand(player, params)
     if #params.ents > 0 or player.components.age:GetAge() < INITIAL_SPAWN_THRESHOLD then
         --Already spawned, or player is too young, try again next time
         Reschedule(player, params)
         return
-	elseif _map:IsPointInVaultRoom(player.Transform:GetWorldPosition()) then
-		local vaultroommanager = TheWorld.components.vaultroommanager
-		local room = vaultroommanager and vaultroommanager:GetVaultCenterMarker()
-		if room and room.components.vaultroom and room.components.vaultroom:GetCurrentRoomId() == "puzzle2" then
-			--lights out puzzle room has it's own shadow hand
-			Reschedule(player, params)
-			return
-		end
-	end
+    end
+
+    if ShouldRescheduleForVirtualRooms(player, params) then
+        Reschedule(player, params)
+        return
+    end
 
     local sanity = player.replica.sanity:IsInsanityMode() and player.replica.sanity:GetPercent() or 1
     if sanity > 0.75 then

@@ -136,12 +136,18 @@ end
 local function UpdatePlayerTargets(inst)
     local toadd = {}
     local toremove = {}
-    local pos = inst.components.knownlocations:GetLocation("spawnpoint")
+	local pos = inst.components.knownlocations:GetLocation("spawnpoint")
+	local x, y, z
+	if pos then
+		x, y, z = pos:Get()
+	else
+		x, y, z = inst.Transform:GetWorldPosition()
+	end
 
     for k, v in pairs(inst.components.grouptargeter:GetTargets()) do
         toremove[k] = true
     end
-    for i, v in ipairs(FindPlayersInRange(pos.x, pos.y, pos.z, TUNING.BEEQUEEN_DEAGGRO_DIST, true)) do
+	for i, v in ipairs(FindPlayersInRange(x, y, z, TUNING.BEEQUEEN_DEAGGRO_DIST, true)) do
         if toremove[v] then
             toremove[v] = nil
         else

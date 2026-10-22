@@ -563,6 +563,7 @@ local function MakeDrone(name, numcols, numrows, required_skill)
 			COLLISION.SMALLOBSTACLES)
 
 		inst.MiniMapEntity:SetIcon(name..".png")
+        inst.MiniMapEntity:SetAlwaysOutsideVRS(true)
 
 		inst.AnimState:SetBank(name)
 		inst.AnimState:SetBuild(name)

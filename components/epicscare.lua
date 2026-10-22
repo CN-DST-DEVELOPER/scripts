@@ -15,12 +15,16 @@ function EpicScare:SetDefaultDuration(duration)
     self.defaultduration = duration
 end
 
-function EpicScare:Scare(duration)
+function EpicScare:Scare(duration, fn)
+    duration = duration or self.defaultduration
     local x, y, z = self.inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, self.range, self.scaremusttags, self.scareexcludetags, self.scareoneoftags)
     for i, v in ipairs(ents) do
         if v ~= self.inst and v.entity:IsVisible() and not (v.components.health ~= nil and v.components.health:IsDead()) then
-            v:PushEvent("epicscare", { scarer = self.inst, duration = duration or self.defaultduration })
+            v:PushEvent("epicscare", { scarer = self.inst, duration = duration })
+            if fn then
+                fn(self.inst, v, self, duration)
+            end
         end
     end
 end

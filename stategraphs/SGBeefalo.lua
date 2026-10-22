@@ -664,7 +664,7 @@ local states=
             inst.components.locomotor:StopMoving()
             inst.AnimState:PlayAnimation("revive")
 
-            inst.SoundEmitter:PlaySound("rifts4/beefalo_revive/revive_effect")
+            inst.SoundEmitter:PlaySound("dontstarve/beefalo/revive_effect")
 
             inst.AnimState:AddOverrideBuild("beefalo_revive")
             inst.AnimState:Hide("lightning")

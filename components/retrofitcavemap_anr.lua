@@ -577,6 +577,30 @@ local function ArchiveDispencerFixup()
 	end
 end
 
+local function BatBossCave_Retrofitting()
+	-- if TheWorld.topology.overrides ~= nil and TheWorld.topology.overrides.batbosscave == "never" then
+	-- 	print("Retrofitting for Cursed Confrontation: Bat Boss Cave - Skipping due to overrides.batbosscave")
+	-- 	return
+	-- end
+
+	local candidate_nodes = {}
+
+	for i,v in ipairs(TheWorld.topology.ids) do
+		if string.find(v, "FernyBatCave") then
+			table.insert(candidate_nodes, i)
+		end
+	end
+
+	if #candidate_nodes == 0 then
+		print("Retrofitting for Cursed Confrontation: Bat Boss Cave - Failed to find any FernyBatCave nodes!")
+		return false
+	end
+
+	if not RetrofitNewCaveContentPrefab(inst, "batbosscave", 4, 12, false, candidate_nodes) then -- first try a BGForest with a forest ground tile
+		RetrofitNewCaveContentPrefab(inst, "batbosscave", 4, 6, false, candidate_nodes)
+	end
+end
+
 --------------------------------------------------------------------------
 --[[ Post initialization ]]
 --------------------------------------------------------------------------
@@ -1020,14 +1044,6 @@ function self:OnPostInit()
         -- This would be the start to finding if orbs exist and then it needs to look at vault_teleporter and its state.
         -- Finally for all rooms that have no save data the current vault def would need to be looked over to count how many orbs would be in the map.
         -- This is a lot of checks for something that can be given free here without issue so we will do that.
-        -- Maybe in the future vaultroommanager can have its own record keeping for what is inside of it or for it to self calculate it.
-        --for k,v in pairs(TheWorld.components.vaultroommanager.rooms) do
-        --if type(k) == "string" then
-        --    if v.vaultroomdata and v.vaultroomdata.ents then
-        --        if v.vaultroomdata.ents["vault_orb"] then
-        --        end
-        --    end
-        --end
 
         local vault_orb
         if not vaultmarker_lobby_center then
@@ -1056,6 +1072,11 @@ function self:OnPostInit()
 
         self.retrofit_add_one_vault_orb = nil
     end
+
+	if self.retrofit_bat_boss_cave then
+		BatBossCave_Retrofitting()
+		self.retrofit_bat_boss_cave = nil
+	end
 
 	---------------------------------------------------------------------------
 
@@ -1107,6 +1128,7 @@ function self:OnLoad(data)
 		self.retrofit_missing_retrofits_generated_densities = data.retrofit_missing_retrofits_generated_densities or false
 		self.retrofit_cave_mite_spawners = data.retrofit_cave_mite_spawners or false
         self.retrofit_add_one_vault_orb = data.retrofit_add_one_vault_orb or false
+        self.retrofit_bat_boss_cave = data.retrofit_bat_boss_cave or false
     end
 end
 

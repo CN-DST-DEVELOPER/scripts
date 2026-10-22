@@ -50,15 +50,6 @@ global_loading_widget:SetHAnchor(ANCHOR_LEFT)
 global_loading_widget:SetVAnchor(ANCHOR_BOTTOM)
 global_loading_widget:SetScaleMode(SCALEMODE_PROPORTIONAL)
 
-known_error_key = nil
-global_error_widget = nil
-ScriptErrorWidget = require "widgets/scripterrorwidget"
-function SetGlobalErrorWidget(...)
-    if global_error_widget == nil then -- only first error!
-        global_error_widget = ScriptErrorWidget(...)
-    end
-end
-
 cancel_tip = nil
 if not TheNet:IsDedicated() then
     CancelTip = require "widgets/canceltipwidget"

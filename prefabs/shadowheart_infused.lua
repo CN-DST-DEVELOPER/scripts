@@ -48,6 +48,12 @@ local function OnLanded(inst)
     end
 end
 
+local function OnDroppedAsLoot(inst, data)
+    if data and data.dropper and data.dropper:HasTag("npcstalker") then
+        inst.sg:GoToState("stunned", GetRandomWithVariance(10, 1))
+    end
+end
+
 ----------------------------------------------------------------------------------------------------------------
 
 local function CLIENT_AttachShadowFx(inst)
@@ -151,6 +157,7 @@ local function fn()
     inst:ListenForEvent("enterlimbo", inst.OnEntitySleep)
 
     inst:ListenForEvent("on_landed", OnLanded)
+	inst:ListenForEvent("on_loot_dropped", OnDroppedAsLoot)
 
     MakeHauntable(inst)
 

@@ -39,7 +39,7 @@ function ChatHistoryManager:OnSystemMessage(message)
     self:AddToHistory(ChatTypes.SystemMessage, nil, nil, STRINGS.UI.SERVERADMINSCREEN.SYSTEMMESSAGE, message, WHITE)
 end
 
-function ChatHistoryManager:OnChatterMessage(inst, name_colour, message, colour, user_vanity, user_vanity_bg, priority)
+function ChatHistoryManager:OnChatterMessage(inst, name_colour, message, colour, user_vanity, user_vanity_bg, priority, silent)
     if self.join_server then return end
     if not Profile:GetNPCChatEnabled() then return end
 
@@ -55,7 +55,7 @@ function ChatHistoryManager:OnChatterMessage(inst, name_colour, message, colour,
     colour.name_colour = name_colour
     local vanity = {icon = user_vanity, iconbg = user_vanity_bg}
 
-    self:AddToHistory(ChatTypes.ChatterMessage, nil, nil, (inst.GetChatterMessageName and inst:GetChatterMessageName()) or inst:GetDisplayName(), message, colour, vanity)
+    self:AddToHistory(ChatTypes.ChatterMessage, nil, nil, (inst.GetChatterMessageName and inst:GetChatterMessageName()) or inst:GetDisplayName(), message, colour, vanity, nil, nil, nil, silent)
 end
 
 function ChatHistoryManager:OnSay(guid, userid, netid, name, prefab, message, colour, whisper, isemote, user_vanity)
@@ -133,7 +133,7 @@ function ChatHistoryManager:GenerateChatMessage(type, sender_userid, sender_neti
     return chat_message
 end
 
-function ChatHistoryManager:AddToHistory(type, sender_userid, sender_netid, sender_name, message, colour, icondata, whisper, localonly, text_filter_context)
+function ChatHistoryManager:AddToHistory(type, sender_userid, sender_netid, sender_name, message, colour, icondata, whisper, localonly, text_filter_context, silent)
     if self.join_server then return end
 
 	local chat_message = self:GenerateChatMessage(type, sender_userid, sender_netid, sender_name, message, colour, icondata, whisper, localonly, text_filter_context)
@@ -168,8 +168,10 @@ function ChatHistoryManager:AddToHistory(type, sender_userid, sender_netid, send
 
     self.history[self.history_start] = chat_message
 
-    for fn in pairs(self.listeners) do
-        fn(chat_message)
+    if not silent then
+        for fn in pairs(self.listeners) do
+            fn(chat_message)
+        end
     end
 
     return chat_message

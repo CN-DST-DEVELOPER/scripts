@@ -103,7 +103,7 @@ local HEALTH_SEGS_PER_SIZE = LEVELS_PER_SIZE - 1
 local NUM_LEVELS = NUM_SIZES * LEVELS_PER_SIZE
 local NUM_HEALTH_SEGS = NUM_SIZES * HEALTH_SEGS_PER_SIZE
 
-local REGISTERED_PROXIMITY_TAGS = rawget(_G, "TheSim") and TheSim:RegisterFindTags({ "locomotor" }, { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece" }) or {}
+local REGISTERED_PROXIMITY_TAGS = rawget(_G, "TheSim") and TheSim:RegisterFindTags({ "locomotor" }, { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "shadowboss", "stalker", "nogelblob" }) or {}
 local PHYSICS_PADDING = 3
 local NEAR_RADIUS = 3
 
@@ -767,7 +767,7 @@ local function SetLifespan(inst, lifespan)
 	inst:ListenForEvent("timerdone", Small_OnTimerDone)
 end
 
-local function OnTossLanded(inst)
+local function OnTossLanded(inst, lifespan)
 	inst.tossing = nil
 	inst.Physics:SetMotorVel(0, 0, 0)
 	inst.Physics:Stop()
@@ -775,13 +775,16 @@ local function OnTossLanded(inst)
 		inst.SoundEmitter:PlaySound("rifts4/goop/minion_blob_land")
 		Small_OnEntityWake(inst)
 	end
+	if lifespan then
+		SetLifespan(inst, lifespan)
+	end
 end
 
-local function Toss(inst, dist, angle)
-	inst.AnimState:PlayAnimation("blob_pre_med")
+local function Toss(inst, dist, angle, lifespan, fromlow)
+	inst.AnimState:PlayAnimation(fromlow and "blob_pre_med_low" or "blob_pre_med")
 	inst.AnimState:PushAnimation("blob_idle_med")
 	inst.Physics:SetMotorVel(dist * math.cos(angle), 0, -dist * math.sin(angle))
-	inst.tossing = inst:DoTaskInTime(16 * FRAMES, OnTossLanded)
+	inst.tossing = inst:DoTaskInTime(16 * FRAMES, OnTossLanded, lifespan)
 	if inst._proximitytask then
 		inst._proximitytask:Cancel()
 		inst._proximitytask = nil

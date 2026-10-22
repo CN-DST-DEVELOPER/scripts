@@ -76,6 +76,8 @@ local function fn(bank)
     inst.components.inspectable.descriptionfn = rune_getdescription
     MakeRoseTarget_CreateFuel_IncreasedHorror(inst)
 
+    inst:AddComponent("stalkerinspectable")
+
     inst.OnSave = rune_onsave
     inst.OnLoad = rune_onload
 

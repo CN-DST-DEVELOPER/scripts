@@ -165,21 +165,16 @@ local function FindTargetOfInterest(inst)
     end
 end
 
-local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "playerghost" }
+local RETARGET_MUST_TAGS = { "_combat" } --see entityreplica.lua
+local RETARGET_CANT_TAGS = { "playerghost", "npcstalker"--[[dont attack the king]] }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
+local function IsValidTarget(guy, inst)
+    return inst.components.combat:CanTarget(guy)
+end
+
 local function retargetfn(inst)
     return inst:HasTag("nightmare")
-        and FindEntity(
-                inst,
-                20,
-                function(guy)
-                    return inst.components.combat:CanTarget(guy)
-                end,
-                RETARGET_MUST_TAGS, --see entityreplica.lua
-                RETARGET_CANT_TAGS,
-                RETARGET_ONEOF_TAGS
-            )
+        and FindEntity(inst, 20, IsValidTarget, RETARGET_MUST_TAGS, RETARGET_CANT_TAGS, RETARGET_ONEOF_TAGS)
         or nil
 end
 
@@ -429,6 +424,8 @@ local function fn()
     inst:AddTag("cavedweller")
     inst:AddTag("monkey")
     inst:AddTag("animal")
+    inst:AddTag("canwearhat")
+    inst:AddTag("nightmarecorruptable")
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

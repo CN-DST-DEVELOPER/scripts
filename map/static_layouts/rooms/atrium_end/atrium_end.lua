@@ -428,6 +428,17 @@ return {
           height = 0,
           visible = true,
           properties = {}
+        },
+        {
+          name = "",
+          type = "atriummarker_gate_center",
+          shape = "rectangle",
+          x = 288,
+          y = 288,
+          width = 0,
+          height = 0,
+          visible = true,
+          properties = {}
         }
       }
     }

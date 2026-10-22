@@ -923,6 +923,10 @@ function Map:CanAreaTagsHaveAcidRain(tags)
 end
 
 function Map:CanPointHaveAcidRain(x, y, z)
+    if not self:CanPointHaveRain(x, y, z) then -- if regular rain can't happen in a place, neither can acid rain
+        return false
+    end
+
     if self:IsImpassableTileAtPoint(x, y, z) then
         return false
     end
@@ -934,11 +938,28 @@ function Map:CanPointHaveAcidRain(x, y, z)
     -- Note: If you care about the tile overlap then use FindVisualNodeAtPoint
     local node_index = self:GetNodeIdAtPoint(x, y, z)
     local node = TheWorld.topology.nodes[node_index]
-    if node == nil or node.tags == nil then
+    if node == nil then
         return false
+    end
+    if node.tags == nil then
+        return true
     end
 
     return self:CanAreaTagsHaveAcidRain(node.tags)
+end
+
+function Map:CanAreaTagsHaveRain(tags)
+    return not table.contains(tags, "norain")
+end
+
+function Map:CanPointHaveRain(x, y, z)
+    if self:IsPointInCharlieBossArena(x, y, z) then
+        return false
+    end
+
+    local node_index = self:GetNodeIdAtPoint(x, y, z)
+    local node = TheWorld.topology.nodes[node_index]
+    return not node or not node.tags or self:CanAreaTagsHaveRain(node.tags)
 end
 
 function Map:CanAreaTagsHaveQuaker(tags)
@@ -950,6 +971,10 @@ function Map:CanPointHaveQuaker(x, y, z)
         return false
     end
 
+    if self:IsPointInCharlieBossArena(x, y, z) then
+        return false
+    end
+
     -- Note: If you care about the tile overlap then use FindVisualNodeAtPoint
     local node_index = self:GetNodeIdAtPoint(x, y, z)
     local node = TheWorld.topology.nodes[node_index]
@@ -958,6 +983,14 @@ function Map:CanPointHaveQuaker(x, y, z)
     end
 
     return self:CanAreaTagsHaveQuaker(node.tags) -- worldgen
+end
+
+function Map:CanPointCauseQuaker(x, y, z) -- e.g. can explosives at this point cause an earthquake
+    if self:IsPointInCharlieBossArena(x, y, z) then
+        return false
+    end
+
+    return true
 end
 
 function Map:GetRandomPointClustersForNodePrefix(prefixes, countpernode)
@@ -1522,40 +1555,16 @@ function Map:IsWagPunkArenaBarrierUp()
 end
 
 function Map:IsPointInVaultRoom(x, y, z)
-    -- The vault's rooms can have the tiles no longer vault tiles so we will need to do one last check.
-    -- The server will network over the position of the vault so the client can force include a square from the position.
-    local world = TheWorld
-    if world.net == nil or world.net.components.vault_floor_helper == nil then
-        return false
-    end
-
-    return world.net.components.vault_floor_helper:IsPointInVaultRoom_Internal(x, y, z)
+    return self:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, x, y, z)
+end
+function Map:IsPointInVaultLobby(x, y, z)
+    return self:IsPointInVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT, x, y, z)
+end
+function Map:IsPointInAnyVault(x, y, z)
+    return self:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, x, y, z) or self:IsPointInVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT, x, y, z)
 end
 local function IsVaultTile(tileid)
     return tileid == WORLD_TILES.VAULT
-end
-function Map:IsPointInVaultLobby(x, y, z)
-    -- NOTES(JBK): This is a very quick check and makes the assumption for vault tiles being always secluded from anything and covers the entire vault floor.
-    local tx, ty = self:GetTileCoordsAtPoint(x, 0, z)
-    if self:HasAdjacentTileFiltered(tx, ty, IsVaultTile) then
-        if self:IsVisualGroundAtPoint(x, y, z) then
-            return not self:IsPointInVaultRoom(x, y, z)
-        end
-    end
-
-    return false
-end
-function Map:IsPointInAnyVault(x, y, z)
-    -- Optimizations for not caring which vault section the point is in.
-    -- Lobby
-    local tx, ty = self:GetTileCoordsAtPoint(x, 0, z)
-    if self:HasAdjacentTileFiltered(tx, ty, IsVaultTile) then
-        if self:IsVisualGroundAtPoint(x, y, z) then
-            return true
-        end
-    end
-    -- Room
-    return self:IsPointInVaultRoom(x, y, z)
 end
 function Map:IsPointInOrAdjacentToAnyVault(x, y, z)
     -- Optimizations for not caring which vault section the point is in.
@@ -1568,3 +1577,17 @@ function Map:IsPointInOrAdjacentToAnyVault(x, y, z)
     return self:IsPointInVaultRoom(x, y, z)
 end
 
+function Map:IsPointInCharlieBossArena(x, y, z)
+    local roomsetname = VIRTUALROOMSETS.ATRIUM
+    return not self:IsVirtualRoomSetInLobby(roomsetname) and self:IsPointInVirtualRoomSet(roomsetname, x, y, z)
+end
+
+function Map:GetCharlieBossArenaCenterXZ()
+    local tx, ty = TheWorld.Map:GetVirtualRoomSetOriginInTiles(VIRTUALROOMSETS.ATRIUM)
+    if tx then
+        local x, _, z = TheWorld.Map:GetTileCenterPoint(tx, ty)
+        return x, z
+    end
+
+    return nil
+end

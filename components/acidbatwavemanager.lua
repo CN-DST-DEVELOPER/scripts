@@ -36,6 +36,55 @@ function self:TrackAcidBat(bat)
         bat:ListenForEvent("onremove", self.OnRemove_Bat)
     end
 end
+
+function self.StopTrackingAcidBatFn(bat)
+    local restore = self.acidbats[bat]
+    if restore ~= nil then
+        self.acidbats[bat] = nil
+        bat:RemoveEventCallback("onremove", self.OnRemove_Bat)
+    end
+end
+
+function self:IsTrackedAcidBat(bat)
+    return self.acidbats[bat] ~= nil
+end
+
+-- Bat boss cave tracking
+self.batbosscaves = {}
+self.OnRemove_BatBossCave = function(batcave, data)
+    self.batbosscaves[batcave] = nil
+end
+function self:TrackBatBossCave(batcave)
+    if not self.batbosscaves[batcave] then
+        self.batbosscaves[batcave] = true
+        batcave:ListenForEvent("onremove", self.OnRemove_BatBossCave)
+    end
+end
+
+function self:GetNextAvailableBatBoss() -- find a bat boss out in the world or try to spawn one from a bat boss cave
+    for batcave in pairs(self.batbosscaves) do
+        for child in pairs(batcave.components.childspawner.childrenoutside) do
+            if child:CanJoinAcidBatWave() then
+                return child
+            end
+        end
+
+        -- this can be offscreen!
+        local child
+        local _spawnoffscreen = batcave.components.childspawner.spawnoffscreen
+        batcave.components.childspawner.spawnoffscreen = true
+        if batcave.components.childspawner:CanSpawn() then
+            child = batcave.components.childspawner:SpawnChild()
+        end
+        batcave.components.childspawner.spawnoffscreen = _spawnoffscreen
+        if child and child:CanJoinAcidBatWave() then
+            return child
+        end
+    end
+
+    return nil
+end
+
 self.NoHoles = function(pt)
     return not _world.Map:IsPointNearHole(pt)
 end
@@ -51,7 +100,7 @@ function self:GetAcidBatSpawnPoint(pt)
 end
 self.OnBatReturnToScene = function(bat, player)
     bat:ReturnToScene()
-    bat:PushEvent("fly_back")
+    bat:PushEventImmediate("fly_back")
 end
 function self:SpawnAcidBatForPlayerAt(player, pt)
     local bat = SpawnPrefab("bat")
@@ -59,6 +108,24 @@ function self:SpawnAcidBatForPlayerAt(player, pt)
     bat.Transform:SetPosition(pt.x, 0, pt.z)
     bat:DoTaskInTime(math.random()*2, self.OnBatReturnToScene, player)
     return bat
+end
+self.OnBatBossReturnToScene = function(bat_boss, player, pt)
+    bat_boss:ReturnToScene()
+    bat_boss.Transform:SetPosition(pt.x, 0, pt.z)
+    bat_boss:PushEventImmediate("fly_back")
+end
+function self:SpawnAcidBatBossForPlayerAt(player, pt, bat_boss)
+    local timetoreturn
+    if bat_boss:IsAsleep() then
+        bat_boss:RemoveFromScene()
+        bat_boss.Transform:SetPosition(pt.x, 0, pt.z)
+        timetoreturn = math.random() * 2
+    else
+        bat_boss:PushEventImmediate("fly_away")
+        -- 51 frames is minimum time for flyaway state
+        timetoreturn = (51 * FRAMES) + math.random() * 0.5
+    end
+    bat_boss:DoTaskInTime(timetoreturn, self.OnBatBossReturnToScene, player, pt)
 end
 function self:CreateAcidBatsForPlayer(player, playermetadata)
     local items_percent = playermetadata.target_prefab_count / self.max_target_prefab
@@ -71,6 +138,23 @@ function self:CreateAcidBatsForPlayer(player, playermetadata)
             local bat = self:SpawnAcidBatForPlayerAt(player, pt)
             if bat then
                 self:TrackAcidBat(bat)
+            end
+        end
+    end
+
+    if bats_count >= TUNING.ACIDBATWAVE_BATBOSS_BATCOUNT then
+        local pt
+        for tries = 1, 5 do
+            pt = self:GetAcidBatSpawnPoint(origin)
+            if pt then
+                break
+            end
+        end
+        if pt then
+            local bat_boss = self:GetNextAvailableBatBoss()
+            if bat_boss then
+                self:SpawnAcidBatBossForPlayerAt(player, pt, bat_boss)
+                self:TrackAcidBat(bat_boss)
             end
         end
     end
@@ -150,7 +234,7 @@ self.OnPlayerLeft = function(inst, player)
 end
 
 for i, v in ipairs(AllPlayers) do
-    OnPlayerJoined(inst, v)
+    self.OnPlayerJoined(inst, v)
 end
 inst:ListenForEvent("ms_playerjoined", self.OnPlayerJoined)
 inst:ListenForEvent("ms_playerleft", self.OnPlayerLeft)
@@ -232,6 +316,11 @@ function self:UpdateOddsForPlayer(player, playermetadata)
 
     local x, y, z = player.Transform:GetWorldPosition()
     if not _map:CanPointHaveAcidRain(x, y, z) then
+        playermetadata.odds_to_spawn_wave = 0
+        return
+    end
+
+    if player:HasTag("batdisguise") then
         playermetadata.odds_to_spawn_wave = 0
         return
     end
@@ -337,6 +426,10 @@ end
 inst:ListenForEvent("pausehounded", self.OnPauseHounded)
 inst:ListenForEvent("unpausehounded", self.OnUnpauseHounded)
 
+self.OnRegisterBatBossCave = function(inst, batcave)
+    self:TrackBatBossCave(batcave)
+end
+inst:ListenForEvent("ms_registerbatbosscave", self.OnRegisterBatBossCave)
 
 -- Save/Load.
 function self:SetSaveDataForMetaData(savedata, playermetadata, t)

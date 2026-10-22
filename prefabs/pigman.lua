@@ -573,6 +573,7 @@ local function CustomOnHaunt(inst)
 end
 
 local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry_up" }
+local DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE, FOODTYPE.RAW }
 
 local function common(moonbeast)
     local inst = CreateEntity()
@@ -591,6 +592,7 @@ local function common(moonbeast)
     inst:AddTag("character")
     inst:AddTag("pig")
     inst:AddTag("scarytoprey")
+    inst:AddTag("canwearhat")
     inst.AnimState:SetBank("pigman")
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:Hide("hat")
@@ -657,9 +659,7 @@ local function common(moonbeast)
 
     ------------------------------------------
     inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
-    inst.components.eater:SetCanEatHorrible()
-    inst.components.eater:SetCanEatRaw()
+    inst.components.eater:SetDiet(DIET, DIET)
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
     inst.components.eater:SetOnEatFn(OnEat)
     ------------------------------------------

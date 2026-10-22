@@ -508,6 +508,7 @@ local function fn()
         return inst
     end
 
+	inst.scrapbook_thingtype = "creature"
     inst.WARES = WARES
     inst.FORGETABLE_RECIPES = FORGETABLE_RECIPES
 

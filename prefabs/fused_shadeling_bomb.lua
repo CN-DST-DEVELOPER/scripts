@@ -184,8 +184,7 @@ local function on_timer_done(inst, data)
         on_spawn_finished(inst)
     elseif data.name == START_GROW_TIMERNAME then
         inst._start_ball_growing:push()
-
-        inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
+        inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_grow")
     elseif data.name == SIZE_UP_TIMERNAME then
         inst._current_scale = math.min(inst._current_scale + SIZE_UP_BY_TICK, FULL_SIZE)
         inst.AnimState:SetScale(inst._current_scale, inst._current_scale)
@@ -287,6 +286,12 @@ local function fn()
 end
 
 ----
+
+local function deathfx_OnEntityWake(inst)
+    inst.OnEntityWake = nil
+    inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
+end
+
 local function death_fx_fn()
     local inst = CreateEntity()
 
@@ -304,7 +309,7 @@ local function death_fx_fn()
         return inst
     end
 
-    inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_explode")
+    inst.OnEntityWake = deathfx_OnEntityWake
 
     inst.persists = false
     inst:ListenForEvent("animover", inst.Remove)

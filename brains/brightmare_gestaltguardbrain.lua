@@ -13,6 +13,10 @@ local RELOCATED_DISTSQ = 3*3
 
 local GETFACINGTARGET_DISTSQ = TUNING.GESTALTGUARD_WATCHING_RANGE*TUNING.GESTALTGUARD_WATCHING_RANGE
 
+local AVOID_STALKER_DIST = 10 -- keep in sync with gestalt_guard.lua::AVOID_STALKER_DIST
+local AVOID_STALKER_STOP = 12
+local STALKER_TAGS = {tags = {"stalker"}}
+
 local GestaltGuardBrain = Class(Brain, function(self, inst)
     Brain._ctor(self, inst)
 end)
@@ -39,11 +43,18 @@ local function KeepFacingTarget(inst, target)
 	return GetFacingTarget(inst) == target
 end
 
+local function onrunaway(target, inst)
+	inst.components.combat:DropTarget()
+	return true
+end
+
 local UPDATE_RATE = 0.1
 function GestaltGuardBrain:OnStart()
     local root = PriorityNode({
 		WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "",
 			PriorityNode({
+				RunAway(self.inst, STALKER_TAGS, AVOID_STALKER_DIST, AVOID_STALKER_STOP, onrunaway),
+
 				WhileNode( function() return self.inst.behaviour_level == 3 end, "Aggressive",
 					ChaseAndAttack(self.inst, ATTACK_CHASE_TIME, nil, nil, nil, true)
 				),

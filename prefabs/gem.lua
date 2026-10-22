@@ -16,11 +16,20 @@ local FLOATER_PROPERTIES =
 
 local function buildgem(colour, precious)
     local function Sparkle(inst)
+        inst.sparkletask = nil
         if not inst.AnimState:IsCurrentAnimation(colour.."gem_sparkle") then
             inst.AnimState:PlayAnimation(colour.."gem_sparkle")
             inst.AnimState:PushAnimation(colour.."gem_idle", true)
         end
-        inst:DoTaskInTime(4 + math.random(), Sparkle)
+	    if not inst:IsAsleep() then
+            inst.sparkletask = inst:DoTaskInTime(4 + math.random(), Sparkle)
+        end
+    end
+
+    local function OnEntityWake(inst)
+    	if inst.sparkletask == nil then
+    		inst.sparkletask = inst:DoTaskInTime(4 + math.random(), Sparkle)
+    	end
     end
 
     local function fn()
@@ -75,7 +84,8 @@ local function buildgem(colour, precious)
 
         MakeHauntableLaunchAndSmash(inst)
 
-        inst:DoTaskInTime(1, Sparkle)
+        inst.sparkletask = nil
+        inst.OnEntityWake = OnEntityWake
 
         return inst
     end

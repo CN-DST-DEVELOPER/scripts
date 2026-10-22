@@ -49,6 +49,7 @@ local function oneatfn(inst, food)
     end
 end
 
+local DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE }
 local function fn()
     local inst = CreateEntity()
 
@@ -92,11 +93,11 @@ local function fn()
     end
 
     inst:AddComponent("eater")
+    inst.components.eater:SetDiet(DIET, DIET)
     inst.components.eater:SetOnEatFn(oneatfn)
     inst.components.eater:SetAbsorptionModifiers(4.0, 1.75, 0)
     inst.components.eater:SetCanEatRawMeat(true)
     inst.components.eater:SetStrongStomach(true)
-    inst.components.eater:SetCanEatHorrible(true)
 
     inst:AddComponent("weapon")
     inst.components.weapon:SetDamage(TUNING.SHIELDOFTERROR_DAMAGE)

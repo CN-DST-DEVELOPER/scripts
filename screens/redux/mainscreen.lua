@@ -324,7 +324,14 @@ function MainScreen:EmailSignup()
 end
 
 function MainScreen:Quit()
-	TheFrontEnd:PushScreen(PopupDialogScreen(STRINGS.UI.MAINSCREEN.ASKQUIT, STRINGS.UI.MAINSCREEN.ASKQUITDESC, {{text=STRINGS.UI.MAINSCREEN.YES, cb = function() RequestShutdown() end },{text=STRINGS.UI.MAINSCREEN.NO, cb = function() TheFrontEnd:PopScreen() end}  }))
+	TheFrontEnd:PushScreen(PopupDialogScreen(
+        STRINGS.UI.MAINSCREEN.ASKQUIT,
+        TheGenericKV:GetKV("charlie_defeated") == "1" and STRINGS.UI.MAINSCREEN.ASKQUITDESC_NOCHARLIE or STRINGS.UI.MAINSCREEN.ASKQUITDESC,
+        {
+            {text=STRINGS.UI.MAINSCREEN.YES, cb = function() RequestShutdown() end },
+            {text=STRINGS.UI.MAINSCREEN.NO, cb = function() TheFrontEnd:PopScreen() end}
+        }
+    ))
 end
 
 function MainScreen:OnHostButton()

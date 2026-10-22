@@ -6,9 +6,12 @@ local assets =
 }
 
 local function beat(inst)
+    inst.beattask = nil
     inst.AnimState:PlayAnimation("idle")
     inst.SoundEmitter:PlaySound("dontstarve/sanity/shadow_heart")
-    inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, beat)
+	if not inst:IsAsleep() then
+        inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, beat)
+    end
 end
 
 local function ondropped(inst)
@@ -25,6 +28,12 @@ local function onpickup(inst)
     end
 end
 
+local function OnEntityWake(inst)
+	if inst.beattask == nil and not inst.components.inventoryitem:IsHeld() then
+		inst.beattask = inst:DoTaskInTime(.75 + math.random() * .75, beat)
+	end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -38,7 +47,6 @@ local function fn()
     inst.AnimState:SetBank("shadowheart")
     inst.AnimState:SetBuild("shadowheart")
     inst.AnimState:PlayAnimation("idle")
-    --inst.AnimState:SetMultColour(1, 1, 1, 0.5)
 
     MakeInventoryFloatable(inst, "small", 0.05, 0.8)
 
@@ -65,7 +73,7 @@ local function fn()
     MakeHauntableLaunch(inst)
 
     inst.beattask = nil
-    ondropped(inst)
+    inst.OnEntityWake = OnEntityWake
 
     return inst
 end

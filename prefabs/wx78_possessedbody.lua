@@ -599,8 +599,8 @@ local function fn()
     inst.components.sanity.neg_aura_modifiers:SetModifier(inst, TUNING.SKILLS.WX78.POSSESSEDBODY_NEGATIVE_SANITY_AURA_MODIFIER, "gestalt_possessedbody")
 
     inst:AddComponent("eater")
+    inst.components.eater:SetDiet({ FOODGROUP.OMNI, FOODTYPE.GEARS }, { FOODGROUP.OMNI, FOODTYPE.GEARS })
     inst.components.eater:SetIgnoresSpoilage(true)
-    inst.components.eater:SetCanEatGears()
     inst.components.eater:SetOnEatFn(WX78Common.OnEat)
 
     inst:AddComponent("combat")

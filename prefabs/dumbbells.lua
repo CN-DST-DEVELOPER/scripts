@@ -102,9 +102,13 @@ local function onthrown(inst)
     if attacker then
         inst.components.mightydumbbell:DoAttackWorkout(attacker)
     end
-    
-    inst.AnimState:PlayAnimation("spin_loop", true)
-    inst.SoundEmitter:PlaySound("wolfgang1/dumbbell/throw_twirl", "spin_loop")
+
+	if not inst.AnimState:IsCurrentAnimation("spin_loop") then
+		inst.AnimState:PlayAnimation("spin_loop", true)
+	end
+	if not inst.SoundEmitter:PlayingSound("spin_loop") then
+		inst.SoundEmitter:PlaySound("wolfgang1/dumbbell/throw_twirl", "spin_loop")
+	end
 
     inst.Physics:SetMass(1)
     inst.Physics:SetFriction(0)
@@ -185,14 +189,35 @@ local function OnThrownHit(inst, attacker, target)
     end
 end
 
+local LAUNCH_OFFSET = Vector3(1, 1, 0)
+local DEFLECT_LAUNCH_OFFSET = Vector3(0, 0.5, 0)
+
+local function OnDeflect(inst, attacker, deflector)
+	inst.components.complexprojectile:Cancel()
+	local pt = inst:GetPosition()
+	local theta = deflector:GetAngleToPoint(pt) * DEGREES
+	pt.x = pt.x + 3 * math.cos(theta)
+	pt.z = pt.z - 3 * math.sin(theta)
+	pt.y = 0
+	inst.components.complexprojectile:SetHorizontalSpeed(5)
+	inst.components.complexprojectile:SetLaunchOffset(DEFLECT_LAUNCH_OFFSET)
+	inst.components.complexprojectile.usehigharc = false
+	inst.components.complexprojectile:Launch(pt)
+	inst.components.complexprojectile:SetHorizontalSpeed(15)
+	inst.components.complexprojectile:SetLaunchOffset(LAUNCH_OFFSET)
+	inst.components.complexprojectile.usehigharc = true
+end
+
 local function MakeTossable(inst)
     if inst.components.complexprojectile == nil then
         inst:AddComponent("complexprojectile")
         inst.components.complexprojectile:SetHorizontalSpeed(15)
         inst.components.complexprojectile:SetGravity(-35)
-        inst.components.complexprojectile:SetLaunchOffset(Vector3(1, 1, 0))
+        inst.components.complexprojectile:SetLaunchOffset(LAUNCH_OFFSET)
         inst.components.complexprojectile:SetOnLaunch(onthrown)
         inst.components.complexprojectile:SetOnHit(OnThrownHit)
+		inst.components.complexprojectile:SetOnDeflect(OnDeflect)
+		inst.components.complexprojectile:SetKeepOnDeflect(true)
 		inst.components.complexprojectile.ismeleeweapon = true
     end
 end

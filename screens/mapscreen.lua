@@ -892,11 +892,11 @@ function MapScreen:ProcessRMBDecorations_BLINK_MAP(rmb, fresh)
 end
 
 function MapScreen:ProcessRMBDecorations_TOSS_MAP(rmb, fresh)
-    local equippedhands = self.owner.replica.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+    local equippedhands = rmb.invobject
     if equippedhands == nil or not equippedhands:IsValid() then
         return
     end
-    
+
     local does_custom = equippedhands.InitMapDecorations ~= nil and equippedhands.CalculateMapDecorations ~= nil
     if does_custom then
         if fresh then

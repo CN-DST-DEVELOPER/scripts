@@ -1,6 +1,7 @@
 local assets =
 {
 	Asset("ANIM", "anim/shadow_thrall_wings.zip"),
+	Asset("ANIM", "anim/shadow_thrall_wings_actions.zip"),
 }
 
 local prefabs =
@@ -119,6 +120,35 @@ end
 
 local function DisplayNameFn(inst)
 	return ThePlayer ~= nil and ThePlayer:HasTag("player_shadow_aligned") and STRINGS.NAMES.SHADOWTHRALL_WINGS_ALLEGIANCE or nil
+end
+
+--------------------------------------------------------------------------
+
+local function ShouldAvoidAggroFn(target, inst)
+	return false --false means target should not aggro on us - _-""
+end
+
+local function OnShroudenSummon(inst, shrouden, target)
+	inst.shrouden = shrouden
+	inst.persists = false
+	inst.OnEntitySleep = inst.Remove
+	inst:ListenForEvent("resetboss", function() inst:Remove() end, shrouden)
+
+	inst:SetPrefabNameOverride(shrouden.prefab) -- for death announce
+	inst:AddTag("NOCLICK")
+	inst:AddTag("notarget")
+	inst:SetBrain(nil)
+	inst.components.health:SetInvincible(true)
+	inst.components.combat:SetRetargetFunction(nil)
+	inst.components.combat:SetKeepTargetFunction(nil)
+	inst.components.combat.shouldavoidaggrofn = ShouldAvoidAggroFn
+	inst.components.planardamage:AddBonus(shrouden, TUNING.SHROUDEN_SUMMONS_BONUS_PLANAR_DAMAGE, "summoned")
+	inst:RemoveEventCallback("attacked", OnAttacked)
+	inst:RemoveEventCallback("newcombattarget", OnNewCombatTarget)
+	inst.components.lootdropper:SetLoot(nil)
+	inst.components.lootdropper.GetWintersFeastOrnaments = nil
+
+	inst.sg:GoToState("shrouden_flyby")
 end
 
 --------------------------------------------------------------------------
@@ -312,6 +342,7 @@ local function fn()
 	inst:SetBrain(brain)
 
 	inst.OnLoadPostPass = OnLoadPostPass
+	inst.OnShroudenSummon = OnShroudenSummon
 
 	return inst
 end

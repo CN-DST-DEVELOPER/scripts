@@ -753,6 +753,7 @@ end
 local function common_postinit(inst)
     inst:AddTag("plantkin")
     inst:AddTag("self_fertilizable")
+    inst:AddTag("plantcreature")
 
 	--inst.AnimState:AddOverrideBuild("player_wormwood") --V2C: "form_log" state now overrides symbol everytime, depending on product
     inst.AnimState:AddOverrideBuild("player_wormwood_fertilizer")

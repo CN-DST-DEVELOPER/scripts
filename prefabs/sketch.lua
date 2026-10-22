@@ -49,6 +49,11 @@ local SKETCHES =
     { item = "chesspiece_wagboss_lunar",    recipe = "chesspiece_wagboss_lunar_builder",    image = "chesspiece_wagboss_lunar_sketch"},
     { item = "chesspiece_yoth",             recipe = "chesspiece_yoth_builder",             image = "chesspiece_yoth_sketch"},
     { item = "chesspiece_vault_pillar_guard",recipe = "chesspiece_vault_pillar_guard_builder",image = "chesspiece_vault_pillar_guard_sketch"},
+    { item = "chesspiece_batboss_shadow",   recipe = "chesspiece_batboss_shadow_builder",   image = "chesspiece_batboss_shadow_sketch"},
+    { item = "chesspiece_rockyboss_shadow", recipe = "chesspiece_rockyboss_shadow_builder", image = "chesspiece_rockyboss_shadow_sketch"},
+    { item = "chesspiece_wormboss_shadow",  recipe = "chesspiece_wormboss_shadow_builder",  image = "chesspiece_wormboss_shadow_sketch"},
+    { item = "chesspiece_charlie_boss",     recipe = "chesspiece_charlie_boss_builder",     image = "chesspiece_charlie_boss_sketch"},
+    { item = "chesspiece_shrouden",         recipe = "chesspiece_shrouden_builder",         image = "chesspiece_shrouden_sketch"},
 }
 
 local function GetSketchID(item)

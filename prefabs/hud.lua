@@ -138,6 +138,8 @@ local assets =
     Asset("ANIM", "anim/status_wx.zip"),
     Asset("ANIM", "anim/status_wet_wx.zip"),
 
+    Asset("ANIM", "anim/shrouden_overlay.zip"),
+
     -- Skill trees.
     Asset("ANIM", "anim/skills_activate.zip"),
     Asset("ANIM", "anim/skills_shadow.zip"),

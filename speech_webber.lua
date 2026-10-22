@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "Sorry, neither of us speak monkey.",
             QUEENBUSY = "She looks pretty busy... maybe we'll just wait.",
             CARNIVALGAME_GOLFGAME_NOTREADY = "We think it's missing the flaghole still!",
+            KINGSTAFF_COOLDOWN = "Aww it won't come out!", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1254,6 +1255,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "We'd better not play near fire anymore!",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hey! It's following us!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Is somebody there?!",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "Aah! Monsters in the dark!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "So fun! Yay!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "The rocks don't like us because of our bright brains!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "En garde!",
@@ -1703,7 +1715,12 @@ return{
 		CAVE_BANANA = "A bundle of bananas.",
 		CAVE_BANANA_COOKED = "Hot mush.",
 		CAVE_BANANA_TREE = "It's a tropical cave tree, of course.",
-		ROCKY = "Snip snap!",
+        ROCKY =
+        {
+            GENERIC = "Snip snap!",
+            BOULDER = "We'll need to mine it before we can use it.", -- in boulder state, it looks like a normal boulder
+            ACID = "Aww! What's that on its shell?", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1720,7 +1737,11 @@ return{
 
         HOUNDSTOOTH = "It's the perfect tooth to gnash.",
         ARMORSNURTLESHELL = "It didn't protect the last guy.",
-        BAT = "Screechy mean guy!",
+        BAT =
+        {
+            GENERIC = "Screechy mean guy!",
+            ACID = "Ah! Why is it after us?!", -- in acid form
+        },
         BATBAT = "Flap that bat like you were born to do it.",
         BATWING = "This thing drives me batty.",
         BATWING_COOKED = "Tastes like chicken.",
@@ -2191,6 +2212,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "Yes! Three-legged space spider!",
         CHESSPIECE_YOTH = "Were we friends?",
         CHESSPIECE_VAULT_PILLAR_GUARD = "A toy tower!",
+        CHESSPIECE_BATBOSS_SHADOW = "We wish we could fly!",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "How did it move like that?",
+        CHESSPIECE_WORMBOSS_SHADOW = "We had fun being chased by the big worm.",
+        CHESSPIECE_CHARLIE_BOSS = "Aww, poor lady.",
+        CHESSPIECE_SHROUDEN = "We weren't scared one bit!",
 
         CHESSJUNK1 = "A mess of chess.",
         CHESSJUNK2 = "A mess of chess.",
@@ -3509,6 +3535,7 @@ return{
 			CHARGING = "What's it doing?",
 			DESTABILIZING = "It looks like it's gonna blow up!",
 			COOLDOWN = "It wasn't a way home, anyway.",
+            RITUAL_SUMMONING = "It's staring at us!", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "This key is REALLY old.",
 		LIFEINJECTOR = "I hate taking my medicine!",
@@ -4529,6 +4556,8 @@ return{
 			LORE1 = "He's not okay.",
 			LORE2 = "Oh no...",
 			LORE3 = "They look mean!",
+            --
+            LORE1_STALKER = "Aw, poor king. Don't be sad.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5364,7 +5393,12 @@ return{
 		SHADOWTHRALL_WINGS = "Aww, no fair, we wish we had wings!",
 		SHADOWTHRALL_MOUTH = "It's smiling at us! Maybe it wants to play!",
 
-        CHARLIE_NPC = "Are you the lady from the dark?",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Are you the lady from the dark?", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Hey lady! What game is this?", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Hey lady! What game is this?", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "We think it wants something!",
 
         NITRE_FORMATION = "It's a big stack of rock stuff!",
@@ -6271,6 +6305,68 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "It's so windy!", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "We don't wanna get pinched by you!",
+            BOULDER = "That's a spiky boulder!", -- in boulder form
+            ACID = "Aww, does that hurt?",
+        },
+		ROCKY_BOSS_SHADOW = "Wow! Nice shell!",
+        BAT_BOSS =
+        {
+            GENERIC = "Please don't suck our blood!",
+            ACID = "Why is it drooling like that?",
+        },
+		BAT_BOSS_SHADOW = "It's like a dark cloud!",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Something's watching us!", -- boss bat is inside,
+            VACANT = "Hello? Nobody's home.", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "It's so shadowy!",
+
+        ARMOR_ROCKY = "We'll be tough like a lobster!",
+        BAT_BOSSCORPSEHAT = "Will we be three? Oh wait, it's dead.",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "Can it still pinch us?",
+            IN_RITUAL = "Is it hanging by a really thin web?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "That's how it makes sounds!",
+            IN_RITUAL = "Is it hanging by a really thin web?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "So stinky!",
+            IN_RITUAL = "Is it hanging by a really thin web?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "We know how you feel! Kinda.",
+		SHROUDEN =
+		{
+			GENERIC = "We're not afraid of you, bully!",
+			PUDDLE = "We wanna squish it with our feet!",
+		},
+
+        CHARLIEARENA_SPIKE = "No more scary rocks!",
+
+        KING_CANE =
+        {
+            GENERIC = "Now we can be king!", -- has a gem slotted in
+            EMPTY = "We think it needs a pretty rock to work.", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "Oooh, we can't stop staring at it!",
+        
+        CHARLIEARENA_TELEPORTER = "We can't leave anything behind!",
+
+        MASK_CHARLIE_BOSSHAT = "We wanna wear the lady's face!",
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",
@@ -6295,6 +6391,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

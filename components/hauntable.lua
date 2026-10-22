@@ -87,6 +87,7 @@ function Hauntable:DoHaunt(doer)
         end
         self.haunted = self.onhaunt(self.inst, doer)
         if self.haunted then
+            self.inst:PushEvent("haunted")
             if doer ~= nil then
                 if self.hauntvalue == TUNING.HAUNT_INSTANT_REZ and doer:HasTag("playerghost") then
                     doer:PushEvent("respawnfromghost", { source = self.inst })
@@ -111,7 +112,6 @@ function Hauntable:DoHaunt(doer)
 			end
         end
     end
-	self.inst:PushEvent("haunted")
 end
 
 function Hauntable:SetAnimStateGetterFn(fn)

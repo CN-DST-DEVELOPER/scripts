@@ -61,7 +61,7 @@ end
 MAIN = 1
 ENCODE_SAVES = BRANCH ~= "dev"
 CHEATS_ENABLED = CONFIGURATION ~= "PRODUCTION"
-CAN_USE_DBUI = CHEATS_ENABLED and PLATFORM == "WIN32_STEAM"
+CAN_USE_DBUI = CHEATS_ENABLED and (PLATFORM == "WIN32_STEAM" or PLATFORM == "LINUX_STEAM")
 SOUNDDEBUG_ENABLED = false
 SOUNDDEBUGUI_ENABLED = false
 WORLDSTATEDEBUG_ENABLED = false
@@ -88,11 +88,6 @@ ExecutingLongUpdate = false
 DEBUGGER_ENABLED = TheSim:ShouldInitDebugger() and IsNotConsole() and CONFIGURATION ~= "PRODUCTION" and not TheNet:IsDedicated()
 if DEBUGGER_ENABLED then
 	Debuggee = require 'debuggee'
-end
-
--- Testing and viewing skins on a more close level.
-if CAN_USE_DBUI then
-    require("dbui_no_package/debug_skins_data/hooks").Hooks("init")
 end
 
 local servers =
@@ -156,6 +151,12 @@ local loadfn = function(modulename)
   	return errmsg
 end
 table.insert(package.loaders, 2, loadfn)
+
+-- Testing and viewing skins on a more close level.
+-- moved below the custom loader install so it is taken into account
+if CAN_USE_DBUI then
+    require("dbui_no_package/debug_skins_data/hooks").Hooks("init")
+end
 
 --patch this function because NACL has no fopen
 if TheSim then
@@ -377,6 +378,12 @@ require("map/rooms")
 require("map/tasksets")
 require("map/startlocations")
 
+
+if TheSim:FeedbackEnabled() then
+	TheFeedbackScreen = nil
+	TheScreenshotter = require("util.screenshotter")()
+end
+
 inGamePlay = false
 
 local function ModSafeStartup()
@@ -536,6 +543,18 @@ if CHEATS_ENABLED then
     require "debugkeys"
 else
 	global("CREATING_SCRAPBOOK_DATA")
+end
+
+if TheSim:FeedbackEnabled() then
+	global("TheFeedbackScreen")
+
+	function SubmitFeedbackResult(response_code, response)
+		print("Feedback result:",response_code)
+		print("response:",response)
+		if TheFeedbackScreen then
+			TheFeedbackScreen:SubmitFeedbackResult(response_code, response)
+		end
+	end
 end
 
 TheSystemService:SetStalling(false)

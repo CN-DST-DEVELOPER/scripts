@@ -4,6 +4,12 @@ local DEFAULT_SCALE = 2
 
 local HUD_INDICATOR_DATA = { image = "poi_question.tex", atlas = "images/avatars.xml" }
 
+local function OnRemoveEntity(inst)
+    if ThePlayer and ThePlayer.HUD then
+        ThePlayer.HUD:RemovePOIIndicator(inst)
+    end
+end
+
 local function _CommonIndicator(data)
     local inst = CreateEntity()
 
@@ -29,6 +35,11 @@ local function _CommonIndicator(data)
 
     inst.alpha = 1
     inst.scale = 1
+
+    if ThePlayer and ThePlayer.HUD then
+        ThePlayer.HUD:AddPOIIndicator(inst)
+        inst.OnRemoveEntity = OnRemoveEntity
+    end
 
     return inst
 end
@@ -226,8 +237,8 @@ end
 
 function PointOfInterest:OnUpdate(dt)
 
-    if self.marker then       
-        if Profile:GetPOIDisplay() then
+    if self.marker then
+        if Profile:GetPOIDisplay() and ThePlayer and ThePlayer.HUD and ThePlayer.HUD.shown then
             self.marker:Show()
         else
             self.marker:Hide()

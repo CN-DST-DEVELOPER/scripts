@@ -18,6 +18,10 @@ local SkillTreeUpdater = Class(function(self, inst)
     inst:ListenForEvent("playeractivated", onplayeractivated)
 end)
 
+function SkillTreeUpdater:_dbg_print(...)
+    --print("[SkillTreeUpdater]", ...)
+end
+
 -- NOTES(JBK): Wrapper functions to adhere to abstraction layers.
 
 function SkillTreeUpdater:IsActivated(skill)
@@ -63,12 +67,12 @@ end
 
 function SkillTreeUpdater:ActivateSkill_Client(skill) -- NOTES(JBK): Use ActivateSkill instead.
     local characterprefab = ThePlayer.prefab
-    --print("[STUpdater] ActivateSkill CLIENT", characterprefab, skill)
+    self:_dbg_print("ActivateSkill CLIENT", characterprefab, skill)
     ThePlayer:PushEvent("onactivateskill_client", {skill = skill,})
 end
 function SkillTreeUpdater:ActivateSkill_Server(skill) -- NOTES(JBK): Use ActivateSkill instead.
     local characterprefab = self.inst.prefab
-    --print("[STUpdater] ActivateSkill SERVER", characterprefab, skill)
+    self:_dbg_print("ActivateSkill SERVER", characterprefab, skill)
     local onactivate = skilltreedefs.SKILLTREE_DEFS[characterprefab][skill].onactivate
     if onactivate then
         local fromload = self.skilltree.skip_validation
@@ -110,12 +114,12 @@ end
 
 function SkillTreeUpdater:DeactivateSkill_Client(skill) -- NOTES(JBK): Use DeactivateSkill instead.
     local characterprefab = ThePlayer.prefab
-    --print("[STUpdater] DeactivateSkill CLIENT", characterprefab, skill)
+    self:_dbg_print("DeactivateSkill CLIENT", characterprefab, skill)
     ThePlayer:PushEvent("ondeactivateskill_client", {skill = skill,})
 end
 function SkillTreeUpdater:DeactivateSkill_Server(skill) -- NOTES(JBK): Use DeactivateSkill instead.
     local characterprefab = self.inst.prefab
-    --print("[STUpdater] DeactivateSkill SERVER", characterprefab, skill)
+    self:_dbg_print("DeactivateSkill SERVER", characterprefab, skill)
     local ondeactivate = skilltreedefs.SKILLTREE_DEFS[characterprefab][skill].ondeactivate
     if ondeactivate then
         local fromload = self.skilltree.skip_validation
@@ -155,12 +159,12 @@ end
 
 function SkillTreeUpdater:AddSkillXP_Client(amount, total) -- NOTES(JBK): Use AddSkillXP instead.
     local characterprefab = ThePlayer.prefab
-    --print("[STUpdater] AddSkillXP CLIENT", characterprefab, amount, total)
+    self:_dbg_print("AddSkillXP CLIENT", characterprefab, amount, total)
     ThePlayer:PushEvent("onaddskillxp_client", {amount = amount, total = total})
 end
 function SkillTreeUpdater:AddSkillXP_Server(amount, total) -- NOTES(JBK): Use AddSkillXP instead.
     local characterprefab = self.inst.prefab
-    --print("[STUpdater] AddSkillXP SERVER", characterprefab, amount, total)
+    self:_dbg_print("AddSkillXP SERVER", characterprefab, amount, total)
     self.inst:PushEvent("onaddskillxp_server", {amount = amount, total = total})
 end
 function SkillTreeUpdater:AddSkillXP(amount, prefab, fromrpc)
@@ -210,17 +214,17 @@ function SkillTreeUpdater:SetSkipValidation(skip) -- Skip skill validation check
 end
 
 function SkillTreeUpdater:OnSave()
-    local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab)
+    local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab, true)
     local skilltreeblobprefab = self.skilltreeblobprefab or self.inst.prefab
-    --print("[STUpdater] OnSave", skilltreeblob, skilltreeblobprefab)
+    self:_dbg_print("OnSave", skilltreeblob, skilltreeblobprefab)
     if skilltreeblob ~= TheSkillTree.NILDATA then
         return {skilltreeblob = skilltreeblob, skilltreeblobprefab = skilltreeblobprefab}
     end
 end
 
 function SkillTreeUpdater:TransferComponent(newinst)
-    --print("[STUpdater] TransferComponent", self.inst, newinst)
-    local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab)
+    self:_dbg_print("TransferComponent", self.inst, newinst)
+    local skilltreeblob = self.skilltreeblob or self.skilltree:EncodeSkillTreeData(self.inst.prefab, true)
     local skilltreeblobprefab = self.skilltreeblobprefab or self.inst.prefab
     local newcomponent = newinst.components.skilltreeupdater
     if skilltreeblob ~= TheSkillTree.NILDATA then
@@ -239,7 +243,7 @@ function SkillTreeUpdater:SetPlayerSkillSelection(skillselection) -- NOTES(JBK):
     end
     self:SetSilent(false)
     self:SetSkipValidation(false)
-    self.skilltreeblob = self.skilltree:EncodeSkillTreeData(self.inst.prefab)
+    self.skilltreeblob = self.skilltree:EncodeSkillTreeData(self.inst.prefab, true)
     self.skilltreeblobprefab = self.inst.prefab
 end
 
@@ -278,7 +282,7 @@ function SkillTreeUpdater:OnLoad(data)
     if data then
         self.skilltreeblob = data.skilltreeblob
         self.skilltreeblobprefab = data.skilltreeblobprefab
-        --print("[STUpdater] OnLoad", self.skilltreeblob, self.skilltreeblobprefab)
+        self:_dbg_print("OnLoad", self.skilltreeblob, self.skilltreeblobprefab)
     end
 end
 

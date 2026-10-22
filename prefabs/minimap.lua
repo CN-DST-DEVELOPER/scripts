@@ -11,6 +11,8 @@ local assets =
     Asset("IMAGE", "minimap/minimap_atlas1.tex"),
     Asset("ATLAS", "minimap/minimap_data2.xml"),
     Asset("IMAGE", "minimap/minimap_atlas2.tex"),
+    Asset("ATLAS", "minimap/minimap_data3.xml"),
+    Asset("IMAGE", "minimap/minimap_atlas3.tex"),
 
     Asset("ATLAS", "images/hud.xml"),
     Asset("IMAGE", "images/hud.tex"),
@@ -41,6 +43,7 @@ local function fn()
 
     inst.MiniMap:AddAtlas(resolvefilepath("minimap/minimap_data1.xml"))
     inst.MiniMap:AddAtlas(resolvefilepath("minimap/minimap_data2.xml"))
+    inst.MiniMap:AddAtlas(resolvefilepath("minimap/minimap_data3.xml"))
     for _, atlases in ipairs(ModManager:GetPostInitData("MinimapAtlases")) do
         for _, path in ipairs(atlases) do
             inst.MiniMap:AddAtlas(resolvefilepath(path))

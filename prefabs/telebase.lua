@@ -91,15 +91,19 @@ function FindNearestActiveTelebase(x, y, z, range, minrange, prioritizetype)
         local nearest = nil
         for k, v in pairs(TELEBASES) do
             if validteleporttarget(k) then
-                local distsq = k:GetDistanceSqToPoint(x, y, z)
-                if prioritizetype and k.gemtype == prioritizetype then
-                    if distsq < prioritymindistsq and distsq >= minrange and distsq < range then
-                        prioritymindistsq = distsq
-                        prioritynearest = k
+                -- NOTES(JBK): This function is used only by staff currently so we will do the teleport filter check here.
+                local x2, y2, z2 = k.Transform:GetWorldPosition()
+                if IsTeleportingPermittedFromPointToPoint(x, y, z, x2, y2, z2) then
+                    local distsq = k:GetDistanceSqToPoint(x, y, z)
+                    if prioritizetype and k.gemtype == prioritizetype then
+                        if distsq < prioritymindistsq and distsq >= minrange and distsq < range then
+                            prioritymindistsq = distsq
+                            prioritynearest = k
+                        end
+                    elseif distsq < mindistsq and distsq >= minrange and distsq < range then
+                        mindistsq = distsq
+                        nearest = k
                     end
-                elseif distsq < mindistsq and distsq >= minrange and distsq < range then
-                    mindistsq = distsq
-                    nearest = k
                 end
             end
         end

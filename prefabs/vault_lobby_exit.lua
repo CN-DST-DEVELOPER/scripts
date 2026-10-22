@@ -65,17 +65,6 @@ local function SetExitTarget(inst, targetinst)
         return
     end
 
-    if inst.hadrope_fromload then
-        inst.hadrope_fromload = nil
-        inst.hadrope_callback = function()
-            inst:RemoveEventCallback("entitywake", inst.hadrope_callback, targetinst)
-            inst:RemoveEventCallback("entitysleep", inst.hadrope_callback, targetinst)
-            inst.hadrope_callback = nil
-            inst:AddRope()
-        end
-        inst:ListenForEvent("entitywake", inst.hadrope_callback, targetinst)
-        inst:ListenForEvent("entitysleep", inst.hadrope_callback, targetinst)
-    end
     inst.components.teleporter:SetEnabled(true)
     inst:ListenForEvent("onremove", inst._exittarget_onremove, targetinst)
 end
@@ -152,7 +141,6 @@ local function AddRope(inst)
     rope.Transform:SetPosition(x + rope_offset.x, y, z + rope_offset.z)
     rope.persists = false
     rope:SetExitTarget(inst)
-    inst:SetExitTarget(rope)
     if not rope:IsAsleep() then
         rope.AnimState:PlayAnimation("down")
         rope.AnimState:PushAnimation("idle_loop", true)
@@ -297,7 +285,17 @@ local function OnLoad(inst, data, ents)
     end
 end
 
-local function MakeChasm(name, canrope, lobbyexit, keyroomexit)
+local function OnRemove_lobby(inst)
+    TheWorld:PushEvent("ms_unregister_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.LOBBYVAULT, context = VIRTUALROOMCONTEXT.MARKER})
+end
+local function OnRemove_vault(inst)
+    TheWorld:PushEvent("ms_unregister_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.MARKER})
+end
+
+local function MakeChasm(name, canrope)
+    -- NOTES(JBK): If more parameters are needed canrope should move into a data table with the named setup params in it.
+    local lobbyexit = canrope
+    local keyroomexit = not lobbyexit
     local function fn()
         local inst = CreateEntity()
 
@@ -384,6 +382,7 @@ local function MakeChasm(name, canrope, lobbyexit, keyroomexit)
         teleporter.offset = 3
         teleporter:SetSelfManaged(lobbyexit)
         teleporter:SetEnabled(false)
+        teleporter.saveenabled = false
         inst.StartTravelSound = StartTravelSound
         inst:ListenForEvent("starttravelsound", inst.StartTravelSound) -- triggered by player stategraph
 
@@ -394,6 +393,7 @@ local function MakeChasm(name, canrope, lobbyexit, keyroomexit)
 
         inst._onroperemoved = function()
             inst.rope = nil
+            inst:RemoveRope()
         end
 
         inst.OnSave = OnSave
@@ -405,10 +405,11 @@ local function MakeChasm(name, canrope, lobbyexit, keyroomexit)
         inst.Open = Open
 
         if lobbyexit then
-            TheWorld:PushEvent("ms_register_vault_lobby_exit", inst)
+            inst:ListenForEvent("onremove", OnRemove_lobby)
+            TheWorld:PushEvent("ms_register_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.LOBBYVAULT, context = VIRTUALROOMCONTEXT.MARKER})
         elseif keyroomexit then
-            TheWorld:PushEvent("ms_register_vault_key_exit", inst)
-            inst.components.teleporter.saveenabled = false
+            inst:ListenForEvent("onremove", OnRemove_vault)
+            TheWorld:PushEvent("ms_register_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.MARKER})
         end
 
         return inst
@@ -417,5 +418,5 @@ local function MakeChasm(name, canrope, lobbyexit, keyroomexit)
     return Prefab(name, fn, assets, prefabs)
 end
 
-return MakeChasm("vault_lobby_exit", true, true),
-    MakeChasm("vault_key_exit", false, false, true)
+return MakeChasm("vault_lobby_exit", true),
+    MakeChasm("vault_key_exit", false)

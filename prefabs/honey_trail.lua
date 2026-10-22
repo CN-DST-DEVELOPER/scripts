@@ -1,24 +1,28 @@
-local assets =
-{
-    Asset("ANIM", "anim/honey_trail.zip"),
-}
-
 local HONEYTRAILSLOWDOWN_MUST_TAGS = { "locomotor" }
 local HONEYTRAILSLOWDOWN_CANT_TAGS = { "flying", "playerghost", "INLIMBO", "honey_ammo_afflicted", "vigorbuff" }
+local HONEYTRAILSLOWDOWN_CANT_TAGS_SHROUDEN = { "flying", "playerghost", "INLIMBO", "gelblobbed" }
 
-local function OnUpdate(inst, x, y, z, rad)
-    for i, v in ipairs(TheSim:FindEntities(x, y, z, rad, HONEYTRAILSLOWDOWN_MUST_TAGS, HONEYTRAILSLOWDOWN_CANT_TAGS)) do
-        if v.components.locomotor ~= nil then
+local function OnUpdateServer(inst, x, y, z, rad, server_exclude_tags)
+	local ents =
+		inst.registered_tags and
+		TheSim:FindEntities_Registered(x, y, z, rad, inst.registered_tags) or
+		TheSim:FindEntities(x, y, z, rad, HONEYTRAILSLOWDOWN_MUST_TAGS, server_exclude_tags)
+
+    for _, v in ipairs(ents) do
+        if v.components.locomotor and (inst.filterfn == nil or inst.filterfn(v, inst)) then
             v.components.locomotor:PushTempGroundSpeedMultiplier(TUNING.BEEQUEEN_HONEYTRAIL_SPEED_PENALTY, WORLD_TILES.MUD)
         end
     end
 end
 
-local function OnUpdateClient(inst, x, y, z, rad)
+local CLIENT_EXCLUDE_TAGS = { "playerghost", "honey_ammo_afflicted", "vigorbuff" }
+local CLIENT_EXCLUDE_TAGS_SHROUDEN = { "playerghost", "gelblobbed" }
+
+local function OnUpdateClient(inst, x, y, z, rad, client_exclude_tags)
     local player = ThePlayer
     if player ~= nil and
         player.components.locomotor ~= nil and
-        not player:HasTag("playerghost") and
+		not player:HasAnyTag(client_exclude_tags) and
         player:GetDistanceSqToPoint(x, 0, z) < rad * rad then
         player.components.locomotor:PushTempGroundSpeedMultiplier(TUNING.BEEQUEEN_HONEYTRAIL_SPEED_PENALTY, WORLD_TILES.MUD)
     end
@@ -45,63 +49,94 @@ local function OnAnimOver(inst)
     end
 end
 
-local function OnInit(inst, scale)
+local function OnInit(inst, _exclude_tags, scale)
     local x, y, z = inst.Transform:GetWorldPosition()
     if scale == nil then
         scale = inst.Transform:GetScale()
     end
     inst.task:Cancel()
-    local onupdatefn = TheWorld.ismastersim and OnUpdate or OnUpdateClient
-    inst.task = inst:DoPeriodicTask(0, onupdatefn, nil, x, y, z, scale)
-    onupdatefn(inst, x, y, z, scale)
+    local onupdatefn = TheWorld.ismastersim and OnUpdateServer or OnUpdateClient
+    inst.task = inst:DoPeriodicTask(0, onupdatefn, nil, x, y, z, scale, _exclude_tags)
+    onupdatefn(inst, x, y, z, scale, _exclude_tags)
 end
 
-local function SetVariation(inst, rand, scale, duration)
-    if inst.trailname == nil then
-        inst.Transform:SetScale(scale, scale, scale)
-
-        inst.trailname = "trail"..tostring(rand)
-        inst.duration = duration
-        inst.SoundEmitter:PlaySound("dontstarve/creatures/together/bee_queen/honey_drip")
-        inst.AnimState:PlayAnimation(inst.trailname.."_pre")
-        inst:ListenForEvent("animover", OnAnimOver)
-
-        OnInit(inst, scale)
-    end
+local function OverrideSearchParams(inst, registered_tags, filterfn)
+	inst.registered_tags = registered_tags
+	inst.filterfn = filterfn
 end
 
-local function fn()
-    local inst = CreateEntity()
+local function MakeFx(name, data)
+	local assets =
+	{
+		Asset("ANIM", "anim/honey_trail.zip"),
+	}
+	if data.build ~= "honey_trail" then
+		table.insert(assets, Asset("ANIM", "anim/"..data.build..".zip"))
+	end
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-    inst.entity:AddNetwork()
+	local function SetVariation(inst, rand, scale, duration)
+		if inst.trailname == nil then
+			inst.Transform:SetScale(scale, scale, scale)
 
-    inst:AddTag("FX")
+			inst.trailname = "trail"..tostring(rand)
+			inst.duration = duration
+			inst.SoundEmitter:PlaySound("dontstarve/creatures/together/bee_queen/honey_drip")
+			inst.AnimState:PlayAnimation(inst.trailname.."_pre")
+			inst:ListenForEvent("animover", OnAnimOver)
 
-    inst.AnimState:SetBank("honey_trail")
-    inst.AnimState:SetBuild("honey_trail")
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(3)
+			OnInit(inst, data.server_exclude_tags, scale)
+		end
+	end
 
-    inst._isfading = net_bool(inst.GUID, "honey_trail._isfading", "isfadingdirty")
+	local function fn()
+		local inst = CreateEntity()
 
-    inst.entity:SetPristine()
+		inst.entity:AddTransform()
+		inst.entity:AddAnimState()
+		inst.entity:AddSoundEmitter()
+		inst.entity:AddNetwork()
 
-    if not TheWorld.ismastersim then
-        inst:ListenForEvent("isfadingdirty", OnIsFadingDirty)
-        inst.task = inst:DoPeriodicTask(0, OnInit)
+		inst:AddTag("FX")
 
-        return inst
-    end
+		inst.AnimState:SetBank("honey_trail")
+		inst.AnimState:SetBuild(data.build)
+		inst.AnimState:SetLayer(LAYER_BACKGROUND)
+		inst.AnimState:SetSortOrder(3)
+		if data.light_override then
+			inst.AnimState:SetLightOverride(data.light_override)
+		end
 
-    inst.SetVariation = SetVariation
+		inst._isfading = net_bool(inst.GUID, name.."._isfading", "isfadingdirty")
 
-    inst.persists = false
-    inst.task = inst:DoTaskInTime(0, inst.Remove)
+		inst.entity:SetPristine()
 
-    return inst
+		if not TheWorld.ismastersim then
+			inst:ListenForEvent("isfadingdirty", OnIsFadingDirty)
+			inst.task = inst:DoPeriodicTask(0, OnInit, nil, data.client_exclude_tags)
+
+			return inst
+		end
+
+		inst.SetVariation = SetVariation
+		inst.OverrideSearchParams = OverrideSearchParams
+
+		inst.persists = false
+		inst.task = inst:DoTaskInTime(0, inst.Remove)
+
+		return inst
+	end
+
+	return Prefab(name, fn, assets)
 end
 
-return Prefab("honey_trail", fn, assets)
+return MakeFx("honey_trail", {
+		build = "honey_trail",
+		client_exclude_tags = CLIENT_EXCLUDE_TAGS,
+		server_exclude_tags = HONEYTRAILSLOWDOWN_CANT_TAGS,
+	}),
+	MakeFx("honey_trail_shrouden_fx", {
+		build = "honey_trail_shrouden",
+		client_exclude_tags = CLIENT_EXCLUDE_TAGS_SHROUDEN,
+		server_exclude_tags = HONEYTRAILSLOWDOWN_CANT_TAGS_SHROUDEN,
+		light_override = 1,
+	})

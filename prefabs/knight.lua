@@ -105,6 +105,7 @@ local function MakeKnight(name, common_postinit, master_postinit, _assets, _pref
 		inst:AddTag("hostile")
 		inst:AddTag("knight")
 		inst:AddTag("monster")
+		inst:AddTag("nightmarecorruptable")
 
 		if common_postinit then
 			common_postinit(inst)
@@ -158,6 +159,8 @@ local function MakeKnight(name, common_postinit, master_postinit, _assets, _pref
 
 		inst:ListenForEvent("attacked", clockwork_common.OnAttacked)
 		inst:ListenForEvent("newcombattarget", clockwork_common.OnNewCombatTarget)
+		-- king staff interaction
+		inst:ListenForEvent("ms_becomeshadowchess", clockwork_common.OnBecomeShadowChess)
 
 		if master_postinit then
 			master_postinit(inst)

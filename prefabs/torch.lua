@@ -322,6 +322,25 @@ local function OnHit(inst)
 	inst:RemoveTag("FX")
 end
 
+local LAUNCH_OFFSET = Vector3(0.25, 1, 0)
+local DEFLECT_LAUNCH_OFFSET = Vector3(0, 0.5, 0)
+
+local function OnDeflect(inst, attacker, deflector)
+	inst.components.complexprojectile:Cancel()
+	local pt = inst:GetPosition()
+	local theta = deflector:GetAngleToPoint(pt) * DEGREES
+	pt.x = pt.x + 3 * math.cos(theta)
+	pt.z = pt.z - 3 * math.sin(theta)
+	pt.y = 0
+	inst.components.complexprojectile:SetHorizontalSpeed(5)
+	inst.components.complexprojectile:SetLaunchOffset(DEFLECT_LAUNCH_OFFSET)
+	inst.components.complexprojectile.usehigharc = false
+	inst.components.complexprojectile:Launch(pt)
+	inst.components.complexprojectile:SetHorizontalSpeed(15)
+	inst.components.complexprojectile:SetLaunchOffset(LAUNCH_OFFSET)
+	inst.components.complexprojectile.usehigharc = true
+end
+
 local function RemoveThrower(inst)
     if inst.thrower then
 		if inst._owner == nil then
@@ -425,6 +444,7 @@ local function fn()
 	--Only get TOSS action via PointSpecialActions
     inst:AddTag("special_action_toss")
 	inst:AddTag("keep_equip_toss")
+	inst:AddTag("torch")
 
 	MakeInventoryFloatable(inst, "med", nil, 0.68)
 
@@ -459,9 +479,11 @@ local function fn()
 	inst:AddComponent("complexprojectile")
 	inst.components.complexprojectile:SetHorizontalSpeed(15)
 	inst.components.complexprojectile:SetGravity(-35)
-	inst.components.complexprojectile:SetLaunchOffset(Vector3(.25, 1, 0))
+	inst.components.complexprojectile:SetLaunchOffset(LAUNCH_OFFSET)
 	inst.components.complexprojectile:SetOnLaunch(OnThrown)
 	inst.components.complexprojectile:SetOnHit(OnHit)
+	inst.components.complexprojectile:SetOnDeflect(OnDeflect)
+	inst.components.complexprojectile:SetKeepOnDeflect(true)
 	inst.components.complexprojectile.ismeleeweapon = true
 
     -----------------------------------

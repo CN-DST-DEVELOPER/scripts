@@ -65,6 +65,9 @@ local function CreateRotator()
 	looper.entity:SetParent(rotator.entity)
 	looper.Follower:FollowSymbol(rotator.GUID, "fx_missile_follow", 0, 0, 0, true)
 
+	rotator.scrapbook_inspectonseen = true
+	rotator.scrapbook_proxy = "wagboss_missile"
+
 	return rotator
 end
 
@@ -650,7 +653,7 @@ local function fn()
 	inst.circling:set(true)
 	inst.pending = true
 	inst:AddComponent("updatelooper")
-    
+
     inst.scrapbook_inspectonseen = true
 
 	inst.entity:SetPristine()

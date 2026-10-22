@@ -67,7 +67,7 @@ local function test_for_scared(inst, dt)
     if not inst.AnimState:IsCurrentAnimation("scared") then
         local x, y, z = inst.Transform:GetWorldPosition()
         local players = FindPlayersInRange(x, y, z, 0.5)
-        if #players > 0 then
+        if #players > 0 or FindClosestQueenTorch(inst) then
             scareaway(inst)
         end
     end

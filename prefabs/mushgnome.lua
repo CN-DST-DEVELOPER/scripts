@@ -110,6 +110,7 @@ local function normal_fn()
     inst:AddTag("monster")
     inst:AddTag("tree")
     inst:AddTag("lunar_aligned")
+    inst:AddTag("plantcreature")
 
     inst.AnimState:SetBank("grotto_mushgnome")
     inst.AnimState:SetBuild("grotto_mushgnome")

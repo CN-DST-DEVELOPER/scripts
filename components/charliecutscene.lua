@@ -12,6 +12,7 @@ local CAMERA_DISTANCE_GAIN = 0.7
 local CAMERA_FINAL_DISTANCE = 25
 
 local REPAIR_GATE_ANIM_LENGTH = 114 * FRAMES
+local SOCKET_ANIM_LENGTH = 132 * FRAMES
 
 local CHARLIE_SPAWN_DELAY = 2
 local CHARLIE_START_CAST_DELAY = 3
@@ -19,6 +20,12 @@ local CHARLIE_CAST_TIME = REPAIR_GATE_ANIM_LENGTH + 0.5 + (20 * FRAMES)
 
 local START_REPAIRING_GATE_DELAY = CHARLIE_START_CAST_DELAY + (80 * FRAMES)
 local REPAIR_GATE_DELAY = START_REPAIRING_GATE_DELAY + REPAIR_GATE_ANIM_LENGTH
+
+local START_SOCKETING_GATE_DELAY = CHARLIE_START_CAST_DELAY + (70 * FRAMES)
+local CHARLIE_CAST_KEY_SOCKET_TIME = SOCKET_ANIM_LENGTH - (6 * FRAMES)
+local PLACE_RITUAL_CIRCLE_DELAY = START_SOCKETING_GATE_DELAY + 6.5 + (111 * FRAMES)
+local CHARLIE_START_CAST2_DELAY = PLACE_RITUAL_CIRCLE_DELAY - CHARLIE_SPAWN_DELAY - (80 * FRAMES)
+local CHARLIE_CAST_RITUAL_TIME = 0.75 + (40 * FRAMES)
 
 local START_TWEENING_DELAY = REPAIR_GATE_ANIM_LENGTH * 0.95
 local TWEEN_TO_BLACK_TIME = REPAIR_GATE_ANIM_LENGTH - START_TWEENING_DELAY
@@ -161,6 +168,7 @@ local CharlieCutscene = Class(function(self, inst)
 
     self._running = false
     self._gatefixed = false
+    self._runningkeysocket = false
 
     self._traderenabled = nil
 
@@ -188,6 +196,10 @@ function CharlieCutscene:ClientUnlockCamera()
     -- Note: TheFocalPoint will handle resetting the gain values.
 end
 
+function CharlieCutscene:ClientGetCameraAngle()
+    return self._cameraangle:value()
+end
+
 -----------------------------------------------------------------------------------------------
 
 if not TheWorld.ismastersim then
@@ -199,6 +211,10 @@ end
 --=========================================================================--
 ----                       SERVER SIDE FUNCTIONS                         ----
 --=========================================================================--
+
+function CharlieCutscene:FindAndSetCameraSceneAngle()
+    self._cameraangle:set(self:FindSceneCameraAngle())
+end
 
 function CharlieCutscene:Start()
     self._running = true
@@ -250,16 +266,21 @@ function CharlieCutscene:CollectAtriumPillarsData()
 end
 
 function CharlieCutscene:FindSceneCameraAngle()
+    self:CollectAtriumPillarsData()
     local pillar_pos = self.atrium_pillars.back:GetPosition()
-
-    local angle = math.atan2(self.gate_pos.z - pillar_pos.z, pillar_pos.x - self.gate_pos.x) / DEGREES + 180
-
-    angle = RoundPillarAngle(angle)
-
+    local angle = RoundPillarAngle(math.atan2(self.gate_pos.z - pillar_pos.z, pillar_pos.x - self.gate_pos.x) / DEGREES + 180)
     -- DiogoW: This is ugly, I know...
     local offset = ((angle == 45 or angle == 225) and -90) or 90
 
     return (angle + offset) % 360
+end
+
+function CharlieCutscene:FindRitualAngle() -- charliecutscene has data on atrium pillar positions so using this component
+    self:CollectAtriumPillarsData()
+    local pillar_pos = self.atrium_pillars.back:GetPosition()
+    local angle = RoundPillarAngle(math.atan2(self.gate_pos.z - pillar_pos.z, pillar_pos.x - self.gate_pos.x) / DEGREES + 180)
+    local offset = 45
+    return ReduceAngle((angle + offset) % 360)
 end
 
 -----------------------------------------------------------------------------------------------
@@ -275,7 +296,7 @@ function CharlieCutscene:RepairGate()
     self.inst.AnimState:PlayAnimation("fixed")
     self.inst.SoundEmitter:KillSound("fixing")
 
-    ShakeAllCameras(CAMERASHAKE.SIDE, 1, .07, .4, self.inst, 30)
+    ShakeAllCameras(CAMERASHAKE.SIDE, 1, .06, .35, self.inst, 30)
 
     self.inst.SoundEmitter:PlaySound("rifts2/atrium/fixed")
 
@@ -305,18 +326,61 @@ function CharlieCutscene:FindCharlieSpawnPoint()
     end
 end
 
+-- non-cutscene, when we're just waiting by the gateway
+function CharlieCutscene:FindCharlieRitualSpawnPoint()
+    local pillar = self.atrium_pillars.side[2]
+        or self.atrium_pillars.side[1]
+
+    if pillar ~= nil then
+        local pillar_pos = pillar:GetPosition()
+        local spawn_pos = (pillar_pos * 0.3) + (self.gate_pos * 0.7)
+
+        -- Moving the spawn point slightly ahead of the atrium gate.
+        local angle = self._cameraangle:value() / RADIANS
+        local mult = 3
+
+        local offset = Vector3(math.cos(angle), 0, math.sin(angle)):Normalize() * mult
+
+        return spawn_pos + offset
+    end
+end
+
 function CharlieCutscene:SpawnCharlieWithDelay(delay)
     self.inst:DoTaskInTime(delay, function(inst)
         self.charlie = SpawnPrefab("charlie_npc")
-        
+        self.charlie:PushEventImmediate("spawn")
+
         self.charlie.atrium = inst
-        
+
         local spawn_pos = self:FindCharlieSpawnPoint()
-        
+
         self.charlie.Transform:SetPosition(spawn_pos:Get())
         self.charlie:ForceFacePoint(self.gate_pos:Get())
 
         self.charlie:StartCastingWithDelay(CHARLIE_START_CAST_DELAY, CHARLIE_CAST_TIME)
+    end)
+end
+
+-- for cutscene 2
+function CharlieCutscene:SpawnCharlieWithDelay2(delay)
+    self.inst:DoTaskInTime(delay, function(inst)
+        self.charlie = SpawnPrefab("charlie_npc")
+        self.charlie:PushEventImmediate("spawn")
+
+        self.charlie.atrium = inst
+        self.charlie.socketing_key = true
+
+        local spawn_pos = self:FindCharlieSpawnPoint()
+
+        self.charlie.Transform:SetPosition(spawn_pos:Get())
+        self.charlie:ForceFacePoint(self.gate_pos:Get())
+
+        -- CHARLIE_NPC_SACRIFICE_REQUEST
+        self.charlie:StartCastingWithDelay(CHARLIE_START_CAST_DELAY, CHARLIE_CAST_KEY_SOCKET_TIME, true)
+
+        self.charlie:DoTaskInTime(CHARLIE_START_CAST2_DELAY, function()
+            self.charlie:StartCasting2WithDelay(0, CHARLIE_CAST_RITUAL_TIME)
+        end)
     end)
 end
 
@@ -360,41 +424,124 @@ end
 
 -----------------------------------------------------------------------------------------------
 
+-- keep in sync with atrium_gate.lua
+local NUM_RITUAL_MARKINGS = 3
+local RITUAL_MARKING_THETA_STEP = 1 / NUM_RITUAL_MARKINGS
+local MARKING_RANGE = 725 / 150
+local function SpawnCharlieCircleFX(inst)
+    inst.SoundEmitter:PlaySound("rifts8/charlie_ritual/soul")
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local theta = (inst.components.charliecutscene:FindRitualAngle() * DEGREES) -- charliecutscene has data on atrium pillar positions so using that component
+    for i = 1, NUM_RITUAL_MARKINGS do
+        SpawnPrefab("charlie_circle_spawn_fx").Transform:SetPosition(x + math.cos(theta) * MARKING_RANGE, 0, z - math.sin(theta) * MARKING_RANGE)
+        SpawnPrefab("charlie_circle_spawn_ground_fx").Transform:SetPosition(x + math.cos(theta) * MARKING_RANGE, 0, z - math.sin(theta) * MARKING_RANGE)
+        theta = theta + (RITUAL_MARKING_THETA_STEP * TWOPI)
+    end
+end
+
+local function EnableRitual(inst)
+    inst:EnableRitual(true)
+    ShakeAllCameras(CAMERASHAKE.SIDE, 1, .07, .4, inst, 30)
+end
+
+local CIRCLE_FX_TIMING = 71 * FRAMES -- 25 + 46
+function CharlieCutscene:StartSocketingGateWithDelay(delay, delay_for_ritual)
+    self.inst:DoTaskInTime(delay, self.inst.SocketVaultKey)
+    self.inst:DoTaskInTime(delay_for_ritual - CIRCLE_FX_TIMING, SpawnCharlieCircleFX)
+    self.inst:DoTaskInTime(delay_for_ritual, EnableRitual)
+end
+
+function CharlieCutscene:StartKeySocket()
+    self._runningkeysocket = true
+
+    self.inst:AddTag("intense")
+
+    TheWorld:PushEvent("charliecutscene", true)
+
+    self._traderenabled = self.inst.components.trader.enabled
+    self.inst.components.trader:Disable()
+
+    self:CollectAtriumPillarsData()
+
+    self:SpawnCharlieWithDelay2(CHARLIE_SPAWN_DELAY)
+    self:StartSocketingGateWithDelay(START_SOCKETING_GATE_DELAY, PLACE_RITUAL_CIRCLE_DELAY)
+
+    self._cameraangle:set(self:FindSceneCameraAngle())
+    self._iscameralocked:set(true)
+
+    OnIsCameraLockedDirty(self.inst)
+end
+
+-- Called by charlie_npc.lua
+function CharlieCutscene:FinishKeySocket()
+    self._runningkeysocket = false
+
+    self.inst:RemoveTag("intense")
+
+    TheWorld:PushEvent("charliecutscene", false)
+
+    -- Note: trader.enabled is not saved, so this don't need to run on load.
+    if self._traderenabled then
+        self.inst.components.trader:Enable()
+    end
+
+    self._iscameralocked:set(false)
+    OnIsCameraLockedDirty(self.inst)
+end
+
+-----------------------------------------------------------------------------------------------
+
 function CharlieCutscene:IsGateRepaired()
     return self._gatefixed
 end
 
 function CharlieCutscene:OnSave()
     if self._running then
-        return {
-            running = true
-        }
+        return { running = true }
     elseif self._gatefixed then
-        return {
-            gatefixed = true
-        }
+        return { gatefixed = true, runningkeysocket = self._runningkeysocket or nil }
     end
 end
 
 function CharlieCutscene:OnLoad(data)
     if data ~= nil then
+        -- Just skip the cutscenes!
         if data.running then
-            -- Just skip the cutscene!
             self:Finish()
-
             self._running = false
+        end
+
+        if data.runningkeysocket then
+            self.inst:SocketVaultKey(true)
+            self:FinishKeySocket()
+            self._runningkeysocket = false
         end
 
         if data.running or data.gatefixed then
             self._gatefixed = true
             self.inst.AnimState:SetBuild("atrium_gate_build")
 
+            local vaultkeyin = self.inst:IsVaultKeySocketed()
             local active = self.inst.components.pickable.caninteractwith or self.inst.components.worldsettingstimer:ActiveTimerExists("destabilizedelay")
-            self.inst.MiniMapEntity:SetIcon(active and "atrium_gate_fixed_active.png" or "atrium_gate_fixed.png")
+            self.inst.MiniMapEntity:SetIcon((active and vaultkeyin and "atrium_gate_keystone_active.png") or active and "atrium_gate_fixed_active.png" or vaultkeyin and "atrium_gate_keystone.png" or "atrium_gate_fixed.png")
         end
     end
 end
 
+function CharlieCutscene:LoadPostPass(ents, data)
+    if data ~= nil then
+        if data.runningkeysocket then
+            self.inst._runningkeysocket = true
+            -- kill off cooldown timer if it exists
+            self.inst.components.worldsettingstimer:StopTimer("cooldown")
+            self.inst.SoundEmitter:KillSound("loop")
+            -- self.inst:EnableRitual(true) -- done in atrium_gate:OnLoadPostPass so that entitytracker is guaranteed to have ran
+            if not self.inst.components.pickable.caninteractwith then
+                self.inst:OnKeyGiven()
+            end
+        end
+    end
+end
 -----------------------------------------------------------------------------------------------
 
 return CharlieCutscene

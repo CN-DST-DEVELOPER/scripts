@@ -139,7 +139,7 @@ local function OnAttacked(inst, data)
         if inst.charged then
             if data.attacker.components.health ~= nil and not data.attacker.components.health:IsDead() and
                 data.stimuli ~= "soul" and
-                (data.weapon == nil or ((data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil) and data.weapon.components.projectile == nil)) and
+				not IsRangedWeapon(data.weapon) and
 				not (data.attacker.components.inventory ~= nil and data.attacker.components.inventory:IsInsulated()) and
 				not data.attacker:HasTag("catapult")
 			then

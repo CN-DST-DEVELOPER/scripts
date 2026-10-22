@@ -133,7 +133,7 @@ end
 --Create icon prefabs to be used with globaltrackingicon component.
 --*See example usage below.
 
-local function gclass_or_revealable_CreateIcon(overfog, isproxy, icondata, selected)
+local function gclass_or_revealable_CreateIcon(overfog, alwaysoutsidevrs, isproxy, icondata, selected)
 	local inst = CreateEntity()
 
 	inst:AddTag("CLASSIFIED")
@@ -149,6 +149,7 @@ local function gclass_or_revealable_CreateIcon(overfog, isproxy, icondata, selec
 	inst.MiniMapEntity:SetCanUseCache(false)
 	inst.MiniMapEntity:SetDrawOverFogOfWar(overfog)
 	inst.MiniMapEntity:SetIsProxy(isproxy)
+    inst.MiniMapEntity:SetAlwaysOutsideVRS(alwaysoutsidevrs)
 
 	return inst
 end
@@ -195,12 +196,16 @@ local function gclass_or_revealable_TrackEntity(inst, target, restriction)--, ic
 end
 
 local function gclass_Init(inst)
-	inst.iconnear = gclass_or_revealable_CreateIcon(true, false, inst.icondata, inst.selected)
-	inst.iconfar = gclass_or_revealable_CreateIcon(true, true, inst.icondata, inst.selected)
+    local alwaysoutsidevrs = inst.icondata.alwaysoutsidevrs
+	inst.iconnear = gclass_or_revealable_CreateIcon(true, alwaysoutsidevrs, false, inst.icondata, inst.selected)
+	inst.iconfar = gclass_or_revealable_CreateIcon(true, alwaysoutsidevrs, true, inst.icondata, inst.selected)
 	inst.iconnear.entity:SetParent(inst.entity)
 	inst.iconfar.entity:SetParent(inst.entity)
 	if inst.icondata.fogrevealer then
 		inst.iconfar.MiniMapEntity:SetIsFogRevealer(true)
+	end
+	if alwaysoutsidevrs then
+		inst.iconfar.MiniMapEntity:SetAlwaysOutsideVRS(true)
 	end
 end
 
@@ -234,7 +239,7 @@ local function revealable_Init(inst)
 		(inst._restriction == nil or (ThePlayer and ThePlayer:HasTag(inst._restriction)))
 	then
 		if inst.icon == nil then
-			inst.icon = gclass_or_revealable_CreateIcon(false, inst.isproxy:value(), inst.icondata)
+			inst.icon = gclass_or_revealable_CreateIcon(false, false, inst.isproxy:value(), inst.icondata)
 			inst.icon.entity:SetParent(inst.entity)
 		end
 	elseif inst.icon then
@@ -281,6 +286,7 @@ function MakeGlobalTrackingIcons(name, data)
 		priority = data.icondata.priority,
 		selectedpriority = data.icondata.selectedpriority,
 		fogrevealer = data.icondata.fogrevealer,
+		alwaysoutsidevrs = data.icondata.alwaysoutsidevrs,
 	} or {
 		icon = name,
 	}

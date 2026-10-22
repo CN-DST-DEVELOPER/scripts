@@ -1,4 +1,4 @@
-ChattyNode = Class(BehaviourNode, function(self, inst, chatlines, child, delay, rand_delay, enter_delay, enter_delay_rand)
+ChattyNode = Class(BehaviourNode, function(self, inst, chatlines, child, delay, rand_delay, enter_delay, enter_delay_rand, data)
     BehaviourNode._ctor(self, "ChattyNode", {child})
 
     self.inst = inst
@@ -18,6 +18,11 @@ ChattyNode = Class(BehaviourNode, function(self, inst, chatlines, child, delay, 
 
 	self.enter_delay = enter_delay
 	self.enter_delay_rand = enter_delay_rand
+
+    if data then
+        self.noanim = data.noanim or nil
+        self.nonpctalker = data.nonpctalker or nil
+    end
 end)
 
 function ChattyNode:Visit()
@@ -35,13 +40,14 @@ function ChattyNode:Visit()
             -- for a long time, and frequently enter it.
             local enter_delay_rand = (self.enter_delay_rand ~= nil and math.random() * self.enter_delay_rand) or 0
 			self.nextchattime = t + (self.enter_delay or 0) + enter_delay_rand - FRAMES
+            self.initial_enter = true
 		end
 
         if self.nextchattime == nil or t > self.nextchattime then
             if type(self.chatlines) == "function" then
-                local str = self.chatlines(self.inst)
+                local str = self.chatlines(self.inst, self.initial_enter)
 				if str ~= nil then
-					if self.inst.components.npc_talker then
+					if self.inst.components.npc_talker and not self.nonpctalker then
                         local splits = str:split(".")
                         if STRINGS[splits[1]] ~= nil then
                             local echotochatpriority = (self.chatter_echotochatpriority == true and 1)
@@ -52,7 +58,7 @@ function ChattyNode:Visit()
 						    self.inst.components.npc_talker:Say(str,nil,true)
                         end
 					else
-						self.inst.components.talker:Say(str)
+						self.inst.components.talker:Say(str, nil, self.noanim)
 					end
 				end
             elseif type(self.chatlines) == "table" then
@@ -63,7 +69,7 @@ function ChattyNode:Visit()
                     dumptable(self.chatlines)
                 end
                 local str = self.chatlines[math.random(r)]
-                self.inst.components.talker:Say(str)
+                self.inst.components.talker:Say(str, nil, self.noanim)
             else
                 --Will be networked if talker:MakeChatter() was initialized
                 local strtbl = STRINGS[self.chatlines]
@@ -82,6 +88,7 @@ function ChattyNode:Visit()
                 end
             end
             self.nextchattime = t + (self.delay or 10) + math.random() * (self.rand_delay or 10)
+            self.initial_enter = nil
         end
         if self.nextchattime ~= nil then
             self:Sleep(self.nextchattime - t)

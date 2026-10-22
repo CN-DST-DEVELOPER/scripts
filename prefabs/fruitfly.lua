@@ -71,6 +71,7 @@ local function common()
     inst:AddTag("ignorewalkableplatformdrowning")
     inst:AddTag("insect")
     inst:AddTag("small")
+    inst:AddTag("plantcreature")
 
     return inst
 end

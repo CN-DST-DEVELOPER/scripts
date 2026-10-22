@@ -244,6 +244,23 @@ TheMixer:AddNewMix("supernova", 0, 3,
 })
 
 --------------------------------------------------------------------------
+-- Shrouded Queen aka charlie_boss
+
+TheMixer:AddNewMix("gateway_dimension_battle", 1, 2,
+{
+	[amb] = 0.25,
+	[cloud] = 0,
+	[music] = 1,
+	[voice] = 1,
+	[movement] = 1,
+	[creature] = 1,
+	[player] = 1,
+	[HUD] = 1,
+	[sfx] = 1,
+	[slurp] = 1,
+})
+
+--------------------------------------------------------------------------
 -- WX-78 screech
 
 TheMixer:AddNewMix("wx_screech", 0.6, 4,

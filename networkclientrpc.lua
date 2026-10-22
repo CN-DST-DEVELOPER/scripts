@@ -1615,6 +1615,10 @@ local SHARD_RPC_HANDLERS =
     SyncMermKingPauldron = function(shardid, exists)
         Shard_SyncMermKingPauldron(exists, shardid)
     end,
+
+    SyncCharlieDefeated = function(shardid, exists)
+        Shard_SyncCharlieDefeated(exists, shardid)
+    end,
 }
 
 SHARD_RPC = {}

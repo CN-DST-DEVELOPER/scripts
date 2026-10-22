@@ -179,7 +179,7 @@ AddRoom("RuinedCityEntrance", {
 --City
 AddRoom("RuinedCity", {-- Maze used to define room connectivity
     colour={r=.25,g=.28,b=.25,a=.50},
-    value = WORLD_TILES.CAVE,
+    value = WORLD_TILES.MUD,
     tags = {"Maze", "Nightmare"},
     internal_type = NODE_INTERNAL_CONNECTION_TYPE.EdgeCentroid,
     contents =  {

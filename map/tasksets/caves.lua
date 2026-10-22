@@ -82,6 +82,7 @@ local taskset_data =
     required_prefabs = {
         "tentacle_pillar_atrium",
         "tentacle_pillar_atrium",
+        "batbosscave",
     },
     set_pieces = { -- if you add or remove tasks, don't forget to update this list!
         ["TentaclePillar"] = { count = 10, tasks= {

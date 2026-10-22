@@ -1962,6 +1962,7 @@ end
 
 ------------------------------
 -- PRNG implementation based off of Sergei Mikhailovich Prigarin's demonstration program documentation for the "2^40-5^17" multiplicative generator from June, 1999.
+-- #PSEUDO RANDOM PRND PRAND (for searching XD)
 PRNG_Uniform = Class(function(self, seed)
     self.A1 = 727595 -- 5^17 = D20 * A1 + A2
     self.A2 = 798405

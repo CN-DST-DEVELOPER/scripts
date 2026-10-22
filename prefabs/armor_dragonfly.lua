@@ -3,11 +3,14 @@ local assets =
     Asset("ANIM", "anim/torso_dragonfly.zip"),
 }
 
-local function OnBlocked(owner, data)
+local function OnBlocked(owner, data, inst)
+	if not ShouldProcOnAttackedOrBlocked(inst, owner, data) then
+		return
+	end
     owner.SoundEmitter:PlaySound("dontstarve/wilson/hit_scalemail")
     if data.attacker ~= nil and
         not (data.attacker.components.health ~= nil and data.attacker.components.health:IsDead()) and
-        (data.weapon == nil or ((data.weapon.components.weapon == nil or data.weapon.components.weapon.projectile == nil) and data.weapon.components.projectile == nil)) and
+		not IsRangedWeapon(data.weapon) and
         data.attacker.components.burnable ~= nil and
         not data.redirected and
         not data.attacker:HasTag("thorny") then
@@ -24,8 +27,11 @@ local function onequip(inst, owner)
         owner.AnimState:OverrideSymbol("swap_body", "torso_dragonfly", "swap_body")
     end
 
-    inst:ListenForEvent("blocked", OnBlocked, owner)
-    inst:ListenForEvent("attacked", OnBlocked, owner)
+	if inst._onblocked == nil then
+		inst._onblocked = function(owner, data) OnBlocked(owner, data, inst) end
+	end
+	inst:ListenForEvent("blocked", inst._onblocked, owner)
+	inst:ListenForEvent("attacked", inst._onblocked, owner)
 
     if owner.components.health ~= nil then
         owner.components.health.externalfiredamagemultipliers:SetModifier(inst, 1 - TUNING.ARMORDRAGONFLY_FIRE_RESIST)
@@ -35,8 +41,9 @@ end
 local function onunequip(inst, owner)
     owner.AnimState:ClearOverrideSymbol("swap_body")
 
-    inst:RemoveEventCallback("blocked", OnBlocked, owner)
-    inst:RemoveEventCallback("attacked", OnBlocked, owner)
+	inst:RemoveEventCallback("blocked", inst._onblocked, owner)
+	inst:RemoveEventCallback("attacked", inst._onblocked, owner)
+	inst._onblocked = nil
 
     if owner.components.health ~= nil then
         owner.components.health.externalfiredamagemultipliers:RemoveModifier(inst)

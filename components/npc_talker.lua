@@ -1,8 +1,10 @@
 
 local NPC_Talker = Class(function(self, inst)
     self.inst = inst
+
     self.queue = {}
     self.soundqueue = {}
+    self.callbackqueue = {}
     self.default_chatpriority = CHATPRIORITIES.NOCHAT
 
     --self.speaktime = nil
@@ -10,14 +12,13 @@ local NPC_Talker = Class(function(self, inst)
     --self.inst:ListenForEvent("done_npc_talk", function(inst) self:checknextline() end)
 end)
 
-function NPC_Talker:Say(lines, override, stompable, sound)
+function NPC_Talker:Say(lines, override, stompable, sound, cb)
     -- override means it wipes out the old queue
     -- stompable means anything else will remove it. And if there's anything queued already it will be ignored
 
 
     if override or self.stompable then
-       self.queue = {}
-       self.soundqueue = {}
+       self:ResetQueue()
        self.stompable = false
     end
 
@@ -27,15 +28,17 @@ function NPC_Talker:Say(lines, override, stompable, sound)
 
     if lines then
 
-        table.insert(self.soundqueue,sound or false)
+        table.insert(self.soundqueue, sound or false)
 
         if type(lines) ~= "table" then
-            table.insert(self.queue,lines)
+            table.insert(self.queue, lines)
+            table.insert(self.callbackqueue, cb or false)
         else
             for i,line in ipairs(lines) do
                 if i > 1 then
                     table.insert(self.soundqueue, false)
                 end
+                table.insert(self.callbackqueue, (i == #lines and cb) or false)
                 table.insert(self.queue, line)
             end
         end
@@ -47,10 +50,9 @@ function NPC_Talker:Say(lines, override, stompable, sound)
 
 end
 
-function NPC_Talker:Chatter(strtbl, index, chatpriority, override, stompable, sound)
+function NPC_Talker:Chatter(strtbl, index, chatpriority, override, stompable, sound, cb)
     if override or self.stompable then
-        self.queue = {}
-        self.soundqueue = {}
+        self:ResetQueue()
         self.stompable = false
     end
 
@@ -73,12 +75,14 @@ function NPC_Talker:Chatter(strtbl, index, chatpriority, override, stompable, so
             -- If an index was given, or our entry only has one line, just queue up that one line.
             table.insert(self.queue, {strtbl, index or 0, chatpriority})
             table.insert(self.soundqueue, sound or false)
+            table.insert(self.callbackqueue, cb or false)
         else
             -- If no index was given, and we have multiple lines, queue up all of them
             -- to play in sequence.
             for i, _ in ipairs(string_data) do
                 table.insert(self.queue, {strtbl, i, chatpriority})
                 table.insert(self.soundqueue, (i == 1 and sound) or false)
+                table.insert(self.callbackqueue, (i == #string_data and cb) or false)
             end
         end
     end
@@ -95,6 +99,7 @@ end
 function NPC_Talker:ResetQueue()
     self.queue = {}
     self.soundqueue = {}
+    self.callbackqueue = {}
 end
 
 function NPC_Talker:DoNextLine()
@@ -115,6 +120,10 @@ function NPC_Talker:DoNextLine()
         if self.soundqueue[1] and type(self.soundqueue[1]) == "string" then
             self.inst.SoundEmitter:PlaySound(self.soundqueue[1])
         end
+        if self.callbackqueue[1] and type(self.callbackqueue[1]) == "function" then
+            self.callbackqueue[1](self.inst)
+        end
+        table.remove(self.callbackqueue, 1)
         table.remove(self.soundqueue, 1)
         table.remove(self.queue, 1)
     end

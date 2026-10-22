@@ -371,10 +371,17 @@ local function RetargetFn(inst)
 	--NOTE: grouptargets aleady have checked for inarena conditions during UpdatePlayerTargets
 	assert(next(inst._temptbl1) == nil)
 	local nearplayers = inst._temptbl1
-	for k in pairs(inst.components.grouptargeter:GetTargets()) do
-		local range = inrange and TUNING.WAGBOSS_ROBOT_ATTACK_RANGE + k:GetPhysicsRadius(0) or TUNING.WAGBOSS_ROBOT_AGGRO_DIST
-		if k:GetDistanceSqToPoint(x, y, z) < range * range then
+	if not inrange and inst._engagetask and not inst._engagetask.engaged and inst.engaged then
+		--V2C: when pending reset (was in combat but lost aggro), retarget the entire arena until successfully reset
+		for k in pairs(inst.components.grouptargeter:GetTargets()) do
 			table.insert(nearplayers, k)
+		end
+	else
+		for k in pairs(inst.components.grouptargeter:GetTargets()) do
+			local range = inrange and TUNING.WAGBOSS_ROBOT_ATTACK_RANGE + k:GetPhysicsRadius(0) or TUNING.WAGBOSS_ROBOT_AGGRO_DIST
+			if k:GetDistanceSqToPoint(x, y, z) < range * range then
+				table.insert(nearplayers, k)
+			end
 		end
 	end
 	if #nearplayers > 0 then

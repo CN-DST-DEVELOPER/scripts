@@ -19,7 +19,7 @@ local function SetHeadAlpha(inst, a)
 	end
 end
 
-local shadow_tags = {"nightmarecreature", "shadowcreature", "shadow", "shadowminion", "stalker", "stalkerminion", "nightmare", "shadow_fire"}
+local shadow_tags = {"nightmarecreature", "shadowcreature", "shadow", "shadowminion", "stalkerminion", "nightmare", "shadow_fire"}
 
 local attack_any_tags = ConcatArrays({"player","gestalt_possessable"}, shadow_tags)
 local watch_must_tags = {"player"}
@@ -41,12 +41,20 @@ local function FindRelocatePoint(inst)
 	return offset ~= nil and (offset + pt) or pt
 end
 
+local STALKER_TAGS = { "stalker" }
+local AVOID_STALKER_DIST = 10 -- keep in sync with brightmare_gestaltguardbrain.lua::AVOID_STALKER_DIST
+
+-- NOTE this has to support clients too
 local function GetLevelForTarget(target)
 	-- L1: 0.5 to 1.0 is ignore
 	-- L2: 0.0 to 0.5 is look at behaviour
 	-- L3: shadow target, attack it!
 
 	if target ~= nil then
+		if FindEntity(target, AVOID_STALKER_DIST, nil, STALKER_TAGS) ~= nil then
+			return 2, 0
+		end
+
 		if target:HasTag("gestalt_possessable") then
 			return 3, 0
 		end

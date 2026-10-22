@@ -316,6 +316,7 @@ for k, v in pairs(MORPHABLE_ITEMS) do
 end
 
 --
+local DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE }
 local function revealed_fn()
     local inst = CreateEntity()
 
@@ -363,8 +364,7 @@ local function revealed_fn()
 
     --
     local eater = inst:AddComponent("eater")
-    eater:SetDiet({FOODGROUP.OMNI}, {FOODGROUP.OMNI})
-    eater:SetCanEatHorrible()
+    eater:SetDiet(DIET, DIET)
     eater:SetStrongStomach(true) -- can eat monster meat!
 
     --

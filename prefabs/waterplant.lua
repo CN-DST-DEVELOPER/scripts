@@ -382,6 +382,7 @@ local function fn()
     inst:AddTag("seastack")
     inst:AddTag("veggie")
     inst:AddTag("waterplant")       -- So that plants don't try to affect each other
+    inst:AddTag("plantcreature")
 
     inst.AnimState:SetBank("barnacle_plant")
     inst.AnimState:SetBuild("barnacle_plant_colour_swaps")

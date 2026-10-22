@@ -64,6 +64,9 @@ local function fn()
     inst.AnimState:SetSortOrder(3)
     inst.AnimState:SetRayTestOnBB(true)
 
+    -- Blank string for controller action prompt.
+    inst.name = " "
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

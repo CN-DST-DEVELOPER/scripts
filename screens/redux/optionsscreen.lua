@@ -392,6 +392,7 @@ local OptionsScreen = Class(Screen, function( self, prev_screen, default_section
     self.show_language_options = (prev_screen ~= nil and prev_screen.name == "MultiplayerMainScreen") and (IsConsole() or IsSteam())
 	self.show_mod_language_options = (prev_screen ~= nil and prev_screen.name == "MultiplayerMainScreen") and IsSteam()
 	self.show_datacollection = IsSteam() and not InGamePlay()
+	self.show_crashreports = (IsSteam() or IsRail()) and not InGamePlay()
 
 	local graphicsOptions = TheFrontEnd:GetGraphicsOptions()
 
@@ -1873,6 +1874,15 @@ function OptionsScreen:_BuildSettings()
 			end,
 			TheSim:GetDataCollectionSetting(), STRINGS.UI.OPTIONS.TOOLTIPS.DATACOLLECTION)
 	end
+	if self.show_crashreports then
+		self.crashreportsCheckbox = CreateCheckBox(STRINGS.UI.OPTIONS.CRASHREPORTS,
+			function()
+				local enabled = not TheSim:GetCrashReportsEnabled()
+				TheSim:SetCrashReportsEnabled(enabled)
+				return enabled
+			end,
+			TheSim:GetCrashReportsEnabled(), STRINGS.UI.OPTIONS.TOOLTIPS.CRASHREPORTS)
+	end
 	
     self.targetlockingSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.TARGETLOCKING, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.TARGETLOCKING)
     self.targetlockingSpinner.OnChanged =
@@ -1944,6 +1954,9 @@ function OptionsScreen:_BuildSettings()
     table.insert( self.left_spinners, self.craftingmenusize )
 	table.insert( self.left_spinners, self.loadingtipsSpinner )
 	table.insert( self.left_spinners, self.autologinSpinner )
+	if self.show_crashreports then
+		table.insert( self.left_spinners, self.crashreportsCheckbox )
+	end
 
     table.insert( self.right_spinners, self.passwordSpinner )
     table.insert( self.right_spinners, self.boatcameraSpinner )
@@ -2056,12 +2069,14 @@ function OptionsScreen:_BuildAdvancedSettings()
 				self.working.command_wheel_allows_gameplay = data
 				self:UpdateMenu()
 			end
-	self.automodsSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.AUTOMODS, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.AUTOMODS)
-	self.automodsSpinner.OnChanged =
-		function( _, data )
-			self.working.automods = data
-			self:UpdateMenu()
-		end
+	if CanDownloadWorkshopMods() then
+		self.automodsSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.AUTOMODS, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.AUTOMODS)
+		self.automodsSpinner.OnChanged =
+			function( _, data )
+				self.working.automods = data
+				self:UpdateMenu()
+			end
+	end
 
 	self.animatedHeadsSpinner = CreateTextSpinner(STRINGS.UI.OPTIONS.ANIMATED_HEADS, enableDisableOptions, STRINGS.UI.OPTIONS.TOOLTIPS.ANIMATED_HEADS)
 		self.animatedHeadsSpinner.OnChanged =
@@ -2153,7 +2168,9 @@ function OptionsScreen:_BuildAdvancedSettings()
 	end
     table.insert( self.left_spinners, self.movementpredictionSpinner )
 	table.insert( self.left_spinners, self.commandwheelSpinner )
-    table.insert( self.left_spinners, self.automodsSpinner )
+    if self.automodsSpinner ~= nil then
+        table.insert( self.left_spinners, self.automodsSpinner )
+    end
 	table.insert( self.left_spinners, self.animatedHeadsSpinner )
     table.insert( self.left_spinners, self.wathgrithrfontSpinner)
 	table.insert( self.left_spinners, self.waltercameraSpinner)
@@ -2820,7 +2837,9 @@ function OptionsScreen:InitializeSpinners(first)
 	end
 
 	self.commandwheelSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.command_wheel_allows_gameplay) )
-	self.automodsSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.automods ) )
+	if self.automodsSpinner ~= nil then
+		self.automodsSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.automods ) )
+	end
 	self.autologinSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.autologin ) )
 	self.animatedHeadsSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.animatedheads ) )
 	self.autopauseSpinner:SetSelectedIndex( EnabledOptionsIndex( self.working.autopause ) )

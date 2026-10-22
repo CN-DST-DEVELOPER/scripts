@@ -444,7 +444,7 @@ end
 function PlayerController:PullUpMap(maptarget, forced_actiondef)
     if self.inst.replica.inventory then
         local activeitem = self.inst.replica.inventory:GetActiveItem()
-        if activeitem then
+        if activeitem and maptarget ~= activeitem then -- don't return the active item if it is the map target
             self.inst.replica.inventory:ReturnActiveItem()
             if not self.inst.replica.inventory:IsHolding(activeitem) then
                 return
@@ -2031,7 +2031,7 @@ local function GetPickupAction(self, target, tool)
 			or nil
     elseif target.replica.inventoryitem ~= nil and
         target.replica.inventoryitem:CanBePickedUp(self.inst) and
-		not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasTag("lighter")) or target:HasTag("catchable")) and
+		not (target:HasTag("heavy") or (target:HasTag("fire") and not target:HasAnyTag("lighter", "torch")) or target:HasTag("catchable")) and
         not target:HasTag("spider") then
         if self:HasItemSlots() or target.replica.equippable ~= nil then
             return ACTIONS.PICKUP

@@ -29,8 +29,10 @@ local function fn()
 
     inst.AnimState:SetBank("acidsmoke")
     inst.AnimState:SetBuild("acidsmoke")
+    inst.AnimState:PlayAnimation("idle_1")
+    inst.AnimState:SetFrame(inst.AnimState:GetCurrentAnimationNumFrames() - 1) -- do this so we have a state, acidinfusible needs animation length on fx in kill case
     inst.AnimState:SetFinalOffset(3)
-    
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then

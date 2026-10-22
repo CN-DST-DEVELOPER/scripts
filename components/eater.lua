@@ -82,46 +82,10 @@ function Eater:OnLoad(data)
     end
 end
 
-function Eater:SetCanEatHorrible()
-    table.insert(self.preferseating, FOODTYPE.HORRIBLE)
-    table.insert(self.caneat, FOODTYPE.HORRIBLE)
-    self.inst:AddTag(FOODTYPE.HORRIBLE.."_eater")
-end
-
-function Eater:SetCanEatGears()
-    table.insert(self.preferseating, FOODTYPE.GEARS)
-    table.insert(self.caneat, FOODTYPE.GEARS)
-    self.inst:AddTag(FOODTYPE.GEARS.."_eater")
-end
-
-function Eater:SetCanEatNitre(can_eat)
-    local tag = FOODTYPE.NITRE .. "_eater"
-    local hastag = self.inst:HasTag(tag)
-    if can_eat then
-        if not hastag then
-            table.insert(self.preferseating, FOODTYPE.NITRE)
-            table.insert(self.caneat, FOODTYPE.NITRE)
-            self.inst:AddTag(tag)
-        end
-    else
-        if hastag then
-            table.removearrayvalue(self.preferseating, FOODTYPE.NITRE)
-            table.removearrayvalue(self.caneat, FOODTYPE.NITRE)
-            self.inst:RemoveTag(tag)
-        end
-    end
-end
-
-function Eater:SetCanEatRaw()
-    table.insert(self.preferseating, FOODTYPE.RAW)
-    table.insert(self.caneat, FOODTYPE.RAW)
-    self.inst:AddTag(FOODTYPE.RAW.."_eater")
-end
-
 function Eater:SetPrefersEatingTag(tag)
     if self.preferseatingtags == nil then
         self.preferseatingtags = { tag }
-    else
+    elseif not table.contains(self.preferseatingtags, tag) then
         table.insert(self.preferseatingtags, tag)
     end
 end
@@ -225,6 +189,10 @@ function Eater:GetEdibleTags()
         self.cacheedibletags = tags
     end
     return tags
+end
+
+function Eater:ResetEdibleTagsCache()
+    self.cacheedibletags = nil
 end
 
 function Eater:Eat(food, feeder)
@@ -366,6 +334,58 @@ function Eater:IsTryingToFeedMe(inst)
 		and (	act == ACTIONS.FEED or
 				act == ACTIONS.FEEDPLAYER
 			)
+end
+
+function Eater:SetCanEatHorrible() -- Deprecated, do not use, just add HORRIBLE to SetDiet
+    if not table.contains(self.preferseating, FOODTYPE.HORRIBLE) then
+        table.insert(self.preferseating, FOODTYPE.HORRIBLE)
+    end
+    if not table.contains(self.caneat, FOODTYPE.HORRIBLE) then
+        table.insert(self.caneat, FOODTYPE.HORRIBLE)
+    end
+    self.inst:AddTag(FOODTYPE.HORRIBLE.."_eater")
+end
+
+function Eater:SetCanEatGears() -- Deprecated, do not use, just add GEARS to SetDiet
+    if not table.contains(self.preferseating, FOODTYPE.GEARS) then
+        table.insert(self.preferseating, FOODTYPE.GEARS)
+    end
+    if not table.contains(self.caneat, FOODTYPE.GEARS) then
+        table.insert(self.caneat, FOODTYPE.GEARS)
+    end
+    self.inst:AddTag(FOODTYPE.GEARS.."_eater")
+end
+
+function Eater:SetCanEatNitre(can_eat) -- Deprecated, do not use, just add NITRE to SetDiet
+    local tag = FOODTYPE.NITRE .. "_eater"
+    local hastag = self.inst:HasTag(tag)
+    if can_eat then
+        if not hastag then
+            if not table.contains(self.preferseating, FOODTYPE.NITRE) then
+                table.insert(self.preferseating, FOODTYPE.NITRE)
+            end
+            if not table.contains(self.caneat, FOODTYPE.NITRE) then
+                table.insert(self.caneat, FOODTYPE.NITRE)
+            end
+            self.inst:AddTag(tag)
+        end
+    else
+        if hastag then
+            table.removearrayvalue(self.preferseating, FOODTYPE.NITRE)
+            table.removearrayvalue(self.caneat, FOODTYPE.NITRE)
+            self.inst:RemoveTag(tag)
+        end
+    end
+end
+
+function Eater:SetCanEatRaw() -- Deprecated, do not use, just add RAW to SetDiet
+    if not table.contains(self.preferseating, FOODTYPE.RAW) then
+        table.insert(self.preferseating, FOODTYPE.RAW)
+    end
+    if not table.contains(self.caneat, FOODTYPE.RAW) then
+        table.insert(self.caneat, FOODTYPE.RAW)
+    end
+    self.inst:AddTag(FOODTYPE.RAW.."_eater")
 end
 
 return Eater

@@ -178,7 +178,7 @@ end
 
 local function GetEquippableDapperness(owner, equippable)
 	local dapperness = equippable:GetDapperness(owner, owner.components.sanity.no_moisture_penalty)
-	return equippable.inst:HasTag("shadow_item")
+	return (equippable.inst:HasTag("shadow_item") and dapperness < 0)
 		and dapperness * TUNING.WAXWELL_SHADOW_ITEM_RESISTANCE
 		or dapperness
 end
@@ -324,6 +324,8 @@ local function master_postinit(inst)
 		levels = {},
 	}
 	--
+
+	inst:AddComponent("stalkerinspectable")
 
     if TheNet:GetServerGameMode() == "lavaarena" then
         event_server_data("lavaarena", "prefabs/waxwell").master_postinit(inst)

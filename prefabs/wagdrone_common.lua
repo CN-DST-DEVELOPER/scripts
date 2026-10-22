@@ -4,7 +4,7 @@ local function FindShockTargets(x, z, radius)
 	if REGISTERED_TARGET_TAGS == nil then
 		REGISTERED_TARGET_TAGS = TheSim:RegisterFindTags(
 			{ "_combat" },
-			{ "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "brightmare", "brightmareboss", "wagdrone", "wagboss", "electric_connector" }
+			{ "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "shadowboss", "brightmare", "brightmareboss", "wagdrone", "wagboss", "electric_connector" }
 		)
 	end
 	return TheSim:FindEntities_Registered(x, 0, z, radius, REGISTERED_TARGET_TAGS)

@@ -27,6 +27,11 @@ function HitBox:AddTriangle(x1, z1, x2, z2, x3, z3)
 	self.bounds_r = math.max(self.bounds_r, math.max(math.max(_len(x1, z1), _len(x2, z2)), _len(x3, z3)))
 end
 
+function HitBox:AddRectangle(x1, z1, x2, z2)
+	self:AddTriangle(x1, z1, x1, z2, x2, z2)
+	self:AddTriangle(x2, z2, x2, z1, x1, z1)
+end
+
 function HitBox:AddCircle(x, z, r)
 	self.circs = self.circs or {}
 	table.insert(self.circs, { x = x, z = z, r = r })

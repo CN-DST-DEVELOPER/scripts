@@ -54,7 +54,7 @@ local events =
 
 local AOE_RANGE_PADDING = 3
 local AOE_TARGET_MUSTHAVE_TAGS = { "_combat" }
-local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall" }
+local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall", "shadowboss" }
 
 local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, targets)
 	inst.components.combat.ignorehitrange = true
@@ -106,7 +106,9 @@ end
 
 local TEAM_ATTACK_COOLDOWN = 1
 local function SetTeamAttackCooldown(inst, isstart)
-	if isstart then
+	if inst.shrouden then
+		return
+	elseif isstart then
 		inst.sg.mem.lastattack = GetTime()
 		inst.components.combat:StartAttack()
 	else
@@ -514,6 +516,111 @@ local states =
 
 		onexit = function(inst)
 			inst.AnimState:Show("fx")
+		end,
+	},
+
+	State{
+		name = "shrouden_run",
+		tags = { "busy", "attack", "jumping", "nointerrupt", "noattack", "temp_invincible" },
+
+		onenter = function(inst, numcollisions)
+			if inst.sg:InNewState() then
+				inst.components.locomotor:Stop()
+				inst.AnimState:PlayAnimation("portal_appear")
+			else
+				inst.AnimState:PlayAnimation("run_loop")
+			end
+			inst.SoundEmitter:PlaySound("rifts2/thrall_generic/vocalization_big")
+			if not inst.SoundEmitter:PlayingSound("running") then
+				inst.SoundEmitter:PlaySound("rifts2/thrall_hands/running_wind_lp", "running")
+			end
+			inst.Physics:SetMotorVelOverride(TUNING.SHADOWTHRALL_HANDS_RUNSPEED, 0, 0)
+
+			inst.sg.statemem.inarena = TheWorld.Map:IsPointInCharlieBossArena(inst.Transform:GetWorldPosition())
+			inst.sg:SetTimeout(inst.sg.statemem.inarena and 10 or 3)
+
+			inst.sg.statemem.numcollisions = numcollisions
+		end,
+
+		timeline =
+		{
+			FrameEvent(8, function(inst) inst.SoundEmitter:PlaySound("rifts2/thrall_hands/footstep_run") end),
+			FrameEvent(11, function(inst)
+				inst.sg.statemem.targets = {}
+				DoAOEAttack(inst, 1.5, 1.2, nil, nil, nil, inst.sg.statemem.targets)
+			end),
+			FrameEvent(12, function(inst)
+				DoAOEAttack(inst, 1.5, 1.2, nil, nil, nil, inst.sg.statemem.targets)
+			end),
+			FrameEvent(13, function(inst)
+				DoAOEAttack(inst, 0.5, 1.8, nil, nil, nil, inst.sg.statemem.targets)
+			end),
+		},
+
+		ontimeout = function(inst)
+			inst.sg.statemem.shouldstop = true
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					if inst.sg.statemem.shouldstop or
+						(inst.sg.statemem.numcollisions or 0) >= 1 or --NOTE: this means we will stop after the NEXT step after 1 collision
+						(inst.shrouden and inst.shrouden.components.health:IsDead())
+					then
+						inst.sg:GoToState("shrouden_run_stop")
+						return
+					end
+
+					local x, _, z = inst.Transform:GetWorldPosition()
+					local theta = inst.Transform:GetRotation() * DEGREES
+					x = x + math.cos(theta)
+					z = z - math.sin(theta)
+					if not TheWorld.Map:IsValidTileAtPoint(x, 0, z) or (inst.sg.statemem.inarena ~= TheWorld.Map:IsPointInCharlieBossArena(x, 0, z)) then
+						inst.sg:GoToState("shrouden_run_stop")
+						return
+					end
+
+					--NOTE: collided is via physics collision callback
+					inst.sg.statemem.running = true
+					inst.sg:GoToState("shrouden_run", inst.sg.statemem.collided and (inst.sg.statemem.numcollisions or 0) + 1 or inst.sg.statemem.numcollisions)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.running then
+				inst.SoundEmitter:KillSound("running")
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+			end
+		end,
+	},
+
+	State{
+		name = "shrouden_run_stop",
+		tags = { "canrotate", "flight" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("shrouden_disappear")
+			inst.DynamicShadow:Enable(false)
+			inst.Physics:SetActive(false)
+		end,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst:Remove()
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+			inst.Physics:SetActive(true)
 		end,
 	},
 }

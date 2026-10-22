@@ -36,6 +36,7 @@ local function fn()
     inst:AddTag("character")
     inst:AddTag("pig")
     inst:AddTag("scarytoprey")
+    inst:AddTag("canwearhat")
 
     --Sneak these into pristine state for optimization
     inst:AddTag("_named")

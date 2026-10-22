@@ -242,6 +242,7 @@ local function fn()
     inst:AddTag("hostile")
 	inst:AddTag("scarytoprey")
     inst:AddTag("pirate")
+    inst:AddTag("canwearhat")
 
     local talker = inst:AddComponent("talker")
     talker.fontsize = 35

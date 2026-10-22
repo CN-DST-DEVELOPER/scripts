@@ -104,9 +104,9 @@ local function OnEquip_Hand(inst, owner, from_ground)
     inst:ListenForEvent("onremove", onremove)
     inst:ListenForEvent("onremove", function() inst.body = nil end, inst._body)
 
-	inst.onownerattackedfn = function(_owner)
-		if _owner:IsValid() and (owner.components.rider == nil or not owner.components.rider:IsRiding()) then -- don't pop balloon items if you are mounted
-			_owner.components.inventory:DropItem(inst)
+	inst.onownerattackedfn = function(owner, data)
+		if owner:IsValid() and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
+			owner.components.inventory:DropItem(inst)
 		end
 	end
     inst:ListenForEvent("attacked", inst.onownerattackedfn, owner)

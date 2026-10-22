@@ -1,15 +1,19 @@
 local assets =
 {
     Asset("ANIM", "anim/bat_basic.zip"),
+    Asset("ANIM", "anim/bat_acid_build.zip"),
     Asset("SOUND", "sound/bat.fsb"),
 }
 
 local prefabs =
 {
+	"nitre",
+	"monstermeat",
     "guano",
     "batwing",
     "teamleader",
     "batcorpse",
+	"splash",
 }
 
 local BrainCommon = require("brains/braincommon")
@@ -45,7 +49,7 @@ local function MakeTeam(inst, attacker)
     leader.components.teamleader:BroadcastDistress(inst)
 end
 
-local RETARGET_CANT_TAGS = { "bat" }
+local RETARGET_CANT_TAGS = { "bat", "batdisguise" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 local function IsValidTarget(guy, inst)
     return inst.components.combat:CanTarget(guy)
@@ -89,6 +93,19 @@ local function OnAttacked(inst, data)
     if inst.components.teamattacker.inteam and not inst.components.teamattacker.teamleader:CanAttack() then
         inst.components.combat:SetTarget(attacker)
 		inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsBat, MAX_TARGET_SHARES)
+    end
+end
+
+local function OnNewCombatTarget(inst, data)
+    local target = data and data.target or nil
+    if target == nil then
+        return
+    end
+
+    if not inst.components.teamattacker.inteam and CanMakeOrJoinTeam(inst, target) and not inst.components.teamattacker:SearchForTeam() then
+        MakeTeam(inst, target)
+    elseif inst.components.teamattacker.teamleader then
+        inst.components.teamattacker.teamleader:BroadcastDistress(inst)   --Ask for  help!
     end
 end
 
@@ -154,15 +171,19 @@ local function BatSleepTest(inst, ...)
     return NocturnalSleepTest(inst, ...)
 end
 
+local DIET = { FOODTYPE.MEAT }
+local ACIDDIET = { FOODTYPE.MEAT, FOODTYPE.NITRE }
+
 local function OnInfuse(inst)
-    inst.AnimState:SetSymbolAddColour("bat_eye", .2, .5, 0, 0)
+    inst.AnimState:SetBuild("bat_acid_build")
     inst.AnimState:SetSymbolLightOverride("bat_eye", .5)
 
     inst.components.lootdropper:SetChanceLootTable("bat_acidinfused")
 
     inst.components.combat:SetRetargetFunction(1, Retarget)
 
-    inst.components.eater:SetCanEatNitre(true)
+    inst.components.eater:SetDiet(ACIDDIET, ACIDDIET)
+    inst.components.eater:ResetEdibleTagsCache()
 
     if inst.components.thief == nil then
         inst:AddComponent("thief")
@@ -170,18 +191,28 @@ local function OnInfuse(inst)
 end
 
 local function OnUninfuse(inst)
-    inst.AnimState:SetSymbolAddColour("bat_eye", 0, 0, 0, 0)
+    inst.AnimState:SetBuild("bat_basic")
     inst.AnimState:SetSymbolLightOverride("bat_eye", 0)
 
     inst.components.lootdropper:SetChanceLootTable("bat")
 
     inst.components.combat:SetRetargetFunction(3, Retarget)
 
-    inst.components.eater:SetCanEatNitre(false)
+    inst.components.eater:SetDiet(DIET, DIET)
+    inst.components.eater:ResetEdibleTagsCache()
 
     if inst.components.thief ~= nil then
         inst:RemoveComponent("thief")
     end
+end
+
+local function CalcSanityAura(inst, observer)
+    return inst.components.acidinfusible:IsInfused() and -TUNING.SANITYAURA_MED or -TUNING.SANITYAURA_SMALL
+end
+
+local function GetStatus(inst)--, viewer)
+    return inst.components.acidinfusible:IsInfused() and "ACID"
+        or nil
 end
 
 local function fn()
@@ -195,9 +226,9 @@ local function fn()
 
     MakeGhostPhysics(inst, 1, .5)
 
-    inst.DynamicShadow:SetSize(1.5, .75)
+	inst.DynamicShadow:SetSize(1.5, 0.75) --keep in sync with SGbat.lua::ConfigSleepLanded
 
-    inst.Transform:SetFourFaced()
+	inst.Transform:SetSixFaced()
     inst.Transform:SetScale(.75, .75, .75)
 
     inst.AnimState:SetBank("bat")
@@ -220,18 +251,20 @@ local function fn()
     end
 
     inst.scrapbook_scale = 0.75
+	inst.override_combat_fx_size = "tiny"
 
     local locomotor = inst:AddComponent("locomotor")
     locomotor:EnableGroundSpeedMultiplier(false)
     locomotor:SetTriggersCreep(false)
     locomotor.walkspeed = TUNING.BAT_WALK_SPEED
+	locomotor.runspeed = TUNING.BAT_WALK_SPEED
     locomotor.pathcaps = { allowocean = true }
 
     inst:SetStateGraph("SGbat")
     inst:SetBrain(brain)
 
     local eater = inst:AddComponent("eater")
-    eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
+    eater:SetDiet(DIET, DIET)
     eater:SetStrongStomach(true)
 
     local sleeper = inst:AddComponent("sleeper")
@@ -243,7 +276,8 @@ local function fn()
     combat.hiteffectsymbol = "bat_body"
     combat:SetDefaultDamage(TUNING.BAT_DAMAGE)
     combat:SetAttackPeriod(TUNING.BAT_ATTACK_PERIOD)
-    combat:SetRange(TUNING.BAT_ATTACK_DIST)
+	combat:SetRange(TUNING.BAT_ATTACK_DIST, TUNING.BAT_HIT_DIST)
+	combat:SetHitArc(TUNING.DEFAULT_HIT_ARC)
     combat:SetRetargetFunction(3, Retarget)
     combat:SetKeepTargetFunction(KeepTarget)
 
@@ -263,8 +297,12 @@ local function fn()
     periodicspawner:Start()
 
     inst:AddComponent("inspectable")
+    inst.components.inspectable.getstatus = GetStatus
 
     inst:AddComponent("knownlocations")
+
+    inst:AddComponent("sanityaura")
+    inst.components.sanityaura.aurafn = CalcSanityAura
 
     MakeMediumBurnableCharacter(inst, "bat_body")
     MakeMediumFreezableCharacter(inst, "bat_body")
@@ -274,6 +312,7 @@ local function fn()
     teamattacker.team_type = "bat"
 
     inst:ListenForEvent("attacked", OnAttacked)
+    inst:ListenForEvent("newcombattarget", OnNewCombatTarget)
 
     local acidinfusible = inst:AddComponent("acidinfusible")
     acidinfusible:SetFXLevel(3)

@@ -130,6 +130,13 @@ function Rider:Mount(target, instant)
 						) or
 						(attacker and attacker:HasTag("pseudoprojectile"))
 					)
+					and not (
+						--e.g. slurper/bat_boss
+						attacker and
+						attacker.components.equippable and
+						self.inst.components.inventory and
+						self.inst.components.inventory:IsItemEquipped(attacker)
+					)
                     and stimuli ~= "electric"
                     and stimuli ~= "darkness"
                     and target

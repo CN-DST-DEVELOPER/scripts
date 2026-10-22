@@ -21,7 +21,7 @@ local function MakeBodyPillow(materialname, pillowdata)
     }
 
     local function on_blocked_callback(owner, data, inst)
-        if inst._defense_callback and not inst._cooldown_task and data and not data.redirected then
+		if inst._defense_callback and inst._cooldown_task == nil and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
             inst._cooldown_task = inst:DoTaskInTime((inst._defense_cooldown or 0.3), on_body_defense_cooldown)
             inst._defense_callback(owner, data, inst)
         end

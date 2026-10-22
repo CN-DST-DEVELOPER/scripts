@@ -1193,6 +1193,9 @@ local function onwakeup(inst)
 end
 
 local function onentersleeping(inst)
+	if inst.components.locomotor then
+		inst.components.locomotor:StopMoving()
+	end
     inst.AnimState:PlayAnimation("sleep_loop")
 end
 
@@ -1756,6 +1759,9 @@ CommonStates.AddSleepExStates = function(states, timelines, fns)
         tags = { "busy", "sleeping" },
 
         onenter = function(inst)
+			if inst.components.locomotor then
+				inst.components.locomotor:StopMoving()
+			end
             inst.AnimState:PlayAnimation("sleep_loop")
             if fns ~= nil and fns.onsleeping ~= nil then
                 fns.onsleeping(inst)
@@ -2897,20 +2903,34 @@ CommonStates.AddInitState = function(states, default_state)
 end
 --------------------------------------------------------
 
-CommonStates.AddParasiteReviveState = function(states)
+CommonStates.AddParasiteReviveState = function(states, timeline, fns)
     table.insert(states, State{
         name = "parasite_revive",
         tags = { "busy", "noelectrocute" },
 
         onenter = function(inst)
+			if inst.components.locomotor then
+				inst.components.locomotor:StopMoving()
+			end
             inst.AnimState:PlayAnimation("parasite_death_pst")
-            inst.Physics:Stop()
+
+			if fns and fns.onenter then
+				fns.onenter(inst)
+			end
         end,
+
+		timeline = timeline,
 
         events =
         {
-            EventHandler("animover", function(inst) inst.sg:GoToState("idle") end ),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
         },
+
+		onexit = fns and fns.onexit,
     })
 end
 
@@ -2973,3 +2993,110 @@ CommonStates.AddPossessChassisState = function(states, anim, possess_frame_timin
 end
 
 --------------------------------------------------------
+
+-- Stalker corruption
+
+local function onstalkercorrupt(inst)
+    inst.sg:GoToState("stalker_corruption_stun")
+end
+
+CommonHandlers.OnStalkerCorrupt = function()
+    return EventHandler("stalker_corruption_stun", onstalkercorrupt)
+end
+
+CommonStates.AddStalkerCorruptionStates = function(states, timelines, fns)
+    table.insert(states, State{
+		name = "stalker_corruption_stun",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorruptingstun", },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation("stun_pre", false)
+			inst.AnimState:PushAnimation("stun_loop", true)
+		end,
+
+		events =
+		{
+            EventHandler("interruptcorruption", function(inst)
+                inst.AnimState:PlayAnimation("stun_pst")
+                inst.sg.statemem.exitstate = true
+            end),
+			EventHandler("startcorruption", function(inst)
+				inst.sg:GoToState("stalker_corruption_pre")
+			end),
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() and inst.sg.statemem.exitstate then
+                    inst.sg:GoToState("idle")
+                end
+            end),
+		},
+	})
+
+    table.insert(states, State{
+		name = "stalker_corruption_pre",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorrupting", },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+            inst.AnimState:PlayAnimation("stalker_corrupt_pre")
+            inst.AnimState:AddOverrideBuild("stalker_corrupt_fx_build")
+            if fns and fns.preonenter then
+                fns.preonenter(inst)
+            end
+        end,
+
+		timeline = timelines ~= nil and timelines.corruption_pre or nil,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+                    local x, y, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+					local corrupted = SpawnPrefab(inst.prefab.."_shadow")
+                    corrupted.Transform:SetPosition(x, y, z)
+					corrupted.Transform:SetRotation(rot)
+					corrupted.AnimState:MakeFacingDirty() --not needed for clients
+					corrupted.sg:GoToState("stalker_corruption_pst")
+                    inst:Remove()
+				end
+			end),
+		},
+
+		onexit = function(inst)
+            inst.AnimState:ClearOverrideBuild("stalker_corrupt_fx_build")
+			assert(BRANCH ~= "dev", "We exited stalker_corruption_pre state somehow :(")
+		end,
+	})
+
+    table.insert(states, State{
+		name = "stalker_corruption_pst",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorrupting", },
+
+		onenter = function(inst)
+			inst.components.locomotor:StopMoving()
+            inst.AnimState:SetMultColour(0, 0, 0, 1)
+			inst.AnimState:PlayAnimation("stalker_corrupt_pst")
+            inst.AnimState:AddOverrideBuild("stalker_corrupt_fx_build")
+            if fns and fns.pstonenter then
+                fns.pstonenter(inst)
+            end
+        end,
+
+		timeline = timelines ~= nil and timelines.corruption_pst or nil,
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("taunt")
+				end
+			end),
+		},
+
+        onexit = function(inst)
+            inst.AnimState:SetMultColour(1, 1, 1, 1)
+            inst.AnimState:ClearOverrideBuild("stalker_corrupt_fx_build")
+        end,
+	})
+end

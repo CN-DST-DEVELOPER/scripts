@@ -130,7 +130,7 @@ local function ShouldWake(inst)
 end
 
 local RETARGET_MUST_TAGS = { "_combat" }
-local RETARGET_CANT_TAGS = { "INLIMBO" }
+local RETARGET_CANT_TAGS = { "INLIMBO", "npcstalker" }
 local RETARGET_ONEOF_TAGS = { "character", "monster" }
 local function Retarget(inst)
     local homePos = inst.components.knownlocations:GetLocation("home")

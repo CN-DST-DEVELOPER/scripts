@@ -36,7 +36,7 @@ local KitcoonPuppet = require "widgets/kitcoonpuppet"
 local SHOW_DST_DEBUG_HOST_JOIN = BRANCH == "dev"
 local SHOW_QUICKJOIN = false
 
-local IS_BETA = BRANCH == "staging"-- or BRANCH == "dev"
+local IS_BETA = BRANCH == "staging" or BRANCH == "dev"
 local IS_DEV_BUILD = BRANCH == "dev"
 
 local function PlayBannerSound(inst, self, sound)
@@ -257,11 +257,17 @@ end
 local function MakeMeta6Banner(self, banner_root, uianim)
     _MakeGenericBanner(uianim, "dst_menu_meta6")
 end
-]]
 
 local function MakeRift7Banner(self, banner_root, uianim)
     _MakeGenericBanner(uianim, "dst_menu_rift7")
 end
+
+]]
+
+local function MakeRift8Banner(self, banner_root, uianim)
+    _MakeGenericBanner(uianim, "dst_menu_rift8")
+end
+
 
 --------------------------------------------------------------------------
 --YOT_ banners
@@ -375,7 +381,7 @@ function MakeBanner(self)
 		--
 		--REMINDER: Check MakeBannerFront as well!
 		--
-		MakeRift7Banner(self, banner_root, uianim)
+		MakeRift8Banner(self, banner_root, uianim)
     elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTH) then
         MakeYOTHBanner(self, banner_root, uianim)
 	elseif IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
@@ -398,7 +404,7 @@ function MakeBanner(self)
 		--*** !!! ***
 		--REMINDER: Check MakeBannerFront as well!
 		--
-		MakeRift7Banner(self, banner_root, uianim)
+		MakeRift8Banner(self, banner_root, uianim)
 		--MakeWurtWinonaQOLBanner(self, banner_root, uianim)
 		--MakeRiftsMetaQoLBanner(self, banner_root, uianim)
 		--MakeMeta2Banner(self, banner_root, uianim)
@@ -896,7 +902,7 @@ function MultiplayerMainScreen:Quit()
     self.last_focus_widget = TheFrontEnd:GetFocusWidget()
     TheFrontEnd:PushScreen(PopupDialogScreen(
             STRINGS.UI.MAINSCREEN.ASKQUIT,
-            STRINGS.UI.MAINSCREEN.ASKQUITDESC,
+            TheGenericKV:GetKV("charlie_defeated") == "1" and STRINGS.UI.MAINSCREEN.ASKQUITDESC_NOCHARLIE or STRINGS.UI.MAINSCREEN.ASKQUITDESC,
             {
                 { text=STRINGS.UI.MAINSCREEN.YES, cb = function() RequestShutdown() end },
                 { text=STRINGS.UI.MAINSCREEN.NO, cb = function() TheFrontEnd:PopScreen() end },

@@ -1208,6 +1208,10 @@ STRINGS =
 		GOLF_STOP_AIMING = "Stop Aiming",
 		GOLF_START_CHARGING = "Putt (Hold)",
         TERRAFORM_REMOVE = "Uproot",
+
+        -- Rifts 8
+
+        CORRUPTNIGHTMARE = "Corrupt",
     },
 
 	WOBY_COMMANDS =
@@ -2523,6 +2527,11 @@ STRINGS =
         CHESSPIECE_WAGBOSS_LUNAR = "Celestial Scion Figure",
         CHESSPIECE_YOTH = "Gilded Knight Figure",
         CHESSPIECE_VAULT_PILLAR_GUARD = "Ancient Guard Tower Figure",
+        CHESSPIECE_BATBOSS_SHADOW = "Blighted Hound Batilisk Figure",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "Blighted Rock Master Figure",
+        CHESSPIECE_WORMBOSS_SHADOW = "Blighted Great Depths Worm Figure",
+        CHESSPIECE_CHARLIE_BOSS = "Shrouded Queen Figure",
+        CHESSPIECE_SHROUDEN = "Umbral Abomination Figure",
 
         CHESSPIECE_PAWN_BUILDER = "Pawn Figure",
         CHESSPIECE_ROOK_BUILDER = "Rook Figure",
@@ -2570,6 +2579,11 @@ STRINGS =
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "Celestial Scion Figure",
         CHESSPIECE_YOTH_BUILDER = "Gilded Knight Figure",
         CHESSPIECE_VAULT_PILLAR_GUARD_BUILDER = "Ancient Guard Tower Figure",
+        CHESSPIECE_BATBOSS_SHADOW_BUILDER = "Blighted Hound Batilisk Figure",
+        CHESSPIECE_ROCKYBOSS_SHADOW_BUILDER = "Blighted Rock Master Figure",
+        CHESSPIECE_WORMBOSS_SHADOW_BUILDER = "Blighted Great Depths Worm Figure",
+        CHESSPIECE_CHARLIE_BOSS_BUILDER = "Shrouded Queen Figure",
+        CHESSPIECE_SHROUDEN_BUILDER = "Umbral Abomination Figure",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "Moon Moth Figure Sketch",
         CHESSPIECE_ANCHOR_SKETCH = "Anchor Figure Sketch",
@@ -2594,6 +2608,11 @@ STRINGS =
         CHESSPIECE_WAGBOSS_LUNAR_SKETCH = "Celestial Scion Figure Sketch",
         CHESSPIECE_YOTH_SKETCH = "Gilded Knight Figure Sketch",
         CHESSPIECE_VAULT_PILLAR_GUARD_SKETCH = "Ancient Guard Tower Figure Sketch",
+        CHESSPIECE_BATBOSS_SHADOW_SKETCH = "Blighted Hound Batilisk Figure Sketch",
+        CHESSPIECE_ROCKYBOSS_SHADOW_SKETCH = "Blighted Rock Master Figure Sketch",
+        CHESSPIECE_WORMBOSS_SHADOW_SKETCH = "Blighted Great Depths Worm Figure Sketch",
+        CHESSPIECE_CHARLIE_BOSS_SKETCH = "Shrouded Queen Figure Sketch",
+        CHESSPIECE_SHROUDEN_SKETCH = "Umbral Abomination Figure Sketch",
 
         SHADOW_ROOK = "Shadow Rook",
         SHADOW_KNIGHT = "Shadow Knight",
@@ -3688,6 +3707,7 @@ STRINGS =
         ARCHIVE_PORTAL = "Sealed Portal",
         ARCHIVE_COOKPOT = "Ancient Kiln",
         ARCHIVE_SWITCH = "Ornate Pedestal",
+        ARCHIVE_SWITCH_BASE = "Ornate Pedestal", -- This is for the scrapbook
         ARCHIVE_SECURITY_DESK = "Ancient Guard Post",
 
         WALL_STONE_2 = "Archival Stone Wall",
@@ -4726,6 +4746,49 @@ STRINGS =
         CARNIVALGAME_GOLFPROP_CUTOUT10 = "Tentacle Obstacle", -- tentacle
 
 		CARNIVALGAME_GOLF_SHAPE = "Course Wall",
+
+        -- Rifts 8
+
+        -- in boulder form
+        ROCKY_BOULDER = "Boulder",
+        ROCKY_BOSS_BOULDER = "Boulder",
+
+		ROCKY_BOSS = "Rock Master",
+		ROCKY_BOSS_SHADOW = "Blighted Rock Master",
+
+		BAT_BOSS = "Hound Batilisk",
+		BAT_BOSS_SHADOW = "Blighted Hound Batilisk",
+
+        WORM_BOSS_SHADOW = "Blighted Great Depths Worm",
+
+        ARMOR_ROCKY = "Craggy Carapace",
+        BAT_BOSSCORPSEHAT = "Bat Hat",
+        REGEN_BAT_BOSSCORPSEHAT = "Bat Hat",
+
+        BATBOSSCAVE = "Big Bat Cave",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY = "Blighted Claw",
+        ATRIUM_RITUAL_ORGAN_BAT = "Blighted Larynx",
+        ATRIUM_RITUAL_ORGAN_WORM = "Blighted Guts",
+
+		CHARLIE_BOSS = "Shrouded Queen",
+		CHARLIE_BOSS_PROJECTILE = "Swarming Horror", -- for scrapbook
+        SHROUDEN = "Umbral Abomination",
+        SHROUDEN_ALLEGIANCE = "Shrouden",
+        SHROUDEN_VOIDMASQUE = "Tenebrau",
+        SHROUDEN_OTHER = "The Other",
+
+        CHARLIE_BOSS_RUNNER = "Grim Harrier",
+
+        CHARLIEARENA_SPIKE = "Dreadstone Outcrop",
+
+        SHADOWHAND_SHROUDED = "Horror Hand", -- for scrapbook
+
+        QUEEN_TORCH = "Queen's Torch",
+        KING_CANE = "King's Staff",
+        MASK_CHARLIE_BOSSHAT = "Queen's Visage",
+
+        CHARLIEARENA_TELEPORTER = "Chasm",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -5173,6 +5236,11 @@ STRINGS =
         CHESSPIECE_WAGBOSS_LUNAR_BUILDER = "The abomination.",
         CHESSPIECE_YOTH_BUILDER = "Shining armor included.",
         CHESSPIECE_VAULT_PILLAR_GUARD_BUILDER = "Imposing presence not included.",
+        CHESSPIECE_BATBOSS_SHADOW_BUILDER = "Luckily the mouth is too small to fit over your head.",
+        CHESSPIECE_ROCKYBOSS_SHADOW_BUILDER = "At least this one will stay in one place.",
+        CHESSPIECE_WORMBOSS_SHADOW_BUILDER = "To commemorate being swallowed by an abyss.",
+        CHESSPIECE_CHARLIE_BOSS_BUILDER = "It really captures her essences.",
+        CHESSPIECE_SHROUDEN_BUILDER = "It's a little evil.",
 
         CHESSPIECE_BUTTERFLY_SKETCH = "A sculpture sketch of a Moon Moth.",
         CHESSPIECE_ANCHOR_SKETCH = "A sculpture sketch of an anchor.",
@@ -6007,6 +6075,9 @@ STRINGS =
         CARNIVALGAME_GOLFPROP_CUTOUT10 = "Not deadly, but still annoying.", -- tentacle
 
 		CARNIVALGAME_GOLF_SHAPE = "Of course, a course needs walls.",
+
+        -- Rifts 8
+
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},
@@ -7025,6 +7096,554 @@ STRINGS =
         "History will repeat itself...",
         "It will all come to pass again...",
         "You've made your choice.",
+    },
+
+    -- The lines are read in order
+
+    STALKER_NPC_FIRST_SPAWN =
+    {
+        "Where am I?",
+        "The battle... I lost...",        
+        "You...!",
+        "What have you done?!",
+        "The Gateway... I can feel it...",
+        "They are waiting...",
+    },
+
+    STALKER_NPC_PERFORM_FIRST_CORRUPT = -- corrupting a boss creature into its shadow version
+    {
+        "By your choice, however cruel,",
+        "This innocent creature...",
+        "Be woven...",
+        "And made an offering...",
+        "To Them.",
+        "As you command...",
+        "It is done.",
+        "Rise now, child.",
+    },
+
+    STALKER_NPC_SEE_BIOMES = -- seeing certain biomes for the first time
+    {
+        ATRIUM =
+        {
+            "My once glorious kingdom is now a tomb.",
+            "What have I done?",
+            "I was a damned fool.",
+        },
+        RUINS_RESIDENTIAL = -- where the common peoples lived
+        {
+            "How many lives were lost to the darkness?",
+            "You all put your trust in me.",
+            "I'm sorry.",
+        },
+        RUINS_MILITARY = -- the military, consisting of clockworks
+        {
+            "How do you fight an enemy that has taken root in your very being?",
+        },
+        RUINS_SACRED = -- the sacred areas, where worship occurred.
+        {
+            "I have desecrated these sacred grounds.",
+            "The cursed fuel has defiled all.",
+            "I can't bear the sight of it.",
+        },
+        RUINS_LABYRINTH = -- the labyrinth, where the guardian was.
+        {
+            "Better to be lost here.",
+            "Wandering for an eternity...",
+            "than find that cursed key.",
+        },
+        LUNAR_GROTTO =
+        {
+            "Alter... I feel your presence.",
+            "Have you returned?",
+            "Alas... not soon enough.",
+        },
+        ARCHIVES =
+        {
+            "We lived in the light once.",
+            "An age of brilliance.",
+            "This is all that remains.",
+        },
+        VAULT =
+        {
+            "This place...",
+            "It was built in secret...",
+            "They trusted no one... especially me.",
+        },
+    },
+
+    STALKER_NPC_INSPECT = -- inspecting certain objects and talking about them for the first time.
+    {
+        VAULT_STATUE_LORE1 = -- the king statue of him pre-transformation in the vault.
+        {
+            "It is... me.",
+            "How long it has been...",
+            "What have I become?",
+        },
+        VAULT_STATUE_LORE2 = -- the statues of the gateway + ancients and bugs surrounding it
+        {
+            "All lost...",
+            "because of me.",
+            "It promised...",
+            "All lies...",
+            "I was blind...",
+            "A fool.",
+        },
+        VAULT_STATUE_LORE3 = -- the statues of the guardsmen with their spear protecting the key room
+        {
+            "They stand guard over a doomed world.",
+            "Against fools fated to repeat the same mistakes.",
+            "Futile is their vigil.",
+            "Watching the dark return, time and again.",
+        },
+        ANCIENT_HUSK_HANDMAID = -- elytra
+        {
+            "What have you done, Shieldbearer?",
+            "Was it by my Queen's command that you came here?",
+            "This place... built beyond my sight. Was I not worthy of your trust?",
+            "What secret did you guard until your last breath?",
+            "What burden drove you to turn against your own brethren, Elytra?",
+            "How unbearable that weight must have been upon your soul... if it is still yours.",
+        },
+        ANCIENT_HUSK_ARCHITECT = -- visionist
+        {
+            "Visionist! What filled this chalice from which you took your final sip?",
+            "Poison? Did you know what it held?",
+            "Did you choose it? Or was it served to you in a toast to your work?",
+            "Why was death itself poured as your reward?",
+            "May your vision be restored, clear and made whole beyond the shroud.",
+            "For this world is no longer our own.",
+        },
+        ANCIENT_HUSK_MASON = -- artificer
+        {
+            "So this is the cruel fate that befell my dear friend.",
+            "What tragedy left your carapace so grievously pierced?",
+            "I recognize the mark of your tarsi in all that was wrought here.",
+            "Knowing you, your labor born of duty to a noble cause.",
+            "I was blinded by the suffering of our kind, unable to see what truly had to be done.",
+            "You deserved a far better end than this, Artificer.",
+        },
+        VAULT_RUNE_LOBBY = -- sanctum rune stones
+        {
+            "Yet you escaped... damning yourself.",
+        },
+        VAULT_RUNE_TELEPORT1 = -- sanctum rune stones
+        {
+            "A fool in your wisdom...",
+        },
+        VAULT_RUNE_LORE1 = -- sanctum rune stones (king statue room)
+        {
+            "It truly does.",
+        },
+        VAULT_RUNE_LORE2 = -- sanctum rune stones (gateway statue room)
+        {
+            "Indeed.",
+        },
+        VAULT_RUNE_LORE3 = -- sanctum rune stones (guard room)
+        {
+            "It's too late.",
+        },
+        VAULT_RUNE_PUZZLE1 = -- sanctum rune stones (sequitor puzzle)
+        {
+            "Better one should fall than all.",
+        },
+        VAULT_RUNE_PUZZLE2 = -- sanctum rune stones (flummoxxing flame puzzle)
+        {
+            "I've seen the way and it is cursed.",
+        },
+        MASK_ANCIENT_HANDMAIDHAT =
+        {
+            "That visage... I've not... It cannot be...", -- e.g. "Is that...? It can't be.."
+            "Where did this come from?", -- e.g. "How did you find this?"
+            "Elytra! Shieldbearer of my beloved Metheus!",
+            "What words did she impart to you in those darkest of days?",
+            "Your devotion to my beloved shall never be forgotten. Rest well, faithful Shieldbearer.",
+        },
+        MASK_ANCIENT_MASONHAT =
+        {
+            "That visage... I've not... It cannot be...", -- e.g. "Is that...? It can't be.."
+            "Where did this come from?", -- e.g. "How did you find this?"
+            "My Artificer...",
+            "How I have missed you, old friend.",
+            "Never one to temper the truth, nor spare a wounded heart. May you finally know rest.",
+        },
+        MASK_ANCIENT_ARCHITECTHAT =
+        {
+            "That visage... I've not... It cannot be...", -- e.g. "Is that...? It can't be.."
+            "Where did this come from?", -- e.g. "How did you find this?"
+            "Dear Visionist...",
+            "My heart aches at the fate of your glorious design.",
+            "It is a mercy that your eyes shall never behold its ruin.",
+        },
+        NIGHTMARELIGHT =
+        {
+            "So afraid of the dark...",
+            "I put faith in this cursed light.",
+            "But all who bathed in the glow...",
+            "lost themselves to madness.",
+        },
+        NIGHTMAREGROWTH = -- the nightmare ramparts found at the edge of the shadow war in the grotto
+        {
+            "You left us little choice.",
+            "Why did you leave us in the cold?",
+            "Was our devotion so lacking?",
+            "We were your children.",
+        },
+        ATRIUM_OVERGROWTH = -- the ancient obelisks found in the atrium
+        {
+            "I chose our path.",
+            "I bowed before the Other.",
+            "They followed me... into damnation.",
+            "Curse the name... Shrouden.",
+        },
+        ATRIUM_RUBBLE =
+        {
+            "You were deaf to our suffering, Alter.",
+            "Do you know what we sacrificed?",
+            "The Other gave us what you wouldn't. Am I to blame for accepting the cursed fuel?",
+            "We lost our way.",
+            "It seemed the beginning of a new age...",
+        },
+        RUINS_SHADELING = -- the shadeling that sits on the chair in the ruins
+        {
+            "Cursed shade.",
+            "Inevitable that it should inherit this world.",
+        },
+        ARCHIVE_MOON_STATUE = -- the common statue in the archives
+        {
+            "All we had left...",
+            "Just pieces of you.",
+            "Did you know we waited?",
+            "Were we nothing to you?",
+        },
+        ANCIENT_ALTAR = -- the (broken) crafting station altar in the ruins
+        {
+            "We thought we mastered the dark.",
+            "The dark cannot be harnessed... or controlled.",
+            "We paid the price for our arrogance.",
+        },
+        ARCHIVE_RUNE_STATUE = -- the runes in the ancient archives
+        {
+            "How long did you expect us to wait?",
+            "We needed you, Alter.",
+            "You left us.",
+            "Faith alone could not sustain.",
+        },
+        ARCHIVE_LOCKBOX_DISPENCER =
+        {
+            "We thought our knowledge gave us power over the forces we tampered with.",
+            "We were wrong.",
+        },
+        ARCHIVE_PORTAL =
+        {
+            "It's been an eternity.",
+            "My memory fails me.",
+            "I don't remember this.",
+        },
+        RUINS_STATUE_HEAD = -- one of two common statues in the ruins
+        {
+            "A blessing you can't see our world in ruin.",
+        },
+        RUINS_STATUE_MAGE = -- the other common statue in the ruins
+        {
+            "We should have known better...",
+            "I should have known better.",
+        },
+        DAYWALKER = -- nightmare werepig, when he's imprisoned by the shadow chains.
+        {
+            "Corrupted swine...",
+            "You know not the forces with which you meddle.",
+            "At least I sought to save our world.",
+            "But you... your lust for power consumes you.",
+            "May you never escape your bondage.",
+        },
+        SHADOWRIFT_PORTAL = -- the shadow rift
+        {
+            "A tear in the fabric...",
+            "From the cursed realm of the Other, shadow seeps forth.",
+            "Your world is infected.",
+        },
+        VAULT_KEY = -- on the ground OR on the pedestal
+        {
+            "The Keystone...",
+            "Kept hidden by the faithful few... by my beloved.",
+            "Now you've unearthed it...",
+            "Damning one and all.",
+        },
+        WAXWELL = -- talking to maxwell
+        {
+            "Maxwell... the king deposed.",
+            "Unimaginable power, once at your fingertips.",
+            "And now... you are nothing.",
+            "Still, you fare better than I...",
+            "A husk filled with naught but echoes of regret.",
+        },
+        WORMWOOD =
+        {
+            "Moonchild...",
+            "Your shard shines true.",
+            "Thank you for allowing me to bask Alter's pure light once more.",
+        },
+        WANDA =
+        {
+            "Traveller...",
+            "Have you seen what becomes?",
+            "Will I rest?",
+            "Or am I cursed to awaken to this nightmare evermore?",
+        },    
+        WORTOX =
+        {
+            "Imp...",
+            "Mock me not, mischief-maker.",
+            "Soon enough, your glee shall turn to tears.",
+        },  
+        WICKERBOTTOM =
+        {
+            "Sage...",
+            "Like me, you will learn...",
+            "Wisdom is folly.",
+            "What you seek is unfathomable.",
+            "To know it is to damn yourself.",
+        },       
+        WILLOW =
+        {
+            "Firebrand...",
+            "You feed the flames, but the void within you hungers still.",
+            "Yet know this: The fires you kindle to destroy...",
+            "Are the same fires that warm your friends...",
+            "And hold the darkness at bay.",
+        },       
+        WINONA =
+        {
+            "Sister...",
+            "She is lost to you...",
+            "Like Metheus to me...",
+            "Abandon hope...",
+            "Or join her...",
+            "Cursed to wander...",
+            "Forever.",
+        },       
+        WENDY =
+        {
+            "Child of Grief...",
+            "I would bid you live for your other half...",
+            "But I failed to do so for mine.",
+            "Perhaps two little ghosts makes better company...",
+            "One on either side of the grave.",
+        },             
+        WILSON =
+        {
+            "Seeker...",
+            "I sought knowledge, grew wise...",
+            "Yet learned nothing.",
+            "Your science will not save you.",
+            "Some answers cannot be found by those who search alone.",
+        },       
+        WARLY =
+        {
+            "Nourisher...",
+            "You give much of yourself to feed others.",
+            "The one you serve in your heart...",
+            "Beyond this world and hers, rests well.",
+        },       
+        WATHGRITHR =
+        {
+            "Shieldmaiden...",
+            "You have forged yourself in battle.",
+            "But what were you before iron was cast?",
+            "And who remains when armor falls away?",
+        },          
+        WEBBER =
+        {
+            "Entangled Ones...",
+            "Though some may recoil at the sight of you...",
+            "There is a child within who still longs for home.",
+            "A longing not even kings are spared.",
+        },       
+        WOLFGANG =
+        {
+            "Strongman...",
+            "The others see your might.",
+            "I see why you need it.",
+        },       
+        WOODIE =
+        {
+            "Woodsman...",
+            "You have long wondered where the beast came from.",
+            "Perhaps you should ask what it came for.",
+        },       
+        WURT =
+        {
+            "Foundling...",
+            "Blood may bind folk...",
+            "But love may bind a family.",
+            "May both hold you dear, little one.",
+        },       
+        WX78 =
+        {
+            "Construct...",
+            "Your shell protects you from threats without...",
+            "Yet what you fear most lies within.",
+        },       
+        WALTER =
+        {
+            "Brave Boy...",
+            "Tell my tale, so others may avoid the path of a faithless old king.",
+            "And lifetimes from now, I hope they tell yours...",
+            "So more will know the way of a steadfast young scout.",
+        },       
+        WES =
+        {
+            "Wordless One...",
+            "The world frays, yet yours, unseen, remains.",
+            "They laugh with you or at you, so long as they laugh.",
+            "For a fool you are, though I do not believe you foolish.",
+        },
+
+        KING_CANE =
+        {
+            "The staff...",
+            "Of a fool king who believed he could command the accursed fuel.",
+            "I look upon it now and see only the rod that led those who trusted me to ruin.",
+        },
+        QUEEN_TORCH =
+        {
+            "The torch of my beloved...",
+            "How bravely you stood against the darkness while I was blinded by it, lost to it.",
+        },
+    },
+
+    -- Random line is chosen
+
+    STALKER_NPC_SPAWN = -- spawned after first spawns
+    {
+        "I arise yet again.",
+        "Ripped from my slumber.",
+        "Why do you disturb my rest?",
+        "Is this my curse?",
+        "Must I see the ruins of my world again?",
+        "No more... I beg of you.",
+    },
+
+    STALKER_NPC_PERFORM_CORRUPT =
+    {
+        "Awaken to your new life... horrific and fleeting as it may be",
+        "We are all pawns.",
+        "You are woven.",
+        "Your sacrifice will not be forgotten.",
+        "Against my will, I was made to rise... so too shall you.",
+    },
+
+    STALKER_NPC_IDLE =
+    {
+        "Where is she?",
+        "My love...",
+        "It is a nightmare eternal.",
+        "Come back to me...",
+    },
+
+    STALKER_NPC_GREETING =
+    {
+        "Who are you?",
+        "Have you seen her?",
+        "Why do you torment me?",
+        "Do you know who I am?",
+        "Know that I would extinguish you, given a thrall's chance.",
+    },
+
+    STALKER_NPC_FOLLOW_THURIBLE = -- start following thurible
+    {
+        "Will you not let this old king rest his weary bones?",
+        "Who are you to lead a king like a thrall?",
+        "I shall follow... every forced step steeped in shame... and loathing.",
+        "By yon accursed bauble, I am compelled to follow.",
+        "Curse you and that infernal trinket!",
+    },
+
+    STALKER_NPC_FOLLOWING_THURIBLE = -- while we're following it.
+    {
+        "Where you lead, I wish not follow.",
+        "I shall follow you to your doom.",
+        "You may prove a greater fool than I.",
+        "Are you lost? For I am... evermore.",
+        "If not for that infernal trinket, you'd not have power over me.",
+    },
+
+    STALKER_NPC_BIOMES_IDLE = -- idle talk after seeing the biome for the first time, and being within it
+    {
+        ATRIUM =
+        {
+            "Gone... all gone.",
+        },
+        RUINS_RESIDENTIAL = -- where the common peoples lived
+        {
+            "They trusted me.",
+            "I failed them.",
+        },
+        RUINS_MILITARY = -- the military, consisting of clockworks
+        {
+            "I was our enemy.",
+        },
+        RUINS_SACRED = -- the sacred areas, where worship occurred.
+        {
+            "All that was once sacred now stand defiled.",
+        },
+        RUINS_LABYRINTH = -- the labyrinth, where the guardian was.
+        {
+            "Does my old friend still roam these parts?",
+        },
+        LUNAR_GROTTO =
+        {
+            "Alter's power is strong here.",
+        },
+        ARCHIVES =
+        {
+            "It pains me to remember what we once were.",
+        },
+        VAULT =
+        {
+            "You should have never come here.",
+        },
+    },
+
+    STALKER_NPC_DESTROY_STRUCTURE = -- this is by accident from him walking into a structure(he can be a little apologetic)
+    {
+        "All I touch is laid to ruin!",
+        "My way is ever cursed!",
+        "Like my world, broken forever.",
+    },
+
+    CHARLIE_NPC_SACRIFICE_REQUEST =
+    {
+        "The ritual demands sacrifices.",
+        "Only the most extraordinary specimens are worthy.",
+        "Seek them out. Allow them to be touched by Shadow...",
+        "Slaughter them. Bring me their essence.",
+        "Then the ritual may begin.",
+    },
+
+    -- should be one string only
+    CHARLIE_NPC_GIVE_SHADOWHEART_INFUSED =
+    {
+        "Call upon an old foe. This will make him... a friend.",
+    },
+
+    -- Monologue on ritual beginning, portal swirls, eye appears, hooray! youre about to be betrayed and apart of the ritual!
+    -- (script plays in order)
+    CHARLIE_NPC_RITUAL_BEGUN =
+    {
+        "We've done it.",
+        "They whom we call Shrouden accept our sacrifices.",
+        "There's just one left to make...",
+    },
+
+    -- Shrouden jumps to take host of charlie
+    -- (script plays in order)
+    -- keep to two lines only
+    CHARLIE_NPC_SHROUDEN_TAKES_HOST =
+    {
+        "What's happening?!",
+        "They're the sacrifice, not me!",
     },
 
     --Arena Event
@@ -9101,7 +9720,7 @@ STRINGS.UI =
             "Steven Erenst",
             "Corey McDaniel",
             "Xiaowen Lin",
-            "Leira Zamfirescu",
+			"Zell Leira",
             "Scott Hansen",
 			"Philippe Donati",
 			"Yorman Arias",
@@ -9141,7 +9760,6 @@ STRINGS.UI =
             "Kent Reimer",
             "Garnet (G50) Syberg-Olsen",
             "Omar Al-Saadi",
-            "Elaine Chen",
             "Nathan Bosia",
         },
 
@@ -9589,6 +10207,7 @@ STRINGS.UI =
         IMPORTSUCCESS = "Success",
         IMPORTSUCCESSDESC = "Data was imported successfully.",
         OK = "OK",
+        LOGIN_REQUIRED_TITLE = "Login Required",
         IMPORTFAIL = "Failed to load",
         GREETING = "Hi ",
         NEWWORLD = "Create a new world!",
@@ -9600,6 +10219,7 @@ STRINGS.UI =
         NEWGO = "Let's Go!",
         ASKQUIT = "Quit Game?",
         ASKQUITDESC = "Charlie will miss you.",
+        ASKQUITDESC_NOCHARLIE = "Charlie would miss you.",
         QUIT = "Quit",
 
         DYNAMICCONTENT_TITLE = "Dynamic Content",
@@ -9743,7 +10363,7 @@ STRINGS.UI =
 
         ITEMCOLLECTION_DISABLE = "You must be logged in to view your Profile or Item Collection.",
 		STORE_DISABLE = "You must be logged in to use the Klei Store.",
-        STORE_DISABLE_CONSOLE = "You must be logged in to use the Klei Store.\nDo you want to log in now?",
+        ITEMS_DISABLE = "You must be logged in to continue.\nDo you want to log in now?",
 
         LOGIN = "Login",
 
@@ -10449,6 +11069,7 @@ STRINGS.UI =
 		INTEGRATEDBACKPACK_DISABLED = "Separated",
 		INTEGRATEDBACKPACK_ENABLED = "Integrated",
         DATACOLLECTION = "Data Collection:",
+        CRASHREPORTS = "Crash Reports:",
         MOVEMENTPREDICTION = "Lag Compensation:",
         MOVEMENTPREDICTION_ENABLED = "Predictive",
         MOVEMENTPREDICTION_DISABLED = "None",
@@ -10570,6 +11191,7 @@ STRINGS.UI =
 			CRAFTINGMENUBUFFEREDBUILDAUTOCLOSE = "Closes the crafting menu when building a structure that is placed in the world.",
 			CRAFTINGHINTALLRECIPES = "Preview the next available research tier or show all locked recipes.",
             DATACOLLECTION = "We collect metrics and telemetry on Don't Starve Together, including how long and how often you play. This information helps us troubleshoot the game, provide rewards, and improve your experience. Refer to https://www.klei.com/privacy-policy for more information.",
+            CRASHREPORTS = "After a crash, offer to send a crash dump and the log to Klei so we can fix it. Turn this off and you will never be asked.",
             LOADING_TIPS = "Learn more about the lore and the gameplay of Don't Starve while your world loads.",
 			TARGETLOCKING = "Focus on one target at a time.",
 			PROMOTIONS = "Display store promotions in the main menus.",
@@ -10991,7 +11613,7 @@ STRINGS.UI =
             ID_DST_USER_CONNECTION_FAILED = "Something went awry while connecting. Please try again.",
             ID_DST_FRIENDS_ONLY_SERVER = "Attempted to join a \"friends only\" server, but you're not friends with the host.",
             APP_OWNERSHIP_CHECK_FAILED = "The server says you don't own the game. But you do... right?",
-            SERVER_MODS_NOT_ON_WORKSHOP = "This server requires mods that are not available on the Steam Workshop. You will need to manually download the missing mods.",
+            SERVER_MODS_NOT_ON_WORKSHOP = "This server requires mods you don't have installed, or a different version of a mod you have.\nSubscribe on the Steam Workshop and let Steam update them (or download them manually if they are not Workshop mods), then join again.",
             SERVER_MODS_NOT_ON_WORKSHOP_RAIL = "This server requires mods that are not available. You will need to manually download the missing mods.",
             SERVER_MODS_WORKSHOP_VERSION_MISMATCH = "The server is running mods with an old version. The server owner must update the mods for new players to join.",
             SERVER_MODS_WORKSHOP_FAILURE = "Download of the required mods from the Steam Workshop failed. Please try again.",
@@ -11374,12 +11996,12 @@ STRINGS.UI =
         ENABLEDDISABLED_FILTER = "Both",
         SEARCH = "Search",
         MOD_DEPENDENCIES_TITLE = "Dependencies Required",
-        MOD_HAS_DEPENDENCIES_FMT = "{mod} requires other mods to run, it will subscribe and enable these if you enable this mod:",
+        MOD_HAS_DEPENDENCIES_FMT = "{mod} requires other mods to run. They will be enabled with it once they are installed (Workshop mods can be clicked to open their Workshop page):",
         MOD_DEPENDENTS_TITLE = "Required By Other Mods",
         MOD_HAS_DEPENDENTS_FMT = "{mod} is required for other mods to run, if you disable this mod these mods will be disabled:",
         DISABLE_ALL = "Disable All",
-        REQUIRED_MODS_DOWNLOADING_TITLE = "Required Mods Are Downloading",
-        REQUIRED_MODS_DOWNLOADING = "The game has not finished downloading required mods.\nEither wait until the mods have finished downloading, or disable mods which have dependencies.",
+        REQUIRED_MODS_DOWNLOADING_TITLE = "Required Mods Not Installed",
+        REQUIRED_MODS_DOWNLOADING = "Required mods are not installed yet.\nSubscribe to them on the Workshop and wait until they have been installed, or disable mods which have dependencies.",
         DOWNLOADING_MODS = "Downloading Mods...",
     },
 
@@ -11800,6 +12422,9 @@ STRINGS.UI =
         MUTATED_WARG = "Possessed Vargs",
 
         TREE_ROCK = "Boulderboughs",
+
+        BAT_BOSS = "Hound Batilisks",
+        ROCKY_BOSS = "Rock Masters",
 		-- End of world customization strings
     },
 
@@ -12169,8 +12794,11 @@ STRINGS.UI =
         OFFLINEMODEBODYRESUME = "You are resuming an offline world. Only users on your Local Area Network will be able to join this world. Players will not be able to receive or use Collection Items in this world.",
         OFFLINEMODEBODYCREATE_CANSKIN = "Are you sure you want to create an offline world? This is a limited mode where only players on your Local Area Network can join.",
         OFFLINEMODEBODYRESUME_CANSKIN = "You are resuming an offline world. Only users on your Local Area Network will be able to join this world.",
-        CONVERT_OFFLINE_TO_ONLINE = "This world was last saved as offline. Are you sure you want to play online?",
-        CONVERT_ONLINE_TO_OFFLINE = "This world was last saved as online. Are you sure you want to play offline? Only users on your Local Area Network will be able to join.",
+        CHANGE_MODE_TITLE = "Change World Mode",
+        CHANGE_MODE_TO_ONLINE = "This world was last played offline. Do you want to change it to an online world?",
+        CHANGE_MODE_TO_OFFLINE = "This world was last played online. Do you want to change it to an offline world? Only players on your local network will be able to join. Your skins and characters still work but gifts will be unavailable.",
+        SIGNIN_REQUIRED_TITLE = "Login Required",
+        SIGNIN_REQUIRED_BODY = "You must be logged in to play worlds in online mode. Logging in takes you back to the title screen.",
         FULLSLOTSTITLE = "No Slots Available",
         FULLSLOTSBODY = "All of your server slots are currently full. You must either select a slot to load from, or delete a slot and start a new world.",
         OK = "OK",
@@ -15566,12 +16194,15 @@ STRINGS.UI =
 
     PREMIUM_ONLINE = 
     {
-        NOT_REQUIRED_TEXT = "Skins and the Klei Shop are now available to everyone without a %s membership.\n\n You must be logged in to a Klei Account to use these features.",
-        UPSELL_TEXT = "Online play requires an active\n%s membership\n Do you want to become a member?",
-        PLAYSTATION_PLUS = "PlayStation®Plus",
-        NINTENDO_ONLINE = "Nintendo Switch Online",
-        YES = "Subscribe",
-        NO = "Cancel",
+        PLAYSTATION = "PlayStation®Plus",
+        NINTENDO = "Nintendo Switch Online",
+        NOT_REQUIRED_TEXT = "Skins and the Klei Store are now available to everyone without a %s membership.\n\n You must be logged in to a Klei Account to use these features.",
+        MEMBERSHIP_REQUIRED_TITLE = "Membership Required",
+        OFFLINE_WARNING = "Online play requires an active\n%s membership\nDo you want to play offline?",
+        MEMBERSHIP_REQUIRED_BODY = "Online play requires an active\n%s membership.\n\nIf you do not wish to play Online, please choose an offline mode from the Connection setting.",
+        UPSELL_TEXT = "Online play requires an active%s membership\n Do you want to become a member?",
+        SUBSCRIBE = "Subscribe",
+        CANCEL = "Cancel",
     },
 }
 
@@ -18386,7 +19017,6 @@ STRINGS.SCRAPBOOK = {
         CUTLESS = "Knocks items out of targets inventory.",
         WATERINGCAN = "Adds 25 points of wetness to Garden Soil per use.\n\nCan also put out fires and stop smouldering.",
         FENCEROTATOR = "Rotates rotatable structures like fences, signs and chairs.",
-        HOE = "Use on Garden Soil to create dirt piles where survivors can plant seeds.",
         SADDLEHORN = "Removes saddles from a Beefalo without reducing saddle durability.",
         DUMBBELLRED = "When equipped Wolfgang can Lift to raise his Mightiness.\n\nWhen thrown it creates fire where it lands.",
         DUMBBELLBLUE = "When equipped Wolfgang can Lift to raise his Mightiness.\n\nWhen thrown it increases the coldness of creatures near where it lands.",
@@ -18655,9 +19285,6 @@ STRINGS.SCRAPBOOK = {
         WOBY_TREAT = "Restores three times as much hunger when eaten by Woby.",
         ELIXIR_CONTAINER = "A carryable container with 9 slots that can hold Elixirs.",
         GHOSTFLOWERHAT = "When equipped, allows Wendy to drink Elixirs herself.",
-        -- GHOSTLYELIXERLUNAR = "TODO",
-        -- GHOSTLYELIXERREVIVE = "TODO",
-        -- GHOSTLYELIXERSHADOW = "TODO",
         GRAVEGUARD_GHOST = "Where they appear, Evil Flowers tend to grow nearby.",
         GRAVEURN = "It is used to move Headstones.",
         PORTABLEFIREPIT_ITEM = "A portable campfire that stays lit even when packed!",
@@ -18784,6 +19411,21 @@ STRINGS.SCRAPBOOK = {
         VAULT_COMPASS = "A compass left by one of the last builders of this place. It could lead somewhere important.",
         VAULT_KEY_PEDESTAL = "Maybe this one will help you get home.",
         VAULT_REFINER_PEDESTAL = "Break down some orbs in the mean time.",
+
+        -- Rifts 8
+
+        BAT_BOSSCORPSEHAT = "When equipped, leeches your life in exchange for life steal on melee attack. The wearer is considered a monster, grants neutrality with Batilisks, Hound Batilisk and Naked Mole Bats, and also prevents Bat Waves during Acid Rain.",
+        ARMOR_ROCKY = "Grants its wearer knockback immunity",
+
+        CHARLIE_BOSS_RUNNER = "Echoes of lost souls. Don't get too close.",
+
+        CHARLIE_BOSS = "What have we done?",
+        CHARLIE_BOSS_PROJECTILE = "Chases those who dare still bask in the light.",
+        SHROUDEN = "We just want to go home.",
+
+        KING_CANE = "Increases movement speed by 30% when held. Socket any gem to use the respective staffs ability.\nBe careful to not overuse, or you will fall as they did.",
+        QUEEN_TORCH = "An eternal flame to push back the shadows.",
+        MASK_CHARLIE_BOSSHAT = "Once worn by Her Royal Darkness.",
     },
 
     -- Full name: "{name} Scrapbook Page"
@@ -18802,7 +19444,13 @@ STRINGS.TEMP_BETA_MSG =
 	RIFTS6_BASIC = "Thanks for playing the beta!\nThe room beyond this point is not yet available.",
 	--
 	RIFTS7_FMT = "You defeated all beta {name}s!\nAdditional loot and rewards coming soon...",
+	--
+	RIFTS8_BASIC = "Thanks for playing the beta!\nBoss final phase and rewards coming soon...",
+	RIFTS8_BASIC_NEW = "Thanks for playing the beta!",
+	RIFTS8_KILLTIME_FMT = "You defeated {name} in {time}s.",
 }
+
+STRINGS.UPDATENAME = require("versioning").UPDATENAME
 
 --Don't include this in pot generation as this file is already translated.
 if POT_GENERATION == false then
@@ -18815,6 +19463,27 @@ if POT_GENERATION == false then
 		end
 	end
 end
+
+----------------------------------------------------------------------------
+-- Not used in-game - translated here, then exported to external tools
+----------------------------------------------------------------------------
+STRINGS.EXTERNAL =
+{
+	CRASHREPORTER =
+	{
+		IDS_APP_TITLE = "Don't Starve Together Crash Reporter",
+		IDS_DLG_TITLE = "It appears Don't Starve Together has crashed.\nPlease visit our support page for fixes to common problems: <a>https://support.klei.com</a>",
+		IDS_DLG_INSTRUCTIONS = "Can you describe what was going on in the game when the crash happened?",
+		IDS_DLG_FILES = "Files to include:",
+		IDS_FAILED_TO_SEND = "Crash report failed to send",
+		IDS_SEND = "Send",
+		IDS_ERROR = "Error",
+		IDS_CANCEL = "Cancel",
+		IDS_SUCCESS = "Success",
+		IDS_SEND_SUCCESS = "Crash report sent. Thank you!",
+		IDS_PRIVACY_DISCLAIMER = "Report includes platform information for diagnostic purposes.",
+	},
+}
 
 ----------------------------------------------------------------------------
 -- Include the names and descriptions of the clothing and craftable skins.

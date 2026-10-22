@@ -44,7 +44,7 @@ local events =
 
 local AOE_RANGE_PADDING = 3
 local AOE_TARGET_MUSTHAVE_TAGS = { "_combat" }
-local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall" }
+local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall", "shadowboss" }
 local AOE_DEVOUR_RADIUS_SQ = TUNING.SHADOWTHRALL_HORNS_DEVOUR_RADIUS * TUNING.SHADOWTHRALL_HORNS_DEVOUR_RADIUS
 
 local function DoAOEAttack(inst, dist, radius, heavymult, mult, forcelanded, targets, devour)
@@ -188,7 +188,7 @@ end
 
 local function DoSpitOut(inst, target)
 	if IsDevouring(inst, target) then
-		target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = inst, radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 1 })
+		target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = inst, rot = inst.Transform:GetRotation(), radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 0.667 })
 		if not inst.components.health:IsDead() then
 			inst.components.combat:SetTarget(target)
 		end
@@ -205,7 +205,9 @@ end
 
 local TEAM_ATTACK_COOLDOWN = 1
 local function SetTeamAttackCooldown(inst, isstart)
-	if isstart then
+	if inst.shrouden then
+		return
+	elseif isstart then
 		inst.sg.mem.lastattack = GetTime()
 		inst.components.combat:StartAttack()
 	else
@@ -253,6 +255,9 @@ local function SetTeamAttackCooldown(inst, isstart)
 end
 
 local function ResetTeamTarget(inst)
+	if inst.shrouden then
+		return
+	end
 	local target = inst.components.combat.target
 	if target ~= nil then
 		local hands = inst.components.entitytracker:GetEntity("hands")
@@ -663,6 +668,151 @@ local states =
 	},
 
 	State{
+		name = "shrouden_jump",
+		tags = { "busy", "attack", "jumping", "nointerrupt", "noattack", "temp_invincible" },
+
+		onenter = function(inst, target)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("shrouden_jump")
+			--inst.AnimState:SetFrame(18)
+
+			inst.sg.statemem.target = target
+			ToggleOffAllObjectCollisions(inst)
+		end,
+
+		timeline =
+		{
+			FrameEvent(0--[[9 - 18]], function(inst)
+				local x, _, z = inst.Transform:GetWorldPosition()
+				local rot = inst.Transform:GetRotation()
+				local costheta, sintheta
+				local targetdist
+				local dt = 11 * FRAMES
+				local target = inst.sg.statemem.target
+				if target and target:IsValid() then
+					local x1, _, z1 = target.Transform:GetWorldPosition()
+					local dx = x1 - x
+					local dz = z1 - z
+					if target.Physics then
+						local vx, _, vz = target.Physics:GetVelocity()
+						dx = dx + vx * dt
+						dz = dz + vz * dt
+					end
+					if dx ~= 0 or dz ~= 0 then
+						local rot1 = math.atan2(-dz, dx) * RADIANS
+						local diff = ReduceAngle(rot1 - rot)
+						if math.abs(diff) < 90 then
+							rot = rot + math.clamp(diff, -45, 45)
+							inst.Transform:SetRotation(rot)
+
+							local theta = rot * DEGREES
+							costheta, sintheta = math.cos(theta), math.sin(theta)
+
+							local dot = costheta * dx - sintheta * dz
+							targetdist = math.clamp(dot, 3.5, 9)
+						end
+					else
+						targetdist = 3.5
+					end
+				end
+				local physrad = inst:GetPhysicsRadius(0)
+				targetdist = (targetdist or 6 + 2 * math.random()) + physrad
+				local dist = math.min(1, targetdist)
+				if dist < targetdist then
+					if costheta == nil then
+						local theta = rot * DEGREES
+						costheta, sintheta = math.cos(theta), math.sin(theta)
+					end
+					repeat
+						if not TheWorld.Map:IsPassableAtPoint(x + costheta * dist, 0, z - sintheta * dist) then
+							break
+						end
+						dist = math.min(targetdist, dist + 0.5)
+					until dist >= targetdist
+				end
+				dist = math.max(1, dist - physrad)
+				-- 30 fps; 20 + 9 - 18 frames at full speed
+				inst.sg.statemem.speed = dist / dt
+				inst.Physics:SetMotorVelOverride(inst.sg.statemem.speed, 0, 0)
+			end),
+			FrameEvent(29 - 18, function(inst)
+				inst.SoundEmitter:PlaySound("rifts2/thrall_horns/jump_f31")
+				inst.sg.statemem.targets = {}
+				DoAOEWork(inst, 0, TUNING.SHADOWTHRALL_HORNS_FACEPLANT_RADIUS, inst.sg.statemem.targets)
+				inst.sg.statemem.devoured = DoAOEAttack(inst, 0, TUNING.SHADOWTHRALL_HORNS_FACEPLANT_RADIUS, 0.8, 0.7, false, inst.sg.statemem.targets, true)
+				if inst.shrouden then
+					local x, _, z = inst.Transform:GetWorldPosition()
+					inst.shrouden:RemoveSpawningArenaSpikes(x, z, inst:GetPhysicsRadius(0))
+				end
+			end),
+			FrameEvent(30 - 18, function(inst)
+				local x, _, z = inst.Transform:GetWorldPosition()
+				ToggleOnAllObjectCollisionsAt(inst, x, z)
+				inst.Physics:SetMotorVelOverride(0.5 * inst.sg.statemem.speed, 0, 0)
+				DoFaceplantShake(inst)
+				DoAOEWork(inst, 0, TUNING.SHADOWTHRALL_HORNS_FACEPLANT_RADIUS, inst.sg.statemem.targets)
+				inst.sg.statemem.devoured = DoAOEAttack(inst, 0, TUNING.SHADOWTHRALL_HORNS_FACEPLANT_RADIUS, 0.8, 0.7, false, inst.sg.statemem.targets, inst.sg.statemem.devoured == nil) or inst.sg.statemem.devoured
+				if inst.shrouden then
+					inst.shrouden:RemoveSpawningArenaSpikes(x, z, inst:GetPhysicsRadius(0))
+				end
+				if inst.sg.statemem.devoured then
+					inst.SoundEmitter:PlaySound("dontstarve/common/teleportworm/swallow")
+					inst.SoundEmitter:PlaySound("rifts2/thrall_horns/wormhole_amb", "devour_loop")
+				else
+					inst.AnimState:PushAnimation("shrouden_jump_pst", false)
+				end
+			end),
+			FrameEvent(33 - 18, function(inst)
+				inst.sg:AddStateTag("flight")
+			end),
+			FrameEvent(33 - 18, function(inst) inst.Physics:SetMotorVelOverride(0.4 * inst.sg.statemem.speed, 0, 0) end),
+			FrameEvent(35 - 18, function(inst) inst.Physics:SetMotorVelOverride(0.2 * inst.sg.statemem.speed, 0, 0) end),
+			FrameEvent(36 - 18, function(inst)
+				inst.DynamicShadow:Enable(false)
+				RemovePhysicsColliders(inst)
+			end),
+			FrameEvent(37 - 18, function(inst) inst.Physics:SetMotorVelOverride(0.1 * inst.sg.statemem.speed, 0, 0) end),
+			FrameEvent(39 - 18, function(inst) inst.Physics:SetMotorVelOverride(0.05 * inst.sg.statemem.speed, 0, 0) end),
+			FrameEvent(41 - 18, function(inst)
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+				inst.Physics:SetActive(false)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animqueueover", function(inst)
+				if inst.AnimState:AnimDone() then
+					local devoured = inst.sg.statemem.devoured
+					if devoured and not devoured:IsValid() then
+						devoured = nil
+					end
+					if devoured == nil then
+						inst:Remove()
+					elseif inst.AnimState:IsCurrentAnimation("shrouden_jump") then
+						inst.AnimState:PlayAnimation("jump")
+						inst.AnimState:SetFrame(33)
+					else
+						inst.Physics:SetMotorVelOverride(0.05 * inst.sg.statemem.speed, 0, 0)
+						inst.sg.statemem.jumping = true
+						inst.sg:GoToState("spit", devoured)
+					end
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.jumping then
+				inst:Remove()
+			elseif inst.sg.mem.isobstaclepassthrough then
+				local x, y, z = inst.Transform:GetWorldPosition()
+				ToggleOnAllObjectCollisionsAt(inst, x, z)
+			end
+		end,
+	},
+
+	State{
 		name = "jump_pst",
 		tags = { "busy", "attack", "jumping" },
 
@@ -706,6 +856,11 @@ local states =
 		onenter = function(inst, devoured)
 			inst.AnimState:PlayAnimation("spit")
 			inst.sg.statemem.devoured = devoured
+			if inst.shrouden then
+				inst.sg:AddStateTag("nointerrupt")
+				inst.sg:AddStateTag("noattack")
+				inst.sg:AddStateTag("temp_invincible")
+			end
 		end,
 
 		timeline =
@@ -723,6 +878,36 @@ local states =
 			FrameEvent(28, function(inst) DoChew(inst, inst.sg.statemem.devoured) end),
 			FrameEvent(38, function(inst) DoChew(inst, inst.sg.statemem.devoured) end),
 			FrameEvent(44, function(inst) DoChew(inst, inst.sg.statemem.devoured) end),
+			FrameEvent(49, function(inst)
+				if inst.shrouden and inst.shrouden:IsInArena() then
+					local x, _, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+					local map = TheWorld.Map
+					local safedir1, safedir2
+					for delta = 0, 180, 30 do
+						local rot1 = rot + delta
+						local theta = rot1 * DEGREES
+						local done = safedir1 ~= nil or safedir2 ~= nil
+						if map:IsValidTileAtPoint(x + 6 * math.cos(theta), 0, z - 6 * math.sin(theta)) then
+							safedir1 = rot1
+							done = done or delta == 0
+						end
+						if delta ~= 0 and delta ~= 180 then
+							rot1 = rot - delta
+							theta = rot1 * DEGREES
+							if map:IsValidTileAtPoint(x + 6 * math.cos(theta), 0, z - 6 * math.sin(theta)) then
+								safedir2 = rot1
+							end
+						end
+						if done then
+							break
+						end
+					end
+					if safedir1 or safedir2 then
+						inst.Transform:SetRotation(math.random() < 0.5 and safedir1 or safedir2 or safedir1)
+					end
+				end
+			end),
 			FrameEvent(55, function(inst) inst.SoundEmitter:PlaySound("rifts2/thrall_horns/spit_f46") end),
 			FrameEvent(58, function(inst) DoChew(inst, inst.sg.statemem.devoured, true) end),
 			FrameEvent(58, function(inst)
@@ -732,13 +917,22 @@ local states =
 				DoSpitOut(inst, devoured)
 				SetTeamAttackCooldown(inst) --team may have dropped target while devoured
 			end),
+			FrameEvent(65, function(inst)
+				if inst.shrouden then
+					inst.sg:GoToState("shrouden_spit_pst")
+				end
+			end),
 		},
 
 		events =
 		{
 			EventHandler("animover", function(inst)
 				if inst.AnimState:AnimDone() then
-					inst.sg:GoToState("idle")
+					if inst.shrouden then
+						inst.sg:GoToState("shrouden_spit_pst")
+					else
+						inst.sg:GoToState("idle")
+					end
 				end
 			end),
 		},
@@ -751,6 +945,38 @@ local states =
 			end
 			DoSpitOut(inst, inst.sg.statemem.devoured)
 			ResetTeamTarget(inst) --team may have dropped target while devoured
+		end,
+	},
+
+	State{
+		name = "shrouden_spit_pst",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "flight" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("shrouden_disappear")
+		end,
+
+		timeline =
+		{
+			FrameEvent(9, function(inst)
+				inst.DynamicShadow:Enable(false)
+				inst.Physics:SetActive(false)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst:Remove()
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			inst.DynamicShadow:Enable(true)
+			inst.Physics:SetActive(true)
 		end,
 	},
 

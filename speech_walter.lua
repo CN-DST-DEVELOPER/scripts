@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "Um. Sorry, could you repeat that please?",
             QUEENBUSY = "Sorry ma'am, I'll wait until you're ready.",
             CARNIVALGAME_GOLFGAME_NOTREADY = "We can't play until there's a flaghole, Woby!",
+            KINGSTAFF_COOLDOWN = "It won't come out, Woby!", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1296,6 +1297,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "I've got to be careful, Woby. My Thermal Balm has worn off.",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "We have a new buddy, Woby!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Woah! What are you?",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "Hey w-wait- I thought we could be friends!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "This is so gross! I love it!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "These rocks don't like it when we're enlightened, Woby!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Sorry!!",
@@ -1745,7 +1757,12 @@ return{
 		CAVE_BANANA = "I wouldn't mind stopping for a snack.",
 		CAVE_BANANA_COOKED = "Well... it's a hot banana.",
 		CAVE_BANANA_TREE = "I didn't know bananas could grow in caves.",
-		ROCKY = "Wow! Look at you!",
+        ROCKY =
+        {
+            GENERIC = "Wow! Look at you!",
+            BOULDER = "It would be more useful in smaller pieces.", -- in boulder state, it looks like a normal boulder
+            ACID = "Hey what's that growing on you, little guy?", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1762,7 +1779,11 @@ return{
 
         HOUNDSTOOTH = "They left a souvenir!",
         ARMORSNURTLESHELL = "I'm the terrifying snail boy! Part boy, part snail!",
-        BAT = "Maybe if we're lucky it'll turn into a vampire!",
+        BAT =
+        {
+            GENERIC = "Maybe if we're lucky it'll turn into a vampire!",
+            ACID = "It's gone batty! Get it, Woby?", -- in acid form
+        },
         BATBAT = "Bat 'er up!",
         BATWING = "Where did the rest of the bat go?",
         BATWING_COOKED = "Uh... Woby, do you want this?",
@@ -2233,6 +2254,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "Like a robot possessed!",
         CHESSPIECE_YOTH = "It's a chess piece of a chess piece!",
         CHESSPIECE_VAULT_PILLAR_GUARD = "Don't even think about it, Woby!",
+        CHESSPIECE_BATBOSS_SHADOW = "What a sucker! Get it, Woby?",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "It got real rocky with this guy!",
+        CHESSPIECE_WORMBOSS_SHADOW = "That was a whopper, eh, Woby?",
+        CHESSPIECE_CHARLIE_BOSS = "She sure had a lot going on!",
+        CHESSPIECE_SHROUDEN = "It can't hurt us now, Woby!",
 
         CHESSJUNK1 = "I don't think they're going to get up anytime soon.",
         CHESSJUNK2 = "I don't think they're going to get up anytime soon.",
@@ -3551,6 +3577,7 @@ return{
 			CHARGING = "I guess we'll have to wait for it to power up.",
 			DESTABILIZING = "Is it supposed to be making that sound?",
 			COOLDOWN = "I guess I should give it a rest for now.",
+            RITUAL_SUMMONING = "That is the scariest eye I've ever seen in my life, Woby! So cool!", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "It's the key to this whole mystery!",
 		LIFEINJECTOR = "This is supposed to make me healthier?",
@@ -4571,6 +4598,8 @@ return{
 			LORE1 = "Poor fella doesn't look well, eh Woby?",
 			LORE2 = "Something real bad happened to them.",
 			LORE3 = "They're just statues, girl!",
+            --
+            LORE1_STALKER = "I know, Woby. It makes him sad.", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5406,7 +5435,12 @@ return{
 		SHADOWTHRALL_WINGS = "Oooh, neat! That one can fly!",
 		SHADOWTHRALL_MOUTH = "It's a silly one!",
 
-        CHARLIE_NPC = "Excuse me, ma'am! It's dangerous here, do you need any assistance?",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Excuse me, ma'am! It's dangerous here, do you need any assistance?", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "She needs our help, Woby!", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "She needs our help, Woby!", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "We should give it a hand! Heh. Good one, Walter.",
 
         NITRE_FORMATION = "Huh. Looks like a big clump of rocks.",
@@ -6313,6 +6347,68 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "Look, Woby! We have a fan!", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Neat claw!",
+            BOULDER = "Look at that weird boulder, Wobes!", -- in boulder form
+            ACID = "Something's happening to its shell!",
+        },
+		ROCKY_BOSS_SHADOW = "Its shell's all shadowy!",
+        BAT_BOSS =
+        {
+            GENERIC = "A real vampire bat!",
+            ACID = "It's sure drooling something awful!",
+        },
+		BAT_BOSS_SHADOW = "See Wobes? That's called a shadow-bat-dog.",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Stay back, Woby! Something's watching us!", -- boss bat is inside,
+            VACANT = "I think no one's home, Woby.", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "Woah.",
+
+        ARMOR_ROCKY = "Aww the lobster man gave his shell for us.",
+        BAT_BOSSCORPSEHAT = "There's nothing in the Pinetree manual about wearing a bat on my head.",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "It's the big lobster man's claw!",
+            IN_RITUAL = "Neat! It's floating, Woby!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "I think it's its voice box, Woby.",
+            IN_RITUAL = "Neat! It's floating, Woby!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Look at all those worm guts!",
+            IN_RITUAL = "Neat! It's floating, Woby!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "Woah. Are you the queen of monsters now, ma'am? Your highness?",
+		SHROUDEN =
+		{
+			GENERIC = "I can't stop staring at it!",
+			PUDDLE = "Let's smush that crazy eye, Woby!",
+		},
+
+        CHARLIEARENA_SPIKE = "They grow up so fast! Eh, Woby?",
+
+        KING_CANE =
+        {
+            GENERIC = "Now that is a neat staff!", -- has a gem slotted in
+            EMPTY = "Let's find a gem for it, Woby!", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "That's gotta be a special flame, Wobes!",
+        
+        CHARLIEARENA_TELEPORTER = "We better not leave anything behind, Woby!",
+
+        MASK_CHARLIE_BOSSHAT = "Ooooh, what's that on the back!",
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",
@@ -6337,6 +6433,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

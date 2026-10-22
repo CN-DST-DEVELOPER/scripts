@@ -290,7 +290,7 @@ function QuickJoinScreen:JoinGame()
 		    print(string.format("[QuickJoin]: %d - Trying to join: %s, %s", self.servertojoin, server.name, tostring(server.ip)))
 
 		    local passworld = ""
-			local start_worked = TheNet:JoinServerResponse( false, sel_serv.guid, passworld )
+			local start_worked = TheNet:JoinServerResponse( false, sel_serv.guid, passworld, sel_serv.row )
 			if start_worked then
 				DisableAllDLC()
 			end

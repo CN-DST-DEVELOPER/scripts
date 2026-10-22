@@ -768,48 +768,6 @@ AddGameDebugKey(KEY_F7, function()
     end
 end)
 
----Spawn random items from the "items" table in a circles around me.
-AddGameDebugKey(KEY_F8, function()
-    --Spawns a lot of prefabs around you in rings.
-    local items = {"flower"} --Which items spawn.
-    local player = DebugKeyPlayer()
-    if player == nil then
-        return true
-    end
-    local pt = Vector3(player.Transform:GetWorldPosition())
-    local theta = math.random() * TWOPI
-    local numrings = 10 --How many rings of stuff you spawn
-    local radius = 2 --Initial distance from player
-    local radius_step_distance = 1 --How much the radius increases per ring.
-    local itemdensity = 1 --(X items per unit)
-    local map = TheWorld.Map
-
-    local finalRad = (radius + (radius_step_distance * numrings))
-    local ents = TheSim:FindEntities(pt.x, pt.y, pt.z, finalRad + 2)
-
-    local numspawned = 0
-    -- Walk the circle trying to find a valid spawn point
-    for i = 1, numrings do
-        local circ = TWOPI*radius
-        local numitems = circ * itemdensity
-
-        for i = 1, numitems do
-            numspawned = numspawned + 1
-            local offset = Vector3(radius * math.cos( theta ), 0, -radius * math.sin( theta ))
-            local wander_point = pt + offset
-
-            if map:IsPassableAtPoint(wander_point:Get()) then
-                local spawn = SpawnPrefab(GetRandomItem(items))
-                spawn.Transform:SetPosition(wander_point:Get())
-            end
-            theta = theta - (TWOPI / numitems)
-        end
-        radius = radius + radius_step_distance
-    end
-    print("Made: ".. numspawned .." items")
-    return true
-end)
-
 AddGameDebugKey(KEY_PAGEUP, function()
     if TheInput:IsKeyDown(KEY_SHIFT) then
         TheWorld:PushEvent("ms_deltawetness", 5)

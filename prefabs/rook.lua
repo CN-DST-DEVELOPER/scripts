@@ -162,6 +162,7 @@ local function MakeRook(name, common_postinit, master_postinit, _assets, _prefab
 		inst:AddTag("hostile")
 		inst:AddTag("chess")
 		inst:AddTag("rook")
+		inst:AddTag("nightmarecorruptable")
 
 		inst.groundfx = net_event(inst.GUID, "rook.groundfx")
 
@@ -227,6 +228,8 @@ local function MakeRook(name, common_postinit, master_postinit, _assets, _prefab
 
 		inst:ListenForEvent("attacked", clockwork_common.OnAttacked)
 		inst:ListenForEvent("newcombattarget", clockwork_common.OnNewCombatTarget)
+		-- king staff interaction
+		inst:ListenForEvent("ms_becomeshadowchess", clockwork_common.OnBecomeShadowChess)
 
 		clockwork_common.InitHomePosition(inst)
 		clockwork_common.MakeBefriendable(inst)

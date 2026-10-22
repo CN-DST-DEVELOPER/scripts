@@ -371,7 +371,7 @@ local states=
 
     State{
         name = "pounceplayaction",
-        tags = {"canrotate", "busy", "jumping"},
+		tags = { "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.target = target
@@ -429,7 +429,7 @@ local states=
 
     State{
         name = "pounceattack",
-        tags = {"attack", "canrotate", "busy", "jumping"},
+		tags = { "attack", "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.components.locomotor:Stop()
@@ -480,7 +480,7 @@ local states=
 
     State{
         name = "pounceplay",
-        tags = {"canrotate", "busy", "jumping"},
+		tags = { "busy", "jumping" },
 
         onenter = function(inst, target)
             inst.target = target

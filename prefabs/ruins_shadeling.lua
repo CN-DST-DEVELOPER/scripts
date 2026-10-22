@@ -69,6 +69,12 @@ local function Despawn(inst)
 	end
 end
 
+local function OnUpdate(inst)
+    if FindClosestQueenTorch(inst) then
+        inst:Despawn()
+    end
+end
+
 local function TryRemoveOffScreen(inst)
 	inst.sleeptask = nil
 	--just don't want to remove when we're about to drop loot
@@ -148,11 +154,16 @@ local function fn()
 	inst:AddComponent("lootdropper")
 	inst.components.lootdropper:SetLoot(LOOT)
 
+	inst:AddComponent("stalkerinspectable")
+
 	inst:ListenForEvent("death", OnDeath)
 	inst.Despawn = Despawn
 	inst.OnEntitySleep = OnEntitySleep
 	inst.OnEntityWake = OnEntityWake
 	inst.persists = false
+
+	inst:AddComponent("updatelooper")
+	inst.components.updatelooper:AddOnUpdateFn(OnUpdate)
 
 	local function CheckRift()
 		local riftspawner = TheWorld.components.riftspawner

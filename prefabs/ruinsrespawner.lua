@@ -57,6 +57,7 @@ local function MakeFn(obj, onrespawnfn, data)
 		--[[Non-networked entity]]
 
 		inst:AddTag("CLASSIFIED")
+        inst:AddTag("forcedtosavethroughvirtualrooms")
 
 		inst.spawnprefab = obj
 		inst.onrespawnfn = onrespawnfn

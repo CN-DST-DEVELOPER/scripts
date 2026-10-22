@@ -174,6 +174,7 @@ local function basefn(build, tags)
 
     inst:AddTag("structure")
     inst:AddTag("equipmentmodel")
+    inst:AddTag("canwearhat")
     inst:AddTag("wooden")
 
     inst.DynamicShadow:SetSize(1.3, 0.6)

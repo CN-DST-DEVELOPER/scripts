@@ -113,6 +113,7 @@ local function MakePigEliteFighter(variation)
         inst:AddTag("scarytoprey")
         inst:AddTag("noepicmusic")
 		inst:AddTag("ignorewalkableplatformdrowning")
+        inst:AddTag("canwearhat")
 
         inst.AnimState:SetBank("pigman")
         inst.AnimState:SetBuild("pig_guard_build")

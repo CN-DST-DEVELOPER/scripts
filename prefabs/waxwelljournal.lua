@@ -632,6 +632,7 @@ local function fn()
 
 	inst:AddTag("book")
 	inst:AddTag("shadowmagic")
+	inst:AddTag("pseudorangedweapon")
 
 	MakeInventoryFloatable(inst, "med", nil, 0.75)
 

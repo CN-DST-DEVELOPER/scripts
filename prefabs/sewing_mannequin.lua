@@ -171,6 +171,7 @@ local function fn()
 
     inst:AddTag("structure")
     inst:AddTag("equipmentmodel")
+    inst:AddTag("canwearhat")
 	inst:AddTag("rotatableobject")
 
     -- stageactor (from stageactor component) added to pristine state for optimization

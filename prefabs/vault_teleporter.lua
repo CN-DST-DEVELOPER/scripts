@@ -1,6 +1,7 @@
 local assets = {
 	Asset("ANIM", "anim/vault_portal.zip"),
 	Asset("ANIM", "anim/vault_portal_ground.zip"),
+    Asset("SCRIPT", "scripts/prefabs/vaultroom_defs.lua"),
 }
 
 local prefabs =
@@ -9,45 +10,52 @@ local prefabs =
 	"vault_portal_fx",
 }
 
---------------------------------------------------------------------------
+local vaultroom_defs = require("prefabs/vaultroom_defs")
 
-local LOBBY_TO_OR_FROM_VAULT = "lobby_or_vault"
+--------------------------------------------------------------------------
 
 local DIRS =
 {
-	N = 0,
-	E = 1,
-	S = 2,
-	W = 3,
+	[VIRTUALROOMDIRECTIONS.N] = 0,
+	[VIRTUALROOMDIRECTIONS.E] = 1,
+	[VIRTUALROOMDIRECTIONS.S] = 2,
+	[VIRTUALROOMDIRECTIONS.W] = 3,
 }
+DIRS[VIRTUALROOMDIRECTIONS.IN] = DIRS[VIRTUALROOMDIRECTIONS.N]
+DIRS[VIRTUALROOMDIRECTIONS.OUT] = DIRS[VIRTUALROOMDIRECTIONS.S]
 
 local function SetCode(inst, pos, dir)
 	for k in pairs(DIRS) do
+        local name = VIRTUALROOMDIRECTIONS_INDEX[k]
 		if k == dir then
-			inst.AnimState:Show(pos..k)
+			inst.AnimState:Show(pos..name)
 		else
-			inst.AnimState:Hide(pos..k)
+			inst.AnimState:Hide(pos..name)
 		end
 	end
 end
 
 local function ConfigureBaseCode(inst, dir)
-	if dir == DIRS.W then
-		SetCode(inst, "M", "E")
-		SetCode(inst, "L", "S")
-		SetCode(inst, "R", "N")
-	elseif dir == DIRS.S then
-		SetCode(inst, "M", "N")
-		SetCode(inst, "L", "E")
-		SetCode(inst, "R", "W")
-	elseif dir == DIRS.E then
-		SetCode(inst, "M", "W")
-		SetCode(inst, "L", "N")
-		SetCode(inst, "R", "S")
-	else
-		SetCode(inst, "M", "S")
-		SetCode(inst, "L", "W")
-		SetCode(inst, "R", "E")
+	if dir == DIRS[VIRTUALROOMDIRECTIONS.W] then
+		SetCode(inst, "M", VIRTUALROOMDIRECTIONS.E)
+		SetCode(inst, "L", VIRTUALROOMDIRECTIONS.S)
+		SetCode(inst, "R", VIRTUALROOMDIRECTIONS.N)
+	elseif dir == DIRS[VIRTUALROOMDIRECTIONS.S] then
+		SetCode(inst, "M", VIRTUALROOMDIRECTIONS.N)
+		SetCode(inst, "L", VIRTUALROOMDIRECTIONS.E)
+		SetCode(inst, "R", VIRTUALROOMDIRECTIONS.W)
+	elseif dir == DIRS[VIRTUALROOMDIRECTIONS.E] then
+		SetCode(inst, "M", VIRTUALROOMDIRECTIONS.W)
+		SetCode(inst, "L", VIRTUALROOMDIRECTIONS.N)
+		SetCode(inst, "R", VIRTUALROOMDIRECTIONS.S)
+    elseif dir == DIRS[VIRTUALROOMDIRECTIONS.N] then
+		SetCode(inst, "M", VIRTUALROOMDIRECTIONS.S)
+		SetCode(inst, "L", VIRTUALROOMDIRECTIONS.W)
+		SetCode(inst, "R", VIRTUALROOMDIRECTIONS.E)
+    else
+        SetCode(inst, "M", -1)
+        SetCode(inst, "L", -1)
+        SetCode(inst, "R", -1)
 	end
 end
 
@@ -69,7 +77,7 @@ local function CreateBase()
 	inst.AnimState:SetLayer(LAYER_BACKGROUND)
 	inst.AnimState:SetSortOrder(-3)
 
-	ConfigureBaseCode(inst, DIRS.N)
+	ConfigureBaseCode(inst, DIRS[VIRTUALROOMDIRECTIONS.N])
 
 	inst.persists = false
 
@@ -78,7 +86,90 @@ end
 
 --------------------------------------------------------------------------
 
-local function OnStartChanneling(inst, channeler)
+local function TeleportDestinationPositionOverride(inst, ent)
+    local virtualroomset = inst.components.virtualroomteleporter:GetVirtualRoomSet()
+    if not virtualroomset then
+        return nil, nil, nil
+    end
+
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    if not direction then
+        return nil, nil, nil
+    end
+
+    local markers = virtualroomset:GetVirtualRoomEntities(VIRTUALROOMCONTEXT.MARKER)
+    local marker
+    if direction == VIRTUALROOMDIRECTIONS.IN or direction == VIRTUALROOMDIRECTIONS.OUT then
+        local markerprefab = vaultroom_defs.internal.DIRECTIONS_TO_MARKER_TELEPORTERUSE[direction]
+        marker = FindFirstPrefabInArray(markers, markerprefab)
+    else
+        local virtualroom = virtualroomset.rooms[virtualroomset.currentroomindex] -- Do not use GetCurrentRoom here for clarity on the linked room handling.
+        if virtualroom then
+            local links = virtualroom.links
+            if links then
+                local link = links[direction]
+                if link and link.linkedroom and link.linkeddirection then
+                    local linkedvirtualroom = virtualroomset.rooms[link.linkedroom]
+                    if linkedvirtualroom then
+                        local linkedshuffleddirectionname = linkedvirtualroom.shuffleddirections[link.linkeddirection]
+                        if linkedshuffleddirectionname then
+                            local linkedshuffleddirection = VIRTUALROOMDIRECTIONS[linkedshuffleddirectionname]
+                            local markerprefab = virtualroomset.defs.internal.DIRECTIONS_TO_MARKER[linkedshuffleddirection]
+                            marker = FindFirstPrefabInArray(markers, markerprefab)
+                        end
+                    end
+                end
+            end
+        end
+    end
+    if marker then
+        return marker.Transform:GetWorldPosition()
+    end
+
+    return nil, nil, nil
+end
+
+local function ShouldTeleportFollower(follower)
+    if follower.components.follower and follower.components.follower.noleashing then
+        return false
+    end
+
+    if follower.components.inventoryitem and follower.components.inventoryitem:IsHeld() then
+        return false
+    end
+
+    return true
+end
+local function GetToOrFromVaultTeleportTargetsFor(doer)
+    local onecopycache = {[doer] = true}
+    if doer.components.leader then
+        for follower, _ in pairs(doer.components.leader.followers) do
+            if ShouldTeleportFollower(follower) then
+                onecopycache[follower] = true
+            end
+        end
+    end
+
+    if doer.components.inventory then
+        doer.components.inventory:ForEachItem(function(item)
+            if item.components.leader then
+                for follower, _ in pairs(item.components.leader.followers) do
+                    if ShouldTeleportFollower(follower) then
+                        onecopycache[follower] = true
+                    end
+                end
+            end
+        end)
+    end
+
+    local entities = {}
+    for entity, _ in pairs(onecopycache) do
+        table.insert(entities, entity)
+    end
+    return entities
+end
+
+local function OnStartChanneling(inst, doer)
 	if not (inst.AnimState:IsCurrentAnimation("idle_on_loop") or
 			inst.AnimState:IsCurrentAnimation("turn_on"))
 	then
@@ -88,10 +179,35 @@ local function OnStartChanneling(inst, channeler)
 	if not inst.SoundEmitter:PlayingSound("loop") then
 		inst.SoundEmitter:PlaySound("rifts6/vault_portal/turn_on_powered_LP", "loop")
 	end
-    TheWorld:PushEvent("ms_vault_teleporter_channel_start", {inst = inst, doer = channeler})
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    if direction == VIRTUALROOMDIRECTIONS.IN or direction == VIRTUALROOMDIRECTIONS.OUT then
+        -- NOTES(JBK): Custom logic here to go in and out of the virtual room area reserved space for the vault.
+        local virtualroomset = inst.components.virtualroomteleporter:GetVirtualRoomSet()
+        local x, y, z = inst.components.virtualroomteleporter:GetTeleportDestinationPosition(doer)
+        if not x or not virtualroomset then
+            doer:PushEvent("vault_teleporter_does_nothing") -- Wisecracker.
+            inst.components.channelable:StopChanneling(true)
+        else
+            doer:PushEventImmediate("vault_teleport", {
+                onplayerready = function(doer)
+                    local entities = GetToOrFromVaultTeleportTargetsFor(doer)
+                    for i, v in ipairs(entities) do
+                        if not v.isplayer then -- Player VFX is created in the stategraph.
+                            SpawnPrefab("vault_portal_fx").Transform:SetPosition(v.Transform:GetWorldPosition())
+                        end
+                    end
+                    virtualroomset:TeleportEntities(entities, x, y, z)
+                    vaultroom_defs.internal.DoOnArriveTeleporters_HACK(virtualroomset, x, z)
+                end,
+            })
+            inst.components.virtualroomteleporter:OnDepart()
+        end
+    else
+        inst.components.virtualroomteleporter:StartRoomVote(doer)
+    end
 end
 
-local function OnStopChanneling(inst, aborted, channeler)
+local function OnStopChanneling(inst, aborted, doer)
 	if not (inst.components.channelable:IsChanneling() or
 			inst.AnimState:IsCurrentAnimation("idle_off") or
 			inst.AnimState:IsCurrentAnimation("turn_off"))
@@ -101,7 +217,12 @@ local function OnStopChanneling(inst, aborted, channeler)
 		inst.SoundEmitter:PlaySound("rifts6/vault_portal/turn_off")
 	end
 	inst.SoundEmitter:KillSound("loop")
-    TheWorld:PushEvent("ms_vault_teleporter_channel_stop", {inst = inst, doer = channeler})
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    if direction == VIRTUALROOMDIRECTIONS.IN or direction == VIRTUALROOMDIRECTIONS.OUT then
+        -- Do nothing.
+    else
+        inst.components.virtualroomteleporter:StopRoomVote(doer)
+    end
 end
 
 local function CheckForNearbyGhosts(inst)
@@ -162,8 +283,8 @@ local function UpdateHauntable(inst)
         return
     end
 
-    local roomid = inst.components.vault_teleporter:GetTargetRoomID()
-    if roomid == LOBBY_TO_OR_FROM_VAULT then
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    if direction == VIRTUALROOMDIRECTIONS.IN or direction == VIRTUALROOMDIRECTIONS.OUT then
         inst.components.hauntable.cooldown = 0.01
         inst.components.hauntable:SetOnHauntFn(OnHaunt_ToOrFromVault)
         inst.components.hauntable:SetOnUnHauntFn(OnUnHaunt_ToOrFromVault)
@@ -208,8 +329,19 @@ end
 local function OnRepair(inst, giver, item)
 	inst:RemoveTag("trader_repair")
 	inst:RemoveComponent("trader")
+    inst.broken = nil
 
-    TheWorld:PushEvent("ms_vault_teleporter_repair", {inst = inst, doer = giver,})
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    local directionname = VIRTUALROOMDIRECTIONS_INDEX[direction]
+    local virtualroomset = inst.components.virtualroomteleporter:GetVirtualRoomSet()
+    virtualroomset:InvalidateClosestDirectionCache()
+    local currentroomname = virtualroomset:GetCurrentRoomName()
+    local repairedlinks = virtualroomset.customdata.repairedlinks[currentroomname]
+    if not repairedlinks then
+        repairedlinks = {}
+        virtualroomset.customdata.repairedlinks[currentroomname] = repairedlinks
+    end
+    repairedlinks[directionname] = true
 
 	if inst:IsAsleep() then
 		OnAnimOver(inst)
@@ -223,12 +355,14 @@ local function OnRepair(inst, giver, item)
 end
 
 local function MakeFixed(inst)
+    inst.broken = nil
 	inst:RemoveTag("trader_repair")
 	inst:RemoveComponent("trader")
     OnAnimOver(inst)
 end
 
 local function MakeBroken(inst)
+    inst.broken = true
 	inst:RemoveEventCallback("animover", OnAnimOver) --cancel mid repair???
 	inst.AnimState:PlayAnimation("idle_broken")
 	inst.SoundEmitter:KillSound("loop")
@@ -272,23 +406,44 @@ local function OnDirCodeDirty(inst)
 	ConfigureBaseCode(inst.base, inst.dircode:value())
 end
 
-local function OnPlaced(inst)
-    local directionname = inst.components.vault_teleporter:GetDirectionName()
-    local unshuffleddirectionname = inst.components.vault_teleporter:GetUnshuffledDirectionName()
+local function OnPlaced(inst) -- NOTES(JBK): This should be safe to run multiple times to refresh.
+    local direction = inst.components.virtualroomteleporter:GetShuffledDirection()
+    local unshuffleddirection = inst.components.virtualroomteleporter:GetDirection()
 
 	inst.Transform:SetRotation(
-		(directionname == "E" and 90) or
-		(directionname == "S" and 180) or
-		(directionname == "W" and -90) or
-		0)
+		(direction == VIRTUALROOMDIRECTIONS.E and 90) or
+		((direction == VIRTUALROOMDIRECTIONS.S or direction == VIRTUALROOMDIRECTIONS.OUT) and 180) or
+		(direction == VIRTUALROOMDIRECTIONS.W and -90) or
+		0) -- VIRTUALROOMDIRECTIONS.N or VIRTUALROOMDIRECTIONS.IN
 
-	local dircode = DIRS[unshuffleddirectionname] or 0
+	local dircode = DIRS[unshuffleddirection] or 0
 	if dircode ~= inst.dircode:value() then
 		inst.dircode:set(dircode)
 		if inst.base then
 			OnDirCodeDirty(inst)
 		end
 	end
+end
+
+local function UpdateTeleporterPoweredState(inst)
+    local virtualroomset = inst.components.virtualroomteleporter:GetVirtualRoomSet()
+    local direction = inst.components.virtualroomteleporter:GetDirection()
+    if direction == VIRTUALROOMDIRECTIONS.IN then
+        local forcedpoweredstate = nil
+        if virtualroomset.currentroomindex ~= 1 then
+            forcedpoweredstate = false
+        end
+        if forcedpoweredstate ~= nil then
+            inst:SetPowered(forcedpoweredstate)
+        else
+            local archivemanager = TheWorld.components.archivemanager
+            local powered = archivemanager and archivemanager:GetPowerSetting() or false
+            inst:SetPowered(powered)
+        end
+    else
+        local powered = not vaultroom_defs.internal.IsOtherRoomLinkBroken(virtualroomset, virtualroomset:GetCurrentRoomName(), direction)
+        inst:SetPowered(powered)
+    end
 end
 
 local function DisplayNameFn(inst)
@@ -302,6 +457,11 @@ local function GetStatus(inst, viewer)
 end
 
 local function SetPowered(inst, powered)
+    if inst.powered == powered then
+        return
+    end
+    inst.powered = powered
+
     -- Assumes the device is not broken for now.
 	inst.SoundEmitter:KillSound("loop")
     if powered then
@@ -329,12 +489,40 @@ local function SetPowered(inst, powered)
 end
 
 --V2C: doing this instead of putting the sound on the fx, so we don't have so many sound instances.
-local function OnDepartFx(inst)
+local function OnDepart(inst)
 	inst.SoundEmitter:PlaySound("rifts6/vault_portal/teleport_fx")
 end
 
-local function OnArriveFx(inst)
+local function OnArrive(inst)
 	inst.SoundEmitter:PlaySound("rifts6/vault_portal/teleport_arrive_FX")
+end
+
+local function OnAdd(inst)
+    inst.inittask = nil
+	TheWorld:PushEvent("ms_register_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.TELEPORTER})
+    inst:OnPlaced()
+end
+
+local function OnForceRegisterEntity(inst)
+    if inst.inittask then
+        inst.inittask:Cancel()
+        OnAdd(inst)
+    end
+end
+
+local function OnLoad(inst, data)
+    if data and data.broken then
+        inst:MakeBroken()
+    end
+    inst.components.virtualroomteleporter:OnForceRegisterEntity()
+end
+
+local function OnSave(inst, data)
+    data.broken = inst.broken
+end
+
+local function OnRemove(inst)
+	TheWorld:PushEvent("ms_unregister_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.TELEPORTER})
 end
 
 local function fn()
@@ -356,10 +544,9 @@ local function fn()
 	inst.AnimState:SetBuild("vault_portal")
     inst.AnimState:PlayAnimation("idle_off", true)
 
-    inst:AddTag("vault_teleporter")
-    inst:AddTag("staysthroughvirtualrooms")
+    inst:AddTag("virtualroomteleporter")
 
-	inst.dircode = net_tinybyte(inst.GUID, "vault_teleporter.dircode", "dircodedirty")
+	inst.dircode = net_tinybyte(inst.GUID, "virtualroomteleporter.dircode", "dircodedirty")
 
 	inst.displaynamefn = DisplayNameFn
 
@@ -376,9 +563,14 @@ local function fn()
         return inst
     end
 
-    inst.persists = false -- This prefab is designed to be created on the fly.
+    inst.powered = true
 
-    inst:AddComponent("vault_teleporter")
+    local virtualroomteleporter = inst:AddComponent("virtualroomteleporter")
+    virtualroomteleporter:SetRoomSetName(VIRTUALROOMSETS.VAULT)
+    virtualroomteleporter:SetOnDepart(OnDepart)
+    virtualroomteleporter:SetOnArrive(OnArrive)
+    virtualroomteleporter:SetOnForceRegisterEntity(OnForceRegisterEntity)
+    virtualroomteleporter:SetTeleportDestinationPositionOverride(TeleportDestinationPositionOverride)
 
     inst:AddComponent("channelable")
     inst.components.channelable:SetChannelingFn(OnStartChanneling, OnStopChanneling)
@@ -398,12 +590,24 @@ local function fn()
     inst.SpawnOrb = SpawnOrb
 	inst.OnPlaced = OnPlaced
     inst.SetPowered = SetPowered
-	inst.OnDepartFx = OnDepartFx
-	inst.OnArriveFx = OnArriveFx
     inst.CheckForNearbyGhosts = CheckForNearbyGhosts
+    inst.UpdateTeleporterPoweredState = UpdateTeleporterPoweredState
 
     inst.OnNewVaultTeleporterRoomID = OnNewVaultTeleporterRoomID
     inst:ListenForEvent("newvaultteleporterroomid", inst.OnNewVaultTeleporterRoomID)
+
+    inst:ListenForEvent("arhivepoweron", function(_world) inst:UpdateTeleporterPoweredState() end, TheWorld)
+    inst:ListenForEvent("arhivepoweroff", function(_world) inst:UpdateTeleporterPoweredState() end, TheWorld)
+    inst:ListenForEvent("ms_virtualroomset_originset", function(_world, data)
+        if data and (data.roomsetname == virtualroomteleporter:GetRoomSetName()) then
+            inst:UpdateTeleporterPoweredState()
+        end
+    end, TheWorld)
+
+    inst.inittask = inst:DoStaticTaskInTime(0, OnAdd)
+    inst.OnLoad = OnLoad
+    inst.OnSave = OnSave
+    inst:ListenForEvent("onremove", OnRemove)
 
     return inst
 end

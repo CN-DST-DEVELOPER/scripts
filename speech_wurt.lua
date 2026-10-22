@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "Me not monkey, talk to somebody else!",
             QUEENBUSY = "Glurgh... why she gotta be so busy?",
             CARNIVALGAME_GOLFGAME_NOTREADY = "Glurph! What missing?!",
+            KINGSTAFF_COOLDOWN = "Glurph! Stuck!", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -567,7 +568,7 @@ return{
 
 	ANNOUNCE_BEES = "Glorp! Buzzy stingers!",
 	ANNOUNCE_BOOMERANG = "Glorp! Come-back stick hurts.",
-	ANNOUNCE_CHARLIE = "Me think saw scary night lady!",
+	ANNOUNCE_CHARLIE = "Florp? Where scary night lady!",
 	ANNOUNCE_CHARLIE_ATTACK = "GLORP! GO AWAY!",
 --fallback to speech_wilson.lua 	ANNOUNCE_CHARLIE_MISSED = "only_used_by_winona", --winona specific
 	ANNOUNCE_COLD = "Flrrrr... c-cold...",
@@ -1254,6 +1255,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Need more theer-mole bomb!",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Glorp! Why you following me?", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Me think saw scary night lady!",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "GLORP! GO AWAY!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "Squish, squish, squish, florp!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "Sharp rocks hate moon brain!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Not scared of you, florp!",
@@ -1703,7 +1715,12 @@ return{
 		CAVE_BANANA = "Mmm... good fruit, florp.",
 		CAVE_BANANA_COOKED = "Yummy!",
 		CAVE_BANANA_TREE = "See fruits up there!",
-		ROCKY = "Hi!",
+        ROCKY =
+        {
+            GENERIC = "Hi!",
+            BOULDER = "Just a rock, florpt.", -- in boulder state, it looks like a normal boulder
+            ACID = "Florp! What happening to you?", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1720,7 +1737,11 @@ return{
 
         HOUNDSTOOTH = "Big chomper.",
         ARMORSNURTLESHELL = "Sticky!",
-        BAT = "Grrr!",
+        BAT =
+        {
+            GENERIC = "Grrr!",
+            ACID = "Grrr... pretty eyes!", -- in acid form
+        },
         BATBAT = "Whack! Whack!",
         BATWING = "No more bat.",
         BATWING_COOKED = "Gluurrggh...",
@@ -2191,6 +2212,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "Moon stuff made big Ironfolk bad.",
         CHESSPIECE_YOTH = "Where spring now, springy Ironfolk?",
         CHESSPIECE_VAULT_PILLAR_GUARD = "Cute tiny horns! Florp!",
+        CHESSPIECE_BATBOSS_SHADOW = "Florp! Flying night puppy!",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "Wish me have big claw.",
+        CHESSPIECE_WORMBOSS_SHADOW = "Night worm never full.",
+        CHESSPIECE_CHARLIE_BOSS = "Is scary night lady little sad?",
+        CHESSPIECE_SHROUDEN = "Crush you again, wicked eyeball!",
 
         CHESSJUNK1 = "It all broken.",
         CHESSJUNK2 = "Didn't do it!!",
@@ -3509,6 +3535,7 @@ return{
 			CHARGING = "What happening?!",
 			DESTABILIZING = "G-glorp!",
 			COOLDOWN = "It over now?",
+            RITUAL_SUMMONING = "You got staring problem, eyeball? Flort!", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "This look important!",
 		LIFEINJECTOR = "Don't like needles, florp!",
@@ -4529,6 +4556,8 @@ return{
 			LORE1 = "Bugfolk King sick? Glurgh.",
 			LORE2 = "Bugfolk all gone.",
 			LORE3 = "Brave Bugfolk.",
+            --
+            LORE1_STALKER = "Look better now! Florp!", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5364,7 +5393,12 @@ return{
 		SHADOWTHRALL_WINGS = "N-not scared of you, florp!",
 		SHADOWTHRALL_MOUTH = "Glorp! Much teeth!",
 
-        CHARLIE_NPC = "It the scary night lady!!",
+        CHARLIE_NPC =
+        {
+            GENERIC = "It the scary night lady!!", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "What scary night lady doing?", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "What scary night lady doing?", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "What you want, florp?",
 
         NITRE_FORMATION = "Big bunch of funny rocks.",
@@ -6271,6 +6305,68 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "Glurph! Bad wind!", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Wow, claw!",
+            BOULDER = "Funny rock.", -- in boulder form
+            ACID = "What that on shell?",
+        },
+		ROCKY_BOSS_SHADOW = "Shell all dark.",
+        BAT_BOSS =
+        {
+            GENERIC = "Bad flying doggy!",
+            ACID = "Ha! Flying doggy drool!",
+        },
+		BAT_BOSS_SHADOW = "Flying night doggy!",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "What that inside?", -- boss bat is inside,
+            VACANT = "No one inside!", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "Night worm.",
+
+        ARMOR_ROCKY = "Glurph... make me kinda sad.",
+        BAT_BOSSCORPSEHAT = "Flying doggy for hat? WHYYYY?",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "My claw now!",
+            IN_RITUAL = "Done it!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "Ha, can't talk!",
+            IN_RITUAL = "Done it!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Worm poop tunnel? Florp!",
+            IN_RITUAL = "Done it!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "What wrong with scary night lady?",
+		SHROUDEN =
+		{
+			GENERIC = "Florpt, maybe little bit scared.",
+			PUDDLE = "Ha! Me want step on scary eye!",
+		},
+
+        CHARLIEARENA_SPIKE = "Sharp, sharp!",
+
+        KING_CANE =
+        {
+            GENERIC = "Old old folk rock stick", -- has a gem slotted in
+            EMPTY = "No rock. Need rock.", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "Hmm. Weird fire stick.",
+        
+        CHARLIEARENA_TELEPORTER = "Remember take all my stuff. Florp.",
+
+        MASK_CHARLIE_BOSSHAT = "Florp! Me can be scary night lady! Ha!",
     },
 
     DESCRIBE_GENERIC = "What that?",
@@ -6295,6 +6391,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

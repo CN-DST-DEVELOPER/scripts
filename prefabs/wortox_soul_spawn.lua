@@ -262,10 +262,22 @@ local TINT = { r = 154 / 255, g = 23 / 255, b = 19 / 255 }
 
 local function PushColour(inst, addval, multval)
     if inst.components.highlight == nil then
-        inst.AnimState:SetHighlightColour(TINT.r * addval, TINT.g * addval, TINT.b * addval, 0)
+        local tintr, tintg, tintb = TINT.r * addval, TINT.g * addval, TINT.b * addval
+        inst.AnimState:SetHighlightColour(tintr, tintg, tintb, 0)
         inst.AnimState:OverrideMultColour(multval, multval, multval, 1)
+        if inst.highlightchildren ~= nil then
+            for _, child in ipairs(inst.highlightchildren) do
+                child.AnimState:SetHighlightColour(tintr, tintg, tintb, 0)
+                child.AnimState:OverrideMultColour(multval, multval, multval, 1)
+            end
+        end
     else
         inst.AnimState:OverrideMultColour()
+        if inst.highlightchildren ~= nil then
+            for _, child in ipairs(inst.highlightchildren) do
+                child.AnimState:OverrideMultColour()
+            end
+        end
     end
 end
 
@@ -274,6 +286,12 @@ local function PopColour(inst)
         inst.AnimState:SetHighlightColour()
     end
     inst.AnimState:OverrideMultColour()
+    if inst.highlightchildren ~= nil then
+        for _, child in ipairs(inst.highlightchildren) do
+            child.AnimState:SetHighlightColour()
+            child.AnimState:OverrideMultColour()
+        end
+    end
 end
 
 local function OnUpdateTargetTint(inst)--, dt)

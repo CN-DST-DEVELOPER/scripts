@@ -20,8 +20,18 @@ local MIN_CHARGE_START_DELAY = 1
 local KEY_STAFF = "yellowstaff"
 local MORPHED_STAFF = "opalstaff"
 
+local function GetStaffName(inst)
+    return (inst._staffinst ~= nil and inst._staffinst.prefab or inst.components.pickable.product)
+end
+
 local function HasStaff(inst, staffname)
-    return (inst._staffinst ~= nil and inst._staffinst.prefab or inst.components.pickable.product) == staffname
+    return GetStaffName(inst) == staffname
+end
+
+local function HasCorruptedKingStaff(inst)
+    if inst._staffinst then
+        return inst._staffinst.components.corruption and inst._staffinst.components.corruption:IsCorrupted()
+    end
 end
 
 local function IsFixed(inst)
@@ -72,24 +82,28 @@ end
 local function StartFX(inst)
     if inst._fxfront == nil or inst._fxback == nil then
         local x, y, z = inst.Transform:GetWorldPosition()
+        local staffname = GetStaffName(inst)
 
         if inst._fxpulse ~= nil then
             inst._fxpulse:Remove()
         end
         inst._fxpulse = SpawnPrefab("positronpulse")
         inst._fxpulse.Transform:SetPosition(x, y, z)
+        inst._fxpulse:SetStaff(staffname)
 
         if inst._fxfront ~= nil then
             inst._fxfront:Remove()
         end
         inst._fxfront = SpawnPrefab("positronbeam_front")
         inst._fxfront.Transform:SetPosition(x, y, z)
+        inst._fxfront:SetStaff(staffname)
 
         if inst._fxback ~= nil then
             inst._fxback:Remove()
         end
         inst._fxback = SpawnPrefab("positronbeam_back")
         inst._fxback.Transform:SetPosition(x, y, z)
+        inst._fxback:SetStaff(staffname)
 
         if inst._startlighttask ~= nil then
             inst._startlighttask:Cancel()
@@ -199,6 +213,9 @@ local function ToggleMoonCharge(inst)
             HideColdStar(inst)
 
             if inst._staffinst ~= nil then
+                if inst._staffinst.SetFxOwner then
+                    inst._staffinst:SetFxOwner(nil)
+                end
                 inst:RemoveChild(inst._staffinst)
                 inst._staffinst:ReturnToScene()
 				inst._staffinst.components.inventoryitem:InheritWorldWetnessAtTarget(inst)
@@ -239,7 +256,7 @@ local function ToggleMoonCharge(inst)
 
         if TheWorld.state.isfullmoon and
             inst.components.pickable.caninteractwith and
-            HasStaff(inst, KEY_STAFF) then
+            (HasStaff(inst, KEY_STAFF) or HasCorruptedKingStaff(inst)) then
             --Start moon charging
             local state = GetAnimState(inst)
             if state ~= "low" then
@@ -289,6 +306,10 @@ end
 local function ItemTradeTest(inst, item)
     if item == nil then
         return false
+    elseif item:HasTag("icestaff") then -- so that "icestaff2" and "icestaff3" succeed
+        return true
+    elseif item.prefab == "king_cane" then
+        return true
     elseif string.sub(item.prefab, -5) ~= "staff" then
         return false, "NOTSTAFF"
     end
@@ -300,6 +321,8 @@ local STAFF_SYMBOLS =
 {
     ["firestaff"] = "redstaff",
     ["icestaff"] = "bluestaff",
+    ["icestaff2"] = "bluestaff2",
+    ["icestaff3"] = "bluestaff3",
     ["telestaff"] = "purplestaff",
 }
 
@@ -322,7 +345,15 @@ local function OnStaffGiven(inst, giver, item)
     inst.components.pickable:Pause()
     inst.components.pickable.caninteractwith = true
 
-    if skin_build ~= nil then
+    if item.prefab == "king_cane" then
+        item:SetFxOwner(inst)
+        inst.components.pickable:ChangeProduct(nil)
+        inst._staffinst = item
+        inst._staffuse = nil
+        inst:AddChild(item)
+        item.Transform:SetPosition(0, 0, 0)
+        item:RemoveFromScene()
+    elseif skin_build ~= nil then
         inst.AnimState:OverrideItemSkinSymbol("swap_staffs", skin_build, GetStaffSymbol(staffname), item.GUID, "staffs")
         inst.components.pickable:ChangeProduct(nil)
         inst._staffinst = item
@@ -368,6 +399,9 @@ local function OnStaffTaken(inst, picker, loot)
     HideColdStar(inst)
 
 	if inst._staffinst ~= nil then --staffinst used to handle skinned items
+        if inst._staffinst.SetFxOwner then
+            inst._staffinst:SetFxOwner(nil)
+        end
         if loot ~= nil then
             --Shouldn't happen
             loot:Remove()
@@ -424,29 +458,34 @@ local function OnTimerDone(inst, data)
         StartMusic(inst, 2)
     elseif data.name == "mooncharge"
         and inst.components.pickable.caninteractwith
-        and HasStaff(inst, KEY_STAFF) then
+        and (HasStaff(inst, KEY_STAFF) or HasCorruptedKingStaff(inst)) then
         --morph staff
-        inst.components.pickable:ChangeProduct(MORPHED_STAFF)
-        if inst._staffinst ~= nil then
-            local new_staff = SpawnPrefab(MORPHED_STAFF, inst._staffinst.morph_skin, inst._staffinst.skin_id) or nil
-            inst._staffinst:Remove()
-            inst._staffinst = new_staff
-            inst:AddChild(new_staff)
-            new_staff.Transform:SetPosition(0, 0, 0)
-            new_staff:RemoveFromScene()
+        if HasCorruptedKingStaff(inst) then
+            local x, y, z = inst.Transform:GetWorldPosition()
+            SpawnPrefab("shadow_despawn").Transform:SetPosition(x, y + 2, z)
+            inst._staffinst.components.corruption:MakeUncorrupted()
+        else -- HasStaff(inst, KEY_STAFF)
+            inst.components.pickable:ChangeProduct(MORPHED_STAFF)
+            if inst._staffinst ~= nil then
+                local new_staff = SpawnPrefab(MORPHED_STAFF, inst._staffinst.morph_skin, inst._staffinst.skin_id) or nil
+                inst._staffinst:Remove()
+                inst._staffinst = new_staff
+                inst:AddChild(new_staff)
+                new_staff.Transform:SetPosition(0, 0, 0)
+                new_staff:RemoveFromScene()
 
-            inst.AnimState:OverrideItemSkinSymbol("swap_staffs", inst._staffinst:GetSkinBuild(), GetStaffSymbol(MORPHED_STAFF), inst._staffinst.GUID, "staffs")
-        else
-            inst.AnimState:OverrideSymbol("swap_staffs", "staffs", GetStaffSymbol(MORPHED_STAFF))
-        end
-        inst._staffuse = nil
+                inst.AnimState:OverrideItemSkinSymbol("swap_staffs", inst._staffinst:GetSkinBuild(), GetStaffSymbol(MORPHED_STAFF), inst._staffinst.GUID, "staffs")
+            else
+                inst.AnimState:OverrideSymbol("swap_staffs", "staffs", GetStaffSymbol(MORPHED_STAFF))
+            end
+            inst._staffuse = nil
 
+            ShowColdStar(inst)
 
-        ShowColdStar(inst)
-
-        if inst._fxpulse ~= nil then
-            inst._fxpulse:FinishFX()
-            inst._fxpulse = nil
+            if inst._fxpulse ~= nil then
+                inst._fxpulse:FinishFX()
+                inst._fxpulse = nil
+            end
         end
 
         if not inst._loading then
@@ -520,7 +559,7 @@ end
 local function getstatus(inst)
     return (not IsFixed(inst) and "BROKEN")
         or (not inst.components.pickable.caninteractwith and "GENERIC")
-        or (HasStaff(inst, KEY_STAFF) and "STAFFED")
+        or ((HasStaff(inst, KEY_STAFF) or HasCorruptedKingStaff(inst)) and "STAFFED")
         or (HasStaff(inst, MORPHED_STAFF) and "MOONSTAFF")
         or "WRONGSTAFF"
 end

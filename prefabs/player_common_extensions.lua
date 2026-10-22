@@ -850,6 +850,10 @@ local function OnRespawnFromVineSave(inst)
 	inst.components.health:SetCurrentHealth(TUNING.RESURRECT_HEALTH * (inst.resurrect_multiplier or 1))
 	inst.components.health:ForceUpdateHUD(true)
 
+    -- FIXME: something here
+	-- local announcement_string = GetNewRezAnnouncementString(inst,
+    --     TheWorld.components.charlie_tracker:IsCharlieDefeated() and STRINGS.NAMES.DARKNESS or
+    --     STRINGS.NAMES.CHARLIE)
 	local announcement_string = GetNewRezAnnouncementString(inst, STRINGS.NAMES.CHARLIE)
 	if announcement_string ~= "" then
 		TheNet:AnnounceResurrect(announcement_string, inst.entity)
@@ -1120,7 +1124,7 @@ local function OnClosePopups(inst)
     inst:ShowPopUp(POPUPS.PLAYERINFO, false)
 end
 
-local SCRAPBOOK_CANT_TAGS = { "FX", "INLIMBO" }
+local SCRAPBOOK_CANT_TAGS = { "INLIMBO" }
 local function UpdateScrapbook(inst)
 	--assert(inst = ThePlayer)
     local x, y, z = inst.Transform:GetWorldPosition()

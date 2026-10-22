@@ -281,8 +281,8 @@ end
 local function _updatelight(inst)
 	local powered
 	if inst.vaultpowered then
-		local vaultroommanager = TheWorld.components.vaultroommanager
-		powered = vaultroommanager ~= nil and vaultroommanager:NumPlayersInVault() > 0
+        local players, numberplayers = GetPlayersInfoForVirtualRoomSetName(VIRTUALROOMSETS.VAULT)
+        powered = players and (numberplayers > 0)
 	else
 		local archivemanager = TheWorld.components.archivemanager
 		local playerprox = inst.components.playerprox
@@ -438,8 +438,12 @@ local function vault_master_postinit(inst)
 	inst.OnSave = vault_OnSave
 	inst.OnLoad = vault_OnLoad
 
-	inst:ListenForEvent("ms_vaultroom_vault_playerleft", function() inst:updatelight() end, TheWorld)
-	inst:ListenForEvent("ms_vaultroom_vault_playerentered", function() inst:updatelight() end, TheWorld)
+    local function DoUpdateLight(_world, data)
+        if data and (data.roomsetname == VIRTUALROOMSETS.VAULT) then
+            inst:updatelight()
+        end
+    end
+    inst:ListenForEvent("ms_virtualroomset_playerschanged", DoUpdateLight, TheWorld)
 	inst:updatelight()
 end
 
@@ -523,8 +527,12 @@ local function crawler_master_postinit(inst)
 	inst.updatelight = crawler_UpdateLight
 	inst.DropCrawler = crawler_DropCrawler
 
-	inst:ListenForEvent("ms_vaultroom_vault_playerleft", function() inst:updatelight() end, TheWorld)
-	inst:ListenForEvent("ms_vaultroom_vault_playerentered", function() inst:updatelight() end, TheWorld)
+    local function DoUpdateLight(_world, data)
+        if data and (data.roomsetname == VIRTUALROOMSETS.VAULT) then
+            inst:updatelight()
+        end
+    end
+    inst:ListenForEvent("ms_virtualroomset_playerschanged", DoUpdateLight, TheWorld)
 	inst:updatelight()
 end
 

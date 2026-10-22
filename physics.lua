@@ -74,6 +74,9 @@ function Launch(inst, launcher, basespeed)
         spd = (basespeed or 5) + math.random() * 2
         inst.Physics:Teleport(x, .1, z)
         inst.Physics:SetVel(math.cos(angle) * spd, 10, math.sin(angle) * spd)
+		if inst.components.inventoryitem then
+			inst.components.inventoryitem:SetLanded(false, true)
+		end
     end
 end
 
@@ -95,8 +98,14 @@ function Launch2(inst, launcher, basespeed, speedmult, startheight, startradius,
 		local sina, cosa = math.sin(angle), math.cos(angle)
 		local speed = basespeed + math.random() * speedmult
 		local vertical_speed = vertical_speed or (speed * 5 + math.random() * 2)
-		TryTeleportToLaunchPos(inst, x + startradius * cosa, startheight, z + startradius * sina)
+		if not TryTeleportToLaunchPos(inst, x + startradius * cosa, startheight, z + startradius * sina) then
+			local x1, y1, z1 = inst.Transform:GetWorldPosition()
+			inst.Physics:Teleport(x1, math.max(y1, startheight), z1)
+		end
 		inst.Physics:SetVel(cosa * speed, vertical_speed, sina * speed)
+		if inst.components.inventoryitem then
+			inst.components.inventoryitem:SetLanded(false, true)
+		end
 		return angle
 	end
 	return 0
@@ -116,8 +125,14 @@ function LaunchAt(inst, launcher, target, speedmult, startheight, startradius, r
         end
         local sina, cosa = math.sin(angle), math.cos(angle)
         local spd = (math.random() * 2 + 1) * (speedmult or 1)
-		TryTeleportToLaunchPos(inst, x + (startradius or 0) * cosa, startheight or 0.1, z + (startradius or 0) * sina)
+		if not TryTeleportToLaunchPos(inst, x + (startradius or 0) * cosa, startheight or 0.1, z + (startradius or 0) * sina) then
+			local x1, y1, z1 = inst.Transform:GetWorldPosition()
+			inst.Physics:Teleport(x1, math.max(y1, startheight or 0.1), z1)
+		end
         inst.Physics:SetVel(spd * cosa, math.random() * 2 + 4 + 2 * (speedmult or 1), spd * sina)
+		if inst.components.inventoryitem then
+			inst.components.inventoryitem:SetLanded(false, true)
+		end
     end
 end
 
@@ -135,7 +150,15 @@ function LaunchToXZ(inst, tox, toz)
             inst.Physics:Teleport(x, .1, z)
             inst.Physics:SetVel(0, 2, 0)
         end
+		if inst.components.inventoryitem then
+			inst.components.inventoryitem:SetLanded(false, true)
+		end
     end
+end
+
+function LaunchToInst(inst, toinst)
+    local x, _, z = toinst.Transform:GetWorldPosition()
+    LaunchToXZ(inst, x, z)
 end
 
 local COLLAPSIBLE_WORK_ACTIONS =

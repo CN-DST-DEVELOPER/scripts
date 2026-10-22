@@ -42,6 +42,10 @@ local function pulse_light(inst)
 end
 
 local function kill_light(inst)
+	if inst._arenatask then
+		inst._arenatask:Cancel()
+		inst._arenatask = nil
+	end
     if inst._pulsetime:value() >= 0 then
         inst._pulsetime:set(-inst:GetTimeAlive())
         if inst._fadek >= 1 then
@@ -63,6 +67,13 @@ local function onpulsetimedirty(inst)
             inst._task = inst:DoPeriodicTask(FRAMES, pulse_light, 0)
         end
     end
+end
+
+local function CheckArena(inst)
+	inst._arenatask = nil
+	if TheWorld.Map:IsPointInCharlieBossArena(inst.Transform:GetWorldPosition()) then
+		kill_light(inst)
+	end
 end
 
 local function fn()
@@ -99,6 +110,10 @@ local function fn()
 
     --Watch "cycles" because it is valid to make a world with no "night" phase
     inst:WatchWorldState("cycles", kill_light)
+
+	if TheWorld:HasTag("cave") then
+		inst._arenatask = inst:DoTaskInTime(10, CheckArena)
+	end
 
     inst.persists = false
 

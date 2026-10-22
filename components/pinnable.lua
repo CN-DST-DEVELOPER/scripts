@@ -81,11 +81,13 @@ end
 function Pinnable:SpawnShatterFX(ratio)
     local ratio = self:RemainingRatio()
 	local splash_fx = self.splashfxlist or splashprefabs
-    local index = math.clamp(math.floor(#splash_fx*ratio)+1, 1, #splash_fx)
-    local fx = SpawnPrefab(splash_fx[index])
-    if fx ~= nil then
-        self.inst:AddChild(fx)
-    end
+	if #splash_fx > 0 then
+		local index = math.clamp(math.floor(#splash_fx * ratio) + 1, 1, #splash_fx)
+		local fx = SpawnPrefab(splash_fx[index])
+		if fx then
+			self.inst:AddChild(fx)
+		end
+	end
 end
 
 function Pinnable:IsStuck()
@@ -145,6 +147,10 @@ function Pinnable:UpdateStuckStatus()
             self:StartWearingOff(remaining)
         end
     end
+end
+
+function Pinnable:GetTimeStuck()
+	return self.stuck and GetTime() - self.last_stuck_time or 0
 end
 
 function Pinnable:RemainingRatio()

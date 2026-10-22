@@ -212,9 +212,8 @@ local function meteor_invitem_behaviour(inst, v)
         if math.random() <= TUNING.METEOR_SMASH_INVITEM_CHANCE then
             v.components.container:DropEverything()
         end
-    elseif v.components.mine ~= nil and not v.components.mine.inactive then
+    elseif DeactivateInventoryItemBeforeLaunch(v) then
         -- Always smash things on the periphery so that we don't end up with a ring of flung loot
-        v.components.mine:Deactivate()
     elseif math.random() <= TUNING.METEOR_SMASH_INVITEM_CHANCE and not v:HasTag("irreplaceable") then
         -- Always smash things on the periphery so that we don't end up with a ring of flung loot
         local vx, vy, vz = v.Transform:GetWorldPosition()

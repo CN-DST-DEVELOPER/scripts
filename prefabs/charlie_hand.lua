@@ -1,11 +1,24 @@
 local assets =
 {
     Asset("ANIM", "anim/shadow_creatures_ground.zip"),
+    Asset("ANIM", "anim/ui_construction_1x1.zip"),
 }
 
 local prefabs =
 {
     "enable_shadow_rift_construction_container",
+}
+
+local key_assets =
+{
+    Asset("ANIM", "anim/shadow_creatures_ground.zip"),
+    Asset("ANIM", "anim/ui_construction_2x1.zip"),
+    Asset("ANIM", "anim/ui_construction_1x1.zip"),
+}
+
+local key_prefabs =
+{
+    "socket_keystone_construction_container",
 }
 
 ----------------------------------------------------------------------------
@@ -127,6 +140,13 @@ local function Initialize(inst, pos)
 
         inst.components.knownlocations:RememberLocation("origin", pos)
         inst.components.knownlocations:RememberLocation("showup", showup_pos)
+
+        if inst.OnAtriumPowered then
+            inst:OnAtriumPowered(
+                (atrium.components.pickable ~= nil and atrium.components.pickable.caninteractwith) or
+                (atrium.components.worldsettingstimer ~= nil and atrium.components.worldsettingstimer:ActiveTimerExists("destabilizedelay"))
+            )
+        end
     end
 end
 
@@ -166,7 +186,7 @@ end
 
 ----------------------------------------------------------------------------
 
-local function CommonCharlieHandFn()
+local function CommonCharlieHandFn(common_postinit)
     local inst = CreateEntity()
 
     inst.entity:AddTransform()
@@ -192,6 +212,10 @@ local function CommonCharlieHandFn()
 
     inst:SetPrefabNameOverride("charlie_hand")
 
+    if common_postinit then
+        common_postinit(inst)
+    end
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -205,7 +229,6 @@ local function CommonCharlieHandFn()
     inst.RunAway = RunAway
     inst.OnGetMaterials = OnGetMaterials
     inst.SpawnShadowArm = SpawnShadowArm
-    inst.OnAtriumPowered = OnAtriumPowered
     inst.HandleAction = HandleAction
     inst.StartCutScene = StartCutScene
 
@@ -229,6 +252,7 @@ local function CommonCharlieHandFn()
     inst.OnRemoveEntity = OnRemove
 
     inst:ListenForEvent("startaction",   inst.HandleAction)
+    inst:ListenForEvent("atriumpowered", function(_, ispowered) inst:OnAtriumPowered(ispowered) end, TheWorld)
 
     return inst
 end
@@ -244,8 +268,7 @@ local function CharlieHandFn()
 
     inst.components.constructionsite:SetConstructionPrefab("enable_shadow_rift_construction_container")
     inst.components.constructionsite:SetOnConstructedFn(ConstructionSite_OnConstructed)
-
-    inst:ListenForEvent("atriumpowered", function(_, ispowered) inst:OnAtriumPowered(ispowered) end, TheWorld)
+    inst.OnAtriumPowered = OnAtriumPowered
 
     return inst
 end
@@ -255,32 +278,75 @@ local function KeyStone_ConstructionSite_OnConstructed(inst, doer)
         local atrium = inst.components.entitytracker:GetEntity("atrium")
 
         if atrium ~= nil and atrium.components.charliecutscene ~= nil then
-            local was_destabilizing = atrium:ForceDestabilizeExplode()
-
             atrium.components.entitytracker:ForgetEntity("charlie_hand")
 
-            -- atrium:SocketVaultKey(doer)
-
-            atrium.can_spawn_charlie_hand_keystone = false -- TODO #FIXME
-            TheWorld:PushEvent("resetvault")
-
-            -- atrium:DoTaskInTime(was_destabilizing and 2 or 0, inst.StartCutScene)
-            -- atrium.components.charliecutscene._running = true
+            if TheWorld.components.charlie_tracker:IsCharlieDefeated() then
+                atrium:SocketVaultKey()
+            else
+                atrium.components.charliecutscene:StartKeySocket()
+            end
         end
 
         inst:OnGetMaterials()
     end
 end
 
+--[[
+(OMAR):
+PLEASE FORGIVE MY SINS! WE MUTATE A CONSTRUCTION PLAN RECIPE!
+We want to change the needed keys for the charlie hand construction(if atrium key is already in the portal, we don't need it)
+While we can change construction prefab pretty easily, construction PLAN recipe is tied to prefab name (WHY!)
+This keystone hand will only exist one at a time, absolutely guaranteed, so we can get away with this
+]]
+local ATRIUM_POWERED_CONSTRUCTION_PLAN = { Ingredient("vault_key", 1) }
+local NO_POWER_CONSTRUCTION_PLAN = { Ingredient("atrium_key", 1), Ingredient("vault_key", 1) }
+local function common_KeyStone_OnAtriumPowered(inst, atriumpowered)
+    atriumpowered = (atriumpowered == nil and inst.atriumpowered:value()) or atriumpowered
+    CONSTRUCTION_PLANS["charlie_hand_keystone"] = atriumpowered and ATRIUM_POWERED_CONSTRUCTION_PLAN or NO_POWER_CONSTRUCTION_PLAN
+end
+
+local function KeyStone_SetAtriumPowered(inst, atriumpowered)
+    if atriumpowered ~= inst.atriumpowered:value() then
+        inst.atriumpowered:set(atriumpowered)
+        common_KeyStone_OnAtriumPowered(inst, atriumpowered)
+    end
+end
+
+local function KeyStone_OnAtriumPowered(inst, ispowered)
+    local old_constructionprefab = inst.components.constructionsite.constructionprefab
+    local new_constructionprefab = ispowered and "socket_keystone_construction_container" or "socket_bothgatekeys_construction_container"
+    inst.components.constructionsite:SetConstructionPrefab(new_constructionprefab)
+
+    KeyStone_SetAtriumPowered(inst, ispowered) -- before starting construction again
+
+    if old_constructionprefab ~= new_constructionprefab then
+        local builder = inst.components.constructionsite.builder
+        if builder then
+            builder.components.constructionbuilder:StartConstruction(inst)
+        end
+    end
+end
+
+local function keystone_common_postinit(inst)
+    CONSTRUCTION_PLANS["charlie_hand_keystone"] = NO_POWER_CONSTRUCTION_PLAN -- reset
+    inst.atriumpowered = net_bool(inst.GUID, "charlie_hand_keystone.atriumpowered", "atriumpowereddirty")
+    inst.atriumpowered:set(false)
+    if not TheWorld.ismastersim then
+        inst:ListenForEvent("atriumpowereddirty", common_KeyStone_OnAtriumPowered)
+    end
+end
+
 local function CharlieHandKeyStoneFn()
-    local inst = CommonCharlieHandFn()
+    local inst = CommonCharlieHandFn(keystone_common_postinit)
 
     if not TheWorld.ismastersim then
         return inst
     end
 
-    inst.components.constructionsite:SetConstructionPrefab("socket_keystone_construction_container")
+    inst.components.constructionsite:SetConstructionPrefab("socket_bothgatekeys_construction_container")
     inst.components.constructionsite:SetOnConstructedFn(KeyStone_ConstructionSite_OnConstructed)
+    inst.OnAtriumPowered = KeyStone_OnAtriumPowered
+    inst.OnEntitySleep = inst.Remove
 
     return inst
 end
@@ -349,8 +415,40 @@ end
 
 ----------------------------------------------------------------------------
 
+local function GiveBothKeysContainerFn()
+    local inst = CreateEntity()
+
+    inst.entity:AddTransform()
+    inst.entity:AddNetwork()
+
+	inst:AddTag("bundle")
+
+	-- Offer action strings.
+	inst:AddTag("offerconstructionsite")
+
+    -- Blank string for controller action prompt.
+    inst.name = " "
+	inst.POPUP_STRINGS = STRINGS.UI.GIVE_KEY_STONE
+
+    inst.entity:SetPristine()
+
+    if not TheWorld.ismastersim then
+        return inst
+    end
+
+    inst:AddComponent("container")
+    inst.components.container:WidgetSetup("socket_bothgatekeys_construction_container")
+
+    inst.persists = false
+
+    return inst
+end
+
+----------------------------------------------------------------------------
+
 return
         Prefab("charlie_hand",                               CharlieHandFn,          assets, prefabs ),
-        Prefab("charlie_hand_keystone",                      CharlieHandKeyStoneFn,  assets, prefabs ),
+        Prefab("charlie_hand_keystone",                      CharlieHandKeyStoneFn,  key_assets, key_prefabs ),
         Prefab("enable_shadow_rift_construction_container",  EnableRiftContainerFn                   ),
-        Prefab("socket_keystone_construction_container",     GiveKeyStoneContainerFn                 )
+        Prefab("socket_keystone_construction_container",     GiveKeyStoneContainerFn                 ),
+        Prefab("socket_bothgatekeys_construction_container", GiveBothKeysContainerFn                 )

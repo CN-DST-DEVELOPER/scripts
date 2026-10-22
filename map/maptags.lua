@@ -20,6 +20,13 @@ local function MakeTags()
 		"Terrarium_Forest_Fire"
 	}
 
+	local BatBossCave_Spawners =
+	{
+		"bat_boss_cave1",
+		"bat_boss_cave2",
+		"bat_boss_cave3",
+	}
+
 	local map_tags =
 		{
 			["Maze"] = function(tagdata)
@@ -151,6 +158,19 @@ local function MakeTags()
 
 										return "STATIC", "Charlie2"
 									end,
+
+			["BatBossCave_Spawner"] = function(tagdata, level)
+									if tagdata["BatBossCave_Spawner"] == false then
+										return
+									end
+									tagdata["BatBossCave_Spawner"] = false
+
+									if level ~= nil and level.overrides ~= nil and level.overrides.batbosscave == "never" then
+										return
+									end
+
+									return "STATIC", BatBossCave_Spawners[math.random(#BatBossCave_Spawners)]
+								end,
 
 			["Hutch_Fishbowl"] =	function(tagdata)
 										if tagdata["Hutch_Fishbowl"] == false then

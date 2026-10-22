@@ -2296,13 +2296,13 @@ end
 
 params.socket_keystone_construction_container = deepcopy(params.construction_container)
 
-params.socket_keystone_construction_container.widget.slotpos = {Vector3(0, 8, 0)}
+params.socket_keystone_construction_container.widget.slotpos = { Vector3(0, 8, 0) }
 params.socket_keystone_construction_container.widget.side_align_tip = 120
 params.socket_keystone_construction_container.widget.animbank = "ui_construction_1x1"
 params.socket_keystone_construction_container.widget.animbuild = "ui_construction_1x1"
 params.socket_keystone_construction_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.OFFER
 
-local function DoKeyStoneAct(inst, doer)
+function params.socket_keystone_construction_container.widget.buttoninfo.fn(inst, doer)
 	if inst.components.container ~= nil then
 		BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
 	elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
@@ -2310,36 +2310,32 @@ local function DoKeyStoneAct(inst, doer)
 	end
 end
 
-local function GiveKeyStoneGoBack()
-	TheFrontEnd:PopScreen()
+function params.socket_keystone_construction_container.widget.buttoninfo.validfn(inst)
+    return inst.replica.container ~= nil and inst.replica.container:IsFull()
 end
 
-function params.socket_keystone_construction_container.widget.buttoninfo.fn(inst, doer)
-	if not params.socket_keystone_construction_container.widget.overrideactionfn(inst, doer) then
-		-- No UI no dialogue.
-		DoKeyStoneAct(inst, doer)
+--------------------------------------------------------------------------
+--[[ socket_bothgatekeys_construction_container ]]
+--------------------------------------------------------------------------
+
+params.socket_bothgatekeys_construction_container = deepcopy(params.construction_container)
+
+params.socket_bothgatekeys_construction_container.widget.slotpos = { Vector3(-55, 8, 0), Vector3(55, 8, 0) }
+params.socket_bothgatekeys_construction_container.widget.side_align_tip = 120
+params.socket_bothgatekeys_construction_container.widget.animbank = "ui_construction_2x1"
+params.socket_bothgatekeys_construction_container.widget.animbuild = "ui_construction_2x1"
+params.socket_bothgatekeys_construction_container.widget.buttoninfo.text = STRINGS.ACTIONS.APPLYCONSTRUCTION.OFFER
+
+function params.socket_bothgatekeys_construction_container.widget.buttoninfo.fn(inst, doer)
+	if inst.components.container ~= nil then
+		BufferedAction(doer, inst, ACTIONS.APPLYCONSTRUCTION):Do()
+	elseif inst.replica.container ~= nil and not inst.replica.container:IsBusy() then
+		SendRPCToServer(RPC.DoWidgetButtonAction, ACTIONS.APPLYCONSTRUCTION.code, inst, ACTIONS.APPLYCONSTRUCTION.mod_name)
 	end
 end
 
-function params.socket_keystone_construction_container.widget.overrideactionfn(inst, doer)
-	if doer ~= nil and doer.HUD ~= nil and IsConstructionSiteComplete(inst, doer) then
-		-- We have UI do dialogue.
-		local function GiveKeyStonePopUp()
-			DoKeyStoneAct(inst, doer)
-			TheFrontEnd:PopScreen()
-		end
-
-		local str = inst.POPUP_STRINGS
-		local confirmation = RiftConfirmScreen(str.TITLE, str.BODY,
-		{
-			{ text = str.OK,     cb = GiveKeyStonePopUp },
-            { text = str.CANCEL, cb = GiveKeyStoneGoBack  },
-		})
-
-		TheFrontEnd:PushScreen(confirmation)
-		return true
-	end
-	return false
+function params.socket_bothgatekeys_construction_container.widget.buttoninfo.validfn(inst)
+    return inst.replica.container ~= nil and inst.replica.container:IsFull()
 end
 
 --------------------------------------------------------------------------
@@ -2370,7 +2366,7 @@ function params.quagmire_pot.itemtestfn(container, item, slot)
     return item:HasTag("quagmire_stewable")
         and item.prefab ~= "quagmire_sap"
         and ((item.components.inventoryitem ~= nil and not item.components.inventoryitem:IsHeld()) or
-            not (item.prefab == "spoiled_food" or item:HasTag("preparedfood") or item:HasTag("overcooked") or container.inst:HasTag("takeonly")))
+            not (item.prefab == "spoiled_food" or item:HasAnyTag("preparedfood", "overcooked") or container.inst:HasTag("takeonly")))
 end
 
 --------------------------------------------------------------------------

@@ -71,13 +71,13 @@ local events =
 
 local AOE_RANGE_PADDING = 3
 local AOE_TARGET_MUSTHAVE_TAGS = { "_combat" }
-local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall" }
+local AOE_TARGET_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "shadowthrall", "shadowboss" }
 
 local BITE_DIST = 0.75
 local BITE_RADIUS = 1
 local MAX_BITES = 5
 
-local function DoBiteAOEAttack(inst)
+local function DoBiteAOEAttack(inst, overridemult)
 	local lasttargets = inst.sg.mem.lasttargets
 	local nexttargets = inst.sg.mem.nexttargets
 	if lasttargets == nil then
@@ -85,6 +85,8 @@ local function DoBiteAOEAttack(inst)
 		inst.sg.mem.lasttargets = lasttargets
 		inst.sg.mem.nexttargets = nexttargets
 	end
+
+	local hit = false
 
 	inst.components.combat.ignorehitrange = true
 	local x, y, z = inst.Transform:GetWorldPosition()
@@ -99,11 +101,15 @@ local function DoBiteAOEAttack(inst)
 			local range = BITE_RADIUS + v:GetPhysicsRadius(0)
 			local dsq = v:GetDistanceSqToPoint(x, y, z)
 			if dsq < range * range and inst.components.combat:CanTarget(v) then
+				hit = true
+				nexttargets[v] = true
+				if lasttargets[v] and v.components.rider and v.components.rider.mount then
+					nexttargets[v.components.rider.mount] = true
+				end
 				inst.components.combat:DoAttack(v)
 				if lasttargets[v] then
-					v:PushEvent("knockback", { knocker = inst, radius = BITE_DIST + BITE_RADIUS })
+					v:PushEvent("knockback", { knocker = inst, radius = BITE_DIST + BITE_RADIUS, strengthmult = overridemult })
 				end
-				nexttargets[v] = true
 			end
 		end
 	end
@@ -114,6 +120,8 @@ local function DoBiteAOEAttack(inst)
 	end
 	inst.sg.mem.lasttargets = nexttargets
 	inst.sg.mem.nexttargets = lasttargets
+
+	return hit
 end
 
 local function DoAOEAttack(inst, radius, heavymult, mult, forcelanded)
@@ -185,6 +193,82 @@ local function TryBiteRange(inst, target)
 				inst.Transform:SetRotation(rot + math.clamp(diff, -45, 45))
 				return absdiff < 60
 			end
+		end
+	end
+	return false
+end
+
+local function _ShroudenBiteRangeTest(inst, x, z, rot, target, mindsq, mindiff, loops)
+	local x1, _, z1 = target.Transform:GetWorldPosition()
+	local dx = x1 - x
+	local dz = z1 - z
+	local dsq = dx * dx + dz * dz
+	local diff = dsq > 0 and ReduceAngle(math.atan2(-dz, dx) * RADIANS - rot) or 0
+
+	if mindsq < 64 and dsq < 64 then
+		if math.abs(diff) >= mindiff then
+			return
+		end
+	elseif mindiff < 45 and diff < 45 then
+		if dsq >= mindsq then
+			return
+		end
+	elseif dsq >= mindsq and math.abs(diff) >= mindiff then
+		return
+	elseif math.random() < 0.5 then
+		return
+	end
+
+	return dsq, diff
+end
+
+local function TryShroudenBiteRange(inst, loops, inarena)
+	if inst.shrouden then
+		local x, _, z = inst.Transform:GetWorldPosition()
+		local rot = inst.Transform:GetRotation()
+
+		local mintarget
+		local mindiff =
+			(loops <= 3 and 180) or
+			(loops <= 4 and 120) or
+			(loops <= 5 and 90) or
+			(inst.sg.statemem.shroudentargetlock and 75) or
+			60
+		local mindsq =
+			(inarena or inst.sg.statemem.shroudentargetlock) and (
+				(loops <= 2 and 900) or
+				(loops <= 3 and 576) or
+				(loops <= 4 and 324) or
+				144
+			) or 36
+		local maxturn = Remap(mindiff, 60, 180, 45, 60) --set this with the initial mindiff
+
+		local function TryTarget(k)
+			local dsq, diff = _ShroudenBiteRangeTest(inst, x, z, rot, k, mindsq, mindiff, loops)
+			if dsq then
+				mindsq, mindiff, mintarget = dsq, diff, k
+			end
+		end
+
+		local target = inst.shrouden.components.combat.target
+		if target then
+			TryTarget(target)
+		end
+
+		for k in pairs(inst.shrouden.components.grouptargeter:GetTargets()) do
+			if k:IsValid() and not IsEntityDeadOrGhost(k) then
+				TryTarget(k)
+			end
+		end
+
+		if mintarget == nil then
+			inst.shrouden:ForEachRecentNonPlayerAttacker(TryTarget)
+		end
+
+		if mintarget then
+			inst.Transform:SetRotation(rot + math.clamp(mindiff, -maxturn, maxturn))
+			inst.sg.mem.shroudentargetlock = mintarget
+			return true
 		end
 	end
 	return false
@@ -742,6 +826,256 @@ local states =
 				end
 			end),
 		},
+	},
+
+	State{
+		name = "shrouden_bite",
+		tags = { "busy", "attack", "jumping", "nointerrupt", "noattack", "temp_invincible" },
+
+		onenter = function(inst, target)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("portal_appear")
+			inst.Physics:SetMotorVelOverride(8, 0, 0)
+
+			inst.sg.mem.shroudentargetlock = target
+		end,
+
+		timeline =
+		{
+			FrameEvent(2, function(inst) inst.SoundEmitter:PlaySound("rifts4/shadowthrall_mouth/bite") end),
+			FrameEvent(8, function(inst)
+				if DoBiteAOEAttack(inst, 0.7) then
+					inst.sg.statemem.numbites = 1
+					if inst.shrouden then
+						inst.shrouden:PushEvent("shadowthrall_mouth_shroudenbite")
+					end
+				end
+			end),
+			FrameEvent(9, function(inst) inst.Physics:SetMotorVelOverride(6, 0, 0) end),
+			FrameEvent(10, function(inst) inst.Physics:SetMotorVelOverride(4, 0, 0) end),
+			FrameEvent(11, function(inst) inst.Physics:SetMotorVelOverride(2, 0, 0) end),
+			FrameEvent(12, function(inst) inst.Physics:SetMotorVelOverride(1, 0, 0) end),
+			FrameEvent(13, function(inst) inst.Physics:SetMotorVelOverride(0.5, 0, 0) end),
+			FrameEvent(14, function(inst) inst.Physics:SetMotorVelOverride(0.25, 0, 0) end),
+			FrameEvent(15, function(inst)
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.biting = true
+
+					if inst.shrouden and inst.shrouden.components.health:IsDead() then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+
+					local x, _, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+					local theta = rot * DEGREES
+					local x1 = x + math.cos(theta)
+					local z1 = z - math.sin(theta)
+					if not TheWorld.Map:IsValidTileAtPoint(x1, 0, z1) then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+					local inarena = TheWorld.Map:IsPointInCharlieBossArena(x, 0, z)
+					if inarena ~= TheWorld.Map:IsPointInCharlieBossArena(x1, 0, z1) then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+
+					local sign
+					if not TryShroudenBiteRange(inst, 1, inarena) then
+						local delta = 30 - 10 + 20 * math.random()
+						sign = math.random() < 0.5 and -1 or 1
+						inst.Transform:SetRotation(rot + delta * sign)
+					end
+					inst.sg:GoToState("shrouden_bite_loop", {
+						sign = sign,
+						loops = 1,
+						numbites = inst.sg.statemem.collided and 1 + (inst.sg.statemem.numbites or 0) or inst.sg.statemem.numbites,
+					})
+					--NOTE: collided is via physics collision callback
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.biting then
+				ResetBiteTargets(inst)
+			end
+			inst.Physics:ClearMotorVelOverride()
+			inst.Physics:Stop()
+		end,
+	},
+
+	State{
+		name = "shrouden_bite_loop",
+		tags = { "busy", "attack", "jumping", "nointerrupt", "noattack", "temp_invincible" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("bite_loop")
+			inst.SoundEmitter:PlaySound("rifts4/shadowthrall_mouth/bite")
+			inst.Physics:SetMotorVelOverride(8, 0, 0)
+
+			data = data or {}
+			data.sign = data.sign or (math.random() < 0.5 and -1 or 1)
+			data.loops = data.loops or 1
+			data.numbites = data.numbites or 0
+			inst.sg.statemem.data = data
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst)
+				if DoBiteAOEAttack(inst, 0.7) then
+					inst.sg.statemem.data.numbites = inst.sg.statemem.data.numbites + 1
+					if inst.shrouden then
+						inst.shrouden:PushEvent("shadowthrall_mouth_shroudenbite")
+					end
+				end
+			end),
+			FrameEvent(7, function(inst) inst.Physics:SetMotorVelOverride(6, 0, 0) end),
+			FrameEvent(8, function(inst) inst.Physics:SetMotorVelOverride(4, 0, 0) end),
+			FrameEvent(9, function(inst) inst.Physics:SetMotorVelOverride(2, 0, 0) end),
+			FrameEvent(10, function(inst) inst.Physics:SetMotorVelOverride(1, 0, 0) end),
+			FrameEvent(11, function(inst) inst.Physics:SetMotorVelOverride(0.5, 0, 0) end),
+			FrameEvent(12, function(inst) inst.Physics:SetMotorVelOverride(0.25, 0, 0) end),
+			FrameEvent(13, function(inst)
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.biting = true
+
+					if inst.shrouden and inst.shrouden.components.health:IsDead() then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+
+					local x, _, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+					local theta = rot * DEGREES
+					local x1 = x + math.cos(theta)
+					local z1 = z - math.sin(theta)
+					if not TheWorld.Map:IsValidTileAtPoint(x1, 0, z1) then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+					local inarena = TheWorld.Map:IsPointInCharlieBossArena(x, 0, z)
+					if inarena ~= TheWorld.Map:IsPointInCharlieBossArena(x1, 0, z1) then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+
+					local data = inst.sg.statemem.data
+					if inst.sg.statemem.collided then
+						--NOTE: collided is via physics collision callback
+						data.numbites = data.numbites + 1
+					end
+
+					data.loops = data.loops + 1
+					local maxloops =
+						(data.numbites >= 1 and 3) or
+						(inarena and 7) or
+						5
+					if data.loops >= maxloops then
+						inst.sg:GoToState("shrouden_bite_final")
+						return
+					end
+
+					if not TryShroudenBiteRange(inst, data.loops, inarena) then
+						data.sign = -data.sign
+						local delta = 60 - 10 + 20 * math.random()
+						inst.Transform:SetRotation(rot + delta * data.sign)
+					else
+						local rot1 = inst.Transform:GetRotation()
+						local diff = ReduceAngle(rot1 - rot)
+						data.sign = diff > 0 and 1 or -1
+					end
+					inst.sg:GoToState("shrouden_bite_loop", data)
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			if not inst.sg.statemem.biting then
+				ResetBiteTargets(inst)
+			end
+			inst.Physics:ClearMotorVelOverride()
+			inst.Physics:Stop()
+		end,
+	},
+
+	State{
+		name = "shrouden_bite_final",
+		tags = { "busy", "attack", "jumping", "nointerrupt", "noattack", "temp_invincible" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.components.combat:StartAttack()
+			inst.AnimState:PlayAnimation("shrouden_disappear")
+			inst.SoundEmitter:PlaySound("rifts4/shadowthrall_mouth/bite")
+			inst.Physics:SetMotorVelOverride(8, 0, 0)
+		end,
+
+		timeline =
+		{
+			FrameEvent(6, function(inst)
+				if DoBiteAOEAttack(inst, 0.7) then
+					if inst.shrouden then
+						inst.shrouden:PushEvent("shadowthrall_mouth_shroudenbite")
+					end
+				end
+			end),
+			FrameEvent(7, function(inst) inst.Physics:SetMotorVelOverride(6, 0, 0) end),
+			FrameEvent(8, function(inst)
+				inst.sg:AddStateTag("flight")
+			end),
+			FrameEvent(8, function(inst) inst.Physics:SetMotorVelOverride(4, 0, 0) end),
+			FrameEvent(9, function(inst)
+				RemovePhysicsColliders(inst)
+				inst.DynamicShadow:Enable(false)
+			end),
+			FrameEvent(9, function(inst) inst.Physics:SetMotorVelOverride(2, 0, 0) end),
+			FrameEvent(10, function(inst) inst.Physics:SetMotorVelOverride(1, 0, 0) end),
+			FrameEvent(11, function(inst) inst.Physics:SetMotorVelOverride(0.5, 0, 0) end),
+			FrameEvent(12, function(inst) inst.Physics:SetMotorVelOverride(0.25, 0, 0) end),
+			FrameEvent(13, function(inst)
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+				inst.Physics:SetActive(false)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst:Remove()
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			ResetBiteTargets(inst)
+			ChangeToCharacterPhysics(inst, 50, inst.physicsradiusoverride)
+			inst.DynamicShadow:Enable(true)
+			inst.Physics:ClearMotorVelOverride()
+			inst.Physics:Stop()
+			inst.Physics:SetActive(true)
+		end,
 	},
 
 	State{

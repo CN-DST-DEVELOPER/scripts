@@ -1,7 +1,7 @@
 require("stategraphs/commonstates")
 
 local DROPKICK_MUSTHAVE_TAGS = { "_health", "_combat" }
-local DROPKICK_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowchesspiece" }
+local DROPKICK_CANT_TAGS = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowchesspiece", "shadowboss" }
 local DROPKICK_ONEOF_TAGS = { "animal", "character", "monster", "shadowminion" }
 
 local function DoKnockback(inst, target)

@@ -1,3 +1,5 @@
+local shared_laststompshrouden
+
 local Wisecracker = Class(function(self, inst)
     self.inst = inst
     self.time_in_lightstate = 0
@@ -99,16 +101,19 @@ local Wisecracker = Class(function(self, inst)
         inst.components.talker:Say(GetString(inst, "ANNOUNCE_INSUFFICIENTFERTILIZER"))
     end)
 
+    local function IsCharlieDefeated()
+        return TheWorld.components.charlie_tracker:IsCharlieDefeated()
+    end
     inst:ListenForEvent("heargrue", function(inst, data)
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_CHARLIE"))
+        inst.components.talker:Say(GetString(inst, IsCharlieDefeated() and "ANNOUNCE_GRUE_NOCHARLIE" or "ANNOUNCE_CHARLIE"))
     end)
 
     inst:ListenForEvent("attackedbygrue", function(inst, data)
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_CHARLIE_ATTACK"))
+        inst.components.talker:Say(GetString(inst, IsCharlieDefeated() and "ANNOUNCE_GRUE_NOCHARLIE_ATTACK" or "ANNOUNCE_CHARLIE_ATTACK"))
     end)
 
     inst:ListenForEvent("resistedgrue", function(inst, data)
-        inst.components.talker:Say(GetString(inst, "ANNOUNCE_CHARLIE_MISSED"))
+        inst.components.talker:Say(GetString(inst, IsCharlieDefeated() and "ANNOUNCE_GRUE_NOCHARLIE_MISSED" or "ANNOUNCE_CHARLIE_MISSED"))
     end)
 
     inst:ListenForEvent("thorns", function(inst, data)
@@ -500,6 +505,36 @@ local Wisecracker = Class(function(self, inst)
 			end
 			sparkfollowtask = inst:DoTaskInTime(1 + math.random() * 1.5, onsecuritysparkfollow)
 		end
+    end)
+
+	local laststompshrouden
+	inst:ListenForEvent("ms_stompshrouden", function(inst)--, shrouden)
+		local t = GetTime()
+		--there's also a shared cd between all players
+		if (shared_laststompshrouden or -math.huge) + 3 < t and
+			(laststompshrouden or -math.huge) + 10 < t
+		then
+			shared_laststompshrouden = t
+			laststompshrouden = t
+			inst.components.talker:Say(GetString(inst, "ANNOUNCE_STOMP_SHROUDEN"))
+		end
+	end)
+
+    local lastdreadstoneexplode
+    local dreadstoneexplodetask
+    local function ondreadstoneexploding(inst)
+        dreadstoneexplodetask = nil
+        inst.components.talker:Say(GetString(inst, "ANNOUNCE_DREADSTONE_SPIKE_EXPLODING"))
+    end
+    inst:ListenForEvent("ms_dreadstonespikeexploding", function(inst)
+        local t = GetTime()
+        if (lastdreadstoneexplode or -math.huge) + 30 < t then
+            lastdreadstoneexplode = t
+			if dreadstoneexplodetask then
+				dreadstoneexplodetask:Cancel()
+			end
+			dreadstoneexplodetask = inst:DoTaskInTime(.5 + math.random() * .3, ondreadstoneexploding)
+        end
     end)
 
     if TheNet:GetServerGameMode() == "quagmire" then

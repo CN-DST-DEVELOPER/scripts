@@ -43,6 +43,7 @@ local function DoBlowUpdate(inst, dt)
                 end
             end
             if v.components.burnable ~= nil and
+                v.components.burnable:IsBurning() and
                 v.components.fueled == nil and
                 v.components.health ~= nil then
                 v.components.burnable:ExtendBurning()

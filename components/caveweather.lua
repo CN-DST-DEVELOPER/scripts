@@ -154,6 +154,7 @@ local _groundoverlay = nil
 local _hasfx = not TheNet:IsDedicated()
 local _rainfx = _hasfx and SpawnPrefab("caverain") or nil
 local _acidrainfx = _hasfx and SpawnPrefab("caveacidrain") or nil
+local _rainfx_allowsfx = true
 local _acidrainfx_allowsfx = true
 
 --Light
@@ -203,7 +204,7 @@ local function StopAmbientRainSound()
     end
 end
 
-local function StartTreeRainSound()
+local function StartTreeRainSound(intensity)
 	local sound = "dontstarve_DLC001/common/rain_on_tree"
 
 	if _treerainsound ~= sound then
@@ -213,6 +214,7 @@ local function StartTreeRainSound()
 		_treerainsound = sound
 		TheFocalPoint.SoundEmitter:PlaySound(sound, "treerainsound")
 	end
+    TheFocalPoint.SoundEmitter:SetParameter("treerainsound", "intensity", intensity)
 end
 
 local function StopTreeRainSound()
@@ -401,8 +403,8 @@ end
 
 local function OnChangeArea_fx(inst, area)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local canacidrain = _map:CanPointHaveAcidRain(x, y, z)
-    _acidrainfx_allowsfx = canacidrain
+    _rainfx_allowsfx = _map:CanPointHaveRain(x, y, z)
+    _acidrainfx_allowsfx = _map:CanPointHaveAcidRain(x, y, z)
 end
 
 local function OnPlayerActivated(src, player)
@@ -427,11 +429,21 @@ local function OnPlayerDeactivated(src, player)
 end
 if _ismastersim then
     local function OnChangeArea_logic(inst, area)
+        local x, y, z = inst.Transform:GetWorldPosition()
         local acidlevel = inst.components.acidlevel
         if acidlevel then
-            local x, y, z = inst.Transform:GetWorldPosition()
             local canacidrain = _map:CanPointHaveAcidRain(x, y, z)
             acidlevel:SetIgnoreAcidRainTicks(not canacidrain)
+        end
+        local moisture = inst.components.moisture
+        if moisture then
+            local canrain = _map:CanPointHaveRain(x, y, z)
+            if not canrain then
+                local rainimmunity = inst.components.rainimmunity or inst:AddComponent("rainimmunity")
+                rainimmunity:AddSource(TheWorld)
+            elseif inst.components.rainimmunity then
+                inst.components.rainimmunity:RemoveSource(TheWorld)
+            end
         end
     end
     local function OnPlayerJoined(world, player)
@@ -637,6 +649,9 @@ function self:OnUpdate(dt)
     end
 
     --Update precipitation effects
+    local israining = _preciptype:value() == PRECIP_TYPES.rain
+    local isacidraining = _preciptype:value() == PRECIP_TYPES.acidrain
+    local allowsfx = (israining and _rainfx_allowsfx) or (isacidraining and _acidrainfx_allowsfx)
     if _preciptype:value() == PRECIP_TYPES.none then
         StopAmbientRainSound()
         StopTreeRainSound()
@@ -652,7 +667,7 @@ function self:OnUpdate(dt)
             _acidrainfx.particles_per_tick = 0
             _acidrainfx.splashes_per_tick = 0
         end
-    elseif _preciptype:value() == PRECIP_TYPES.rain or _preciptype:value() == PRECIP_TYPES.acidrain then
+    elseif israining or isacidraining then
         local preciprate_sound = preciprate
         if _activatedplayer == nil then
             StopTreeRainSound()
@@ -664,8 +679,8 @@ function self:OnUpdate(dt)
 			StartBarrierSound()
 			preciprate_sound = math.min(.1, preciprate_sound * .5)
         elseif _activatedplayer.replica.sheltered ~= nil and _activatedplayer.replica.sheltered:IsSheltered() then
-            if _acidrainfx_allowsfx then
-                StartTreeRainSound()
+            if allowsfx then
+                StartTreeRainSound(preciprate_sound)
             else
                 StopTreeRainSound()
             end
@@ -675,20 +690,20 @@ function self:OnUpdate(dt)
         else
             StopTreeRainSound()
 			StopBarrierSound()
-            if _acidrainfx_allowsfx and _activatedplayer.replica.inventory:EquipHasTag("umbrella") then
+            if allowsfx and _activatedplayer.replica.inventory:EquipHasTag("umbrella") then
                 preciprate_sound = preciprate_sound - .4
                 StartUmbrellaRainSound()
             else
                 StopUmbrellaRainSound()
             end
         end
-		if _acidrainfx_allowsfx and preciprate_sound > 0 then
+		if allowsfx and preciprate_sound > 0 then
 			StartAmbientRainSound(preciprate_sound)
 		else
 			StopAmbientRainSound()
 		end
         if _hasfx then
-            if _preciptype:value() == PRECIP_TYPES.rain then
+            if israining then
                 _rainfx.particles_per_tick = 5 * preciprate
                 _rainfx.splashes_per_tick = 2 * preciprate
                 _acidrainfx.particles_per_tick = 0
@@ -702,7 +717,8 @@ function self:OnUpdate(dt)
         end
     end
 
-    SetGroundOverlay(GROUND_OVERLAYS.puddles, _wetness:value() * 3 / 100)
+    --NOTE: for now this is okay because only charlie arena is a no rain zone, which is already covered by a teleport, so we won't see any sudden snapping.
+    SetGroundOverlay(GROUND_OVERLAYS.puddles, _rainfx_allowsfx and _wetness:value() * 3 / 100 or 0)
 
     PushWeather()
 end

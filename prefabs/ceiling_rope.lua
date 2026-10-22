@@ -70,7 +70,7 @@ local function fn()
 
     local teleporter = inst:AddComponent("teleporter")
     teleporter.onActivate = OnActivate
-    teleporter.offset = 3
+    teleporter.offset = 0
     teleporter:SetSelfManaged(true)
     teleporter:SetEnabled(false)
     inst.StartTravelSound = StartTravelSound

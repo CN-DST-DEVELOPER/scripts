@@ -777,4 +777,11 @@ function OnControlMapped(deviceId, controlId, inputId, hasChanged)
     TheInput:OnControlMapped(deviceId, controlId, inputId, hasChanged)
 end
 
+function Input:IsCTRLDown()
+	if PLATFORM == "OSX_STEAM" then
+		return self:IsKeyDown(KEY_LSUPER) or self:IsKeyDown(KEY_RSUPER)
+	end
+	return self:IsKeyDown(KEY_CTRL)
+end
+
 return Input

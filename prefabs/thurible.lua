@@ -89,16 +89,25 @@ local function ondropped(inst)
 end
 
 local function ToggleOverrideSymbols(inst, owner)
+    local skin_build = inst:GetSkinBuild()
     if owner.sg == nil or (owner.sg:HasStateTag("nodangle")
             or (owner.components.rider ~= nil and owner.components.rider:IsRiding()
                 and not owner.sg:HasStateTag("forcedangle"))) then
-        owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible")
+        if skin_build ~= nil then
+            owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_thurible", inst.GUID, "swap_thurible")
+        else
+            owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible")
+        end
         inst._body:Hide()
         if inst._smoke ~= nil then
             inst._smoke.Follower:FollowSymbol(owner.GUID, "swap_object", 65, 0, 0)
         end
     else
-        owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible_stick")
+        if skin_build ~= nil then
+            owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_thurible_stick", inst.GUID, "swap_thurible")
+        else
+            owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible_stick")
+        end
         inst._body:Show()
         if inst._smoke ~= nil then
             inst._smoke.Follower:FollowSymbol(inst._body.GUID, "thurible_swing", 0, 185, 0)
@@ -117,7 +126,11 @@ local function onequip(inst, owner)
     if inst._body ~= nil then
         inst._body:Remove()
     end
-    inst._body = SpawnPrefab("thuriblebody")
+    local skin_name = inst:GetSkinName()
+    if skin_name ~= nil then
+        owner:PushEvent("equipskinneditem", inst:GetSkinName())
+    end
+    inst._body = SpawnPrefab("thuriblebody", skin_name, inst.skin_id, nil)
     inst._body._thurible = inst
     inst:ListenForEvent("onremove", onremovebody, inst._body)
 
@@ -138,8 +151,13 @@ end
 local function onunequip(inst, owner)
     if inst._body ~= nil then
         if inst._body.entity:IsVisible() then
+            local skin_build = inst:GetSkinBuild()
             --need to see the thurible when animating putting away the object
-            owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible")
+            if skin_build ~= nil then
+                owner.AnimState:OverrideItemSkinSymbol("swap_object", skin_build, "swap_thurible", inst.GUID, "swap_thurible")
+            else
+                owner.AnimState:OverrideSymbol("swap_object", "swap_thurible", "swap_thurible")
+            end
         end
         inst._body:Remove()
     end

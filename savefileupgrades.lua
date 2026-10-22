@@ -1413,6 +1413,220 @@ t = {
                 FlagForRetrofitting_Cave(savedata, "retrofit_add_one_vault_orb")
             end,
         },
+        {
+            version = 5.24, -- Bat Boss cave - new content
+            fn = function(savedata)
+                FlagForRetrofitting_Cave(savedata, "retrofit_bat_boss_cave")
+            end,
+        },
+        {
+            version = 5.25, -- Replacing vaultroommanager with virtualroommanager.
+            fn = function(savedata)
+                if savedata ~= nil and savedata.map ~= nil and savedata.map.prefab == "cave" then
+                    if savedata.map.persistdata == nil then
+                        savedata.map.persistdata = {}
+                    end
+
+                    print("Upgrading save to support virtualroommanager. Component vaultroommanager is deprecated.")
+                    local vaultroommanager = savedata.map.persistdata.vaultroommanager
+                    if not vaultroommanager then
+                        print("Savedata for component vaultroommanager not found. This save must have migrated from a long time ago and needs no porting.")
+                        return
+                    end
+
+                    if vaultroommanager.spawnedlayouts then
+                        print("Migrating vault spawnedlayouts flag to worldstaticlayouts component.")
+                        local worldstaticlayouts = {
+                            placedlayouts = {
+                                ["VAULT"] = true,
+                            },
+                        }
+                        savedata.map.persistdata.worldstaticlayouts = worldstaticlayouts
+                    end
+
+                    local versionlookups = {
+                        [1] = {
+                            "mask1", --1
+                            "teleport1", --2
+                            "hall3", --3
+                            "puzzle1", --4
+                            "lore3", --5
+                            "key1", --6
+                            "hall1", --7
+                            "lore1", --8
+                            "hall4", --9
+                            "hall6", --10
+                            "hall2", --11
+                            "lore2", --12
+                            "hall5", --13
+                            "hall7", --14
+                            "fountain2", --15
+                            "generator1", --16
+                            "playbill1", --17
+                            "fountain1", --18
+                        },
+                        [2] = {
+                            "mask1", --1
+                            "teleport1", --2
+                            "hall3", --3
+                            "puzzle1", --4
+                            "lore3", --5
+                            "key1", --6
+                            "hall1", --7
+                            "lore1", --8
+                            "puzzle2", --9
+                            "hall6", --10
+                            "hall2", --11
+                            "lore2", --12
+                            "hall5", --13
+                            "hall7", --14
+                            "fountain2", --15
+                            "generator1", --16
+                            "playbill1", --17
+                            "fountain1", --18
+                            "decon1", --19
+                        },
+                    }
+                    local idtoname = versionlookups[vaultroommanager.version]
+                    if not idtoname then
+                        print("Component vaultroommanager found with a bad version and will not be ported. Version:", vaultroommanager.version)
+                        return
+                    end
+
+                    local vaultroomdata = {} -- Cache the data into a table to apply for each vaultmarker_vault_center entity.
+                    if vaultroommanager.vaultroomdata then
+                        for roomindex, roomdata in pairs(vaultroommanager.vaultroomdata) do
+                            local roomname = idtoname[roomindex]
+                            print("Converting roomdata from roomindex:", roomindex, "name:", roomname)
+                            vaultroomdata[roomname] = roomdata
+                        end
+                    end
+                    if savedata.ents then
+                        if savedata.ents.vaultmarker_lobby_center then
+                            for _, entsavedata in ipairs(savedata.ents.vaultmarker_lobby_center) do
+                                local data = entsavedata.data
+                                if not data then
+                                    data = {}
+                                    entsavedata.data = data
+                                end
+                                data.virtualroomset = {
+                                    version = 1,
+                                }
+                            end
+                        end
+                        if savedata.ents.vaultmarker_vault_center then
+                            for _, entsavedata in ipairs(savedata.ents.vaultmarker_vault_center) do
+                                local data = entsavedata.data
+                                if not data then
+                                    data = {}
+                                    entsavedata.data = data
+                                end
+                                local currentroomname = entsavedata.data.vaultroom and entsavedata.data.vaultroom.room or nil
+                                local X = "x"
+                                local V = WORLD_TILES.VAULT
+                                data.virtualroomset = {
+                                    resetting = true,-- vaultroommanager.resetting, NOTES(JBK): This retrofit became not worth the time cost when teleporters were made static.
+                                    version = 1, -- Prior vaultroommanager versions are not the same as virtualroommanager versions.
+                                    currentroomname = currentroomname,
+                                    roomsavedata = shallowcopy(vaultroomdata),
+                                    customdata = {
+                                        prngseed = vaultroommanager.seed or hash(TheNet:GetSessionIdentifier()),
+                                        repairedlinks = shallowcopy(vaultroommanager.repairedlinks),
+                                    },
+                                    originalfloortiles = { -- The default vault_vault layout that would have been saved at world post init for this save file.
+                                        X, X, X, X, V, V, V, X, X, X, X,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        V, V, V, V, V, V, V, V, V, V, V,
+                                        V, V, V, V, V, V, V, V, V, V, V,
+                                        V, V, V, V, V, V, V, V, V, V, V,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        X, V, V, V, V, V, V, V, V, V, X,
+                                        X, X, X, X, V, V, V, X, X, X, X,
+                                    },
+                                }
+                            end
+                        end
+
+                        -- Inject new missing entities.
+                        local vaultmarker_lobby_to_vault = nil
+                        if savedata.ents.vaultmarker_lobby_to_vault then
+                            vaultmarker_lobby_to_vault = savedata.ents.vaultmarker_lobby_to_vault[#savedata.ents.vaultmarker_lobby_to_vault]
+                        end
+                        assert(vaultmarker_lobby_to_vault ~= nil, "We cannot upgrade this save file and the Vault will be inaccessible please report this to the bug tracker with the world save file!")
+
+                        savedata.ents.vault_teleporter = {
+                            {
+                                x = vaultmarker_lobby_to_vault.x,
+                                z = vaultmarker_lobby_to_vault.z,
+                                data = {
+                                    virtualroomteleporter = {
+                                        direction = "IN",
+                                        shuffleddirection = "IN",
+                                        roomsetname = "VAULT",
+                                    },
+                                },
+                            },
+                        }
+                        print("Placed vault_teleporter at:", savedata.ents.vault_teleporter[1].x, savedata.ents.vault_teleporter[1].z)
+                    end
+                    print("Upgraded save to support virtualroommanager.")
+                end
+            end,
+        },
+        {
+            version = 5.26, -- Adding atrium marker gate center
+            fn = function(savedata)
+                if savedata ~= nil and savedata.map ~= nil and savedata.map.prefab == "cave" then
+                    if savedata.map.persistdata == nil then
+                        savedata.map.persistdata = {}
+                    end
+
+                    -- Inject new missing entities.
+                    local atrium_gate = nil
+                    if savedata.ents.atrium_gate then
+                        atrium_gate = savedata.ents.atrium_gate[#savedata.ents.atrium_gate]
+                    end
+                    assert(atrium_gate ~= nil, "We cannot upgrade this save file and the Final Boss will be inaccessible please report this to the bug tracker with the world save file!")
+
+                    savedata.ents.atriummarker_gate_center = {
+                        {
+                            x = atrium_gate.x,
+                            z = atrium_gate.z,
+                            data = {
+                                virtualroomset = {version = 1,},
+                            },
+                        },
+                    }
+                    print("Placed atriummarker_gate_center at:", savedata.ents.atriummarker_gate_center[1].x, savedata.ents.atriummarker_gate_center[1].z)
+                end
+            end,
+        },
+        {
+            version = 5.27, -- Fixup internal dev maps for spawned layouts migration.
+            fn = function(savedata)
+                if BRANCH ~= "dev" then
+                    return
+                end
+                if savedata ~= nil and savedata.map ~= nil and savedata.map.prefab == "cave" then
+                    if savedata.map.persistdata == nil then
+                        savedata.map.persistdata = {}
+                    end
+
+                    if not savedata.map.persistdata.worldstaticlayouts and savedata.ents.vaultmarker_lobby_to_vault then
+                        print("Adding missing worldstaticlayouts changes.")
+                        local worldstaticlayouts = {
+                            placedlayouts = {
+                                ["VAULT"] = true,
+                            },
+                        }
+                        savedata.map.persistdata.worldstaticlayouts = worldstaticlayouts
+                    end
+                end
+            end,
+        },
     },
 }
 

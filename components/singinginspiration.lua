@@ -103,13 +103,16 @@ function SingingInspiration:OnAttacked(data)
     self.is_draining = false
     self.last_attack_time = GetTime()
 
-    if data.attacker and data.damageresolved then
+	if data.damageresolved and not IsEquipmentOnAttackedOrBlocked(self.inst, self.inst, data) then
         local delta = (data.damageresolved * TUNING.INSPIRATION_GAIN_RATE) * (1 - self:GetPercent())
         self:DoDelta(delta)
     end
 end
 
 function SingingInspiration:OnHitOther(data)
+	if not (data and data.from_doattack) then
+		return
+	end
     local target = data.target
     if target ~= nil and target:IsValid() and target.components.health and (self.validvictimfn == nil or self.validvictimfn(target)) then
         self.is_draining = false

@@ -97,6 +97,7 @@ local function fn()
     inst.AnimState:SetBuild("treedrake_build")
     inst.AnimState:PlayAnimation("enter")
 
+    inst:AddTag("plantcreature")
     inst:AddTag("beaverchewable")
     inst:AddTag("birchnutdrake")
     inst:AddTag("monster")

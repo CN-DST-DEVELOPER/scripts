@@ -348,7 +348,7 @@ end
 
 ----------- alterguardianhat_projectile -----------
 local HATGUARD_COMBAT_MUSHAVE_TAGS = { "_combat", "_health" }
-local HATGUARD_COMBAT_CANTHAVE_TAGS = { "INLIMBO", "structure", "wall", "companion" }
+local HATGUARD_COMBAT_CANTHAVE_TAGS = { "INLIMBO", "structure", "wall", "balloon", "smashable", "deck_of_cards", "companion" }
 
 local function hatguard_find_attack_victim(inst)
     local hitrange = 0.75

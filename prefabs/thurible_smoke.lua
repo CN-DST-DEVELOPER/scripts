@@ -196,6 +196,7 @@ local function fn()
     inst.entity:AddNetwork()
 
     inst:AddTag("FX")
+    inst:AddTag("staysthroughvirtualrooms")
 
     InitParticles(inst)
 

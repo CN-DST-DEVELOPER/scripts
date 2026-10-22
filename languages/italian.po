@@ -435756,3 +435756,48 @@ msgctxt "STRINGS.YOTB_TOO_LATE_PRIZE"
 msgid "Sorry, can't wait any longer. Bye now."
 msgstr "Mi dispiace, non posso attendere oltre. Ciao."
 
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE"
+msgid "Don't Starve Together Crash Reporter"
+msgstr "Segnalatore di arresti anomali di Don't Starve Together"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE"
+msgid "It appears Don't Starve Together has crashed.\nPlease visit our support page for fixes to common problems: <a>https://support.klei.com</a>"
+msgstr "Sembra che Don't Starve Together abbia subito un arresto anomalo.\nVisita la pagina dell'assistenza per scoprire come risolvere i problemi più comuni: <a>https://support.klei.com</a>"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND"
+msgid "Crash report failed to send"
+msgstr "Invio della segnalazione di arresto anomalo non riuscita"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND"
+msgid "Send"
+msgstr "Invia"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR"
+msgid "Error"
+msgstr "Errore"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL"
+msgid "Cancel"
+msgstr "Annulla"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS"
+msgid "Success"
+msgstr "Operazione completata"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS"
+msgid "Crash report sent. Thank you!"
+msgstr "Segnalazione di arresto anomalo inviata. Grazie!"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER"
+msgid "Report includes platform information for diagnostic purposes."
+msgstr "A fini diagnostici, la segnalazione include le informazioni della piattaforma."
+

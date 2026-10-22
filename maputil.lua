@@ -428,7 +428,26 @@ end
 local function TileFilter_Impassable(tileid)
     return TileGroupManager:IsImpassableTile(tileid)
 end
-local function ScanForStaticLayoutPosition_Spiral(tx, ty, size, displacement, filterfn)
+
+local function CreateVRSPositionFilter(roomsetname)
+    local boundingbox = VIRTUALROOM_BOUNDINGBOXES[roomsetname]
+    if not boundingbox then
+        assert(false, string.format("CreateVRSPositionFilter: Bad roomsetname %s has no bounding box!", roomsetname))
+    end
+
+    local positionfilterfn = function(tx, ty)
+        local virtualroommanager = TheWorld.components.virtualroommanager
+        if not virtualroommanager then
+            return false -- Never collides if there is no manager.
+        end
+
+        return virtualroommanager:WillBoundingBoxCollideAt(boundingbox, tx, ty)
+    end
+
+    return positionfilterfn
+end
+
+local function ScanForStaticLayoutPosition_Spiral(tx, ty, size, displacement, filterfn, positionfilterfn)
     local map = TheWorld.Map
     local map_width, map_height = map:GetSize()
     map_width = map_width - size
@@ -443,7 +462,9 @@ local function ScanForStaticLayoutPosition_Spiral(tx, ty, size, displacement, fi
             for i = 1, step do
                 if tx > 0 and tx < map_width and ty > 0 and ty < map_height then
                     if map:IsAreaTilesFiltered(tx, ty, size, size, filterfn) then
-                        return tx, ty
+                        if (positionfilterfn == nil) or (not positionfilterfn(tx, ty)) then
+                            return tx, ty
+                        end
                     end
                 end
                 tries = tries - 1
@@ -479,7 +500,7 @@ local function SpawnLayout_AddFn(prefab, points_x, points_y, current_pos_idx, en
         ent.components.scenariorunner:Run()
     end
 end
-local function TryToPlaceStaticLayoutNear(layout, tx, ty, scanmethodfn, scanfilterfn)
+local function TryToPlaceStaticLayoutNear(layout, tx, ty, scanmethodfn, scanfilterfn, positionfilterfn)
     local obj_layout = require("map/object_layout")
     local map = TheWorld.Map
     local topology = TheWorld.topology
@@ -487,7 +508,7 @@ local function TryToPlaceStaticLayoutNear(layout, tx, ty, scanmethodfn, scanfilt
         local offset = math.floor(padding / 2)
         local size = #layout.ground + padding
         for displacement = math.floor(size / 2), 1, -1 do
-            local tx2, ty2 = scanmethodfn(tx, ty, size, displacement, scanfilterfn)
+            local tx2, ty2 = scanmethodfn(tx, ty, size, displacement, scanfilterfn, positionfilterfn)
             if tx2 then
                 local map_width, map_height = map:GetSize()
                 local add_fn = {
@@ -521,6 +542,9 @@ StaticLayoutPlacer = {
 
     -- scanfilterfn premade functions
     TileFilter_Impassable = TileFilter_Impassable,
+
+    -- positionfilterfn premade functions
+    CreateVRSPositionFilter = CreateVRSPositionFilter,
 
     -- The placer
     TryToPlaceStaticLayoutNear = TryToPlaceStaticLayoutNear,

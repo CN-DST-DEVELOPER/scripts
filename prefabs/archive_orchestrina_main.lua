@@ -426,7 +426,7 @@ local function mainfn()
     teleporter.overrideteleportarrivestate = "abyss_drop"
     teleporter.offset = 3
     teleporter:SetEnabled(false)
-    TheWorld:PushEvent("ms_register_vault_key_exit_target", inst)
+    TheWorld:PushEvent("ms_register_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.MARKER})
 
     return inst
 end

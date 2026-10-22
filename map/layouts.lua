@@ -1381,6 +1381,13 @@ local ExampleLayout =
 		}
 	}),
 
+--------------------------------------------------------------------------------
+-- Bat Boss Cave
+--------------------------------------------------------------------------------
+	["bat_boss_cave1"] = StaticLayout.Get("map/static_layouts/batbosscave1"),
+	["bat_boss_cave2"] = StaticLayout.Get("map/static_layouts/batbosscave2"),
+	["bat_boss_cave3"] = StaticLayout.Get("map/static_layouts/batbosscave3"),
+
 --------------------------------------------------------------------------------	
 
 }

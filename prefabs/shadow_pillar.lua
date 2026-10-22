@@ -191,6 +191,7 @@ local function Pillar_OnSetTarget(inst, target)
 		end
 	end
 	inst:ListenForEvent("dispell_shadow_pillars", inst._ondispell, target)
+	inst:ListenForEvent("ms_escape_rooted", inst._ondispell, target)
 	inst:ListenForEvent("death", inst._ontargetdeath, target)
 	inst:ListenForEvent("onremove", inst._ontargetremoved, target)
 	inst:ListenForEvent("remove_shadow_pillars", inst._ontargetremoved, target)
@@ -202,6 +203,7 @@ local function Pillar_SetTarget(inst, target, hasplatform)
 	if oldtarget ~= nil then
 		if inst._ondispell ~= nil then
 			inst:RemoveEventCallback("dispell_shadow_pillars", inst._ondispell, oldtarget)
+			inst:RemoveEventCallback("ms_escape_rooted", inst._ondispell, oldtarget)
 			inst._ondispell = nil
 		end
 		if inst._ontargetdeath ~= nil then
@@ -489,10 +491,11 @@ local function Target_OnSetTarget(inst, target)
 	inst:ListenForEvent("enterlimbo", onremovetarget, target)
 	inst:ListenForEvent("teleported", onremovetarget, target)
 	inst:ListenForEvent("dispell_shadow_pillars", onremovetarget, target)
+	inst:ListenForEvent("ms_escape_rooted", onremovetarget, target)
 
 	if target.sg ~= nil then
 		inst:ListenForEvent("newstate", function(target)
-			if target.sg ~= nil and target.sg:HasStateTag("flight") then
+			if target.sg and target.sg:HasAnyStateTag("flight", "invisible") then
 				inst:Remove()
 			end
 		end, target)

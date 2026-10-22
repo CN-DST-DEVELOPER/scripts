@@ -53,6 +53,9 @@ local function DoTargetDebris(inst, x, z, player, spread, remaining)
 end
 
 local function DoTargetWarning(targetinfo)
+    if not TheWorld.Map:CanPointHaveQuaker(targetinfo.pos.x, targetinfo.pos.y, targetinfo.pos.z) then
+        return
+    end
     ShakeAllCameras(CAMERASHAKE.SIDE, 1.5, .04, .05, targetinfo.pos, 6)
     DoTargetDebris(inst, targetinfo.pos.x, targetinfo.pos.z, targetinfo.player, .2, math.random(3, 4))
     if targetinfo.player ~= nil and not targetinfo.warned then

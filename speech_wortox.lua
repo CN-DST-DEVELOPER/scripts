@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "I speak in tongues, but not that one.",
             QUEENBUSY = "Her majesty's schedule must be bananas, hyuyu!",
             CARNIVALGAME_GOLFGAME_NOTREADY = "Can't compete until the course is complete!",
+            KINGSTAFF_COOLDOWN = "Oh shucks! It's stucks!", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1273,6 +1274,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "My resistance to fire has just expired.",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hello, fellow who glows and follows!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "What manner of imp was that??",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "OWIE-HEE-HEE!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "Such pep in my steps!",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "My enlightenment causes much excitement!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Let's have some fun.",
@@ -1722,7 +1734,12 @@ return{
 		CAVE_BANANA = "One of the least offensive mortal food flavors.",
 		CAVE_BANANA_COOKED = "It's cooked now.",
 		CAVE_BANANA_TREE = "What do I see? An underground tree!",
-		ROCKY = "Can a rock possess a soul?",
+        ROCKY =
+        {
+            GENERIC = "Can a rock possess a soul?",
+            BOULDER = "What a shock! It's a rock!", -- in boulder state, it looks like a normal boulder
+            ACID = "It's slighter but covered in nitre!", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1739,7 +1756,11 @@ return{
 
         HOUNDSTOOTH = "You cannot compete with my fangs, no, no.",
         ARMORSNURTLESHELL = "Little bits of snurtle, yes.",
-        BAT = "I'm quite batty myself! Hyuyu!",
+        BAT =
+        {
+            GENERIC = "I'm quite batty myself! Hyuyu!",
+            ACID = "It's gone insane in the rain!", -- in acid form
+        },
         BATBAT = "Extra batty!",
         BATWING = "Look at that! The wing of a bat.",
         BATWING_COOKED = "Perhaps I'll find a hungry mortal to give it to.",
@@ -2211,6 +2232,11 @@ return{
         CHESSPIECE_WAGBOSS_LUNAR = "What error caused such a terror?",
         CHESSPIECE_YOTH = "This little knight put up quite the fight.",
         CHESSPIECE_VAULT_PILLAR_GUARD = "It was tall, now small.",
+        CHESSPIECE_BATBOSS_SHADOW = "The bat that was an unwanted hat.",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "The nastiest claw I ever did saw!",
+        CHESSPIECE_WORMBOSS_SHADOW = "The sight of that worm still makes me squirm.",
+        CHESSPIECE_CHARLIE_BOSS = "The Shadow Queen has been!",
+        CHESSPIECE_SHROUDEN = "Nice try, evil eye.",
 
         CHESSJUNK1 = "It looks quite broke, and that's no joke!",
         CHESSJUNK2 = "It looks quite broke, and that's no joke!",
@@ -3529,6 +3555,7 @@ return{
 			CHARGING = "Oh, we're going to have some fun!",
 			DESTABILIZING = "Hyuyu, it's getting weird!",
 			COOLDOWN = "Playtime's over.",
+            RITUAL_SUMMONING = "I spy a giant eye with my little eye! Hyuyu!", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "An imp could do mischievous things with this.",
 		LIFEINJECTOR = "On further reflection, I don't want an injection.",
@@ -4549,6 +4576,8 @@ return{
 			LORE1 = "The Monarch is lost to the Dark!",
 			LORE2 = "Mass extinction makes no distinction!",
 			LORE3 = "Oh dears. They appears to have spears, I fears!",
+            --
+            LORE1_STALKER = "The king became a thing! Hyuyu!", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5384,7 +5413,12 @@ return{
 		SHADOWTHRALL_WINGS = "A fright, taken flight!",
 		SHADOWTHRALL_MOUTH = "I'd rather see that smile from a mile.",
 
-        CHARLIE_NPC = "The Shadow Queen is finally seen!",
+        CHARLIE_NPC =
+        {
+            GENERIC = "The Shadow Queen is finally seen!", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Hey Shadow Queen, where ya been?", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Hey Shadow Queen, where ya been?", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "It seeks a stone of dread.",
 
         NITRE_FORMATION = "After a while it formed a pile.",
@@ -6291,6 +6325,68 @@ return{
 
         CARNIVALGAME_GOLFPROP_FAN = "The ball goes where it blows.", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Nastiest claw I ever saw!",
+            BOULDER = "Don't mock! That's no rock!", -- in boulder form
+            ACID = "It must've just formed that crust!",
+        },
+		ROCKY_BOSS_SHADOW = "Oh no, it's all shadow!",
+        BAT_BOSS =
+        {
+            GENERIC = "Who gave those things wings?!",
+            ACID = "A glowing stare... beware, beware!",
+        },
+		BAT_BOSS_SHADOW = "Hark! What's that in the dark!",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Something there? I feel its stare!", -- boss bat is inside,
+            VACANT = "Nothing there in that lair.", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "I confirm that worm has the shadow germ.",
+
+        ARMOR_ROCKY = "We've robbed the lob!",
+        BAT_BOSSCORPSEHAT = "Huh. That's a bat hat?",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "I didn't flinch when came the pinch!",
+            IN_RITUAL = "This sacrifice should suffice!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "Don't mean to gloat, but I got it by the throat!",
+            IN_RITUAL = "This sacrifice should suffice!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Foul bowel!",
+            IN_RITUAL = "This sacrifice should suffice!", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "Deal is done! Time for fun! Hyuyu!",
+		SHROUDEN =
+		{
+			GENERIC = "Mr. Doom 'n' Gloom is in the room!",
+			PUDDLE = "Ooooh, I wish to squish that eye!",
+		},
+
+        CHARLIEARENA_SPIKE = "They grow from the ground all around!",
+
+        KING_CANE =
+        {
+            GENERIC = "I love a king's things!", -- has a gem slotted in
+            EMPTY = "Ahem! The gem?", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "It's not the same flame!",
+        
+        CHARLIEARENA_TELEPORTER = "Pack it all before the fall!",
+
+        MASK_CHARLIE_BOSSHAT = "A bad case of broken face! Hyuyu!",
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",
@@ -6315,6 +6411,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

@@ -143,6 +143,7 @@ end
 
 --
 local PATHING_CAPABILITIES = {allowocean = true}
+local DIET = { FOODTYPE.MEAT, FOODTYPE.HORRIBLE }
 local function fn()
     local inst = CreateEntity()
 
@@ -192,8 +193,7 @@ local function fn()
 
     --
     local eater = inst:AddComponent("eater")
-    eater:SetDiet({FOODTYPE.MEAT}, {FOODTYPE.MEAT})
-    eater:SetCanEatHorrible()
+    eater:SetDiet(DIET, DIET)
     eater:SetStrongStomach(true)
 
     --

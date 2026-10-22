@@ -1,33 +1,34 @@
 require("stategraphs/commonstates")
 local WORMBOSS_UTILS = require("prefabs/worm_boss_util")
 
-local function IsDevouring(inst, target)
-    return target ~= nil
-        and target:IsValid()
-        and target.sg ~= nil
-        and target.sg:HasStateTag("devoured")
-        and target.sg.statemem.attacker == inst
+local function TryInitStunned(inst)
+	if inst.sg.mem.stun_t0 == nil then
+		inst.sg.mem.stun_t0 = GetTime()
+	end
 end
 
-local function DoChew(inst, target, useimpactsound)
-    if not useimpactsound then
-        inst.SoundEmitter:PlaySound("dontstarve/impacts/impact_flesh_med_dull")
-    end
-    if IsDevouring(inst.worm, target) then
-        local dmg, spdmg = inst.components.combat:CalcDamage(target)
-        local noimpactsound = target.components.combat.noimpactsound
-        target.components.combat.noimpactsound = not useimpactsound
-        target.components.combat:GetAttacked(inst, dmg, nil, nil, spdmg)
-        target.components.combat.noimpactsound = noimpactsound
+local function TryClearStunned(inst)
+	if not inst.sg.statemem.stunned then
+		inst.sg.mem.stun_t0 = nil
+	end
+end
+
+local function IsShadow(inst)
+	return inst:HasTag("shadowthrall")
+end
+
+local function PlayWormSound(inst, sound)
+    if IsShadow(inst) then
+        inst.sg.mem.soundparams = inst.sg.mem.soundparams or { type = 0.95 }
+		inst.SoundEmitter:PlaySoundWithParams(sound, inst.sg.mem.soundparams)
+    else
+        inst.SoundEmitter:PlaySound(sound)
     end
 end
 
-local function ChewAll(inst)
-    if inst.worm and inst.worm.devoured then
-        for i,ent in ipairs(inst.worm.devoured)do
-            DoChew(inst, ent, true)
-        end
-    end
+local function GetStaggerTime(inst)
+    return (IsShadow(inst) and inst.worm and inst.worm.enraged) and TUNING.WORM_BOSS_SHADOW_ENRAGED_STAGGER_TIME
+        or TUNING.WORM_BOSS_STAGGER_TIME
 end
 
 local events=
@@ -53,8 +54,13 @@ local events=
     end),
 
     EventHandler("attacked", function(inst)
-        if not inst.sg:HasStateTag("busy") then
-            inst.sg:GoToState("hit")
+        if not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt") then
+            if inst.sg:HasStateTag("stunned") then
+				inst.sg.statemem.stunned = true
+				inst.sg:GoToState("stun_hit")
+            else
+                inst.sg:GoToState("hit")
+            end
         end
     end),
 
@@ -73,12 +79,12 @@ local events=
     EventHandler("taunt", function(inst)
 		inst.sg:GoToState("taunt")
     end),
+
+	CommonHandlers.OnStalkerCorrupt(),
 }
 
 local states =
 {
-
-
     State{
 
         name = "emerge_taunt",
@@ -86,7 +92,7 @@ local states =
         onenter = function(inst, playanim)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("emerge_taunt")
-            inst.SoundEmitter:PlaySound("rifts4/worm_boss/taunt")
+            PlayWormSound(inst, "rifts4/worm_boss/taunt")
         end,
 
         events=
@@ -104,8 +110,8 @@ local states =
             inst.sg.statemem.isdead = data.dead
 
             if data.loading and inst.sg.statemem.isdead then
+                inst.sg.statemem.safeexit = true
                 inst.sg:GoToState("death_loop")
-
             elseif data.ate then
                 inst.SoundEmitter:PlaySound("rifts4/worm_boss/chomp")
                 inst.AnimState:PlayAnimation("emerge_eat")
@@ -158,6 +164,7 @@ local states =
 				return not inst.sg:HasStateTag("canelectrocute")
 			end),
 			EventHandler("animqueueover", function(inst)
+                inst.sg.statemem.safeexit = true
                 if inst.sg.statemem.isdead then
                     inst.sg:GoToState("death")
 
@@ -171,6 +178,9 @@ local states =
         },
 
 		onexit = function(inst)
+            if not inst.sg.statemem.safeexit then
+                WORMBOSS_UTILS.SpitAll(inst.worm,true)
+            end
 			if inst.sg.statemem.electrocute_task then
 				inst.sg.statemem.electrocute_task:Cancel()
 			end
@@ -202,25 +212,59 @@ local states =
 
         onexit = function(inst)
             if not inst.sg.statemem.safeexit then
-               WORMBOSS_UTILS.SpitAll(inst.worm,true)
+                WORMBOSS_UTILS.SpitAll(inst.worm,true)
             end
+            if inst.sg.statemem.electrocute_task then
+				inst.sg.statemem.electrocute_task:Cancel()
+			end
         end,
 
         timeline =
         {
             TimeEvent(12*FRAMES,  function(inst)
-                local items = inst.worm.components.inventory:FindItems(function() return true end)
-                if items and #items >  0 then
-                    for i=#items, 1,-1 do
-                        local ent = items[i]
-
-                        if not ent:HasTag("irreplaceable") then
-                            inst.worm.components.inventory:RemoveItem(ent,true)
-                            ent:Remove()
+                local explodetarget = inst.chunk and (inst.chunk.dirt_start or inst.chunk.dirt_end) or nil
+                local stunned = false
+                local exploded = false
+                WORMBOSS_UTILS.EnableWeakToExplosive(inst.worm, true)
+                -- explosion first, so we can spit out all items if stunned
+                inst.worm.components.inventory:ForEachItem(function(item)
+                    if item.components.explosive and item.components.burnable and item.components.burnable:IsBurning() then
+                        item.components.explosive:OnBurnt(explodetarget)
+                        exploded = true
+                        stunned = true
+                    elseif item.ExplodeOnChew then -- special case for brightshade bomb, because it doesn't have explosive component always
+                        item:ExplodeOnChew(explodetarget)
+                        exploded = true
+                        stunned = true
+                    elseif not IsShadow(inst) and
+                        (item.prefab == "mandrake" -- special case of substitute stun state for sleep
+                        or item.prefab == "cookedmandrake"
+                        or item.prefab == "shroombait") then
+                        if item.components.stackable then
+                            item.components.stackable:Get():Remove()
+                        else
+                            item:Remove()
                         end
+                        stunned = true
                     end
+                end)
+                WORMBOSS_UTILS.EnableWeakToExplosive(inst.worm, false)
+
+                if exploded then
+                    WORMBOSS_UTILS.SpawnExplosiveFX(inst.worm)
                 end
-                WORMBOSS_UTILS.ChewAll(inst.worm)
+
+                if stunned then
+                    inst.sg:GoToState("stun_pre")
+                else
+                    inst.worm.components.inventory:ForEachItem(function(item)
+                        if not item:HasTag("irreplaceable") then
+                            inst.worm.components.inventory:RemoveItem(item, true)
+                            item:Remove()
+                        end
+                    end)
+                    WORMBOSS_UTILS.ChewAll(inst.worm)
+                end
             end),
         },
 
@@ -270,11 +314,6 @@ local states =
             end),
         },
 
-		onexit = function(inst)
-			if inst.sg.statemem.electrocute_task then
-				inst.sg.statemem.electrocute_task:Cancel()
-			end
-		end,
     },
 
     State{
@@ -306,8 +345,8 @@ local states =
         name = "swallow",
         tags = {"busy"},
         onenter = function(inst, data)
+            WORMBOSS_UTILS.SetWormDigestionSound(inst.worm)
             inst.AnimState:PlayAnimation("swallow", false)
-
             inst.SoundEmitter:PlaySound("rifts4/worm_boss/swallow_other")
         end,
 
@@ -340,7 +379,7 @@ local states =
 		tags = { "canrotate", "busy", "canelectrocute" },
         onenter = function(inst)
             inst.AnimState:PlayAnimation("taunt")
-            inst.SoundEmitter:PlaySound("rifts4/worm_boss/taunt")
+            PlayWormSound(inst, "rifts4/worm_boss/taunt")
         end,
 
         onexit = function(inst)
@@ -379,6 +418,11 @@ local states =
         {
             TimeEvent(7*FRAMES, function(inst)
                 inst.chunk.head = nil
+                if inst.chunk.dirt_start and inst.chunk.dirt_start:IsValid() then
+                    inst.chunk.dirt_start:RemoveTag("nightmarecorruptable")
+                    inst.chunk.dirt_start.CanStalkerCorrupt = nil
+                    inst.chunk.dirt_start.RedirectStalkerCorruption = nil
+                end
 
                 local advancetime = 0.3
                 inst.worm:SetState(WORMBOSS_UTILS.STATE.MOVING)
@@ -455,7 +499,7 @@ local states =
             if inst.worm and inst.worm.devoured then
                 WORMBOSS_UTILS.SpitAll(inst.worm, nil, true)
             end
-            inst.SoundEmitter:PlaySound("rifts4/worm_boss/death_pst")
+            PlayWormSound(inst, "rifts4/worm_boss/death_pre")
             inst.AnimState:PlayAnimation("death_pre")
         end,
 
@@ -471,6 +515,7 @@ local states =
         tags = {"dead", "canrotate", "busy"},
 
         onenter = function(inst, playanim)
+            PlayWormSound(inst, "rifts4/worm_boss/death")
             inst.AnimState:PlayAnimation("death_loop")
         end,
 
@@ -491,6 +536,7 @@ local states =
             inst.sg.statemem.looping = inst.AnimState:IsCurrentAnimation("death_loop")
 
             if not inst.sg.statemem.looping then
+                PlayWormSound(inst, "rifts4/worm_boss/death")
                 inst.AnimState:PlayAnimation("death_loop", false)
                 inst.AnimState:PushAnimation("death_pst", false)
             else
@@ -535,6 +581,267 @@ local states =
             EventHandler("animover", function(inst) ErodeAway(inst, 6) end),
         },
     },
+
+	State{
+		name = "stun_pre",
+		tags = { "stunned", "busy" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("stun_pre")
+			TryInitStunned(inst)
+		end,
+
+		timeline =
+		{
+			--#SFX
+			-- FrameEvent(0, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/stun_pre") end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.stunned = true
+					inst.sg:GoToState("stun_idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			TryClearStunned(inst)
+		end,
+	},
+
+	State{
+		name = "stun_idle",
+		tags = { "stunned", "busy", "caninterrupt" },
+
+		onenter = function(inst)
+			if not inst.AnimState:IsCurrentAnimation("stun_loop") then
+				inst.AnimState:PlayAnimation("stun_loop", true)
+			end
+			TryInitStunned(inst)
+			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
+		end,
+
+		timeline =
+		{
+			--#SFX
+			-- FrameEvent(0, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/stun_idle") end),
+		},
+
+		ontimeout = function(inst)
+			inst.sg.statemem.stunned = true
+			inst.sg:GoToState(
+				GetTime() - inst.sg.mem.stun_t0 < GetStaggerTime(inst) - 1 and
+				"stun_idle" or
+				"stun_pst")
+		end,
+
+		onexit = function(inst)
+			TryClearStunned(inst)
+		end,
+	},
+
+	State{
+		name = "stun_hit",
+		tags = { "stunned", "hit", "busy" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("stun_hit")
+			TryInitStunned(inst)
+		end,
+
+		timeline =
+		{
+			FrameEvent(0, function(inst)
+				-- PlayLobSound(inst, "dontstarve/creatures/rocklobster/hurt")
+				-- PlayLobFoley(inst)
+			end),
+
+			FrameEvent(6, function(inst)
+				if GetTime() - inst.sg.mem.stun_t0 < GetStaggerTime(inst) then
+					inst.sg:AddStateTag("caninterrupt")
+				end
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg.statemem.stunned = true
+					inst.sg:GoToState(
+						GetTime() - inst.sg.mem.stun_t0 < GetStaggerTime(inst) - 1 and
+						"stun_idle" or
+						"stun_pst")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			TryClearStunned(inst)
+		end,
+	},
+
+	State{
+		name = "stun_pst",
+		tags = { "stunned", "busy", "canrotate" },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("stun_pst")
+			TryInitStunned(inst)
+			if GetTime() - inst.sg.mem.stun_t0 < GetStaggerTime(inst) then
+				inst.sg:AddStateTag("caninterrupt")
+			end
+		end,
+
+		timeline =
+		{
+			--#SFX
+			-- FrameEvent(0, function(inst) PlayLobSound(inst, "dontstarve/creatures/rocklobster/stun_pst") end),
+
+			FrameEvent(5, function(inst)
+				inst.sg:RemoveStateTag("stunned")
+				inst.sg:AddStateTag("caninterrupt")
+			end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("idle")
+				end
+			end),
+		},
+
+		onexit = function(inst)
+			TryClearStunned(inst)
+		end,
+	},
+
+    -- stalker corrupted
+    -- For searching: CommonStates.AddStalkerCorruptionStates
+
+    State{
+		name = "stalker_corruption_stun",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorruptingstun", },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("stun_pre", false)
+			inst.AnimState:PushAnimation("stun_loop", true)
+            inst.worm.components.health:SetInvincible(true)
+		end,
+
+		events =
+		{
+            EventHandler("interruptcorruption", function(inst)
+                inst.AnimState:PlayAnimation("stun_pst")
+                inst.sg.statemem.exitstate = true
+            end),
+			EventHandler("startcorruption", function(inst)
+				inst.sg:GoToState("stalker_corruption_pre")
+			end),
+            EventHandler("animover", function(inst)
+                if inst.AnimState:AnimDone() and inst.sg.statemem.exitstate then
+                    inst.sg:GoToState("idle") -- assuming pushanim param (true for rocky and bat)
+                end
+            end),
+		},
+
+        onexit = function(inst)
+            inst.worm.components.health:SetInvincible(false)
+        end,
+	},
+
+    State{
+		name = "stalker_corruption_pre",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorrupting", },
+
+		onenter = function(inst)
+            inst.worm.components.health:SetInvincible(true)
+			inst.AnimState:PlayAnimation("stalker_corrupt_pre")
+            inst.AnimState:AddOverrideBuild("stalker_corrupt_fx_build")
+            inst.SoundEmitter:PlaySound("dontstarve/common/together/shadow_transform_a")
+		end,
+
+		timeline =
+		{
+		    --#SFX
+		    -- FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound("###") end),
+
+            -- 12 frames to tween colour
+            FrameEvent(38 - 12, function(inst)
+                WORMBOSS_UTILS.TransformToShadowFXPre(inst.worm)
+            end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+                    local x, y, z = inst.Transform:GetWorldPosition()
+					local rot = inst.Transform:GetRotation()
+                    local worm = inst.worm
+					local corrupted = SpawnPrefab("worm_boss_shadow")
+                    corrupted.Transform:SetPosition(x, y, z)
+					corrupted.Transform:SetRotation(rot)
+
+                    local data = {}
+                    worm:OnSave(data) -- purposely not GetPersistData/SetPersistData, components shouldnt save
+                    corrupted:OnLoad(data)
+
+                    if corrupted.head then
+                        corrupted.head.sg:GoToState("stalker_corruption_pst")
+                    end
+
+                    worm:Remove()
+				end
+			end),
+		},
+
+		onexit = function(inst)
+            inst.worm.components.health:SetInvincible(false)
+            inst.AnimState:ClearOverrideBuild("stalker_corrupt_fx_build")
+			assert(BRANCH ~= "dev", "We exited stalker_corruption_pre state somehow :(")
+		end,
+	},
+
+    State{
+		name = "stalker_corruption_pst",
+		tags = { "busy", "nointerrupt", "noattack", "temp_invincible", "stalkercorrupting", },
+
+		onenter = function(inst)
+			inst.AnimState:PlayAnimation("stalker_corrupt_pst")
+            inst.AnimState:AddOverrideBuild("stalker_corrupt_fx_build")
+            inst.SoundEmitter:PlaySound("dontstarve/common/together/shadow_transform_b")
+            WORMBOSS_UTILS.SetBlack(inst.worm)
+		end,
+
+		timeline =
+		{
+            --#SFX
+		    -- FrameEvent(0, function(inst) inst.SoundEmitter:PlaySound("###") end),
+
+            FrameEvent(10, function(inst)
+                WORMBOSS_UTILS.TransformToShadowFXPst(inst.worm)
+            end),
+		},
+
+		events =
+		{
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState("taunt")
+				end
+			end),
+		},
+
+        onexit = function(inst)
+            inst.AnimState:ClearOverrideBuild("stalker_corrupt_fx_build")
+        end
+	},
 }
 
 return StateGraph("worm_boss_head", states, events, "idle")

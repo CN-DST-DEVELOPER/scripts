@@ -877,6 +877,8 @@ local function MakeChained(inst)
 		inst:SwitchToFacingModel(0) --inst.Transform:SetNoFaced()
 		inst.SoundEmitter:PlaySound("daywalker/pillar/chain_idle", "chainloop")
 
+		inst:AddComponent("stalkerinspectable")
+
 		ChangeToObstaclePhysics(inst)
 		MakeCollidesWithElectricField(inst)
 
@@ -908,6 +910,8 @@ local function MakeUnchained(inst)
 		inst.AnimState:ClearAllOverrideSymbols()
 		inst:SwitchToFacingModel(4) --inst.Transform:SetFourFaced()
 		inst.SoundEmitter:KillSound("chainloop")
+
+		inst:RemoveComponent("stalkerinspectable")
 
 		ClearCollidesWithElectricField(inst)
 		ChangeToGiantCharacterPhysics(inst, MASS)

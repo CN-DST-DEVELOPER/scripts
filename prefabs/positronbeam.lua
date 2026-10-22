@@ -1,7 +1,12 @@
 local assets =
 {
     Asset("ANIM", "anim/moonbase_fx.zip"),
+    Asset("ANIM", "anim/moonbase_fx_king_cane.zip"),
 }
+
+local function SetStaff(inst, staffname)
+    inst.AnimState:SetBank(staffname == "king_cane" and "lunar_fx_king_cane" or "lunar_fx")
+end
 
 local function createbeam(layer, offset)
     local function KillFX(inst)
@@ -43,6 +48,7 @@ local function createbeam(layer, offset)
 
         inst.persists = false
 
+        inst.SetStaff = SetStaff
         inst.KillFX = KillFX
 
         return inst
@@ -115,6 +121,7 @@ local function createpulse(offset)
         inst.persists = false
 
         inst._finished = nil
+        inst.SetStaff = SetStaff
         inst.SetLevel = SetLevel
         inst.FinishFX = FinishFX
         inst.KillFX = inst.Remove

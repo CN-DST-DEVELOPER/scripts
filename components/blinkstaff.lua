@@ -45,6 +45,9 @@ local function OnBlinked(caster, self, dpt)
     elseif caster.sg.statemem.onstopblinking ~= nil then
         caster.sg.statemem.onstopblinking()
     end
+    if self.inst.DoGemShine then
+        self.inst:DoGemShine()
+    end
 	local pt = dpt:GetPosition()
     local casterx, castery, casterz = caster.Transform:GetWorldPosition()
 	if pt ~= nil and TheWorld.Map:IsPassableAtPoint(pt:Get()) and not TheWorld.Map:IsGroundTargetBlocked(pt) and IsTeleportingPermittedFromPointToPoint(casterx, castery, casterz, pt.x, pt.y, pt.z) then -- NOTES(JBK): Keep in sync with wortox. [BATELE]
@@ -60,9 +63,7 @@ function BlinkStaff:Blink(pt, caster)
     local casterx, castery, casterz = caster.Transform:GetWorldPosition()
     if not IsTeleportingPermittedFromPointToPoint(casterx, castery, casterz, pt.x, pt.y, pt.z) then
         return false
-    elseif (caster.sg ~= nil and caster.sg.currentstate.name ~= "quicktele") or
-        not TheWorld.Map:IsPassableAtPoint(pt:Get()) or
-        TheWorld.Map:IsGroundTargetBlocked(pt) then
+    elseif not TheWorld.Map:IsPassableAtPoint(pt:Get()) or TheWorld.Map:IsGroundTargetBlocked(pt) then
         return false
     elseif self.blinktask ~= nil then
         self.blinktask:Cancel()
@@ -90,6 +91,7 @@ function BlinkStaff:Blink(pt, caster)
     if self.onblinkfn ~= nil then
         self.onblinkfn(self.inst, pt, caster)
     end
+    self.inst:PushEvent("onblink", { pt = pt, caster = caster })
 
     return true
 end

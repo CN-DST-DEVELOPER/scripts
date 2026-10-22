@@ -69,11 +69,11 @@ local states =
         name = "stunned",
         tags = {"busy", "stunned"},
 
-        onenter = function(inst)
+        onenter = function(inst, overridetimeout)
             inst.components.locomotor:StopMoving()
 
             inst.AnimState:PlayAnimation("stunned", true)
-            inst.sg:SetTimeout(GetRandomWithVariance(3, 1))
+            inst.sg:SetTimeout(overridetimeout or GetRandomWithVariance(3, 1))
 
             inst.components.inventoryitem.canbepickedup = true
         end,
@@ -92,7 +92,7 @@ local states =
         tags = {"busy", "trapped"},
 
         onenter = function(inst)
-            inst.Physics:Stop()
+            inst.components.locomotor:StopMoving()
 
             inst.AnimState:PlayAnimation("stunned", true)
 

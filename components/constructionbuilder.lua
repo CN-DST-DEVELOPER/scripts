@@ -104,7 +104,7 @@ function ConstructionBuilder:StopConstruction()
         end
         self.constructionsite = nil
     end
-    self.inst:PushEvent("stopconstruction")
+    self.inst:PushEventImmediate("stopconstruction")
 end
 
 function ConstructionBuilder:FinishConstruction()

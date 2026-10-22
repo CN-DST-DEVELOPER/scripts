@@ -148,10 +148,14 @@ HALLUCINATION_TYPES.shadowskittish.spawnfn = function(inst, hallucination)
         local x, y, z = _player.Transform:GetWorldPosition()
         local x1 = x + 15 * math.cos(theta)
         local z1 = z - 15 * math.sin(theta)
-        local ent = SpawnPrefab(hallucination.name)
-        ent.Transform:SetPosition(x1, 0, z1)
-        StartTracking(hallucination, ent)
-        RepeatHallucination(hallucination)
+        if FindClosestQueenTorchAtXZ(x1, z1) then
+            RepeatHallucination(hallucination, 1)
+        else
+            local ent = SpawnPrefab(hallucination.name)
+            ent.Transform:SetPosition(x1, 0, z1)
+            StartTracking(hallucination, ent)
+            RepeatHallucination(hallucination)
+        end
     else
         --Too many, retry with short delay
         RepeatHallucination(hallucination, 1)

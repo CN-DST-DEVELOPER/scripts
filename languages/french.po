@@ -435756,3 +435756,48 @@ msgctxt "STRINGS.YOTB_TOO_LATE_PRIZE"
 msgid "Sorry, can't wait any longer. Bye now."
 msgstr "Pardon, mais je ne peux plus me permettre d'attendre. Au revoir."
 
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_APP_TITLE"
+msgid "Don't Starve Together Crash Reporter"
+msgstr "Rapporteur de plantage Don't Starve Together"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_DLG_TITLE"
+msgid "It appears Don't Starve Together has crashed.\nPlease visit our support page for fixes to common problems: <a>https://support.klei.com</a>"
+msgstr "Don't Starve Together semble avoir rencontré un plantage.\nRends-toi sur notre page d'assistance pour trouver des solutions aux problèmes courants : <a>https://support.klei.com</a>"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_FAILED_TO_SEND"
+msgid "Crash report failed to send"
+msgstr "Échec de l'envoi du rapport de plantage"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND"
+msgid "Send"
+msgstr "Envoyer"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_ERROR"
+msgid "Error"
+msgstr "Erreur"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_CANCEL"
+msgid "Cancel"
+msgstr "Annuler"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SUCCESS"
+msgid "Success"
+msgstr "Réussite"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_SEND_SUCCESS"
+msgid "Crash report sent. Thank you!"
+msgstr "Rapport de plantage envoyé. Merci bien !"
+
+#. STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER
+msgctxt "STRINGS.EXTERNAL.CRASHREPORTER.IDS_PRIVACY_DISCLAIMER"
+msgid "Report includes platform information for diagnostic purposes."
+msgstr "Le rapport inclut des informations sur la plateforme à des fins de diagnostic."
+

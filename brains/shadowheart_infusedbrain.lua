@@ -11,8 +11,12 @@ end)
 local UPDATE_RATE = 0.25
 function ShadowheartInfusedBrain:OnStart()
     local root = PriorityNode({
-        RunAway(self.inst, "player", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
-        StandStill(self.inst),
+        WhileNode(function() return self.inst.components.inventoryitem.is_landed end, "<landed guard>",
+            PriorityNode({
+                RunAway(self.inst, "player", AVOID_PLAYER_DIST, AVOID_PLAYER_STOP),
+                StandStill(self.inst),
+            }, UPDATE_RATE)
+        )
     }, UPDATE_RATE)
 
     self.bt = BT(self.inst, root)

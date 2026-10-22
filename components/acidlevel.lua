@@ -139,6 +139,11 @@ function AcidLevel:SetIgnoreAcidRainTicks(ignoreacidrainticks)
     end
 end
 
+function AcidLevel:PerishInventoryTick(rate)
+    -- Spoil perishables, using rate.
+    self.inst.components.inventory:ForEachWetableItem(self.DoAcidRainRotOnAllItems, rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT * TUNING.ACIDRAIN_DAMAGE_TIME)
+end
+
 local function DoAcidRainTick(inst, self)
 	if inst.components.rainimmunity ~= nil or self.ignoreacidrainticks then
 		return
@@ -178,8 +183,7 @@ local function DoAcidRainTick(inst, self)
             end
 
             if damage > 0 then
-                -- Spoil perishables, using rate.
-                inst.components.inventory:ForEachWetableItem(self.DoAcidRainRotOnAllItems, rate * TUNING.ACIDRAIN_PERISHABLE_ROT_PERCENT * TUNING.ACIDRAIN_DAMAGE_TIME)
+                self:PerishInventoryTick(rate)
             end
         end
     end

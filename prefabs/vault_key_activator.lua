@@ -215,7 +215,9 @@ end
 --------------------------------------------------------------------------
 
 local function OnKeyTakenAnimOver(inst)
-	inst.plate:OpenPlate("vault_refiner_pedestal")
+	if inst.plate then -- when spawned without a plate
+		inst.plate:OpenPlate("vault_refiner_pedestal")
+	end
 end
 
 local function pedestal_OnKeyTaken(inst)
@@ -231,7 +233,10 @@ local function pedestal_OnKeyTaken(inst)
 		inst.camerafocustask:Cancel()
 		inst.camerafocustask = nil
 	end
-	inst.plate:EnableCameraFocus(true)
+	if inst.plate then -- when spawned without a plate
+		inst.plate:EnableCameraFocus(true)
+	end
+	inst:RemoveComponent("stalkerinspectable")
 end
 
 local function pedestal_OnAppearAnimOver(inst)
@@ -247,7 +252,9 @@ end
 
 local function pedestal_DisableCameraFocus(inst)
 	inst.camerafocustask = nil
-	inst.plate:EnableCameraFocus(false)
+	if inst.plate then -- when spawned without a plate
+		inst.plate:EnableCameraFocus(false)
+	end
 end
 
 local function pedestal_OnEntityWake(inst)
@@ -303,6 +310,9 @@ local function pedestalfn()
     inst.components.pickable:SetUp("vault_key", 1000000)
     inst.components.pickable:Pause()
     inst.components.pickable.onpickedfn = pedestal_OnKeyTaken
+
+	inst:AddComponent("stalkerinspectable")
+	inst.components.stalkerinspectable:SetNameOverride("vault_key")
 
 	inst.OnKeyTaken = pedestal_OnKeyTaken
 

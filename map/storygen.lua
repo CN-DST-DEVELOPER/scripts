@@ -964,6 +964,7 @@ function Story:_AddPlayerStartNode(mainland)
 		}
 	end
 
+	start_node_data.data.tags = ArrayUnion(randomStartNode.data.tags, start_node_data.data.tags)
 	start_node_data.data.name = "START"
 	start_node_data.data.colour = {r=0,g=1,b=1,a=.80}
 

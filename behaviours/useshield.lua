@@ -15,6 +15,8 @@ UseShield = Class(BehaviourNode, function(self, inst, damageforshield, shieldtim
         self.dontshieldforfire = data.dontshieldforfire
         self.checkstategraph = data.checkstategraph
         self.shouldshieldfn = data.shouldshieldfn -- shouldshieldfn CAN optionally return a time to shield for.
+        self.shouldemergefn = data.shouldemergefn
+        self.shouldemergefromshieldendfn = data.shouldemergefromshieldendfn -- specifically for custom shield time set by shouldshieldfn
     end
 
     if hidewhenscared then
@@ -22,7 +24,11 @@ UseShield = Class(BehaviourNode, function(self, inst, damageforshield, shieldtim
         self.inst:ListenForEvent("epicscare", self.onepicscarefn)
     end
 
-    self.onattackedfn = function(inst, data) self:OnAttacked(data.attacker, data.damage) end
+	self.onattackedfn = function(inst, data)
+		if not IsEquipmentOnAttackedOrBlocked(inst, inst, data) then
+			self:OnAttacked(data.attacker, data.damage)
+		end
+	end
     self.onhostileprojectilefn = function() self:OnAttacked(nil, 0, true) end
     self.onfiredamagefn = function() self:OnAttacked() end
 	self.onelectrocutefn = function() self.inst.brain:ForceUpdate() end
@@ -46,10 +52,28 @@ function UseShield:OnStop()
 end
 
 function UseShield:TimeToEmerge()
+    local shouldemerge = nil
+    if self.shouldemergefn then
+        shouldemerge = self.shouldemergefn(self.inst)
+    end
+    if shouldemerge ~= nil then -- shouldemerge can return nil(continue with remaining checks) or false/true
+        return shouldemerge
+    end
+
     local t = GetTime()
-    return t - self.timelastattacked > self.shieldtime
-        and t >= self.scareendtime
-        and (self.shieldendtime == nil or t >= self.shieldendtime)
+    if t - self.timelastattacked <= self.shieldtime then
+        return false
+    end
+
+    if t < self.scareendtime then
+        return false
+    end
+
+    if self.shieldendtime and (t < self.shieldendtime and (self.shouldemergefromshieldendfn == nil or not self.shouldemergefromshieldendfn(self.inst))) then
+        return false
+    end
+
+    return true
 end
 
 function UseShield:ShouldShield()
@@ -88,14 +112,14 @@ function UseShield:OnAttacked(attacker, damage, projectile)
             return
         end
 
-        if damage then
-            self.damagetaken = self.damagetaken + damage
-        end
-
-        if projectile and self.hidefromprojectiles then
-            self.projectileincoming = true
-            return
-        end
+		if not self.inst.sg:HasAnyStateTag("shield", "ignoredamageforshield") then
+			if damage then
+				self.damagetaken = self.damagetaken + damage
+			end
+			if projectile and self.hidefromprojectiles then
+				self.projectileincoming = true
+			end
+		end
     end
 end
 
@@ -130,12 +154,16 @@ function UseShield:Visit()
     if self.status == RUNNING then
 		if self.inst.sg:HasStateTag("electrocute") then
 			self.status = FAILED
+			self.damagetaken = 0
+			self.projectileincoming = false
 		elseif not self:TimeToEmerge() or
                 (not self.dontshieldforfire and self.inst.components.health.takingfiredamage) then
             self.status = RUNNING
         else
             self.inst:PushEvent("exitshield")
             self.status = SUCCESS
+			self.damagetaken = 0
+			self.projectileincoming = false
         end
     end
 end

@@ -295,7 +295,7 @@ end
 local function DoLifeSteal(inst, owner, target)
     if owner.components.health ~= nil and
         owner.components.health:IsHurt() and
-        not target:HasOneOfTags(NON_LIFEFORM_TARGET_TAGS)
+        IsLifeDrainable(target)
     then
 		local mult = owner.components.aoediminishingreturns and owner.components.aoediminishingreturns.mult:Get() or 1
 		owner.components.health:DoDelta(inst._lifesteal * mult, false, "shadow_battleaxe")
@@ -311,6 +311,12 @@ local function OnAttack(inst, owner, target)
         inst:DoAttackEffects(owner, target)
     end
 
+    if inst:IsEpicCreature(target) and
+        inst.epic_kill_count < TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS[#TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS]
+    then
+        inst:TrackTarget(target)
+    end
+
     if target.components.health ~= nil and target.components.health:IsDead() then
         inst.components.hunger:DoDelta(TUNING.SHADOW_BATTLEAXE.HUNGER_GAIN_ONKILL, false)
 
@@ -321,11 +327,6 @@ local function OnAttack(inst, owner, target)
                 inst:SayRegularChatLine("creature_killed", owner)
             end
         end
-
-    elseif inst:IsEpicCreature(target) and
-        inst.epic_kill_count < TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS[#TUNING.SHADOW_BATTLEAXE.LEVEL_THRESHOLDS]
-    then
-        inst:TrackTarget(target)
     end
 
     if inst._lifesteal == nil or inst._lifesteal <= 0 then
@@ -350,6 +351,9 @@ local function TrackTarget(inst, target)
 
     inst:ListenForEvent("death", inst._ontargetdeath, target)
     inst:ListenForEvent("onremove", inst._ontargetremoved, target)
+    if target.components.health:IsDead() then
+        inst._ontargetdeath(target)
+    end
 end
 
 local function ForgetTarget(inst, target)

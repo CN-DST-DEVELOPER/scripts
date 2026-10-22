@@ -75,7 +75,7 @@ local function OnOtherCollide(inst, other)
     end
 end
 
-local NO_COLLIDE_TAGS = {"shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall"}
+local NO_COLLIDE_TAGS = { "shadow", "shadowminion", "shadowchesspiece", "stalker", "stalkerminion", "shadowthrall", "shadowboss" }
 local COLLAPSE_DELAY = 2 * FRAMES
 local function OnCollide(inst, other)
     if other ~= nil and

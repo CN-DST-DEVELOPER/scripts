@@ -153,6 +153,12 @@ local function refresh(inst)
         end
     end
 
+    if not inst:IsAsleep() then -- check for queen torch only if we're actually away (this entire function could probably only refresh when awake, but keeping legacy behaviour)
+        if FindClosestQueenTorch(inst) then
+            inst.active_queue = false
+        end
+    end
+
 	if (inst.conceal ~= inst.conceal_queued or inst.active_queue ~= inst.active) and inst.transition_task == nil then
         inst.transition_task = inst:DoTaskInTime(math.random(), dotransition)
 	end

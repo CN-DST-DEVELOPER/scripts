@@ -82,7 +82,10 @@ local events =
     end),
 
     EventHandler("vault_teleport", function(inst, data)
-        inst.sg:GoToState("vault_teleport", data)
+        local statename = data and data.state or "vault_teleport"
+        if inst.sg.currentstate.name ~= statename then
+            inst.sg:GoToState(statename, data)
+        end
     end),
 }
 
@@ -639,6 +642,55 @@ local states =
                     inst:ScreenFade(true, 1)
                 else
                     inst:ScreenFade(true, 0)
+                end
+            end
+		end,
+	},
+
+	State{
+		name = "charliearena_teleport",
+		tags = { "doing", "busy", "canrotate", "nopredict" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:Stop()
+
+            -- setting the parent is what pushes the shrouden overlay screen
+            SpawnPrefab("atrium_portal_fx").entity:SetParent(inst.entity)
+
+			if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(false)
+			end
+
+			if data then
+				inst.sg.statemem.data = data
+				if data.onplayerpending then
+					data.onplayerpending(inst)
+				end
+			end
+		end,
+
+		timeline =
+		{
+			TimeEvent(1.3, function(inst)
+				local data = inst.sg.statemem.data
+				if data and data.onplayerready then
+					data.onplayerready(inst)
+				end
+			end),
+			TimeEvent(1.5, function(inst)
+                inst.sg.statemem.not_interrupted = true
+				inst.sg:GoToState("appear")
+			end),
+		},
+
+		onexit = function(inst)
+            if inst.components.playercontroller then
+				inst.components.playercontroller:Enable(true)
+			end
+            if not inst.sg.statemem.not_interrupted then
+                local data = inst.sg.statemem.data
+                if data and data.onplayerready then
+                    data.onplayerready(inst)
                 end
             end
 		end,

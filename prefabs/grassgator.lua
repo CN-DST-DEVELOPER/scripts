@@ -162,6 +162,7 @@ local function create_base(build)
     inst:AddTag("grassgator")
     inst:AddTag("animal")
     inst:AddTag("largecreature")
+    inst:AddTag("plantcreature")
 
     --saltlicker (from saltlicker component) added to pristine state for optimization
     inst:AddTag("saltlicker")

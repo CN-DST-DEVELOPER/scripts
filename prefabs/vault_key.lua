@@ -87,11 +87,14 @@ local function fn()
         return inst
     end
 
-    -- WORLDSTATETAGS.SetTagEnabled("VAULT_KEY_FOUND", true) -- FIXME(JBK): rifts7: Vault key progress flag.
+    inst.scrapbook_adddeps = { "atrium_gate" }
+
+    WORLDSTATETAGS.SetTagEnabled("VAULT_KEY_FOUND", true)
 
     inst:AddComponent("inventoryitem")
     inst:AddComponent("inspectable")
     inst:AddComponent("tradable")
+	inst:AddComponent("stalkerinspectable")
 
     MakeHauntableLaunch(inst)
 

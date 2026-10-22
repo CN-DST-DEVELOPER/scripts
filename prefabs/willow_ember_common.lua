@@ -77,9 +77,9 @@ local function GetBurstTargets(player)
     local ents = TheSim:FindEntities(x, 0, z, TUNING.FIRE_BURST_RANGE, nil, CREATURES_CANT, CREATURES_CAN)
 	local j = 1
 	for i, v in ipairs(ents) do
-        local should_remove = v.components.combat == nil and not v:HasTag("miasma")
+        local should_remove = v.replica.combat == nil and not v:HasTag("miasma")
 
-        if v.components.combat then
+        if v.replica.combat then
 		    if not v:HasAnyTag("canlight", "nolight", "fire") then
 		    	--filter out not burnables or things already burning
 		    	should_remove = true

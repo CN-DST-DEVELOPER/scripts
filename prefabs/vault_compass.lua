@@ -9,15 +9,7 @@ local prefabs =
     "vault_compass_visual",
 }
 
-local DIRS =
-{
-	N = 1,
-	E = 2,
-	S = 3,
-	W = 4,
-}
-local INVERTED = table.invert(DIRS)
-
+local CLOSE_TO_ROPE_DIST_SQ = 2.5 * 2.5
 local KEY_ROOM_ID = "key1"
 
 local function ChangeToAnim(inst, animname)
@@ -28,44 +20,58 @@ end
 
 local function OnUpdateDirection(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local vaultroommanager = TheWorld.components.vaultroommanager
-    if vaultroommanager and TheWorld.Map:IsPointInVaultRoom(x, y, z) then
-        local vaultroomid = vaultroommanager:GetVaultRoomId()
-        local direction = vaultroomid ~= nil and vaultroommanager:GetClosestDirectionFromRoomToRoom(vaultroomid, KEY_ROOM_ID) or nil
-
-        if vaultroomid == KEY_ROOM_ID then
+    local world = TheWorld
+    local map = world.Map
+    if map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, x, y, z) then
+        local virtualroomset = world.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.VAULT)
+        local roomname = virtualroomset:GetCurrentRoomName()
+        local direction = virtualroomset:GetClosestDirectionFromRoomToRoom(roomname, KEY_ROOM_ID)
+        if roomname == KEY_ROOM_ID then
             ChangeToAnim(inst, "idle_marker_success")
         elseif direction then
-            ChangeToAnim(inst, "idle_marker")
-            local shuffleddirections = vaultroommanager.rooms[vaultroomid].shuffleddirections
-            local realdirection = shuffleddirections[direction]
-
-            for i, directionname in ipairs(shuffleddirections) do
-                if directionname == INVERTED[direction] then
-                    realdirection = directionname
-                    break
+            local marker
+            local teleporters = virtualroomset:GetVirtualRoomEntities(VIRTUALROOMCONTEXT.TELEPORTER)
+            if teleporters then
+                for _, teleporter in ipairs(teleporters) do
+                    if teleporter.components.virtualroomteleporter:GetDirection() == direction then
+                        marker = teleporter
+                        break
+                    end
                 end
             end
 
-            for teledirection, teleporter in pairs(vaultroommanager.teleporters) do
-                if teleporter.components.vault_teleporter:GetUnshuffledDirectionName() == realdirection then
-                    inst.marker_pointer:FacePoint(teleporter.Transform:GetWorldPosition())
-                    break
-                end
+            if marker then
+                ChangeToAnim(inst, "idle_marker")
+                inst.marker_pointer:FacePoint(marker.Transform:GetWorldPosition())
+            else
+                ChangeToAnim(inst, "idle_marker_fail")
             end
         end
-    elseif vaultroommanager and TheWorld.Map:IsPointInVaultLobby(x, y, z) then
-        ChangeToAnim(inst, "idle_marker")
-        local teleporter = vaultroommanager:GetLobbyToVaultTeleporter()
-        inst.marker_pointer:FacePoint(teleporter.Transform:GetWorldPosition())
+    elseif map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT, x, y, z) then
+        local virtualroomset = world.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT)
+        local markers = virtualroomset:GetVirtualRoomEntities(VIRTUALROOMCONTEXT.MARKER)
+        local marker = FindFirstPrefabInArray(markers, "vaultmarker_lobby_to_vault")
+        if marker then
+            ChangeToAnim(inst, "idle_marker")
+            inst.marker_pointer:FacePoint(marker.Transform:GetWorldPosition())
+        else
+            ChangeToAnim(inst, "idle_marker_fail")
+        end
     else
-        local exittarget = vaultroommanager and vaultroommanager:GetVaultLobbyExitTarget()
-        if exittarget then
-            if inst:GetDistanceSqToInst(exittarget) < 2.5 * 2.5 then
+        local marker
+        if world.components.virtualroommanager then
+            local virtualroomset = world.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT)
+            if virtualroomset then
+                local markers = virtualroomset:GetVirtualRoomEntities(VIRTUALROOMCONTEXT.MARKER)
+                marker = FindFirstPrefabInArray(markers, "archive_portal")
+            end
+        end
+        if marker then
+            if inst:GetDistanceSqToInst(marker) < CLOSE_TO_ROPE_DIST_SQ then
                 ChangeToAnim(inst, "idle_marker_success")
             else
                 ChangeToAnim(inst, "idle_marker")
-                inst.marker_pointer:FacePoint(exittarget.Transform:GetWorldPosition())
+                inst.marker_pointer:FacePoint(marker.Transform:GetWorldPosition())
             end
         else
             ChangeToAnim(inst, "idle_marker_fail")
@@ -116,17 +122,19 @@ end
 
 local function GetStatus(inst, viewer)
     local x, y, z = inst.Transform:GetWorldPosition()
-    local invaultroom = TheWorld.Map:IsPointInVaultRoom(x, y, z)
-    local vaultroommanager = TheWorld.components.vaultroommanager
-    if vaultroommanager and invaultroom then
-        local vaultroomid = vaultroommanager:GetVaultRoomId()
-        if vaultroomid == KEY_ROOM_ID then
+    local world = TheWorld
+    local map = world.Map
+    if map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, x, y, z) then
+        local virtualroomset = world.components.virtualroommanager:GetVirtualRoomSet(VIRTUALROOMSETS.VAULT)
+        if virtualroomset:GetCurrentRoomName() == KEY_ROOM_ID then
             return "KEYROOM"
         end
+        return nil
+    elseif map:IsPointInVirtualRoomSet(VIRTUALROOMSETS.LOBBYVAULT, x, y, z) then
+        return nil
     end
 
-    return (not invaultroom and not TheWorld.Map:IsPointInVaultLobby(x, y, z) and "NOTVAULT")
-        or nil
+    return "NOTVAULT"
 end
 
 local function fn()

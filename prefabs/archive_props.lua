@@ -147,6 +147,7 @@ local function statuefn()
 	end
 
     inst:AddComponent("inspectable")
+    inst:AddComponent("stalkerinspectable")
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(ACTIONS.MINE)
@@ -1088,6 +1089,11 @@ local function getstatusportal(inst)
     return archive and not archive:GetPowerSetting() and "POWEROFF"
 end
 
+
+local function OnRemove_portal(inst)
+    TheWorld:PushEvent("ms_unregister_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.VAULT, context = VIRTUALROOMCONTEXT.MARKER})
+end
+
 local function portalfn()
     local inst = CreateEntity()
 
@@ -1127,7 +1133,10 @@ local function portalfn()
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatusportal
 
-    TheWorld:PushEvent("ms_register_vault_lobby_exit_target", inst)
+    inst:AddComponent("stalkerinspectable")
+
+    inst:ListenForEvent("onremove", OnRemove_portal)
+    TheWorld:PushEvent("ms_register_virtualroom_entity", {inst = inst, roomsetname = VIRTUALROOMSETS.LOBBYVAULT, context = VIRTUALROOMCONTEXT.MARKER, onlyoneprefab = true})
 
     return inst
 end

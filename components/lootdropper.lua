@@ -332,7 +332,7 @@ function LootDropper:FlingItem(loot, pt)
         local y_speed_variance = self.y_speed_variance or 4
         local y_offset = self.y_offset or 0
 
-        if loot.Physics ~= nil then
+        if loot.Physics ~= nil and not self.nofling then
             local angle = (self.flingtargetpos ~= nil and GetRandomWithVariance(self.inst:GetAngleToPoint(self.flingtargetpos), self.flingtargetvariance or 0) * DEGREES)
                 or math.random() * TWOPI
             local speed = min_speed + math.random() * (max_speed - min_speed)
@@ -349,21 +349,31 @@ function LootDropper:FlingItem(loot, pt)
                 if self.inst ~= nil and self.inst.Physics ~= nil then
                     local radius = loot:GetPhysicsRadius(1) + self.inst:GetPhysicsRadius(1)
                     if not self.spawn_loot_inside_prefab then
-						TryTeleportToLaunchPos(loot,
-                            pt.x + cosangle * radius,
-                            pt.y + y_offset,
-                            pt.z - sinangle * radius
-                        )
+						if not TryTeleportToLaunchPos(loot,
+									pt.x + cosangle * radius,
+									pt.y + y_offset,
+									pt.z - sinangle * radius) and
+							y_offset > 0
+						then
+							loot.Physics:Teleport(pt.x, pt.y + y_offset, pt.z)
+						end
                     else
                         radius = radius * math.random()
-						TryTeleportToLaunchPos(loot,
-                            pt.x + cosangle * radius,
-                            pt.y + y_offset + 0.5,
-                            pt.z - sinangle * radius
-                        )
+						if not TryTeleportToLaunchPos(loot,
+									pt.x + cosangle * radius,
+									pt.y + y_offset + 0.5,
+									pt.z - sinangle * radius) and
+							y_offset + 0.5 > 0
+						then
+							loot.Physics:Teleport(pt.x, pt.y + y_offset + 0.5, pt.z)
+						end
                     end
                 end
 				loot.Physics:SetVel(speed * cosangle, GetRandomWithVariance(y_speed, y_speed_variance), speed * -sinangle)
+				--should already be set since loot was just spawned
+				--[[if loot.components.inventoryitem then
+					loot.components.inventoryitem:SetLanded(false, true)
+				end]]
             end
         end
     end

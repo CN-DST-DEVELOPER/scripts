@@ -567,7 +567,7 @@ local function SaveCorpseData(inst, corpse)
     end
 end
 
-local DIET = { FOODTYPE.MEAT }
+local DIET = { FOODTYPE.MEAT, FOODTYPE.HORRIBLE }
 local BASE_PATHCAPS = { ignorecreep = true }
 local function create_common(bank, build, tag, common_init, extra_data)
     local inst = CreateEntity()
@@ -592,6 +592,7 @@ local function create_common(bank, build, tag, common_init, extra_data)
     inst:AddTag("spider")
     inst:AddTag("drop_inventory_onpickup")
     inst:AddTag("drop_inventory_onmurder")
+    inst:AddTag("canwearhat")
 
     --eatsrawmeat (from eater:SetCanEatRawMeat component) added to pristine state for optimization
     inst:AddTag("eatsrawmeat")
@@ -679,7 +680,6 @@ local function create_common(bank, build, tag, common_init, extra_data)
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet(DIET, DIET)
-    inst.components.eater:SetCanEatHorrible()
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
     inst.components.eater:SetCanEatRawMeat(true)
 

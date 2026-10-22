@@ -3,7 +3,7 @@ require("stategraphs/commonstates")
 local DESTROYSTUFF_IGNORE_TAGS = { "INLIMBO", "mushroomsprout", "NET_workable" }
 local BOUNCESTUFF_MUST_TAGS = { "_inventoryitem" }
 local BOUNCESTUFF_CANT_TAGS = { "locomotor", "INLIMBO" }
-SPORECLOUD_TAGS = { "sporecloud" }
+local SPORECLOUD_TAGS = { "sporecloud" }
 
 local function DestroyStuff(inst)
     local x, y, z = inst.Transform:GetWorldPosition()

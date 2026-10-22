@@ -326,6 +326,21 @@ return {
           properties = {
             ["data.random"] = ""
           }
+        },
+        {
+          name = "",
+          type = "vault_teleporter",
+          shape = "rectangle",
+          x = 288,
+          y = 96,
+          width = 0,
+          height = 0,
+          visible = true,
+          properties = {
+            ["data.virtualroomteleporter.direction"] = "IN",
+            ["data.virtualroomteleporter.roomsetname"] = "VAULT",
+            ["data.virtualroomteleporter.shuffleddirection"] = "IN"
+          }
         }
       }
     }

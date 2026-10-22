@@ -369,13 +369,18 @@ end
 local function NoHoles(pt)
     return not TheWorld.Map:IsPointNearHole(pt)
 end
+local function Filter_TeleportingPermitted(inst, nightlight)
+    local fx, fy, fz = inst.Transform:GetWorldPosition()
+    local tx, ty, tz = nightlight.Transform:GetWorldPosition()
+    return IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
+end
 local NO_CHARLIE_TAGS = {"lunacyarea"}
 function FindCharlieRezSpotFor(inst)
     local x, y, z
     local nightlightmanager = TheWorld.components.nightlightmanager
     if nightlightmanager ~= nil then
         local nightlights = nightlightmanager:GetNightLightsWithFilter(nightlightmanager.Filter_OnlyOutTags, NO_CHARLIE_TAGS)
-        local nightlight = nightlightmanager:FindClosestNightLightFromListToInst(nightlights, inst)
+        local nightlight = nightlightmanager:FindClosestNightLightFromListToInst(nightlights, inst, Filter_TeleportingPermitted)
         if nightlight ~= nil then
             x, y, z = nightlight.Transform:GetWorldPosition()
         end
@@ -702,8 +707,10 @@ end
 function GetMinimapAtlas_Internal(imagename)
     local images1 = "minimap/minimap_data1.xml"
     local images2 = "minimap/minimap_data2.xml"
+    local images3 = "minimap/minimap_data3.xml"
     return TheSim:AtlasContains(images1, imagename) and images1
             or TheSim:AtlasContains(images2, imagename) and images2
+            or TheSim:AtlasContains(images3, imagename) and images3
             or nil
 end
 
@@ -894,15 +901,27 @@ function FindClosestMapIconInRangeSq(name, x, y, z, rangesq, restricted_doer)
 		for ent in pairs(ents_bin) do
 			local isrestricted
 			if restricted_doer then
+                local alwaysoutsidevrs
 				if ent.MiniMapEntity then
 					--old style global icons use MiniMapEntity:SetRestriction(...)
 					if not ent.MiniMapEntity:EntityHasRestriction(restricted_doer.GUID) then
 						isrestricted = true
+                    else
+                        alwaysoutsidevrs = ent.MiniMapEntity:GetAlwaysOutsideVRS()
 					end
-				elseif ismastersim and ent.owner ~= restricted_doer then
-					--see global tracking icons (host needs to validate this way, clients don't because the icon should be classified.)
-					isrestricted = true
-				end
+				else
+                    if ismastersim and ent.owner ~= restricted_doer then
+                        --see global tracking icons (host needs to validate this way, clients don't because the icon should be classified.)
+                        isrestricted = true
+                    else
+                        alwaysoutsidevrs = ent.icondata and ent.icondata.alwaysoutsidevrs
+                    end
+                end
+                if not isrestricted then
+                    local fx, fy, fz = restricted_doer.Transform:GetWorldPosition()
+                    local tx, ty, tz = ent.Transform:GetWorldPosition()
+                    isrestricted = not IsVisibleRespectingVRSFromPointToPoint(alwaysoutsidevrs, fx, fy, fz, tx, ty, tz)
+                end
 			end
 			if not isrestricted then
 				local x1, _, z1 = ent.Transform:GetWorldPosition()

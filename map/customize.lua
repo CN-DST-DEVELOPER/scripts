@@ -495,6 +495,9 @@ local WORLDSETTINGS_GROUP = {
 			["spider_warriors"] = {value = "default", desc = yesno_descriptions, image = "spider_warriors.tex", world={"forest", "cave"}},
 			["bats_setting"] = {value = "default", image = "bats.tex", world={"forest", "cave"}},
 
+			["bat_boss"] = {value = "default", image = "bat_boss.tex", world={"cave"}},
+			["rocky_boss"] = {value = "default", image = "rocky_boss.tex", world={"cave"}},
+
 			["nightmarecreatures"] = {value = "default", image = "nightmarecreatures.tex", world={"cave"}},
 			["spider_hider"] = {value = "default", image = "spider_hider.tex", world={"cave"}},
 			["spider_spitter"] = {value = "default", image = "spider_spitter.tex", world={"cave"}},

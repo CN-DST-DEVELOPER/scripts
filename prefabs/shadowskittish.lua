@@ -12,6 +12,12 @@ local function Disappear(inst)
     end
 end
 
+local function OnUpdate(inst)
+    if FindClosestQueenTorch(inst) then
+        Disappear(inst)
+    end
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -38,6 +44,9 @@ local function fn()
         -- this is purely view related
         inst:AddComponent("transparentonsanity")
         inst.components.transparentonsanity:ForceUpdate()
+
+        inst:AddComponent("updatelooper")
+        inst.components.updatelooper:AddOnUpdateFn(OnUpdate)
     end
 
     inst.deathtask = inst:DoTaskInTime(5 + 10 * math.random(), Disappear)

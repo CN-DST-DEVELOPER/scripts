@@ -91,6 +91,12 @@ function OceanShadowCreatureBrain:OnStart()
         WhileNode(function() return not self.inst.sg:HasStateTag("teleporting") end, "TeleportBlock",
             PriorityNode({
             BrainCommon.PanicTriggerShadowCreature(self.inst),
+
+			ParallelNode{
+				BrainCommon.RunAwayFromQueenTorch(self.inst),
+				ActionNode(function() self.inst._detach_from_boat_fn(self.inst) end),
+			},
+
             IfNode(function() return targetonland(self.inst) end, "target on land",
                 DoAction(self.inst, teleport)),
 

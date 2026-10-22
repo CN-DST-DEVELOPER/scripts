@@ -87,10 +87,19 @@ AddRoom("ToadstoolArenaCave", {
         countstaticlayouts = {
             ["ToadstoolArena"] = 1,
         },
-        distributepercent = 0,
+        distributepercent = .1,
         distributeprefabs =
         {
-
+            flower_cave = 0.1,
+            flower_cave_double = 0.05,
+            flower_cave_triple = 0.05,
+            stalagmite_tall=0.4,
+            stalagmite_tall_med=0.4,
+            stalagmite_tall_low=0.4,
+            pillar_cave_rock = 0.01,
+            fissure = 0.05,
+            pond_cave = 0.15,
+            batcave = 0.01,
         },
     }
 })

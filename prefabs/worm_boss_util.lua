@@ -37,9 +37,31 @@ local CHUNK_TEMPLATE = {
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 local WORM_LENGTH = 3
-local DELAY_TO_MOVE_UNDERGROUND = 0.4
+local WORM_SHADOW_LENGTH = 4
+
 local SHAKE_DIST = 40
 local THORN_EASE_THRESHOLD = 0.5
+
+local DELAY_TO_MOVE_UNDERGROUND = 0.4
+local DELAY_TO_MOVE_UNDERGROUND_SHADOW = 0.2
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+local function IsShadow(inst)
+    return inst:HasTag("shadowthrall")
+end
+
+local function GetWormLength(inst)
+    return IsShadow(inst) and WORM_SHADOW_LENGTH or WORM_LENGTH
+end
+
+local function IsShadowEnraged(inst)
+    return IsShadow(inst) and inst.enraged
+end
+
+local function GetDelayToMoveUnderground(inst)
+    return IsShadowEnraged(inst) and DELAY_TO_MOVE_UNDERGROUND_SHADOW or DELAY_TO_MOVE_UNDERGROUND
+end
 
 ----------------------------------------------------------------------------------------------------------------------------------------
 
@@ -57,7 +79,7 @@ local function Knockback(source, target)
 
     local strengthmult = (target.components.inventory ~= nil and target.components.inventory:ArmorHasTag("heavyarmor") or target:HasTag("heavybody")) and heavymult or mult
 
-    target:PushEvent("knockback", { knocker = source, radius = 2, strengthmult = strengthmult, forcelanded = false })
+    target:PushEvent("knockback", { knocker = source, radius = 2, strengthmult = strengthmult, forcelanded = true })
 end
 
 local function ToggleOffPhysics(inst)
@@ -77,8 +99,7 @@ end
 ----------------------------------------------------------------------------------------------------------------------------------------
 
 local function SpawnDirt(inst, chunk, pt, start, instant)
-    local dirt = SpawnPrefab("worm_boss_dirt")
-
+    local dirt = SpawnPrefab(inst.dirtprefab or "worm_boss_dirt")
     dirt.Transform:SetPosition(pt.x, 0, pt.z)
 
     dirt.chunk = chunk
@@ -89,6 +110,10 @@ local function SpawnDirt(inst, chunk, pt, start, instant)
         (start   and #inst.chunks == 1 and "dirt_emerge_loop_pre") or
         (start   and "dirt_pre_slow") or
         "dirt_emerge"
+
+    if state == "dirt_pre_slow" and IsShadowEnraged(inst) then
+        state = "dirt_shadow_pre_slow"
+    end
 
     dirt:dirt_playanimation(state)
 
@@ -103,16 +128,21 @@ local function SpawnDirt(inst, chunk, pt, start, instant)
     else
         chunk.dirt_end = dirt
 
-        dirt.components.groundpounder:GroundPound()
-        ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .03, 1, inst, SHAKE_DIST)
+        -- treating instant param like it means loading
+        if not instant then
+            dirt.components.groundpounder:GroundPound()
+            ShakeAllCameras(CAMERASHAKE.VERTICAL, .5, .03, .7, inst, SHAKE_DIST)
+        end
 
         -- For segments created before dirt_end:
         for _, segment in ipairs(chunk.segments) do
             segment:SetHighlightOwners(chunk.dirt_end, chunk.dirt_start)
         end
 
-        dirt.components.highlightchild:SetOwner(chunk.dirt_start)
-        chunk.dirt_start.components.highlightchild:SetOwner(dirt)
+        if chunk.dirt_start then
+            dirt.components.highlightchild:SetOwner(chunk.dirt_start)
+            chunk.dirt_start.components.highlightchild:SetOwner(dirt)
+        end
     end
 end
 
@@ -135,7 +165,7 @@ local function DoChew(inst, target, useimpactsound)
         local noimpactsound = target.components.combat.noimpactsound
 
         if target:HasTag("player") then
-            target:ShakeCamera(CAMERASHAKE.VERTICAL, .2, .015, 0.5, inst, SHAKE_DIST)
+            target:ShakeCamera(CAMERASHAKE.VERTICAL, .2, .015, 0.35, inst, SHAKE_DIST)
         end
 
         target.components.combat.noimpactsound = not useimpactsound
@@ -143,7 +173,7 @@ local function DoChew(inst, target, useimpactsound)
         target.components.combat.noimpactsound = noimpactsound
 
         if target.components.sanity then
-            target.components.sanity:DoDelta(-TUNING.SANITY_SUPERTINY)
+            target.components.sanity:DoDelta(-TUNING.SANITY_SUPERTINY * (IsShadow(inst) and 2 or 1))
         end
     end
 end
@@ -160,6 +190,16 @@ local function ChewAll(inst)
     end
 end
 
+local function ClearRecentlySpatOut(inst)
+    inst.was_spat_out_by_worm = nil
+end
+
+local WORMPIECE_MUST_TAGS = { "worm_boss_piece" }
+local WORMPIECE_CANT_TAGS = { "INLIMBO" }
+local function NoDirtOrHoles(pt)
+    return not TheWorld.Map:IsPointNearHole(pt) and TheSim:CountEntities(pt.x, 0, pt.z, 3.5, WORMPIECE_MUST_TAGS, WORMPIECE_CANT_TAGS) == 0
+end
+
 local function DoSpitOut(inst, target, spitfromhead, spitfromlocatoin)
     if IsDevouring(inst, target) and target:HasOneOfTags("player", "devourable") then
         local source =
@@ -167,8 +207,16 @@ local function DoSpitOut(inst, target, spitfromhead, spitfromlocatoin)
             (spitfromhead     and inst.head) or
             inst.tail
 
-		target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = source, starthigh = true, radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 1 , rot=math.random()*360 })
+        local radius = source:GetPhysicsRadius(0) + target:GetPhysicsRadius(0) + 1
+        local _, launchangle = FindWalkableOffset(source:GetPosition(), math.random()*TWOPI, radius + 2, 16, false, true, NoDirtOrHoles, false, false)
+        if launchangle then
+            launchangle = launchangle * RADIANS
+        else
+            launchangle = math.random() * 360
+        end
 
+        target:PushEventImmediate("spitout", { spitter = source, starthigh = true, radius = radius, strengthmult = 1, rot = launchangle })
+        target.was_spat_out_by_worm = target:DoTaskInTime(2, ClearRecentlySpatOut) -- leniency used to prevent worm from just burrowing right on top of us after being spat out.
     elseif not target:HasOneOfTags("player", "irreplaceable") then
         target:Remove()
     end
@@ -180,14 +228,28 @@ local function SpitAll(inst, spitfromhead, spitfromlocatoin)
     -- Don't change groundpoint_end itself...
     pt = Vector3(pt.x, 5, pt.z)
 
+    local target = inst.components.combat.target
+    local numpoop = IsShadowEnraged(inst) and 3
+                or IsShadow(inst) and 2
+                or 3
+
     if inst.devoured ~= nil then
         for _, ent in ipairs(inst.devoured) do
             if ent.prefab ~= nil then -- NOTES(DiogoW): Checking prefab because we have fillers in this table.
                 DoSpitOut(inst, ent, spitfromhead, spitfromlocatoin)
 
             elseif not spitfromhead and inst.tail ~= nil then
-                for p=1, 3 do
-                    local poop = SpawnPrefab("poop")
+                for p=1, numpoop do
+                    local poop = SpawnPrefab(IsShadow(inst) and "fused_shadeling_bomb" or "poop")
+
+                    if poop.prefab == "fused_shadeling_bomb" then
+                        poop.Physics:SetDamping(0)
+                        poop:DoTaskInTime(1, function() poop.Physics:SetDamping(5) end)
+
+                        if target and target:IsValid() then
+                            poop:PushEvent("setexplosiontarget", target)
+                        end
+                    end
 
                     inst.tail.components.lootdropper:FlingItem(poop, pt)
                 end
@@ -226,6 +288,14 @@ local function UpdateDigestingPlayersLocations(inst, source)
     ChewAll(inst)
 end
 
+local function SetWormDigestionSound(inst)
+    for _, ent in ipairs(inst.devoured) do
+        if ent.sg and ent.sg:HasStateTag("devoured") and ent.player_classified then
+            ent.player_classified.wormdigestionsound:set(true)
+        end
+    end
+end
+
 local function Digest(inst)
     -- Otherwise, begin digestion.
     if inst.devoured == nil then
@@ -234,11 +304,7 @@ local function Digest(inst)
 
     inst:SetState(STATE.DIGESTING)
 
-    for _, ent in ipairs(inst.devoured) do
-        if ent.sg and ent.sg:HasStateTag("devoured") and ent:HasTag("player") then
-            ent._wormdigestionsound:set(true)
-        end
-    end
+    SetWormDigestionSound(inst)
 
     --
 
@@ -256,14 +322,20 @@ local function HasFood(inst)
     return inst.components.inventory:NumItems() > 0 or (inst.devoured ~= nil and #inst.devoured > 0)
 end
 
+local NPC_STALKER_MUST_TAGS
+local NPC_STALKER_CANT_TAGS
+local function IsValidNPCStalker(guy, inst)
+    return guy.cancorrupt
+end
+
 local function ShouldMove(inst)
     if inst.state == STATE.DEAD or HasFood(inst) then
         return false
     end
 
     -- Find target close to "head"?
+    local lastchunk = inst.chunks[#inst.chunks]
     if inst.components.combat.target ~= nil and inst.components.combat.target:IsValid() and not inst.components.combat.target.components.health:IsDead() then
-        local lastchunk = inst.chunks[#inst.chunks]
 
         if lastchunk.dirt_start ~= nil and lastchunk.dirt_start:IsValid() then
             local dist = lastchunk.dirt_start:GetDistanceSqToInst(inst.components.combat.target)
@@ -272,6 +344,18 @@ local function ShouldMove(inst)
                 if inst.head == nil then
                     return false
                 end
+            end
+        end
+    end
+
+    if lastchunk and not IsShadow(inst) then
+        if lastchunk.dirt_start ~= nil and lastchunk.dirt_start:IsValid() then
+            if NPC_STALKER_MUST_TAGS == nil then
+                NPC_STALKER_MUST_TAGS = { "npcstalker" }
+                NPC_STALKER_CANT_TAGS = { "NOCLICK", "INLIMBO" }
+            end
+            if FindEntity(lastchunk.dirt_start, 12, IsValidNPCStalker, NPC_STALKER_MUST_TAGS, NPC_STALKER_CANT_TAGS) ~= nil then
+                return false
             end
         end
     end
@@ -326,13 +410,14 @@ local function OnThingExitDevouredState(inst, data)
     end
 end
 
+local AOE_RANGE_PADDING = 3
 local FOOD_CANT_TAGS = { "INLIMBO", "NOCLICK", "FX", "DECOR", "largecreature", "worm_boss_piece", "noattack", "notarget", "playerghost" }
-local FOOD_ONEOF_TAGS = { "_inventoryitem", "character", "smallcreature"}
+local FOOD_ONEOF_TAGS = { "_inventoryitem", "character", "smallcreature", "devourable" }
 
 local function CollectThingsToEat(inst, source)
     local pt = source:GetPosition()
 
-    local ents = TheSim:FindEntities(pt.x, 0, pt.z, TUNING.WORM_BOSS_EAT_RANGE, nil, FOOD_CANT_TAGS, FOOD_ONEOF_TAGS)
+    local ents = TheSim:FindEntities(pt.x, 0, pt.z, TUNING.WORM_BOSS_EAT_RANGE + AOE_RANGE_PADDING, nil, FOOD_CANT_TAGS, FOOD_ONEOF_TAGS)
 
     if #ents <= 0 then
         return false
@@ -341,67 +426,77 @@ local function CollectThingsToEat(inst, source)
     local ate = false
     local calories = 0
     for _, ent in ipairs(ents) do
-        if ent.components.health == nil or not ent.components.health:IsDead() then
-            if inst.components.combat.target == ent then
-                inst.components.combat:DropTarget()
-            end
-
-            if ent.components.inventoryitem ~= nil then
-                if not inst.components.inventory:IsFull() then
-                    if ent.components.edible then
-                        calories = calories + ent.components.edible.hungervalue
-                    end
-
-                    inst.components.inventory:GiveItem(ent)
-
-                    ate = true
-
-                elseif inst.head ~= nil then
-                    inst.head.components.lootdropper:FlingItem(ent)
+        if ent:IsValid() and (ent.components.health == nil or not ent.components.health:IsDead()) then
+            local physradius = ent:GetPhysicsRadius(0)
+            local eatrange = TUNING.WORM_BOSS_EAT_RANGE + physradius
+            local dist = ent:GetDistanceSqToPoint(pt)
+            if dist < eatrange * eatrange then
+                if inst.components.combat.target == ent then
+                    inst.components.combat:DropTarget()
                 end
-            else
-                local devoured = false
 
-                if ent.sg ~= nil and not ent.sg:HasStateTag("knockback") then
-                    if ent:IsValid() and ent:GetDistanceSqToPoint(pt) < TUNING.WORM_BOSS_EAT_CREATURE_RANGE * TUNING.WORM_BOSS_EAT_CREATURE_RANGE then
-                        if inst.devoured == nil then
-                            inst.devoured = {}
+                -- creatures shouldn't go through item process
+                if ent.components.inventoryitem ~= nil and not ent:HasAnyTag("character", "smallcreature", "devourable") then
+                    if not inst.components.inventory:IsFull() then
+                        if ent.components.edible then
+                            calories = calories + (ent.components.edible.hungervalue * ent.components.edible:GetStackMultiplier())
                         end
 
-                        if ent:HasOneOfTags("player", "devourable") then
-							ent:PushEventImmediate("devoured", { attacker = inst, ignoresetcamdist = true })
-
-                            local minhealth = ent.components.health ~= nil and ent.components.health.minhealth or nil
-
-                            if minhealth == 0 then
-                                ent.components.health:SetMinHealth(1)
-
-                                ent:ListenForEvent("newstate", OnThingExitDevouredState)
-                            end
-
-                            table.insert(inst.devoured, ent)
-
-                        elseif not ent:HasTag("irreplaceable") then
-                            TransferCreatureInventory(inst, ent)
-
-                            ent:Remove()
-
-                            table.insert(inst.devoured, { blankfiller = true })
+                        inst.components.inventory:GiveItem(ent)
+                        if ent.components.explosive and ent.components.burnable and ent.components.burnable:IsBurning() then
+                            ent.components.burnable:ExtendBurning() -- so that we explode it ourselves on chew
                         end
 
                         ate = true
-                        devoured = true
-                    end
-                end
 
-                if devoured == false then
-                    Knockback(source, ent)
+                    elseif inst.head ~= nil then
+                        inst.head.components.lootdropper:FlingItem(ent)
+                    end
+                else
+                    local devoured = false
+
+                    if ent.sg ~= nil and not ent.sg:HasStateTag("knockback") then
+                        local creatureeatrange = TUNING.WORM_BOSS_EAT_CREATURE_RANGE + ent:GetPhysicsRadius(0)
+                        if dist < creatureeatrange * creatureeatrange then
+                            if inst.devoured == nil then
+                                inst.devoured = {}
+                            end
+
+                            if ent:HasOneOfTags("player", "devourable") then
+			    				ent:PushEventImmediate("devoured", { attacker = inst, ignoresetcamdist = true })
+
+                                local minhealth = ent.components.health ~= nil and ent.components.health.minhealth or nil
+
+                                if minhealth == 0 then
+                                    ent.components.health:SetMinHealth(1)
+
+                                    ent:ListenForEvent("newstate", OnThingExitDevouredState)
+                                end
+
+                                table.insert(inst.devoured, ent)
+
+                            elseif not ent:HasTag("irreplaceable") then
+                                TransferCreatureInventory(inst, ent)
+
+                                ent:Remove()
+
+                                table.insert(inst.devoured, { blankfiller = true })
+                            end
+
+                            ate = true
+                            devoured = true
+                        end
+                    end
+
+                    if devoured == false then
+                        Knockback(source, ent)
+                    end
                 end
             end
         end
     end
     if calories > 0 then
-        inst.chews = math.min(math.ceil(calories/20),4)
+        inst.chews = math.min(math.ceil(calories/20), 5)
     end
     return ate
 end
@@ -409,7 +504,10 @@ end
 local function SpawnTail(inst, chunk, instant)
     local rotation = math.atan2(chunk.groundpoint_end.z - chunk.groundpoint_start.z, chunk.groundpoint_start.x - chunk.groundpoint_end.x) * RADIANS
 
-    local tail = SpawnPrefab("worm_boss_tail")
+    local tail = SpawnPrefab(inst.tailprefab or "worm_boss_tail")
+	if inst.tail_postinit then
+		inst:tail_postinit(tail)
+	end
 
     tail.Transform:SetPosition(chunk.groundpoint_end:Get())
     tail.Transform:SetRotation(rotation)
@@ -426,6 +524,14 @@ local function SpawnTail(inst, chunk, instant)
     chunk.dirt_end.AnimState:PlayAnimation("dirt_idle")
 
     return tail
+end
+
+local function CanStalkerCorrupt()
+    return true
+end
+
+local function RedirectStalkerCorruption(inst)
+    return inst.chunk and inst.chunk.head
 end
 
 local function EmergeHead(inst, chunk, instant)
@@ -451,7 +557,7 @@ local function EmergeHead(inst, chunk, instant)
             chunk.state = CHUNK_STATE.IDLE
         end
 
-        local head = SpawnPrefab("worm_boss_head")
+        local head = SpawnPrefab(inst.headprefab or "worm_boss_head")
         head.Transform:SetPosition(chunk.groundpoint_start:Get())
 
         head.worm = inst
@@ -459,6 +565,12 @@ local function EmergeHead(inst, chunk, instant)
 
         inst.head = head
         chunk.head = head
+
+        if head:HasTag("nightmarecorruptable") then -- cleared in SGworm_boss_head move state timeline
+            chunk.dirt_start:AddTag("nightmarecorruptable")
+            chunk.dirt_start.CanStalkerCorrupt = CanStalkerCorrupt
+            chunk.dirt_start.RedirectStalkerCorruption = RedirectStalkerCorruption
+        end
 
         local rotation = math.random()*360
 
@@ -499,7 +611,7 @@ local function EmergeHead(inst, chunk, instant)
         end
     end
 
-    if not instant and #inst.chunks > WORM_LENGTH then
+    if not instant and #inst.chunks > GetWormLength(inst) then
         local testchunk = inst.chunks[1]
 
         testchunk.lastrun = true
@@ -547,6 +659,13 @@ local WORM_MOVEMENT_BLOCKING_TAGS = { "worm_boss_dirt" }
 
 local function IsPointValid(pt)
     local tile = TheWorld.Map:GetTileAtPoint(pt.x, 0, pt.z)
+
+    -- Don't go to a player that was recently spat out..
+    for i, v in ipairs(FindPlayersInRange(pt.x, 0, pt.z, TUNING.WORM_BOSS_EAT_RANGE + 3, true)) do
+        if v.was_spat_out_by_worm then
+            return false
+        end
+    end
 
     -- Bridges are not valid points.
     return not GROUND_INVISIBLETILES[tile] and TheSim:CountEntities(pt.x, 0, pt.z, 4, WORM_MOVEMENT_BLOCKING_TAGS) <= 0
@@ -605,7 +724,6 @@ local function PlotNextChunk(inst, lastchunk)
 end
 
 local function FindNewEndPoint(inst, chunk)
-    local blocked = true
     local range = 6
 
     local angle = math.random()*TWOPI
@@ -637,12 +755,12 @@ local function FindNewEndPoint(inst, chunk)
     end
 end
 
-local function UpdateSegmentArt(segment)
+local function UpdateSegmentArt(segment, inst)
     segment.build =
-        (    segment.head   and "worm_boss"                ) or
-        (    segment.tail   and "worm_boss"                ) or
-        (not segment.spiked and "worm_boss_segment_2_build") or
-        "worm_boss_segment"
+        (    segment.head   and (inst.build or "worm_boss")                ) or
+        (    segment.tail   and (inst.build or "worm_boss")                ) or
+		(not segment.spiked and (inst.segment_builds and inst.segment_builds[2] or "worm_boss_segment_2_build")) or
+		(inst.segment_builds and inst.segment_builds[1] or "worm_boss_segment")
 
     segment.AnimState:SetBuild(segment.build)
 end
@@ -674,7 +792,7 @@ local function Internal_CreateChunk(inst, pt)
 end
 
 local function SetCreateChunkTask(inst, pt)
-    inst.createnewchunktask = inst:DoTaskInTime(DELAY_TO_MOVE_UNDERGROUND, Internal_CreateChunk, pt)
+    inst.createnewchunktask = inst:DoTaskInTime(GetDelayToMoveUnderground(inst), Internal_CreateChunk, pt)
     inst.createnewchunktask._target_pt = pt
 end
 
@@ -703,7 +821,7 @@ local function MoveSegmentUnderGround(inst, chunk, test_segment, percent, instan
         test_segment:DoThornDamage()
     end
 
-    UpdateSegmentArt(test_segment)
+    UpdateSegmentArt(test_segment, inst)
     UpdateSegmentAnimPosition(test_segment, .95, true)
 
     chunk.segmentstotal = chunk.segmentstotal - 1
@@ -771,6 +889,9 @@ local function AddSegment(inst, chunk, tail, instant)
     if not chunk.head_added then
         chunk.head_added = true
         segment.head = true
+        if segment.SetIsHead then
+            segment:SetIsHead(true)
+        end
     end
 
     if tail then
@@ -778,7 +899,7 @@ local function AddSegment(inst, chunk, tail, instant)
         segment.tail = true
     end
 
-    UpdateSegmentArt(segment)
+    UpdateSegmentArt(segment, inst)
     UpdateSegmentAnimPosition(segment, 0)
 
     segment:SetHighlightOwners(chunk.dirt_end, chunk.dirt_start)
@@ -832,6 +953,8 @@ local function SpawnUnderGroundHeadCorpse(inst)
 
 end
 
+local THROWN_EXPLOSIVE_TAGS = { "complexprojectile", "_inventoryitem", "activeprojectile" }
+local THROWN_EXPLOSIVE_EAT_RANGE = 2.25
 local function UpdateRegularChunk(inst, chunk, dt, instant)
     -- SET END POINT FOR ANY OF THIS TO MAKE SENSE
 
@@ -846,15 +969,30 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
     for _, segment in ipairs(chunk.segments) do
         segment.percentdist = segment.segtime/chunk.segtimeMax
         UpdateSegmentAnimPosition(segment, segment.percentdist)
+
+        -- Eat bombs thrown out while we're burrowing (bomb_lunarplant)
+        if segment.head then
+            local x, y, z = segment.Transform:GetWorldPosition()
+            for i, v in ipairs(TheSim:FindEntities(x, y+0.5, z, THROWN_EXPLOSIVE_EAT_RANGE, THROWN_EXPLOSIVE_TAGS)) do
+                if not v:IsInLimbo() and v.components.inventoryitem then
+                    if v.components.complexprojectile then
+                        v.components.complexprojectile:Cancel()
+                    end
+                    inst.components.inventory:GiveItem(v)
+                end
+            end
+        end
     end
 
-    local rate = 1/60
     local speed = 0
 
     -- IF THIS SEGMENT IS MOVING or THE LAST ONE, ACCELL (THE TAIL WILL CONVERT TO THE PREFAB IF IT SHOULD STOP)
     if IsChunkMoving(inst, chunk) or (chunk.lastrun and chunk.tail == nil) then
-        chunk.ease = math.min(chunk.ease + rate, 1) -- ACCELL
+        local rate = 1 / 60
+        chunk.ease = math.min(chunk.ease + rate, IsShadowEnraged(inst) and TUNING.WORM_BOSS_SHADOW_ENRAGED_MAX_SPEED or TUNING.WORM_BOSS_MAX_SPEED) -- ACCELL
     else
+        local rate = 2 / 60
+        rate = chunk.ease > 1 and rate * 2 or rate
         chunk.ease = math.max(chunk.ease - rate, 0) -- BRAKE
     end
 
@@ -960,7 +1098,9 @@ local function UpdateRegularChunk(inst, chunk, dt, instant)
             local SEGMENTIDLETIME = 0.2
 
             if chunk.digesting == DIGESTING_STATE.DOING then
-                SEGMENTIDLETIME = 0.14 --0.2
+                SEGMENTIDLETIME = IsShadowEnraged(inst) and (FRAMES*2)
+                    or IsShadow(inst) and (FRAMES*3)
+                    or 0.14 --0.2
             end
 
             if not chunk.idletimer then
@@ -1375,6 +1515,109 @@ local function UpdateChunk(inst, chunk, dt, instant)
     end
 end
 
+local function EnableWeakToExplosive(inst, enabled)
+    if enabled then
+        inst.components.damagetyperesist:AddResist("explosive", inst, TUNING.WORM_BOSS_EXPLOSIVE_MULT, "weaktoexplosives")
+    else
+        inst.components.damagetyperesist:RemoveResist("explosive", inst, "weaktoexplosives")
+    end
+    for i, v in ipairs(inst.chunks) do
+        if v.dirt_start and v.dirt_start:IsValid() then
+            v.dirt_start.components.explosiveresist:Enable(not enabled)
+        end
+        if v.dirt_end and v.dirt_end:IsValid() then
+            v.dirt_end.components.explosiveresist:Enable(not enabled)
+        end
+    end
+end
+
+local function SpawnExplosiveFX(inst)
+    for i, v in ipairs(inst.chunks) do
+        v.hit = 1
+        for k, seg in ipairs(v.segments) do
+            if (k % 2) == 0 or math.random() < 0.25 then
+                inst:DoTaskInTime(math.random() * 0.4, function()
+                    local x, y, z = seg.Transform:GetWorldPosition()
+                    y = math.sin(seg.percentdist * PI) * 3.5
+                    SpawnPrefab("explode_small").Transform:SetPosition(x, y, z)
+                end)
+            end
+        end
+    end
+    if inst.tail then
+        inst.tail:PushEvent("attacked")
+        SpawnPrefab("explode_small").Transform:SetPosition(inst.tail.Transform:GetWorldPosition())
+    end
+end
+
+local function TransformToShadowFXPre(inst) -- boss transforming into shadow
+    for i, v in ipairs(inst.chunks) do
+        v.hit = 1
+        for k, seg in ipairs(v.segments) do
+            seg:AddComponent("colourtweener")
+            seg.components.colourtweener:StartTween({0, 0, 0, 1}, 12 * FRAMES)
+        end
+        if v.lastsegment then
+            v.lastsegment:AddComponent("colourtweener")
+            v.lastsegment.components.colourtweener:StartTween({0, 0, 0, 1}, 12 * FRAMES)
+        end
+    end
+    if inst.head then
+        inst.head:AddComponent("colourtweener")
+        inst.head.components.colourtweener:StartTween({0, 0, 0, 1}, 12 * FRAMES)
+    end
+    if inst.tail then
+        inst.tail:AddComponent("colourtweener")
+        inst.tail.components.colourtweener:StartTween({0, 0, 0, 1}, 12 * FRAMES)
+    end
+end
+
+local function SetBlack(inst)
+    for i, v in ipairs(inst.chunks) do
+        for k, seg in ipairs(v.segments) do
+            seg.AnimState:SetMultColour(0, 0, 0, 1)
+        end
+        if v.lastsegment then
+            v.lastsegment.AnimState:SetMultColour(0, 0, 0, 1)
+        end
+    end
+    if inst.head then
+        inst.head.AnimState:SetMultColour(0, 0, 0, 1)
+    end
+    if inst.tail then
+        inst.tail.AnimState:SetMultColour(0, 0, 0, 1)
+    end
+end
+
+local function OnFinishColourTweening(inst)
+    inst:RemoveComponent("colourtweener")
+end
+
+local function TransformToShadowFXPst(inst) -- turned into shadow, tween back to normal colors
+    for i, v in ipairs(inst.chunks) do
+        for k, seg in ipairs(v.segments) do
+            seg.AnimState:SetMultColour(0, 0, 0, 1)
+            seg:AddComponent("colourtweener")
+            seg.components.colourtweener:StartTween({1, 1, 1, 1}, 5 * FRAMES, OnFinishColourTweening)
+        end
+        if v.lastsegment then
+            v.lastsegment.AnimState:SetMultColour(0, 0, 0, 1)
+            v.lastsegment:AddComponent("colourtweener")
+            v.lastsegment.components.colourtweener:StartTween({1, 1, 1, 1}, 5 * FRAMES, OnFinishColourTweening)
+        end
+    end
+    if inst.head then
+        inst.head.AnimState:SetMultColour(0, 0, 0, 1)
+        inst.head:AddComponent("colourtweener")
+        inst.head.components.colourtweener:StartTween({1, 1, 1, 1}, 5 * FRAMES, OnFinishColourTweening)
+    end
+    if inst.tail then
+        inst.tail.AnimState:SetMultColour(0, 0, 0, 1)
+        inst.tail:AddComponent("colourtweener")
+        inst.tail.components.colourtweener:StartTween({1, 1, 1, 1}, 5 * FRAMES, OnFinishColourTweening)
+    end
+end
+
 return {
     CHUNK_STATE = CHUNK_STATE,
     CHUNK_TEMPLATE = CHUNK_TEMPLATE,
@@ -1382,6 +1625,8 @@ return {
     WORM_LENGTH = WORM_LENGTH,
     MAX_SEGTIME = CHUNK_TEMPLATE.segtimeMax,
 
+    SetWormDigestionSound = SetWormDigestionSound,
+    GetWormLength = GetWormLength,
     ChewAll = ChewAll,
     CreateNewChunk = CreateNewChunk,
     Digest = Digest,
@@ -1399,4 +1644,9 @@ return {
     ToggleOffPhysics = ToggleOffPhysics,
     ToggleOnPhysics = ToggleOnPhysics,
     UpdateChunk = UpdateChunk,
+    EnableWeakToExplosive = EnableWeakToExplosive,
+    SpawnExplosiveFX = SpawnExplosiveFX,
+    TransformToShadowFXPre = TransformToShadowFXPre,
+    SetBlack = SetBlack,
+    TransformToShadowFXPst = TransformToShadowFXPst,
 }

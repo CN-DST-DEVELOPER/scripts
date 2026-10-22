@@ -101,9 +101,8 @@ local function onexplode(inst)
                         if math.random() <= TUNING.METEOR_SMASH_INVITEM_CHANCE then
                             v.components.container:DropEverything()
                         end
-                    elseif v.components.mine ~= nil and not v.components.mine.inactive then
+                    elseif DeactivateInventoryItemBeforeLaunch(v) then
                         -- Always smash things on the periphery so that we don't end up with a ring of flung loot
-                        v.components.mine:Deactivate()
                     elseif (inst.peripheral or math.random() <= TUNING.METEOR_SMASH_INVITEM_CHANCE)
                         and not v:HasTag("irreplaceable") then
                         -- Always smash things on the periphery so that we don't end up with a ring of flung loot

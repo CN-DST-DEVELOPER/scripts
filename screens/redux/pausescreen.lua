@@ -1,6 +1,7 @@
 local Screen = require "widgets/screen"
 local Menu = require "widgets/menu"
 local ImageButton = require "widgets/imagebutton"
+local Text = require "widgets/text"
 local Widget = require "widgets/widget"
 local PopupDialogScreen = require "screens/redux/popupdialog"
 local TEMPLATES = require "widgets/redux/templates"
@@ -9,6 +10,11 @@ local ScrapbookScreen = require "screens/redux/scrapbookscreen"
 local UserCommandPickerScreen = require "screens/redux/usercommandpickerscreen"
 
 local UserCommands = require "usercommands"
+
+-- NOTES(JBK): With this being for beta feedback the strings do not need localized.
+local FEEDBACK_SCREEN = {
+    PAUSEDGAME_BUTTONHINT = "Press F8 to send feedback on the beta!",
+}
 
 local PauseScreen = Class(Screen, function(self)
     Screen._ctor(self, "PauseScreen")
@@ -143,6 +149,17 @@ function PauseScreen:BuildMenu()
 
     if rebuild then
         self.last_focus = self.menu.items[self.options_button_index]
+    end
+
+    if TheSim:FeedbackEnabled() then
+        -- Feedback hint below the dialog
+        local feedback_str = FEEDBACK_SCREEN.PAUSEDGAME_BUTTONHINT
+        local feedback_y = -height/2 - 80
+
+        self.feedback_shadow = self.proot:AddChild(Text(UIFONT, 36, feedback_str, UICOLOURS.BLACK))
+        self.feedback_shadow:SetPosition(2, feedback_y - 2, 0)
+        self.feedback_hint = self.proot:AddChild(Text(UIFONT, 36, feedback_str, UICOLOURS.GOLD_SELECTED))
+        self.feedback_hint:SetPosition(0, feedback_y, 0)
     end
 
     self:UpdateText()

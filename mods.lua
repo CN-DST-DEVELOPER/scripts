@@ -10,48 +10,9 @@ MOD_API_VERSION = 10
 -- This is to allow modders to cleanly support features/prefabs that are currently in beta, without crashing when running on the live branch.
 -- When the release id goes to the live branch, no changes will need to be made to the mod.
 -- Test 'if CurrentRelease.GreaterOrEqualTo("R##_ANR_XXX") then' to see if a feature supported on the branch the player currently running.
-AddModReleaseID( "R01_ANR_PART1" )
-AddModReleaseID( "R02_ANR_WARTSANDALL" )
-AddModReleaseID( "R03_ANR_ARTSANDCRAFTS" )
-AddModReleaseID( "R04_ANR_CUTEFUZZYANIMALS" )
-AddModReleaseID( "R05_ANR_HERDMENTALITY" )
-AddModReleaseID( "R06_ANR_AGAINSTTHEGRAIN" )
-AddModReleaseID( "R07_ANR_HEARTOFTHERUINS" )
-AddModReleaseID( "R08_ROT_TURNOFTIDES" )
-AddModReleaseID( "R09_ROT_SALTYDOG" )
-AddModReleaseID( "R09_ROT_HOOKLINEANDINKER" )
-AddModReleaseID( "R11_ROT_SHESELLSSEASHELLS" )
-AddModReleaseID( "R12_ROT_TROUBLEDWATERS" )
-AddModReleaseID( "R13_ROT_FORGOTTENKNOWLEDGE" )
-AddModReleaseID( "R14_FARMING_REAPWHATYOUSOW" )
-AddModReleaseID( "R15_QOL_WORLDSETTINGS" )
-AddModReleaseID( "R16_ROT_MOONSTORMS" )
-AddModReleaseID( "R17_WATERLOGGED" )
-AddModReleaseID( "R18_QOL_SERVERPAUSING" )
-AddModReleaseID( "R19_REFRESH_WOLFGANG" )
-AddModReleaseID( "R20_QOL_CRAFTING4LIFE" )
-AddModReleaseID( "R21_REFRESH_WX78" )
-AddModReleaseID( "R22_PIRATEMONKEYS" )
-AddModReleaseID( "R23_REFRESH_WICKERBOTTOM" )
-AddModReleaseID( "R24_STS_ALITTLEDRAMA" )
-AddModReleaseID( "R25_REFRESH_WAXWELL" )
-AddModReleaseID( "R26_LOBBY_NETWORKQOL" )
-AddModReleaseID( "R27_REFRESH_WILSON" )
-AddModReleaseID( "R28_LUNAR_RIFT" )
-AddModReleaseID( "R29_SHADOW_RIFT" )
-AddModReleaseID( "R30_ST_WOODWOLFWORM" ) -- Keep worm and wood separate to lower confusion.
-AddModReleaseID( "R31_LUNAR_MUTANTS" )
-AddModReleaseID( "R32_ST_WATHGRITHRWILLOW" )
-AddModReleaseID( "R33_QOL_SPRINGCLEANING" )
-AddModReleaseID( "R34_OCEANQOL_WINONAWURT" )
-AddModReleaseID( "R35_SANITYTROUBLES" )
-AddModReleaseID( "R36_ST_WENDWALTWORT" )
-AddModReleaseID( "R37_LUNAR_CAGE" )
-AddModReleaseID( "R38_ELECTROCUTE" )
-AddModReleaseID( "R39_WHIRL_VAULT" )
-AddModReleaseID( "R40_PEARLMAS" )
-AddModReleaseID( "R41_ST_WX78" )
-AddModReleaseID( "R42_HEATED_VAULT" )
+for _, modid in ipairs(require("versioning").MODIDS) do
+    AddModReleaseID(modid)
+end
 
 -----------------------------------------------------------------------------------------------
 
@@ -610,7 +571,7 @@ function ModWrangler:InitializeModMain(modname, env, mainfile, safe)
 		end
 
 		if status == false then
-			moderror("Mod: "..ModInfoname(modname), "  Error loading mod!\n"..r.."\n")
+			moderror("Mod: "..ModInfoname(modname).."  Error loading mod!\n"..r.."\n")
 			table.insert( self.failedmods, {name=modname,error=r} )
 			return false
 		else

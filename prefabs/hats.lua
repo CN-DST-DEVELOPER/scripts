@@ -7,6 +7,7 @@ local SHADOWTHRALL_PARASITE_RETARGET_CANT_TAGS = { "shadowthrall_parasite_hosted
 local MOONGLASS_MUST_TAGS = {"moonglass_piece"}
 local MOONGLASS_CANT_TAGS = {"INLIMBO"}
 local KNIGHT_MUST_TAGS = {"gilded_knight"}
+local EYEMASK_DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE }
 
 ALL_HAT_PREFAB_NAMES = {}
 
@@ -476,7 +477,7 @@ local function MakeHat(name)
 
     local function tryproc(inst, owner, data)
         if inst._task == nil and
-            not data.redirected and
+			ShouldProcOnAttackedOrBlocked(inst, owner, data) and
             TryLuckRoll(owner, TUNING.ARMOR_RUINSHAT_PROC_CHANCE, LuckFormulas.RuinsHatProc) then
             ruinshat_proc(inst, owner)
         end
@@ -523,8 +524,6 @@ local function MakeHat(name)
 
 		inst:AddComponent("shadowlevel")
 		inst.components.shadowlevel:SetDefaultLevel(TUNING.RUINSHAT_SHADOW_LEVEL)
-
-        MakeHauntableLaunch(inst)
 
         inst.OnRemoveEntity = ruins_onremove
 
@@ -1363,21 +1362,22 @@ local function MakeHat(name)
         return inst
     end
 
-    local function balloon_onownerattackedfn(inst, data)
-        local balloon = inst.components.inventory ~= nil and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
-        if balloon ~= nil and balloon.components.poppable ~= nil then
-			balloon.components.poppable:Pop()
-        end
-    end
-
     local function balloon_onequip(inst, owner)
         fns.simple_onequip(inst, owner)
-		inst:ListenForEvent("attacked", balloon_onownerattackedfn, owner)
+		if inst.balloon_onownerattackedfn == nil then
+			inst.balloon_onownerattackedfn = function(owner, data)
+				if inst.components.poppable and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
+					inst.components.poppable:Pop()
+				end
+			end
+		end
+		inst:ListenForEvent("attacked", inst.balloon_onownerattackedfn, owner)
     end
 
     local function balloon_onunequip(inst, owner)        
         _onunequip(inst, owner)
-		inst:RemoveEventCallback("attacked", balloon_onownerattackedfn, owner)
+		inst:RemoveEventCallback("attacked", inst.balloon_onownerattackedfn, owner)
+		inst.balloon_onownerattackedfn = nil
     end
 
     local function balloon_custom_init(inst)
@@ -1855,15 +1855,6 @@ local function MakeHat(name)
 
         hat:DoTaskInTime(TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY, fns.mushroom_onattacked_moonspore_tryspawn)
     end
-    fns.mushroom_onattacked_moonspore = function(inst, data)
-        local hat = inst.components.inventory ~= nil and inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HEAD) or nil
-        if hat ~= nil then
-            if hat._moonspore_tryspawn_count == nil then
-                hat:DoTaskInTime(TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY, fns.mushroom_onattacked_moonspore_tryspawn)
-            end
-            hat._moonspore_tryspawn_count = TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_COUNT
-        end
-    end
     fns.mushroom_spawnpoint_moonspore = function(inst)
         local pos = inst:GetPosition()
         local dist = GetRandomMinMax(0.1, 2.0)
@@ -1882,7 +1873,17 @@ local function MakeHat(name)
         owner:AddTag("spoiler")
         if inst._ismoonspore then
             owner:AddTag("moon_spore_protection")
-            inst:ListenForEvent("attacked", fns.mushroom_onattacked_moonspore, owner)
+			if inst.mushroom_onattacked_moonspore == nil then
+				inst.mushroom_onattacked_moonspore = function(owner, data)
+					if ShouldProcOnAttackedOrBlocked(inst, owner, data) then
+						if inst._moonspore_tryspawn_count == nil then
+							inst:DoTaskInTime(TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_DELAY, fns.mushroom_onattacked_moonspore_tryspawn)
+						end
+						inst._moonspore_tryspawn_count = TUNING.MUSHROOMHAT_MOONSPORE_RETALIATION_SPORE_COUNT
+					end
+				end
+			end
+			inst:ListenForEvent("attacked", inst.mushroom_onattacked_moonspore, owner)
         end
 
         inst.components.periodicspawner:Start()
@@ -1898,7 +1899,8 @@ local function MakeHat(name)
         owner:RemoveTag("spoiler")
         if inst._ismoonspore then
             owner:RemoveTag("moon_spore_protection")
-            inst:RemoveEventCallback("attacked", fns.mushroom_onattacked_moonspore, owner)
+			inst:RemoveEventCallback("attacked", inst.mushroom_onattacked_moonspore, owner)
+			inst.mushroom_onattacked_moonspore = nil
         end
         inst.components.periodicspawner:Stop()
 
@@ -2337,6 +2339,7 @@ local function MakeHat(name)
 		end
 	end
 
+
     fns.eyemask = function()
         local inst = simple(eyemask_custom_init)
 
@@ -2348,12 +2351,11 @@ local function MakeHat(name)
         end
 
 		inst:AddComponent("eater")
-        --inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI }) -- FOODGROUP.OMNI  is default
+        inst.components.eater:SetDiet(EYEMASK_DIET, EYEMASK_DIET)
 		inst.components.eater:SetOnEatFn(eyemask_oneatfn)
 		inst.components.eater:SetAbsorptionModifiers(4.0, 1.75, 0)
 		inst.components.eater:SetCanEatRawMeat(true)
 		inst.components.eater:SetStrongStomach(true)
-		inst.components.eater:SetCanEatHorrible(true)
 
         inst:AddComponent("armor")
         inst.components.armor:InitCondition(TUNING.ARMOR_FOOTBALLHAT, TUNING.ARMOR_FOOTBALLHAT_ABSORPTION)
@@ -2760,6 +2762,10 @@ local function MakeHat(name)
 		local inst = fns.mask_common(fns.mask_ancient_custom_init, true)
         inst.scrapbook_specialinfo = nil -- Let the prefab override these ones.
 		inst.scrapbook_subcat = "costume"
+        if not TheWorld.ismastersim then
+			return inst
+		end
+        inst:AddComponent("stalkerinspectable")
         return inst
 	end
 
@@ -3516,22 +3522,23 @@ local function MakeHat(name)
 	end
 
 	local function alterguardian_spawngestalt_fn(inst, owner, data)
-		if not inst._is_active then
+		if not (inst._is_active and data and data.from_doattack) then
 			return
 		end
 
 		if owner ~= nil and (owner.components.health == nil or not owner.components.health:IsDead()) then
 		    local target = data.target
-			if target and target ~= owner and target:IsValid() and target.prefab ~= "gestalt_guard_evolved" and (target.components.health == nil or not target.components.health:IsDead() and not target:HasAnyTag("structure", "wall")) then
-
-                -- In combat, this is when we're just launching a projectile, so don't spawn a gestalt yet
-                if data.weapon ~= nil and data.projectile == nil
-                        and (data.weapon.components.projectile ~= nil
-                            or data.weapon.components.complexprojectile ~= nil
-                            or data.weapon.components.weapon:CanRangedAttack()) then
-                    return
-                end
-
+			if target and target ~= owner and target:IsValid() and target.prefab ~= "gestalt_guard_evolved" and 
+				--V2C: This used to be "onattackother" event:
+				--       -triggered BEFORE damage is dealt
+				--       -target CAN already be dead, so we DID need to check IsDead()
+				--     Now uses "onhitother" event:
+				--       -triggered AFTER damage is dealt
+				--       -target CANNOT have been dead before the damage (but can be after), so
+				--        do NOT check IsDead()
+				--(target.components.health == nil or not target.components.health:IsDead()) and
+				not target:HasAnyTag("structure", "wall", "balloon", "smashable", "deck_of_cards")
+			then
 				local x, y, z = target.Transform:GetWorldPosition()
 
 				local gestalt = SpawnPrefab("alterguardianhat_projectile")
@@ -3564,8 +3571,10 @@ local function MakeHat(name)
     local function alterguardian_onequip(inst, owner)
         fns.opentop_onequip(inst, owner)
 
-		inst.alterguardian_spawngestalt_fn = function(_owner, _data) alterguardian_spawngestalt_fn(inst, _owner, _data) end
-		inst:ListenForEvent("onattackother", inst.alterguardian_spawngestalt_fn, owner)
+		if inst.alterguardian_spawngestalt_fn == nil then
+			inst.alterguardian_spawngestalt_fn = function(_owner, _data) alterguardian_spawngestalt_fn(inst, _owner, _data) end
+		end
+		inst:ListenForEvent("onhitother", inst.alterguardian_spawngestalt_fn, owner)
 
 		inst._onsanitydelta = function() alterguardian_onsanitydelta(inst, owner) end
 		inst:ListenForEvent("sanitydelta", inst._onsanitydelta, owner)
@@ -3592,7 +3601,7 @@ local function MakeHat(name)
 		inst._is_active = false
 
 		inst:RemoveEventCallback("sanitydelta", inst._onsanitydelta, owner)
-		inst:RemoveEventCallback("onattackother", inst.alterguardian_spawngestalt_fn, owner)
+		inst:RemoveEventCallback("onhitother", inst.alterguardian_spawngestalt_fn, owner)
 
         if inst.lunarseedsmaxed then
             if owner and owner.components.sanity then
@@ -3799,8 +3808,6 @@ local function MakeHat(name)
         local setbonus = inst:AddComponent("setbonus")
         setbonus:SetSetName(EQUIPMENTSETNAMES.DREADSTONE)
 
-		MakeHauntableLaunch(inst)
-
 		return inst
 	end
 
@@ -3914,7 +3921,6 @@ local function MakeHat(name)
         require("prefabs/skilltree_defs").CUSTOM_FUNCTIONS.wortox.SetupLunarResists(inst)
 
 		MakeForgeRepairable(inst, FORGEMATERIALS.LUNARPLANT, lunarplant_onbroken, lunarplant_onrepaired)
-		MakeHauntableLaunch(inst)
 
 		return inst
 	end
@@ -4011,8 +4017,10 @@ local function MakeHat(name)
 						voidcloth_setbuffitem(inst, nil)
 					end
 				end
-				inst._onattacked = function(owner)
-					voidcloth_resetbuff(inst)
+				inst._onattacked = function(owner, data)
+					if not IsEquipmentOnAttackedOrBlocked(inst, owner, data) then
+						voidcloth_resetbuff(inst)
+					end
 				end
 				inst._onattackother = function(owner)
 					voidcloth_onattackother(inst)
@@ -4038,6 +4046,7 @@ local function MakeHat(name)
 			inst.fx:Remove()
 		end
 		inst.fx = SpawnPrefab("voidclothhat_fx")
+        inst.fx.owningitem = inst
 		inst.fx:AttachToOwner(owner)
 
 		voidcloth_setbuffowner(inst, owner)
@@ -4133,7 +4142,6 @@ local function MakeHat(name)
         setbonus:SetOnDisabledFn(fns.voidcloth_onsetbonus_disabled)
 
 		MakeForgeRepairable(inst, FORGEMATERIALS.VOIDCLOTH, fns.voidcloth_onbroken, fns.voidcloth_onrepaired)
-		MakeHauntableLaunch(inst)
 
         inst.voidcloth_onattackother = voidcloth_onattackother -- Mods
 
@@ -4647,7 +4655,6 @@ local function MakeHat(name)
         inst.components.equippable.insulated = true
 
         MakeForgeRepairable(inst, FORGEMATERIALS.WAGPUNKBITS, fns.wagpunk_onbroken, fns.wagpunk_onrepaired)
-        MakeHauntableLaunch(inst)
 
         return inst
     end
@@ -4706,8 +4713,6 @@ local function MakeHat(name)
         inst.components.fueled:SetDepletedFn(--[[generic_perish]]inst.Remove)
         inst.components.fueled.no_sewing = true
 
-        MakeHauntableLaunch(inst)
-
         return inst
     end
 
@@ -4732,8 +4737,6 @@ local function MakeHat(name)
 
 		inst:AddComponent("waterproofer")
 		inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
-
-        MakeHauntableLaunch(inst)
 
         return inst
     end
@@ -5072,8 +5075,6 @@ local function MakeHat(name)
         inst.components.useableitem:SetOnUseFn(fns.inspectacles_onuse)
         inst.components.useableitem:SetOnStopUseFn(fns.inspectacles_onstopuse)
 
-        MakeHauntableLaunch(inst)
-
         inst.components.inspectable.getstatus = fns.inspectacles_getstatus
 
         return inst
@@ -5170,8 +5171,6 @@ local function MakeHat(name)
 		inst.components.equippable:SetOnUnequip(fns.roseglasses_onunequip)
         inst.components.equippable.restrictedtag = "handyperson"
 
-		MakeHauntableLaunch(inst)
-
         inst.components.inspectable.getstatus = fns.roseglasses_getstatus
 
 		return inst
@@ -5239,10 +5238,8 @@ local function MakeHat(name)
         inst:AddComponent("forcecompostable")
         inst.components.forcecompostable.green = true
 
-        inst:AddComponent("rechargeable")        
+        inst:AddComponent("rechargeable")
         inst:ListenForEvent("rechargechange", fns.onghostflowerrecharge)
-
-        MakeHauntableLaunch(inst)
 
         return inst
     end
@@ -5555,14 +5552,9 @@ local function MakeHat(name)
             inst,
             TUNING.SHADOWTHRALL_PARASITE_TARGET_DIST,
             function(guy)
-                return inst.components.combat:CanTarget(guy) and 
-                       not guy:HasTag("shadowthrall") and 
-                       not guy:HasTag("shadow") and 
-                       (guy:HasTag("smallcreature") or 
-                        guy:HasTag("animal") or
-                        guy:HasTag("largecreature") or
-                        guy:HasTag("monster") or 
-                        guy:HasTag("character"))
+				return inst.components.combat:CanTarget(guy)
+					and not guy:HasAnyTag("shadowthrall", "shadow", "shadowboss")
+					and guy:HasAnyTag("smallcreature", "animal", "largecreature", "monster", "character")
             end,
             nil,
             SHADOWTHRALL_PARASITE_RETARGET_CANT_TAGS
@@ -5571,6 +5563,7 @@ local function MakeHat(name)
 
     fns.shadowthrall_parasite_keeptarget = function(inst, target)
         return inst.components.combat:CanTarget(target) and not target:HasTag("shadowthrall_parasite_hosted")
+            and not FindClosestQueenTorch(target)
     end
 
     fns.shadowthrall_parasite_onkilledsomething = function(owner, data)
@@ -5585,7 +5578,11 @@ local function MakeHat(name)
         if data.victim.sg == nil or not (data.victim.sg:HasState("parasite_revive") or data.victim.sg:HasState("death_hosted")) then
             return
         end
-        
+
+        if data.victim.components.inventory == nil then
+            return
+        end
+
         if data.victim.was_shadowthrall_parasited or data.victim:HasTag("shadowthrall_parasite_hosted") then
             return
         end
@@ -5676,8 +5673,10 @@ local function MakeHat(name)
             owner.components.planardamage:SetBaseDamage(TUNING.SHADOWTHRALL_PARASITE_PLANAR_DAMAGE)
         end
 
-        local brain = require("brains/hostedbrain")
-        owner:SetBrain(brain)
+        if not owner.isplayer then
+            local brain = require("brains/hostedbrain")
+            owner:SetBrain(brain)
+        end
 
 		if owner.SoundEmitter then
 			owner.SoundEmitter:PlaySound("hallowednights2024/thrall_parasite/thrall_idle_LP","parasite_LP")
@@ -5762,6 +5761,7 @@ local function MakeHat(name)
 
     fns.shadowthrall_parasite_custom_init = function(inst)
         inst:AddTag("shadowthrall_parasite")
+        inst:AddTag("monsterhat")
     end
 
     local function shadowthrall_parasite_OnEntitySleep_task(inst)
@@ -5804,8 +5804,6 @@ local function MakeHat(name)
         inst.components.equippable:SetOnUnequip(fns.shadowthrall_parasite_onunequip)
 
         inst.components.inventoryitem.keepondeath = true
-
-        MakeHauntableLaunch(inst)
 
         inst.OnEntitySleep = fns.shadowthrall_parasite_OnEntitySleep
         inst.OnEntityWake = fns.shadowthrall_parasite_OnEntityWake
@@ -6505,6 +6503,248 @@ local function MakeHat(name)
         return inst
     end
 
+    --
+
+	fns.bat_bosscorpse_onhitother_fn = function(inst, owner, data)
+		if data and data.from_doattack and
+			owner and owner.components.health and
+			not owner.components.health:IsDead() and owner.components.health:IsHurt()
+		then
+		    local target = data.target
+			if target and target ~= owner and target:IsValid() and
+				not (target.components.health and target.components.health:IsDead()) and
+				IsLifeDrainable(target) and
+				not IsRangedWeapon(data.weapon) and
+                not (owner.components.rider and owner.components.rider:IsRiding())
+			then
+                local mult = owner.components.aoediminishingreturns and owner.components.aoediminishingreturns.mult:Get() or 1
+                owner.components.health:DoDelta(TUNING.BAT_BOSS_CORPSEHAT_LIFESTEAL * mult, false, "bat_bosshat")
+			end
+		end
+	end
+
+    fns.bat_bosscorpse_regenperish = function(inst)
+        inst.components.perishable:AddTime(TUNING.PERISH_FAST * TUNING.BAT_BOSS_CORPSEHAT_REGEN_PERISH_MULT)
+    end
+
+	fns.bat_bosscorpse_onequip = function(inst, owner)
+        owner:AddTag("monster")
+        owner:AddTag("batdisguise")
+        owner.AnimState:ClearOverrideSymbol("swap_hat")
+	    owner.AnimState:Show("HAT")
+	    owner.AnimState:Show("HAIR_HAT")
+	    owner.AnimState:Hide("HAIR_NOHAT")
+	    owner.AnimState:Hide("HAIR")
+
+        if inst.damage_equip_task then
+            inst.damage_equip_task:Cancel()
+            inst.damage_equip_task = nil
+        end
+
+        if inst.regen_perish_task then
+            inst.regen_perish_task:Cancel()
+            inst.regen_perish_task = nil
+        end
+
+        if owner.components.leader then
+            owner.components.leader:RemoveFollowersByTag("pig")
+        end
+
+	    if owner.isplayer then
+	    	owner.AnimState:Hide("HEAD")
+	    	owner.AnimState:Show("HEAD_HAT")
+	    	owner.AnimState:Show("HEAD_HAT_NOHELM")
+	    	owner.AnimState:Hide("HEAD_HAT_HELM")
+	    end
+
+		if inst.fx ~= nil then
+			inst.fx:Remove()
+		end
+		inst.fx = SpawnPrefab("bat_bosscorpsehat_fx")
+        inst.fx.owningitem = inst
+		inst.fx:AttachToOwner(owner)
+
+		if inst.bat_bosscorpse_onhitother_fn == nil then
+			inst.bat_bosscorpse_onhitother_fn = function(_owner, _data) fns.bat_bosscorpse_onhitother_fn(inst, _owner, _data) end
+		end
+		inst:ListenForEvent("onhitother", inst.bat_bosscorpse_onhitother_fn, owner)
+
+        if IsLifeDrainable(owner) and not owner:HasTag("equipmentmodel") then
+            if owner.components.health then
+		    	owner.components.health:AddRegenSource(inst, TUNING.BAT_BOSS_CORPSEHAT_TICK_VALUE, TUNING.BAT_BOSS_CORPSEHAT_TICK_RATE, "bat_bosscorpsehat")
+                -- only if the owner actually has health, will we regen
+                inst.components.perishable:StopPerishing()
+                inst.regen_perish_task = inst:DoPeriodicTask(TUNING.BAT_BOSS_CORPSEHAT_TICK_RATE, fns.bat_bosscorpse_regenperish)
+            end
+            if owner.components.combat and not owner.components.inventory.isloading then
+                -- Delay the hit on equip by a frame so that we can't damage ourselves repeatedly when the game is paused, looks silly.
+                inst.damage_equip_task = inst:DoTaskInTime(0, function()
+                    if owner and owner:IsValid() and owner.components.combat then
+                        owner.components.combat:GetAttacked(inst, TUNING.BAT_BOSS_CORPSEHAT_DAMAGE_ON_EQUIP)
+                    end
+                end)
+            end
+        end
+	end
+
+	fns.bat_bosscorpse_onunequip = function(inst, owner)
+        if not owner:HasTag("playermonster") then
+            owner:RemoveTag("monster")
+        end
+        owner:RemoveTag("batdisguise")
+	    owner.AnimState:ClearOverrideSymbol("swap_hat")
+	    owner.AnimState:Hide("HAT")
+	    owner.AnimState:Hide("HAIR_HAT")
+	    owner.AnimState:Show("HAIR_NOHAT")
+	    owner.AnimState:Show("HAIR")
+
+        if inst.damage_equip_task then
+            inst.damage_equip_task:Cancel()
+            inst.damage_equip_task = nil
+        end
+
+        if inst.regen_perish_task then
+            -- HACK another way to do IsValid check before entity is actually retired :)
+            if Ents[inst.GUID] then
+                inst.components.perishable:StartPerishing()
+            end
+            inst.regen_perish_task:Cancel()
+            inst.regen_perish_task = nil
+        end
+
+	    if owner.isplayer then
+	    	owner.AnimState:Show("HEAD")
+	    	owner.AnimState:Hide("HEAD_HAT")
+	    	owner.AnimState:Hide("HEAD_HAT_NOHELM")
+	    	owner.AnimState:Hide("HEAD_HAT_HELM")
+	    end
+
+		if inst.fx ~= nil then
+			inst.fx:Remove()
+			inst.fx = nil
+		end
+
+		inst:RemoveEventCallback("onhitother", inst.bat_bosscorpse_onhitother_fn, owner)
+
+        if owner.components.health then
+            owner.components.health:RemoveRegenSource(inst, "bat_bosscorpsehat")
+        end
+	end
+
+	fns.bat_bosscorpse_custom_init = function(inst)
+        inst:AddTag("bathat")
+        inst:AddTag("show_spoilage")
+        inst:AddTag("icebox_valid")
+        inst:AddTag("monsterhat")
+		inst:AddTag("mufflehat")
+        inst:AddTag("acidrainimmune")
+        inst:AddTag("small_livestock")
+		inst:AddTag("nodangermusic")
+
+        --waterproofer (from waterproofer component) added to pristine state for optimization
+        inst:AddTag("waterproofer")
+
+        -- inst:AddTag("creaturecorpse")
+	end
+
+    fns.bat_bosscorpse = function()
+        local inst = simple(fns.bat_bosscorpse_custom_init)
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst.components.equippable.dapperness = TUNING.CRAZINESS_MED
+
+		inst.components.equippable:SetOnEquip(fns.bat_bosscorpse_onequip)
+		inst.components.equippable:SetOnUnequip(fns.bat_bosscorpse_onunequip)
+
+        inst:AddComponent("perishable")
+        inst.components.perishable.onperishreplacement = "spoiled_food"
+        inst.components.perishable:SetPerishTime(TUNING.PERISH_FAST)
+        inst.components.perishable:StartPerishing()
+
+        inst:AddComponent("waterproofer")
+        inst.components.waterproofer:SetEffectiveness(TUNING.WATERPROOFNESS_SMALL)
+
+        return inst
+    end
+
+    --
+
+    local function mask_charlie_boss_OnFocusCamera(inst)
+        if inst._camerafocusvalue > FRAMES then
+            inst._camerafocusvalue = inst._camerafocusvalue - FRAMES
+            local k = math.min(1, inst._camerafocusvalue) / 1
+            TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, 10 * k, 28 * k, 4)
+        else
+            inst._camerafocustask:Cancel()
+            inst._camerafocustask = nil
+            inst._camerafocusvalue = nil
+            TheFocalPoint.components.focalpoint:StopFocusSource(inst)
+        end
+    end
+
+    local function mask_charlie_boss_OnCameraFocusDirty(inst)
+        inst._camerafocusvalue = 3
+        if inst._camerafocustask == nil then
+            inst._camerafocustask = inst:DoPeriodicTask(0, mask_charlie_boss_OnFocusCamera)
+            mask_charlie_boss_OnFocusCamera(inst)
+        end
+    end
+
+    local function mask_charlie_boss_PushCameraFocus(inst)
+        inst._camerafocus:push()
+        if not TheNet:IsDedicated() then
+            mask_charlie_boss_OnCameraFocusDirty(inst)
+        end
+    end
+
+    fns.mask_charlie_boss_dappernessfn = function(inst, owner)
+        return (owner and CHARACTER_KNOWS_CHARLIE[owner.prefab] and TUNING.CRAZINESS_MED)
+            or 0
+    end
+
+    fns.mask_charlie_boss_pushcamerafocusforload = function(inst)
+        inst.pushcamerafocusonload = true
+    end
+
+    fns.mask_charlie_boss_onsave = function(inst, data)
+        if inst.pushcamerafocusonload then
+            data.pushcamerafocusonload = true
+        end
+    end
+
+    fns.mask_charlie_boss_onload = function(inst, data)
+        if data and data.pushcamerafocusonload ~= nil then
+            -- after teleport time and screen fade are finished roughly
+            inst:DoTaskInTime(1.2, inst.PushCameraFocus)
+        end
+    end
+
+	fns.mask_charlie_boss_custom_init = function(inst)
+        inst._camerafocus = net_event(inst.GUID, "mask_charlie_bosshat._camerafocus")
+        inst._camerafocustask = nil
+	end
+
+    fns.mask_charlie_boss = function()
+        local inst = simple(fns.mask_charlie_boss_custom_init)
+
+        if not TheWorld.ismastersim then
+            inst:ListenForEvent("mask_charlie_bosshat._camerafocus", mask_charlie_boss_OnCameraFocusDirty)
+            return inst
+        end
+
+        inst.components.equippable:SetDappernessFn(fns.mask_charlie_boss_dappernessfn)
+
+        inst.PushCameraFocus = mask_charlie_boss_PushCameraFocus
+        inst.PushCameraFocusForNextLoad = fns.mask_charlie_boss_pushcamerafocusforload
+        inst.OnSave = fns.mask_charlie_boss_onsave
+        inst.OnLoad = fns.mask_charlie_boss_onload
+
+        return inst
+    end
+
     -----------------------------------------------------------------------------
     local fn = nil
     local assets = { Asset("ANIM", "anim/"..fname..".zip") }
@@ -6731,6 +6971,11 @@ local function MakeHat(name)
         }
     elseif name == "yoth_knight" then
         fn = fns.yoth_knight
+    elseif name == "bat_bosscorpse" then
+        fn = fns.bat_bosscorpse
+        prefabs = { "bat_bosscorpsehat_fx" }
+    elseif name == "mask_charlie_boss" then
+        fn = fns.mask_charlie_boss
     end
 
     table.insert(ALL_HAT_PREFAB_NAMES, prefabname)
@@ -7004,10 +7249,27 @@ fns2.voidclothhat_fx_buffeddirty = function(inst)
 	end
 end
 
+fns2.voidclothhat_fx_skinhashdirty = function(inst)
+    if inst.fx ~= nil then
+        local skinbuildhash = inst.skinbuildhash:value()
+        if skinbuildhash ~= 0 then
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetSkin(skinbuildhash, "hat_voidcloth")
+            end
+        else
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetBuild("hat_voidcloth")
+            end
+        end
+    end
+end
+
 fns2.voidclothhat_fx_common_postinit = function(inst)
 	inst.buffed = net_bool(inst.GUID, "voidclothhat_fx.buffed", "buffeddirty")
+    inst.skinbuildhash = net_hash(inst.GUID, "voidclothhat_fx.skinbuildhash", "skinhashdirty")
 	if not TheNet:IsDedicated() then
 		inst:ListenForEvent("buffeddirty", fns2.voidclothhat_fx_buffeddirty)
+		inst:ListenForEvent("skinhashdirty", fns2.voidclothhat_fx_skinhashdirty)
 	end
 end
 
@@ -7397,6 +7659,82 @@ fns2.pumpkinhat_fx_master_postinit = function(inst)
 	inst.CopyFaceSymbols = fns2.pumpkinhat_fx_copyfacesymbols
 end
 
+fns2.bat_bosscorpsehat_CreateFxFollowFrame = function(i)
+	local inst = CreateEntity()
+
+	--[[Non-networked entity]]
+	inst.entity:AddTransform()
+	inst.entity:AddAnimState()
+	inst.entity:AddFollower()
+
+	inst:AddTag("FX")
+
+	inst.AnimState:SetBank("bat_bosscorpsehat")
+	inst.AnimState:SetBuild("hat_bat_bosscorpse")
+	inst.AnimState:PlayAnimation("idle"..tostring(i))
+
+	inst:AddComponent("highlightchild")
+
+	inst.persists = false
+
+	return inst
+end
+
+fns2.bat_bosscorpsehat_OnFollowFxSpawned = function(inst, owner)
+	if owner and owner:HasTag("locomotor") then
+		inst:AddComponent("autojiggle")
+		inst.components.autojiggle:SetOnJiggleLoopFn(fns2.bat_bosscorpsehat_fx_OnJiggleLoopFn)
+		inst.components.autojiggle:SetOnJiggleOneShotFn(fns2.bat_bosscorpsehat_fx_OnJiggleOneShotFn)
+		inst.components.autojiggle:SetOwner(owner)
+	end
+end
+
+fns2.bat_bosscorpsehat_fx_OnJiggleLoopFn = function(inst)
+	for i, v in ipairs(inst.fx) do
+		v.AnimState:PlayAnimation("swing_loop"..tostring(i), true)
+	end
+end
+
+fns2.bat_bosscorpsehat_fx_OnJiggleOneShotFn = function(inst)
+	for i, v in ipairs(inst.fx) do
+		i = tostring(i)
+		v.AnimState:PlayAnimation("settle"..i)
+		v.AnimState:PushAnimation("idle"..i, false)
+	end
+end
+
+fns2.bat_bosscorpsehat_fx_Init = function(inst)
+	local owner = inst.entity:GetParent()
+	if owner then
+		owner:PushEvent("startbatcorpsehatdrain")
+		owner:ListenForEvent("onremove", function() owner:PushEvent("stopbatcorpsehatdrain") end, inst)
+	end
+end
+
+fns2.bat_bosscorpsehat_fx_skinhashdirty = function(inst)
+    if inst.fx ~= nil then
+        local skinbuildhash = inst.skinbuildhash:value()
+        if skinbuildhash ~= 0 then
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetSkin(skinbuildhash, "bat_bosscorpsehat")
+            end
+        else
+            for _, fx in ipairs(inst.fx) do
+                fx.AnimState:SetBuild("bat_bosscorpsehat")
+            end
+        end
+    end
+end
+
+fns2.bat_bosscorpsehat_fx_common_postinit = function(inst)
+    inst.skinbuildhash = net_hash(inst.GUID, "bat_bosscorpsehat.skinbuildhash", "skinhashdirty")
+    if not TheNet:IsDedicated() then
+        inst:ListenForEvent("skinhashdirty", fns2.bat_bosscorpsehat_fx_skinhashdirty)
+    end
+	--start/stop events (mainly used for HUD), safe to defer via task
+	inst:DoTaskInTime(0, fns2.bat_bosscorpsehat_fx_Init)
+end
+
 --------------------------------------------------------------------------
 
 local function FollowFx_OnRemoveEntity(inst)
@@ -7411,7 +7749,7 @@ local function FollowFx_ColourChanged(inst, r, g, b, a)
 	end
 end
 
-local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend, isfullhelm)
+local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend, isfullhelm, cb)
 	local follow_symbol = isfullhelm and owner.isplayer and owner.AnimState:BuildHasSymbol("headbase_hat") and "headbase_hat" or "swap_hat"
 	inst.fx = {}
 	local frame
@@ -7426,13 +7764,16 @@ local function SpawnFollowFxForOwner(inst, owner, createfn, framebegin, frameend
 	end
 	inst.components.colouraddersync:SetColourChangedFn(FollowFx_ColourChanged)
 	inst.OnRemoveEntity = FollowFx_OnRemoveEntity
+	if cb then
+		cb(inst, owner)
+	end
 end
 
 local function MakeFollowFx(name, data)
 	local function OnEntityReplicated(inst)
 		local owner = inst.entity:GetParent()
 		if owner ~= nil then
-			SpawnFollowFxForOwner(inst, owner, data.createfn, data.framebegin, data.frameend, data.isfullhelm)
+			SpawnFollowFxForOwner(inst, owner, data.createfn, data.framebegin, data.frameend, data.isfullhelm, data.onfollowfxspawnedfn)
 		end
 	end
 
@@ -7449,7 +7790,7 @@ local function MakeFollowFx(name, data)
         end
 		--Dedicated server does not need to spawn the local fx
 		if not TheNet:IsDedicated() then            
-			SpawnFollowFxForOwner(inst, owner, data.createfn, data.framebegin, data.frameend, data.isfullhelm)
+			SpawnFollowFxForOwner(inst, owner, data.createfn, data.framebegin, data.frameend, data.isfullhelm, data.onfollowfxspawnedfn)
 		end
 	end
 
@@ -7605,6 +7946,9 @@ return  MakeHat("straw"),
         MakeHat("mask_princess"),
         MakeHat("yoth_knight"),
 
+        MakeHat("bat_bosscorpse"),
+        MakeHat("mask_charlie_boss"),
+
         MakeFollowFx("mask_halfwit_fx", {
 			createfn = fns2.mask_halfwit_CreateFxFollowFrame,
             framebegin = 1,
@@ -7675,6 +8019,14 @@ return  MakeHat("straw"),
 			frameend = 2,
 			isfullhelm = true,
 			assets = { Asset("ANIM", "anim/hat_pumpkin.zip") },
+		}),
+        MakeFollowFx("bat_bosscorpsehat_fx", {
+			createfn = fns2.bat_bosscorpsehat_CreateFxFollowFrame,
+			onfollowfxspawnedfn = fns2.bat_bosscorpsehat_OnFollowFxSpawned,
+			common_postinit = fns2.bat_bosscorpsehat_fx_common_postinit,
+			framebegin = 1,
+			frameend = 3,
+			assets = { Asset("ANIM", "anim/hat_bat_bosscorpse.zip") },
 		}),
 
 		Prefab("minerhatlight", fns2.minerhatlightfn),

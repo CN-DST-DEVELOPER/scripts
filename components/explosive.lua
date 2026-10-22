@@ -24,7 +24,7 @@ function Explosive:SetPvpAttacker(attacker)
 end
 
 local CANT_TAGS = { "INLIMBO", "notarget" }
-function Explosive:OnBurnt()
+function Explosive:OnBurnt(target) -- pass target to only do it on this ent (e.g. due to being inside a worm)
 	if not self.skip_camera_flash then
 		for i, v in ipairs(AllPlayers) do
 			local distSq = v:GetDistanceSqToInst(self.inst)
@@ -52,10 +52,9 @@ function Explosive:OnBurnt()
     end
 
 	local attacker = self.attacker or self.pvpattacker
-
     local workablecount = TUNING.EXPLOSIVE_MAX_WORKABLE_INVENTORYITEMS
-	local ents = TheSim:FindEntities(x, y, z, self.explosiverange, nil, CANT_TAGS)
-    for i, v in ipairs(ents) do
+
+    local function ExplodeEnt(v)
 		if v ~= self.inst and not v:IsInLimbo() and v:IsValid() and
 			(self.pvpattacker == nil or v == self.pvpattacker or not v:HasTag("player"))
 			then
@@ -98,8 +97,13 @@ function Explosive:OnBurnt()
                     end
 
 					local spdmg = SpDamageUtil.CollectSpDamage(self.inst)
-					if spdmg ~= nil and damagetypemult ~= 1 then
-						spdmg = SpDamageUtil.ApplyMult(spdmg, damagetypemult)
+					if spdmg ~= nil then
+                        if damagetypemult ~= 1 then
+						    spdmg = SpDamageUtil.ApplyMult(spdmg, damagetypemult)
+                        end
+                        if stacksize ~= 1 then
+                            spdmg = SpDamageUtil.ApplyMult(spdmg, stacksize)
+                        end
 					end
 
 					--V2C: still passing self.inst instead of attacker here, so we don't
@@ -120,8 +124,18 @@ function Explosive:OnBurnt()
         end
     end
 
+    if target then
+        ExplodeEnt(target)
+    else
+	    local ents = TheSim:FindEntities(x, y, z, self.explosiverange, nil, CANT_TAGS)
+        for i, v in ipairs(ents) do
+	    	ExplodeEnt(v)
+        end
+    end
+
+    local pt = self.inst:GetPosition()
     for i = 1, stacksize do
-        world:PushEvent("explosion", { damage = self.explosivedamage })
+        world:PushEvent("explosion", { pt = pt, damage = self.explosivedamage })
     end
 
     if self.inst.components.health ~= nil then

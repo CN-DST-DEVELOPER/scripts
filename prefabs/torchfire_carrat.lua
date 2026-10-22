@@ -186,6 +186,8 @@ end
 local function master_postinit(inst)
     inst.fx_offset_x = 20
     inst.fx_offset = -85
+    inst.fx_offset_wargshrine = -140
+    inst.fx_offset_wargshrine_x = 60
 end
 
 return MakeTorchFire("torchfire_carrat", assets, nil, common_postinit, master_postinit)

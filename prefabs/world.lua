@@ -396,6 +396,10 @@ local function CanFlyingCrossBarriers(world) -- NOTES(JBK): Ghosts are flying in
     return world.has_ocean or world.cancrossbarriers_flying
 end
 
+local function OnLoadPostPass(world, newents, savedata)
+    world.components.worldstaticlayouts:PlaceLayouts()
+end
+
 --------------------------------------------------------------------------
 
 function MakeWorld(name, customprefabs, customassets, common_postinit, master_postinit, tags, custom_data)
@@ -565,6 +569,8 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
             return inst
         end
 
+        inst.OnLoadPostPass = OnLoadPostPass
+
         inst:AddComponent("shardtransactionsteps")
 
         inst:AddComponent("klaussackloot")
@@ -586,6 +592,11 @@ function MakeWorld(name, customprefabs, customassets, common_postinit, master_po
         inst:AddComponent("winonateleportpadmanager")
 
         inst:AddComponent("corpsepersistmanager")
+
+        inst:AddComponent("stalkermanager")
+        inst:AddComponent("charlie_tracker")
+        inst:AddComponent("virtualroommanager")
+        inst:AddComponent("worldstaticlayouts")
 
         --World health management
         inst:AddComponent("skeletonsweeper")

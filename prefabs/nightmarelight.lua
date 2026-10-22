@@ -283,6 +283,7 @@ local function fn()
     inst.components.childspawner:SetRareChild(GetRareChildFn, .35)
 
     inst:AddComponent("inspectable")
+    inst:AddComponent("stalkerinspectable")
 
     inst:WatchWorldState("nightmarephase", OnNightmarePhaseChanged)
     OnNightmarePhaseChanged(inst, TheWorld.state.nightmarephase, true)

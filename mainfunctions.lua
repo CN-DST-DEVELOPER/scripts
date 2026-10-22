@@ -15,6 +15,32 @@ SimTearingDown = false
 SimShuttingDown = false
 PerformingRestart = false
 
+known_error_key = nil
+global_error_widget = nil
+ScriptErrorWidget = require "widgets/scripterrorwidget"
+local pending_global_error = nil
+
+-- Moved so failed on mod parse can show the error screen
+function SetGlobalErrorWidget(...)
+    if global_error_widget ~= nil then -- only first error!
+        return
+    elseif TheFrontEnd == nil then
+        if pending_global_error == nil then
+            pending_global_error = { n = select("#", ...), ... }
+        end
+        return
+    end
+    global_error_widget = ScriptErrorWidget(...)
+end
+
+function ShowPendingGlobalError()
+    local err = pending_global_error
+    pending_global_error = nil
+    if err ~= nil then
+        SetGlobalErrorWidget(unpack(err, 1, err.n))
+    end
+end
+
 function SavePersistentString(name, data, encode, callback)
     if TheFrontEnd then
         TheFrontEnd:ShowSavingIndicator()
@@ -1414,6 +1440,7 @@ function Start()
 
     ---The screen manager
     TheFrontEnd = FrontEnd()
+    ShowPendingGlobalError()
     require("gamelogic")
 
     known_assert(TheSim:CanWriteConfigurationDirectory(), "CONFIG_DIR_WRITE_PERMISSION")
@@ -2080,11 +2107,15 @@ function ResumeExistingUserSession(data, guid)
 
             -- Spawn the player to last known location
 			local x, y, z, platform = ResolveSaveRecordPosition(data)
-            if TheWorld.Map:IsPointInVaultRoom(x, y, z) then
-                local vault_lobby_center = TheWorld.components.vaultroommanager:GetVaultLobbyCenterMarker()
-                if vault_lobby_center then
-                    x, y, z = vault_lobby_center.Transform:GetWorldPosition()
-                end
+            local virtualroommanager = TheWorld.components.virtualroommanager
+            if virtualroommanager then
+                local map = TheWorld.Map
+                virtualroommanager:ForEachVirtualRoomSet(function(virtualroomset)
+                    if map:IsPointInVirtualRoomSet(virtualroomset.roomsetname, x, y, z) then
+                        x, y, z = virtualroomset:FindSafePlayerPointFrom(x, y, z)
+                        return true
+                    end
+                end)
             end
 			TheWorld.components.playerspawner:SpawnAtLocation(TheWorld, player, x, y, z, true)
 			if platform ~= nil then
@@ -2363,7 +2394,7 @@ WORLDSTATETAGS.DeclareTag("ATRIUM_KEY_FOUND")
 --WORLDSTATETAGS.DeclareTag("") -- FIXME(JBK): It would be nice for a CELESTIAL_PORTAL_BUILT thing here for caves.
 WORLDSTATETAGS.DeclareTag("ARCHIVES_ENERGIZED")
 WORLDSTATETAGS.DeclareTag("SHADOW_RIFTS_ACTIVE")
--- WORLDSTATETAGS.DeclareTag("VAULT_KEY_FOUND") -- FIXME(JBK): rifts7: Vault key progress flag.
+WORLDSTATETAGS.DeclareTag("VAULT_KEY_FOUND")
 WORLDSTATETAGS.Lock()
 
 

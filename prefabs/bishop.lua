@@ -212,6 +212,7 @@ local function MakeBishop(name, common_postinit, master_postinit, _assets, _pref
 		inst:AddTag("chess")
 		inst:AddTag("hostile")
 		inst:AddTag("monster")
+		inst:AddTag("nightmarecorruptable")
 
 		inst.shotx = net_float(inst.GUID, "bishop.shotx")
 		inst.shotz = net_float(inst.GUID, "bishop.shotz")
@@ -278,6 +279,8 @@ local function MakeBishop(name, common_postinit, master_postinit, _assets, _pref
 
 		inst:ListenForEvent("attacked", clockwork_common.OnAttacked)
 		inst:ListenForEvent("newcombattarget", clockwork_common.OnNewCombatTarget)
+		-- king staff interaction
+		inst:ListenForEvent("ms_becomeshadowchess", clockwork_common.OnBecomeShadowChess)
 
 		clockwork_common.InitHomePosition(inst)
 		clockwork_common.MakeBefriendable(inst)

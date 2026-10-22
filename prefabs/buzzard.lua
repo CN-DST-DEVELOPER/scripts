@@ -179,7 +179,6 @@ local mutated_assets =
 local mutated_prefabs =
 {
     "spoiled_food",
-    "smallmeat",
     --"feather_crow", --Unique feather?
     "warg_mutated_breath_fx",
 	"warg_mutated_ember_fx",

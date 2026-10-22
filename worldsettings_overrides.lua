@@ -175,9 +175,9 @@ local applyoverrides_pre = {
             },
 			rare = {
                 DECID_MONSTER_MIN_DAY = 5,
-                DECID_MONSTER_SPAWN_CHANCE_BASE = 0.075,
-                DECID_MONSTER_SPAWN_CHANCE_LOW = 0.04,
-                DECID_MONSTER_SPAWN_CHANCE_MED = 0.0165,
+                DECID_MONSTER_SPAWN_CHANCE_AUTUMN = 0.075,
+                DECID_MONSTER_SPAWN_CHANCE_SPRING = 0.04,
+                DECID_MONSTER_SPAWN_CHANCE_SUMMER = 0.0165,
             },
             --[[
             default = {
@@ -189,15 +189,15 @@ local applyoverrides_pre = {
             --]]
 			often = {
                 DECID_MONSTER_MIN_DAY = 2,
-                DECID_MONSTER_SPAWN_CHANCE_BASE = 0.3,
-                DECID_MONSTER_SPAWN_CHANCE_LOW = 0.16,
-                DECID_MONSTER_SPAWN_CHANCE_MED = 0.066,
+                DECID_MONSTER_SPAWN_CHANCE_AUTUMN = 0.3,
+                DECID_MONSTER_SPAWN_CHANCE_SPRING = 0.16,
+                DECID_MONSTER_SPAWN_CHANCE_SUMMER = 0.066,
             },
 			always = {
                 DECID_MONSTER_MIN_DAY = 1,
-                DECID_MONSTER_SPAWN_CHANCE_BASE = 0.6,
-                DECID_MONSTER_SPAWN_CHANCE_LOW = 0.32,
-                DECID_MONSTER_SPAWN_CHANCE_MED = 0.132,
+                DECID_MONSTER_SPAWN_CHANCE_AUTUMN = 0.6,
+                DECID_MONSTER_SPAWN_CHANCE_SPRING = 0.32,
+                DECID_MONSTER_SPAWN_CHANCE_SUMMER = 0.132,
             },
 		}
 		OverrideTuningVariables(tuning_vars[difficulty])
@@ -536,7 +536,76 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    rocky_boss = function(difficulty)
+        local tuning_vars = {
+            never = {
+                SPAWN_ROCKY_BOSS = false,
+            },
+            rare = {
+                ROCKY_BOSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 30,
+                ROCKY_BOSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 10,
 
+                ROCKY_BOSS_SPAWNDELAY_RETRY_BASE = TUNING.TOTAL_DAY_TIME * 3,
+                ROCKY_BOSS_SPAWNDELAY_RETRY_RANDOM = TUNING.TOTAL_DAY_TIME * 1,
+            },
+            --[[
+            default = {
+                ROCKY_BOSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 15,
+                ROCKY_BOSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 5,
+
+                ROCKY_BOSS_SPAWNDELAY_RETRY_BASE = TUNING.TOTAL_DAY_TIME * 1.5,
+                ROCKY_BOSS_SPAWNDELAY_RETRY_RANDOM = TUNING.TOTAL_DAY_TIME * 0.5,
+            },
+            --]]
+            often = {
+                ROCKY_BOSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 7.5,
+                ROCKY_BOSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 2.5,
+
+                ROCKY_BOSS_SPAWNDELAY_RETRY_BASE = TUNING.TOTAL_DAY_TIME * 0.75,
+                ROCKY_BOSS_SPAWNDELAY_RETRY_RANDOM = TUNING.TOTAL_DAY_TIME * 0.25,
+            },
+            always = {
+                ROCKY_BOSS_SPAWNDELAY_BASE = TUNING.TOTAL_DAY_TIME * 3.75,
+                ROCKY_BOSS_SPAWNDELAY_RANDOM = TUNING.TOTAL_DAY_TIME * 1.25,
+
+                ROCKY_BOSS_SPAWNDELAY_RETRY_BASE = TUNING.TOTAL_DAY_TIME * 0.375,
+                ROCKY_BOSS_SPAWNDELAY_RETRY_RANDOM = TUNING.TOTAL_DAY_TIME * 0.125,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    bat_boss = function(difficulty)
+        local tuning_vars = {
+            never = {
+                BATBOSSCAVE_ENABLED = false,
+            },
+            rare = {
+                BATBOSSCAVE_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 20,
+                BATBOSSCAVE_SPAWN_PERIOD = 40,
+                BATBOSSCAVE_MAX_CHILDREN = 1,
+            },
+            --[[
+            default = {
+                BATBOSSCAVE_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 10,
+                BATBOSSCAVE_SPAWN_PERIOD = 20,
+                BATBOSSCAVE_MAX_CHILDREN = 1,
+
+                BATBOSSCAVE_ENABLED = true,
+            },
+            --]]
+            often = {
+                BATBOSSCAVE_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 5,
+                BATBOSSCAVE_SPAWN_PERIOD = 10,
+                BATBOSSCAVE_MAX_CHILDREN = 1,
+            },
+            always = {
+                BATBOSSCAVE_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 3,
+                BATBOSSCAVE_SPAWN_PERIOD = 5,
+                BATBOSSCAVE_MAX_CHILDREN = 2,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
 
     --monsters
     lureplants = function(difficulty)
@@ -3811,34 +3880,35 @@ local function areaambientdefault(prefab)
     local world = TheWorld
     if prefab == "cave" then
         -- Clear out the above ground (forest) sounds
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROAD, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROCKY, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.DIRT, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.WOODFLOOR, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SAVANNA, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.GRASS, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FOREST, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CHECKER, override = "SINKHOLE" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MARSH, override = "SINKHOLE" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROAD, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ROCKY, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.DIRT, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.WOODFLOOR, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SAVANNA, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.GRASS, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FOREST, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CHECKER, override = WORLD_TILES.SINKHOLE })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MARSH, override = WORLD_TILES.SINKHOLE })
+        -- NOTE(Omar): Not used?
         world:PushEvent("overrideambientsound", { tile = WORLD_TILES.IMPASSABLE, override = "ABYSS" })
     else
         -- Clear out the cave sounds
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CAVE, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSRED, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSGREEN, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUS, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SINKHOLE, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.UNDERROCK, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MUD, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK_GLOW, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES_GLOW, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM_GLOW, override = "ROCKY" })
-		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ARCHIVE, override = "ROCKY" })
-		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VAULT_CLEAN, override = "ROCKY" })
-        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VENT, override = "ROCKY" })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.CAVE, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSRED, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUSGREEN, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.FUNGUS, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.SINKHOLE, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.UNDERROCK, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.MUD, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.BRICK_GLOW, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TILES_GLOW, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.TRIM_GLOW, override = WORLD_TILES.ROCKY })
+		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.ARCHIVE, override = WORLD_TILES.ROCKY })
+		world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VAULT_CLEAN, override = WORLD_TILES.ROCKY })
+        world:PushEvent("overrideambientsound", { tile = WORLD_TILES.VENT, override = WORLD_TILES.ROCKY })
     end
 end
 

@@ -111,6 +111,9 @@ local function ClearShadowPanic(inst)
     inst._shadow_creature_panic_task = nil
 end
 local function MoonBlossom_OnAttacked(inst, data)
+	if not ShouldProcOnAttackedOrBlocked(inst, inst, data) then
+		return
+	end
     local attacker = data ~= nil and data.attacker
     if attacker and attacker:IsValid() and attacker:HasTag("shadowsubmissive") then
         SparkLunarOnShadow(inst, attacker)
@@ -228,11 +231,6 @@ local BUFF_DEFS =
         duration = TUNING.HERMITCRAB_MOONTREEBLOSSOMTEA_DURATION,
         --
         onattachedfn = function(inst, target)
-            target:ListenForEvent("attacked", MoonBlossom_OnAttacked)
-        end,
-
-        onextendedfn = function(inst, target)
-            target:RemoveEventCallback("attacked", MoonBlossom_OnAttacked)
             target:ListenForEvent("attacked", MoonBlossom_OnAttacked)
         end,
 

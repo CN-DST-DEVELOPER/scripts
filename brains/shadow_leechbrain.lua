@@ -1,6 +1,7 @@
 require("behaviours/leash")
 require("behaviours/faceentity")
 require("behaviours/wander")
+local BrainCommon = require("brains/braincommon")
 
 local JUMP_DIST = 6
 
@@ -31,6 +32,7 @@ function Shadow_LeechBrain:OnStart()
 	{
 		WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "<jump guard>",
 			PriorityNode({
+				BrainCommon.RunAwayFromQueenTorch(self.inst),
 				WhileNode(function() return ShouldJump(self.inst) end, "Jump",
 					ActionNode(function()
 						local target = GetTarget(self.inst)

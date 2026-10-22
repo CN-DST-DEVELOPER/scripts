@@ -38,6 +38,7 @@ local function OnRandDirty(inst)
     local flip = inst._rand:value() > 31
     local scale = MIN_SCALE + (MAX_SCALE - MIN_SCALE) * (flip and inst._rand:value() - 32 or inst._rand:value() - 1) / 30
     inst:DoTaskInTime(0, PlayShadowAnim, "shad"..inst.variation, scale, flip)
+    inst._complete = true
 end
 
 local function DisableNetwork(inst)

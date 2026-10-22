@@ -66,6 +66,7 @@ local function fn()
 
     inst:AddComponent("inspectable")
     inst.components.inspectable.getstatus = getstatus
+    inst:AddComponent("stalkerinspectable")
 
     MakeHauntableWork(inst)
 

@@ -171,6 +171,7 @@ local function MakePigElite(variation)
         inst:AddTag("scarytoprey")
         inst:AddTag("noepicmusic")
         inst:AddTag("minigame_participator")
+        inst:AddTag("canwearhat")
 
         inst.AnimState:SetBank("pigman")
         inst.AnimState:SetBuild("pig_guard_build")

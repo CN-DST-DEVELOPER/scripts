@@ -184,43 +184,39 @@ end
 function BatBrain:OnStart()
     local leave_formation = function() LeaveTeam(self.inst) end
     local root = PriorityNode({
-        EventNode(self.inst, "panic",
-            ParallelNode{
-                Panic(self.inst),
-                ActionNode(leave_formation),
-                WaitNode(6),
-            }),
+		WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "<jumping state guard>",
+			PriorityNode({
+				-- Panic nodes
+				WhileNode(function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "Panic",
+					ParallelNode{
+						Panic(self.inst),
+						ActionNode(leave_formation),
+					}),
+				WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "AvoidElectricFence",
+					ParallelNode{
+						AvoidElectricFence(self.inst),
+						ActionNode(leave_formation),
+					}),
+				--
 
-        -- Panic nodes
-        WhileNode(function() return BrainCommon.ShouldTriggerPanic(self.inst) end, "Panic",
-            ParallelNode{
-                Panic(self.inst),
-                ActionNode(leave_formation),
-            }),
-        WhileNode(function() return BrainCommon.ShouldAvoidElectricFence(self.inst) end, "AvoidElectricFence",
-            ParallelNode{
-                AvoidElectricFence(self.inst),
-                ActionNode(leave_formation),
-            }),
-        --
-
-        AttackWall(self.inst),
-        IfNode(function()
-                    self.inst.components.teamattacker:JoinFormation() -- Always try to rejoin the formation if possible.
-                    return self.inst.components.acidinfusible ~= nil and self.inst.components.acidinfusible:IsInfused()
-                end, "Is Acid Infused",
-            DoAction(self.inst, AcidBatAction)
-        ),
-        ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
-        WhileNode(function() return TheWorld.state.isday end, "IsDay",
-            DoAction(self.inst, GoHomeAction)),
-        WhileNode(function() return self.inst.components.teamattacker.teamleader == nil end, "No Leader",
-            PriorityNode{
-                DoAction(self.inst, EatFoodAction),
-                MinPeriod(self.inst, TUNING.BAT_ESCAPE_TIME, false,
-                    DoAction(self.inst, EscapeAction)),
-                Wander(self.inst, GetWanderPos, MAX_WANDER_DIST),
-            }),
+				AttackWall(self.inst),
+				IfNode(function()
+							self.inst.components.teamattacker:JoinFormation() -- Always try to rejoin the formation if possible.
+							return self.inst.components.acidinfusible ~= nil and self.inst.components.acidinfusible:IsInfused()
+						end, "Is Acid Infused",
+					DoAction(self.inst, AcidBatAction)
+				),
+				ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST),
+				WhileNode(function() return TheWorld.state.isday end, "IsDay",
+					DoAction(self.inst, GoHomeAction)),
+				WhileNode(function() return self.inst.components.teamattacker.teamleader == nil end, "No Leader",
+				PriorityNode{
+					DoAction(self.inst, EatFoodAction),
+					MinPeriod(self.inst, TUNING.BAT_ESCAPE_TIME, false,
+						DoAction(self.inst, EscapeAction)),
+					Wander(self.inst, GetWanderPos, MAX_WANDER_DIST),
+				}),
+			}, 0.25)),
     }, .25)
 
     self.bt = BT(self.inst, root)

@@ -390,15 +390,15 @@ local function portalfn()
     inst:AddTag("scarytoprey")
     inst:AddTag("shadowrift_portal")
 
-    inst.entity:SetPristine()
-
     inst._fx = CreateParticleFx(inst)
-    inst.highlightchildren = {inst._fx}    
+    inst.highlightchildren = {inst._fx}
     inst.highlightoverride = {0.15, 0, 0}
 
     inst.scrapbook_anim = "scrapbook" -- "stage_3_loop"
     inst.scrapbook_nodamage = true
     inst.scrapbook_specialinfo = "SHADOWRIFTPORTAL"
+
+    inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
         return inst
@@ -407,6 +407,7 @@ local function portalfn()
     inst._stage = 1
 
     inst:AddComponent("inspectable")
+    inst:AddComponent("stalkerinspectable")
 
     local combat = inst:AddComponent("combat")
     combat:SetDefaultDamage(TUNING.RIFT_SHADOW1_GROUNDPOUND_DAMAGE)

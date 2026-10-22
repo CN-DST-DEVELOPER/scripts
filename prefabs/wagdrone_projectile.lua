@@ -257,7 +257,7 @@ end
 
 -- Keep in sync with wx78_possessedbodybrain::WX78_DRONE_ZAP_TARGET_NOTAGS
 local WX78_DRONE_ZAP_TARGET_TAGS = { "_combat" }
-local WX78_DRONE_ZAP_TARGET_NOTAGS_PVP = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "brightmare", "brightmareboss", "electric_connector", "wall", "companion" }
+local WX78_DRONE_ZAP_TARGET_NOTAGS_PVP = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "shadowboss", "brightmare", "brightmareboss", "electric_connector", "wall", "companion" }
 local WX78_DRONE_ZAP_TARGET_NOTAGS = shallowcopy(WX78_DRONE_ZAP_TARGET_NOTAGS_PVP, { "player" })
 local function wx78_drone_zap_FindTargets(inst, x, z, radius)
 	return TheSim:FindEntities(x, 0, z, radius, WX78_DRONE_ZAP_TARGET_TAGS, TheNet:GetPVPEnabled() and WX78_DRONE_ZAP_TARGET_NOTAGS_PVP or WX78_DRONE_ZAP_TARGET_NOTAGS)

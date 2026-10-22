@@ -67,7 +67,8 @@ local function OnChatterDirty(inst)
 
                     local name_colour = self.name_colour and {self.name_colour.x, self.name_colour.y, self.name_colour.z, 1} or WHITE
                     local colour = self.colour and {self.colour.x, self.colour.y, self.colour.z, 1} or WHITE
-                    ChatHistory:OnChatterMessage(inst, name_colour, str, colour, self.chaticon, self.chaticonbg, echotochatpriority)
+                    local silent = TheFocalPoint:GetDistanceSqToInst(inst) <= 8 * 8
+                    ChatHistory:OnChatterMessage(inst, name_colour, str, colour, self.chaticon, self.chaticonbg, echotochatpriority, silent)
                 end
             end
             return

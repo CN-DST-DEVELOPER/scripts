@@ -7,6 +7,7 @@ local function kill_sound(inst)
 end
 
 local function kill_light(inst)
+    inst:PushEvent("onstarkilled")
     inst.AnimState:PlayAnimation(inst.pst or "disappear")
     inst:ListenForEvent("animover", kill_sound)
     inst:DoTaskInTime(1, inst.Remove) --originally 0.6, padded for network
@@ -50,11 +51,15 @@ local function pulse_light(inst)
     inst.Light:SetRadius(rad)
 end
 
-local function onhaunt(inst)
+local function ForceExtinguish(inst)
     if inst.components.timer:TimerExists("extinguish") then
         inst.components.timer:StopTimer("extinguish")
         kill_light(inst)
     end
+end
+
+local function onhaunt(inst)
+    inst:ForceExtinguish()
     return true
 end
 
@@ -120,6 +125,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx, pre, pst
             inst.no_wet_prefix = true
         end
 
+        inst:AddTag("staffstar") -- NOTES(JBK): Avoiding generic 'star' tag and demands ForceExtinguish function on inst.
         if is_hot then
             --cooker (from cooker component) added to pristine state for optimization
             inst:AddTag("cooker")
@@ -129,6 +135,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx, pre, pst
 
             inst.SoundEmitter:PlaySound("dontstarve/common/staff_star_LP", "staff_star_loop", nil, not inst._ismastersim)
         else
+            inst:AddTag("coldstar")
             inst.SoundEmitter:PlaySound("dontstarve/common/staff_coldlight_LP", "staff_star_loop", nil, not inst._ismastersim)
         end
 
@@ -167,6 +174,7 @@ local function makestafflight(name, is_hot, anim, colour, idles, is_fx, pre, pst
         if is_fx then
             inst.persists = false
         else
+            inst.ForceExtinguish = ForceExtinguish
             inst:AddComponent("inspectable")
 
             inst:AddComponent("hauntable")

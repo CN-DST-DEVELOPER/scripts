@@ -95,8 +95,7 @@ local function fn()
     MakeLargeFreezableCharacter(inst, "krampus_torso")
 
  --[[   inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
-    inst.components.eater:SetCanEatHorrible()
+    inst.components.eater:SetDiet({ FOODTYPE.MEAT, FOODTYPE.HORRIBLE }, { FOODTYPE.MEAT, FOODTYPE.HORRIBLE })
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!--]]
 
     inst:AddComponent("sleeper")

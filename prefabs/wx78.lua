@@ -751,8 +751,8 @@ local function master_postinit(inst)
 
     ----------------------------------------------------------------
     if inst.components.eater ~= nil then
+        inst.components.eater:SetDiet({ FOODGROUP.OMNI, FOODTYPE.GEARS }, { FOODGROUP.OMNI, FOODTYPE.GEARS })
         inst.components.eater:SetIgnoresSpoilage(true)
-        inst.components.eater:SetCanEatGears()
         inst.components.eater:SetOnEatFn(WX78Common.OnEat)
     end
 

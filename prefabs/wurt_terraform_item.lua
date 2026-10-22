@@ -272,7 +272,7 @@ local function OnHit_Lunar(inst, attacker, target)
     fx.Transform:SetPosition(ix, 0, iz)
 
     local owner = attacker.components.inventoryitem:GetGrandOwner()
-    if not owner:IsValid() then owner = nil end
+    if owner and not owner:IsValid() then owner = nil end
     local pvp = TheNet:GetPVPEnabled()
 
     local potential_hit_entities = TheSim:FindEntities(ix, 0, iz, zone_diagonal, LUNAR_AOE_MUST_TAGS, LUNAR_AOE_CANT_TAGS)

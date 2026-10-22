@@ -8,6 +8,17 @@ local prefabs =
     "shadowhand_arm",
 }
 
+local assets_shrouded =
+{
+    Asset("ANIM", "anim/shadow_creatures_ground.zip"), -- anim
+    Asset("ANIM", "anim/shadow_creatures_ground_shrouded.zip"), -- build
+}
+
+local prefabs_shrouded =
+{
+    "shadowhand_arm_shrouded",
+}
+
 local function Dissipate(inst)
     if inst.dissipating then
         return
@@ -38,6 +49,13 @@ end
 
 local function DoConsumeFire(inst)
     inst.task = nil
+    if inst.targetisstar then
+        -- The buffered action will fail below so let us handle how a star should be removed here.
+        local act = inst:GetBufferedAction()
+        if act and act.target and act.target:IsValid() then
+            act.target:ForceExtinguish()
+        end
+    end
     inst:PerformBufferedAction()
     inst.SoundEmitter:PlaySound("dontstarve/sanity/shadowhand_snuff")
 
@@ -66,6 +84,8 @@ local function ConsumeFire(inst, fire)
             inst._distance_test_task:Cancel()
             inst._distance_test_task = nil
         end
+        inst:RemoveEventCallback("onstarkilled", inst.dissipatefn, fire)
+        inst:RemoveEventCallback("onputininventory", inst.dissipatefn, fire)
 		inst:RemoveEventCallback("onextinguish", inst.dissipatefn, fire)
 		inst:RemoveEventCallback("machineturnedoff", inst.dissipatefn, fire)
         inst:RemoveEventCallback("onremove", inst.dissipatefn, fire)
@@ -131,7 +151,7 @@ local function FireDistanceTest(inst)
     local fire_x, fire_y, fire_z = inst.fire.Transform:GetWorldPosition()
     local origin = inst.components.knownlocations:GetLocation("origin")
     local fire_distance_sq = distsq(fire_x, fire_z, origin.x, origin.z)
-    if fire_distance_sq > MAX_ARM_DISTANCE_SQ then
+    if (fire_distance_sq > MAX_ARM_DISTANCE_SQ) or FindClosestQueenTorch(inst) then
         Dissipate(inst)
     end
 end
@@ -147,7 +167,7 @@ local function SetTargetFire(inst, fire, overrideaction)
     inst:AddComponent("knownlocations")
     inst.components.knownlocations:RememberLocation("origin", pos)
 
-    inst.arm = SpawnPrefab("shadowhand_arm")
+    inst.arm = SpawnPrefab(inst.armprefab)
     inst.arm.Transform:SetPosition(pos:Get())
     inst.arm:FacePoint(fire:GetPosition())
     inst.arm.components.stretcher:SetStretchTarget(inst)
@@ -159,7 +179,13 @@ local function SetTargetFire(inst, fire, overrideaction)
 
     inst.dissipatefn = function() Dissipate(inst) end
     inst:ListenForEvent("enterlight", inst.dissipatefn, inst.arm)
-	inst:ListenForEvent(inst.overrideaction == ACTIONS.TURNOFF and "machineturnedoff" or "onextinguish", inst.dissipatefn, fire)
+    if fire:HasTag("staffstar") then
+        inst.targetisstar = true -- Flag for special handling on the target.
+        inst:ListenForEvent("onstarkilled", inst.dissipatefn, fire)
+    else
+        inst:ListenForEvent(inst.overrideaction == ACTIONS.TURNOFF and "machineturnedoff" or "onextinguish", inst.dissipatefn, fire)
+    end
+    inst:ListenForEvent("onputininventory", inst.dissipatefn, fire)
     inst:ListenForEvent("onremove", inst.dissipatefn, fire)
     inst:ListenForEvent("startaction", HandleAction)
 
@@ -186,104 +212,138 @@ local function CanMouseThrough() -- So that we don't block trying to select othe
 	return true, true
 end
 
-local function create_hand()
-    local inst = CreateEntity()
+local function MakeShadowArm(name, data, assets, prefabs)
+    local build = data.build
+    local common_postinit = data.common_postinit
+    local master_postinit = data.master_postinit
+    local function fn()
+        local inst = CreateEntity()
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddSoundEmitter()
-    inst.entity:AddNetwork()
+        inst:AddTag("NOCLICK")
+        inst:AddTag("FX")
 
-    MakeCharacterPhysics(inst, 10, .5)
-    RemovePhysicsColliders(inst)
+        inst.entity:AddTransform()
+        inst.entity:AddAnimState()
+        inst.entity:AddLightWatcher()
+        inst.entity:AddNetwork()
 
-    inst:AddTag("shadowhand")
-    --inst:AddTag("NOCLICK") --NOTE: Don't add NOCLICK! Else sanity aura doesn't work!
-    inst:AddTag("ignorewalkableplatforms")
+        inst.LightWatcher:SetLightThresh(.2)
+        inst.LightWatcher:SetDarkThresh(.19)
 
-    inst.AnimState:SetBank("shadowcreatures")
-    inst.AnimState:SetBuild("shadow_creatures_ground")
-    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(3)
-    inst.AnimState:PlayAnimation("hand_in")
-    inst.AnimState:PushAnimation("hand_in_loop", true)
+        inst.AnimState:SetBank("shadowcreatures")
+        inst.AnimState:SetBuild(build)
+        inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+        inst.AnimState:SetLayer(LAYER_BACKGROUND)
+        inst.AnimState:SetSortOrder(3)
+        inst.AnimState:PlayAnimation("arm_loop", true)
 
-    inst.scrapbook_inspectonseen = true
+        inst:AddComponent("highlightchild")
 
-    inst.CanMouseThrough = CanMouseThrough
+        inst.entity:SetPristine()
 
-    inst.entity:SetPristine()
+        if not TheWorld.ismastersim then
+            return inst
+        end
 
-    if not TheWorld.ismastersim then
+        inst:AddComponent("stretcher")
+        inst.components.stretcher:SetRestingLength(4.75)
+        inst.components.stretcher:SetWidthRatio(.35)
+
+        inst.persists = false
+
+        if master_postinit then
+            master_postinit(inst)
+        end
         return inst
     end
-
-    inst.scrapbook_anim = "hand_in_loop"
-	inst.scrapbook_thingtype = "creature"
-
-    inst.arm = nil
-    inst.fire = nil
-    inst.task = nil
-    inst.dissipating = nil
-    inst.SetTargetFire = SetTargetFire
-
-    inst:WatchWorldState("startday", Dissipate)
-
-    inst:AddComponent("locomotor")
-    inst.components.locomotor.walkspeed = 2
-    inst.components.locomotor.directdrive = true
-    inst.components.locomotor.slowmultiplier = 1
-    inst.components.locomotor.fastmultiplier = 1
-	inst.components.locomotor:SetTriggersCreep(false)
-    inst.components.locomotor.pathcaps = { ignorecreep = true }
-
-    inst:AddComponent("sanityaura")
-    inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
-
-    inst.OnRemoveEntity = OnRemove
-    inst.persists = false
-
-    return inst
+    return Prefab(name, fn, assets, prefabs)
 end
 
-local function create_arm()
-    local inst = CreateEntity()
+local function MakeShadowHand(name, data, assets, prefabs)
+    local build = data.build
+    local common_postinit = data.common_postinit
+    local master_postinit = data.master_postinit
+    local armprefab = data.armprefab
+    local function fn()
+        local inst = CreateEntity()
 
-    inst:AddTag("NOCLICK")
-    inst:AddTag("FX")
+        inst.entity:AddTransform()
+        inst.entity:AddAnimState()
+        inst.entity:AddSoundEmitter()
+        inst.entity:AddNetwork()
 
-    inst.entity:AddTransform()
-    inst.entity:AddAnimState()
-    inst.entity:AddLightWatcher()
-    inst.entity:AddNetwork()
+        MakeCharacterPhysics(inst, 10, .5)
+        RemovePhysicsColliders(inst)
 
-    inst.LightWatcher:SetLightThresh(.2)
-    inst.LightWatcher:SetDarkThresh(.19)
+        inst:AddTag("shadowhand")
+        --inst:AddTag("NOCLICK") --NOTE: Don't add NOCLICK! Else sanity aura doesn't work!
+        inst:AddTag("ignorewalkableplatforms")
 
-    inst.AnimState:SetBank("shadowcreatures")
-    inst.AnimState:SetBuild("shadow_creatures_ground")
-    inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
-    inst.AnimState:SetLayer(LAYER_BACKGROUND)
-    inst.AnimState:SetSortOrder(3)
-    inst.AnimState:PlayAnimation("arm_loop", true)
+        inst.AnimState:SetBank("shadowcreatures")
+        inst.AnimState:SetBuild(build)
+        inst.AnimState:SetOrientation(ANIM_ORIENTATION.OnGround)
+        inst.AnimState:SetLayer(LAYER_BACKGROUND)
+        inst.AnimState:SetSortOrder(3)
+        inst.AnimState:PlayAnimation("hand_in")
+        inst.AnimState:PushAnimation("hand_in_loop", true)
 
-    inst:AddComponent("highlightchild")
+        inst.CanMouseThrough = CanMouseThrough
 
-    inst.entity:SetPristine()
+        inst.scrapbook_inspectonseen = true
 
-    if not TheWorld.ismastersim then
+        if common_postinit then
+            common_postinit(inst)
+        end
+        inst.entity:SetPristine()
+
+        if not TheWorld.ismastersim then
+            return inst
+        end
+
+        inst.scrapbook_anim = "hand_in_loop"
+        inst.scrapbook_thingtype = "creature"
+
+        inst.arm = nil
+        inst.fire = nil
+        inst.task = nil
+        inst.dissipating = nil
+        inst.armprefab = armprefab
+        inst.SetTargetFire = SetTargetFire
+        inst.Dissipate = Dissipate
+
+        inst:WatchWorldState("startday", Dissipate)
+
+        inst:AddComponent("locomotor")
+        inst.components.locomotor.walkspeed = TUNING.SHADOWHAND_SPEED
+        inst.components.locomotor.directdrive = true
+        inst.components.locomotor.slowmultiplier = 1
+        inst.components.locomotor.fastmultiplier = 1
+        inst.components.locomotor:SetTriggersCreep(false)
+        inst.components.locomotor.pathcaps = { ignorecreep = true }
+
+        inst:AddComponent("sanityaura")
+        inst.components.sanityaura.aura = -TUNING.SANITYAURA_MED
+
+        inst.OnRemoveEntity = OnRemove
+        inst.persists = false
+
+        if master_postinit then
+            master_postinit(inst)
+        end
         return inst
     end
-
-    inst:AddComponent("stretcher")
-    inst.components.stretcher:SetRestingLength(4.75)
-    inst.components.stretcher:SetWidthRatio(.35)
-
-    inst.persists = false
-
-    return inst
+    return Prefab(name, fn, assets, prefabs)
 end
 
-return Prefab("shadowhand", create_hand, assets, prefabs),
-    Prefab("shadowhand_arm", create_arm, assets)
+local function common_postinit_hand_shrouded(inst)
+    inst.AnimState:SetLightOverride(1)
+end
+local function master_postinit_hand_shrouded(inst)
+    inst.components.locomotor.walkspeed = TUNING.SHADOWHAND_SHROUDED_SPEED
+    inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
+end
+
+return MakeShadowHand("shadowhand", {build = "shadow_creatures_ground", armprefab = "shadowhand_arm",}, assets, prefabs),
+    MakeShadowArm("shadowhand_arm", {build = "shadow_creatures_ground",}, assets),
+    MakeShadowHand("shadowhand_shrouded", {build = "shadow_creatures_ground_shrouded", armprefab = "shadowhand_arm_shrouded", common_postinit = common_postinit_hand_shrouded, master_postinit = master_postinit_hand_shrouded,}, assets_shrouded, prefabs_shrouded),
+    MakeShadowArm("shadowhand_arm_shrouded", {build = "shadow_creatures_ground_shrouded",}, assets_shrouded)

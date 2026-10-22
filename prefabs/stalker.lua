@@ -27,6 +27,7 @@ local assets_npc =
     Asset("ANIM", "anim/stalker_basic.zip"),
     Asset("ANIM", "anim/stalker_action.zip"),
     Asset("ANIM", "anim/stalker_atrium.zip"),
+    Asset("ANIM", "anim/stalker_npc.zip"),
     Asset("ANIM", "anim/stalker_shadow_build.zip"),
     Asset("ANIM", "anim/stalker_atrium_build.zip"),
 }
@@ -72,7 +73,7 @@ local prefabs_atrium =
 
 local prefabs_npc =
 {
-    "shadowheart",
+    "shadowheart_infused",
     "fossil_piece",
 }
 
@@ -102,8 +103,9 @@ end
 
 local function OnTalk(inst)
     OnDoneTalking(inst)
-    inst.SoundEmitter:PlaySound(inst.isnpc and "dontstarve/creatures/together/stalker/talk_calm_LP" or "dontstarve/creatures/together/stalker/talk_LP", "talk")
-    inst.talktask = inst:DoTaskInTime(1.5 + math.random() * .5, OnDoneTalking)
+    inst.SoundEmitter:PlaySound(inst.npcstalker and "dontstarve/creatures/together/stalker/talk_calm_LP" or "dontstarve/creatures/together/stalker/talk_LP", "talk")
+    local timeouttalk = inst.npcstalker and (2.5 + math.random() * .5) or (1.5 + math.random() * .5)
+    inst.talktask = inst:DoTaskInTime(timeouttalk, OnDoneTalking)
 end
 
 --------------------------------------------------------------------------
@@ -121,7 +123,10 @@ end
 
 local function OnCameraFocusDirty(inst)
     if inst._camerafocus:value() then
-        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, 6, 22, 6)
+        local minrange = inst.camerafocus_minrange or 6
+        local maxrange = inst.camerafocus_maxrange or 22
+        local offset = inst.camerafocus_offset or nil
+        TheFocalPoint.components.focalpoint:StartFocusSource(inst, nil, nil, minrange, maxrange, 6, nil, offset)
         if inst._camerafocustask == nil then
             inst._camerafocustask = inst:DoPeriodicTask(0, OnFocusCamera)
             OnFocusCamera(inst)
@@ -1071,8 +1076,10 @@ local function CheckAtriumDecay(inst)
 end
 
 local function trackattackers(inst,data)
-    if data.attacker and data.attacker:HasTag("player") then
-        inst.attackerUSERIDs[data.attacker.userid] = true
+    -- afflicter comes from death event
+    local attacker = data.afflicter or data.attacker
+    if attacker and attacker.isplayer then
+        inst.attackerUSERIDs[attacker.userid] = true
     end
 end
 
@@ -1310,6 +1317,9 @@ local function OnDestroyOther(inst, other)
         other.components.workable.action ~= ACTIONS.DIG and
         other.components.workable.action ~= ACTIONS.NET and
         not inst.recentlycharged[other] then
+        if inst.npcstalker and other:HasTag("structure") then
+            inst:ChatterRandom("destroy_structure")
+        end
         SpawnPrefab("collapse_small").Transform:SetPosition(other.Transform:GetWorldPosition())
         other.components.workable:Destroy(inst)
         if other:IsValid() and other.components.workable ~= nil and other.components.workable:CanBeWorked() then
@@ -1369,16 +1379,18 @@ local function MakeStalker(name, common_postinit, master_postinit, data, _assets
         inst:AddTag("stalker")
         inst:AddTag("fossil")
         inst:AddTag("shadow_aligned")
+        inst:AddTag("followsthroughvirtualrooms")
+        inst:AddTag("chessbff")
+        inst:AddTag(isnpc and "npcstalker" or "hostile")
 
-        if not isnpc then
-            inst:AddTag("hostile")
+        if atriumstalker or isnpc then
+            inst._camerafocus = net_bool(inst.GUID, "stalker._camerafocus", "camerafocusdirty")
+            inst._camerafocustask = nil
         end
 
         if atriumstalker then
             inst:AddTag("noepicmusic")
 
-            inst._camerafocus = net_bool(inst.GUID, "stalker._camerafocus", "camerafocusdirty")
-            inst._camerafocustask = nil
             inst._music = net_tinybyte(inst.GUID, "stalker._music", "musicdirty")
             inst._playingmusic = false
             inst._musictask = nil
@@ -1430,7 +1442,7 @@ local function MakeStalker(name, common_postinit, master_postinit, data, _assets
         inst.components.lootdropper:SetChanceLootTable("stalker")
 
         inst:AddComponent("locomotor")
-        inst.components.locomotor.pathcaps = { ignorewalls = true }
+        inst.components.locomotor.pathcaps = not isnpc and { ignorewalls = true } or nil
         inst.components.locomotor.walkspeed = TUNING.STALKER_SPEED
 
         inst:AddComponent("health")
@@ -1484,7 +1496,7 @@ local function MakeStalker(name, common_postinit, master_postinit, data, _assets
             inst:AddComponent("entitytracker")
         end
         if isnpc then
-            inst.isnpc = true --Need this b4 setting brain
+            inst.npcstalker = true --Need this b4 setting brain
         end
 
         inst:SetStateGraph("SGstalker")
@@ -1492,6 +1504,8 @@ local function MakeStalker(name, common_postinit, master_postinit, data, _assets
 
         inst:ListenForEvent("ontalk", OnTalk)
         inst:ListenForEvent("donetalking", OnDoneTalking)
+
+        TheWorld:PushEvent("ms_registerstalker", inst)
 
         if master_postinit ~= nil then
             master_postinit(inst)
@@ -1505,15 +1519,78 @@ end
 
 ------------------------------------------------
 
+local function OnCaveDecay(inst)
+    inst.sleeptask = nil
+    if not inst.components.health:IsDead() then
+        inst.cavedecay = true
+        inst.components.lootdropper:SetLoot(nil)
+        inst.components.lootdropper:AddChanceLoot("shadowheart", 1)
+        inst.components.health:Kill()
+    end
+end
+
+local function OnCaveOffscreenDeath(inst)
+    inst.sleeptask = nil
+    if inst.persists then
+        inst.persists = false
+        inst.components.lootdropper:DropLoot(inst:GetPosition())
+    end
+    inst:Remove()
+end
+
+local function CaveOnEntitySleep(inst)
+    if inst.sleeptask ~= nil then
+        inst.sleeptask:Cancel()
+    end
+    inst.sleeptask =
+        inst.components.health:IsDead() and
+        inst:DoTaskInTime(1, OnCaveOffscreenDeath) or
+        inst:DoTaskInTime(30, OnCaveDecay)
+end
+
+local function CaveOnEntityWake(inst)
+    if inst.sleeptask ~= nil then
+        inst.sleeptask:Cancel()
+        inst.sleeptask = nil
+    end
+end
+
+local function CaveLootFn(lootdropper)
+    lootdropper:SetLoot(nil)
+    if lootdropper.inst.cavedecay then
+        lootdropper:AddChanceLoot("shadowheart", 1)
+    else
+        lootdropper:AddChanceLoot("shadowheart", 1)
+        lootdropper:AddChanceLoot("nightmarefuel", 1)
+        lootdropper:AddChanceLoot("nightmarefuel", 1)
+        lootdropper:AddChanceLoot("nightmarefuel", .5)
+        lootdropper:AddChanceLoot("nightmarefuel", .5)
+    end
+end
+
+local function CaveOnSave(inst, data)
+    data.decay = inst.cavedecay or nil
+end
+
+local function CaveOnLoad(inst, data)
+    if data ~= nil then
+        if inst.components.health:IsDead() then
+            inst.cavedecay = data.decay == true
+        end
+    end
+end
+
 local function cave_master_postinit(inst)
-    inst.components.lootdropper:AddChanceLoot("shadowheart", 1)
-    inst.components.lootdropper:AddChanceLoot("nightmarefuel", 1)
-    inst.components.lootdropper:AddChanceLoot("nightmarefuel", 1)
-    inst.components.lootdropper:AddChanceLoot("nightmarefuel", .5)
-    inst.components.lootdropper:AddChanceLoot("nightmarefuel", .5)
+    inst.components.lootdropper:SetLootSetupFn(CaveLootFn)
 
     inst:AddComponent("healthtrigger")
     inst.components.healthtrigger:AddTrigger(CAVE_PHASE2_HEALTH, CaveEnterPhase2Trigger)
+
+    inst.OnEntityWake = CaveOnEntityWake
+    inst.OnEntitySleep = CaveOnEntitySleep
+
+    inst.OnSave = CaveOnSave
+    inst.OnLoad = CaveOnLoad
 end
 
 ------------------------------------------------
@@ -1589,14 +1666,121 @@ end
 
 ------------------------------------------------
 
+local function NPCLootFn(lootdropper)
+    lootdropper:SetLoot(nil)
+    if lootdropper.inst.npcdecay then
+        lootdropper:AddChanceLoot("shadowheart_infused", 1)
+    else
+        lootdropper:AddChanceLoot("shadowheart_infused", 1)
+        -- lootdropper:AddChanceLoot("nightmarefuel", 1)
+        -- lootdropper:AddChanceLoot("nightmarefuel", 1)
+        -- lootdropper:AddChanceLoot("nightmarefuel", 1)
+        -- lootdropper:AddChanceLoot("nightmarefuel", 1)
+        -- lootdropper:AddChanceLoot("nightmarefuel", .5)
+        -- lootdropper:AddChanceLoot("nightmarefuel", .5)
+    end
+end
+
+local function GetRandomIndexFromString(strtbl)
+    local table_entries = strtbl:split(".")
+    local string_data = STRINGS
+    for _, entry in ipairs(table_entries) do
+        string_data = string_data[entry]
+    end
+
+    return math.random(#string_data)
+end
+
+--For searching:
+-- STRINGS.STALKER_NPC_FIRST_SPAWN
+-- STRINGS.STALKER_NPC_SEE_BIOMES
+-- STRINGS.STALKER_NPC_INSPECT
+local function NPCChatter(inst, id, cb)
+    local strtbl = "STALKER_NPC_"..string.upper(id)
+
+    inst.components.npc_talker:Chatter(strtbl, nil, CHATPRIORITIES.LOW, true, nil, nil, cb)
+    inst.components.npc_talker:DoNextLine()
+end
+
+--For searching:
+-- STRINGS.STALKER_NPC_SPAWN
+-- STRINGS.STALKER_NPC_DESTROY_STRUCTURE
+-- STRINGS.STALKER_NPC_IDLE
+-- STRINGS.STALKER_NPC_GREETING
+-- STRINGS.STALKER_NPC_FOLLOW_THURIBLE
+-- STRINGS.STALKER_NPC_FOLLOWING_THURIBLE
+-- STRINGS.STALKER_NPC_BIOMES_IDLE
+local function NPCChatterRandom(inst, id)
+    local strtbl = "STALKER_NPC_"..string.upper(id)
+    inst.components.npc_talker:Chatter(strtbl, GetRandomIndexFromString(strtbl), CHATPRIORITIES.LOW, true)
+    inst.components.npc_talker:DoNextLine()
+end
+
+local function SetNPCData(inst, var, val)
+    if TheWorld.components.stalkermanager then
+        TheWorld.components.stalkermanager:SetData(var, val)
+    end
+end
+
+local function GetNPCData(inst, var)
+    return TheWorld.components.stalkermanager and TheWorld.components.stalkermanager:GetData(var)
+end
+
+local function NPCOnNewTarget(inst, data)
+    if data.target ~= nil then
+        inst:PushEvent("roar")
+    end
+end
+
+local function NPCOnAttacked(inst, data)
+    if data.attacker ~= nil then
+        inst.components.combat:SetTarget(data.attacker)
+    end
+end
+
 local function npc_common_postinit(inst)
+    inst.camerafocus_minrange = 8
+    inst.camerafocus_maxrange = 16
+    inst.camerafocus_offset = Vector3(0, 2.5, 0)
+
     local npc_talker = inst:AddComponent("npc_talker")
     npc_talker.default_chatpriority = CHATPRIORITIES.HIGH
-    npc_talker.speaktime = 3.5
+    npc_talker.speaktime = 3
+
+    -- --trader (from trader component) added to pristine state for optimization
+    -- inst:AddTag("trader")
+    -- --alltrader (from trader component) added to pristine state for optimization
+    -- inst:AddTag("alltrader")
 end
 
 local function npc_master_postinit(inst)
+	-- inst:AddComponent("trader")
+    -- inst.components.trader:SetAcceptTest(ShouldAcceptItem)
+    -- inst.components.trader.onaccept = OnGetItemFromPlayer
+    -- inst.components.trader.onrefuse = OnRefuseItem
+    -- inst.components.trader.deleteitemonaccept = false
+	-- inst.components.trader.acceptnontradable = true
 
+    inst:AddComponent("areaaware")
+    inst:AddComponent("follower")
+
+    inst:AddComponent("epicscare")
+    inst.components.epicscare:SetRange(TUNING.STALKER_EPICSCARE_RANGE)
+
+    inst.components.lootdropper:SetLootSetupFn(NPCLootFn)
+
+    inst.EnableCameraFocus = EnableCameraFocus
+    inst.Chatter = NPCChatter
+    inst.ChatterRandom = NPCChatterRandom
+
+    inst.SetNPCData = SetNPCData
+    inst.GetNPCData = GetNPCData
+
+    inst.cancorrupt = true
+
+    -- TODO commenting for now
+    -- inst:ListenForEvent("newcombattarget", NPCOnNewTarget)
+    -- inst:ListenForEvent("attacked", NPCOnAttacked)
 end
 
 ------------------------------------------------

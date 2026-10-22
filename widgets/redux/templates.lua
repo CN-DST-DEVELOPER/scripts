@@ -187,12 +187,19 @@ end
 --  VERSION   --
 ----------------
 ----------------
+local VERSION_CACHE = nil
 function TEMPLATES.GetBuildString()
-	local version_str = BRANCH == "dev" and "Internal"
-						or BRANCH == "staging" and "Preview"
-						or STRINGS.UI.MAINSCREEN.DST_UPDATENAME
+    if not VERSION_CACHE then
+        local buildname = BRANCH == "dev" and "Internal"
+            or BRANCH == "staging" and "Preview"
+            or STRINGS.UI.MAINSCREEN.DST_UPDATENAME
+        local bitname = APP_ARCHITECTURE == "x32" and "32-bit" or APP_ARCHITECTURE == "x64" and "64-bit" or "??-bit"
+        local VERSIONING = require("versioning")
+        local version_str = string.format("%s - %s", VERSIONING.CURRENTVERSION, STRINGS.UPDATENAME)
+        VERSION_CACHE = string.format("%s\n%s %s %s", version_str, buildname, APP_VERSION, bitname)
+    end
 
-	return version_str.." v"..APP_VERSION.." ("..(APP_ARCHITECTURE == "x32" and "32-bit" or APP_ARCHITECTURE == "x64" and "64-bit" or "??-bit")..")"
+    return VERSION_CACHE
 end
 
 function TEMPLATES.AddBuildString(parent_widget, config)

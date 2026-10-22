@@ -178,6 +178,9 @@ local assets =
     Asset("SOUNDPACKAGE", "sound/rifts7.fev"),
     Asset("FILE", "sound/rifts7.fsb"),
 
+    Asset("SOUNDPACKAGE", "sound/rifts8.fev"),
+    Asset("FILE", "sound/rifts8.fsb"),
+
     Asset("FILE", "sound/wilton.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/winnie.fsb"),         -- Legacy sound that can be used in mods
     Asset("FILE", "sound/wallace.fsb"),        -- Legacy sound that can be used in mods
@@ -422,6 +425,8 @@ local assets =
     Asset("SHADER", "shaders/postprocess_none.ksh"),
     Asset("SHADER", "shaders/postprocess_bloom.ksh"),
     Asset("SHADER", "shaders/postprocess_colourcube.ksh"),
+    --Asset("SHADER", "shaders/postprocess_colourcube_ringdistort.ksh"),
+    Asset("SHADER", "shaders/postprocess_colourcube_linedistort.ksh"),
     Asset("SHADER", "shaders/postprocess_distort.ksh"),
     Asset("SHADER", "shaders/postprocess_lunacy.ksh"),
     Asset("SHADER", "shaders/postprocess_moonpulse.ksh"),
@@ -442,6 +447,8 @@ local assets =
     Asset("SHADER", "shaders/anim_fade_haunted.ksh"),
     Asset("SHADER", "shaders/anim_bloom_haunted.ksh"),
     Asset("SHADER", "shaders/minimapblend.ksh"),
+
+    Asset("SHADER", "shaders/ui_ctransform.ksh"),
 
     --common UI elements that we will always need
     Asset("ATLAS", "images/ui.xml"),
@@ -578,6 +585,14 @@ local assets =
     Asset("PKGREF", "anim/dynamic/previous_skin.dyn"),
     Asset("DYNAMIC_ANIM", "anim/dynamic/random_skin.zip"),
     Asset("PKGREF", "anim/dynamic/random_skin.dyn"),
+
+    -- nineslices
+    Asset("ATLAS", "images/9slice.xml"),
+    Asset("IMAGE", "images/9slice.tex"),
+
+    -- placeholder for screengrab texture
+    Asset("ATLAS", "images/screen_capture.xml"),
+    Asset("IMAGE", "images/screen_capture.tex"),
 }
 
 require "fonts"

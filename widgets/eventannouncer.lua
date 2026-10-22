@@ -153,7 +153,7 @@ function GetNewDeathAnnouncementString(theDead, source, pkname, sourceispet)
         else
             source = string.upper(source)
             if source == "NIL" then
-                if theDead == "WAXWELL" then
+                if CHARACTER_KNOWS_CHARLIE[theDead.prefab] and not TheWorld.components.charlie_tracker:IsCharlieDefeated() then
                     source = "CHARLIE"
                 else
                     source = "DARKNESS"

@@ -206,6 +206,7 @@ return{
             NOTAMONKEY = "Don't know how to speak Cheeky",
             QUEENBUSY = "She very busy! Maybe try later",
             CARNIVALGAME_GOLFGAME_NOTREADY = "Friend not finished",
+            KINGSTAFF_COOLDOWN = "Nope. Stuck", -- can't give it a new gem because it's on cooldown
         },
         GIVE_TACKLESKETCH =
 		{
@@ -456,7 +457,7 @@ return{
 
 			NOT_MINE = "Not mine",
 
-			CANNOT_FIX_DRONE = "Bye robot friend",
+			CANNOT_FIX_DRONE = "Bye robot buddy",
 
 --fallback to speech_wilson.lua             GESTALT_TOO_POWERFUL = "only_used_by_wx78",
         },
@@ -1258,6 +1259,17 @@ return{
     ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Hm. Cooling feeling gone...",--fire immunity expired
     ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hello, friend! Follow!", -- Security spark attached to us due to us holding Waymark Compass.
 
+    -- Rifts 8
+
+    -- after the final fight when Charlie goes MIA and isn't the night monster anymore
+	ANNOUNCE_GRUE_NOCHARLIE = "Someone here?",
+	ANNOUNCE_GRUE_NOCHARLIE_ATTACK = "Ouch!",
+--fallback to speech_wilson.lua 	ANNOUNCE_GRUE_NOCHARLIE_MISSED = "only_used_by_winona", --winona specific
+
+	ANNOUNCE_STOMP_SHROUDEN = "Squish never friend",
+
+    ANNOUNCE_DREADSTONE_SPIKE_EXPLODING = "Moon head make pointy rock BOOM!", -- exploding because of enlightenment.
+
 	BATTLECRY =
 	{
 		GENERIC = "Attack!",
@@ -1707,7 +1719,12 @@ return{
 		CAVE_BANANA = "Mmmmm...",
 		CAVE_BANANA_COOKED = "Smokey",
 		CAVE_BANANA_TREE = "Friend with Sweet Hair",
-		ROCKY = "Rock Pinchy",
+        ROCKY =
+        {
+            GENERIC = "Rock Pinchy",
+            BOULDER = "Rock. Hello", -- in boulder state, it looks like a normal boulder
+            ACID = "Rock Pinchy smaller?", -- in acid form
+        },
 
 		COMPASS =
 		{
@@ -1724,7 +1741,11 @@ return{
 
         HOUNDSTOOTH = "Sharp. Ouch!",
         ARMORSNURTLESHELL = "Anyone hiding?",
-        BAT = "Flying Claws!",
+        BAT =
+        {
+            GENERIC = "Flying Claws!",
+            ACID = "Flying Claws hungry!", -- in acid form
+        },
         BATBAT = "Flying Claw Whacker",
         BATWING = "Can't fly anymore",
         BATWING_COOKED = "Little chewy. And claw-y",
@@ -2191,10 +2212,15 @@ return{
         CHESSPIECE_SHARKBOI = "Toothy Fish Friend",
         CHESSPIECE_WORMBOSS = "Don't eat!",
         CHESSPIECE_YOTS = "Little wiggly",
-        CHESSPIECE_WAGBOSS_ROBOT = "Stone robot friend",
+        CHESSPIECE_WAGBOSS_ROBOT = "Small stone big robot friend",
         CHESSPIECE_WAGBOSS_LUNAR = "Friend no hurt more",
         CHESSPIECE_YOTH = "Neigh machine?",
-        CHESSPIECE_VAULT_PILLAR_GUARD = "Little tall rock friend",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "Little tall rock thing",
+        CHESSPIECE_BATBOSS_SHADOW = "Bad flying mouth",
+        CHESSPIECE_ROCKYBOSS_SHADOW = "Little big pinchy",
+        CHESSPIECE_WORMBOSS_SHADOW = "Much hungry!",
+        CHESSPIECE_CHARLIE_BOSS = "Sad for lady",
+        CHESSPIECE_SHROUDEN = "Never ever friend",
 
         CHESSJUNK1 = "Machine stuff",
         CHESSJUNK2 = "Lots of machine stuff",
@@ -3426,7 +3452,7 @@ return{
         WINTER_ORNAMENTBOSS = "Put on friends",
 		WINTER_ORNAMENTFORGE = "It goes on friend",
 		WINTER_ORNAMENTGORGE = "For friends to feel pretty",
-        WINTER_ORNAMENTPEARL = "From crabby friend",
+        WINTER_ORNAMENTPEARL = "From crabby lady",
 
         WINTER_FOOD1 = "Friend?", --gingerbread cookie
         WINTER_FOOD2 = "Oh. Didn't fall from sky", --sugar cookie
@@ -3513,6 +3539,7 @@ return{
 			CHARGING = "Oh. What's it doing?",
 			DESTABILIZING = "Looks sick",
 			COOLDOWN = "Tired?",
+            RITUAL_SUMMONING = "Bad eye", -- ritual is actively summoning, shrouden has appeared through the gate in the form of the eye, its looks between players, and charlie.
         },
         ATRIUM_KEY = "Goes where?",
 		LIFEINJECTOR = "Makes strong!",
@@ -4533,6 +4560,8 @@ return{
 			LORE1 = "Dark inside Bug King",
 			LORE2 = "Not sleeping",
 			LORE3 = "Hi, friends! Why mad?",
+            --
+            LORE1_STALKER = "Poor Bug King", -- when the stalker/king is with you, different inspect for the king statue!
 		},
 
         ARCHIVE_RESONATOR = {
@@ -5368,7 +5397,12 @@ return{
 		SHADOWTHRALL_WINGS = "Scary Flier",
 		SHADOWTHRALL_MOUTH = "Bad smile!",
 
-        CHARLIE_NPC = "Hello lady!",
+        CHARLIE_NPC =
+        {
+            GENERIC = "Hello lady!", -- scene 1, first appearance of charlie to repair the gateway
+            SCENE2 = "Help lady?", -- scene 2, charlie appears again to socket the key and place the ritual down
+            SCENE3 = "Help lady?", -- scene 3, the gateway has both keys, and the sacrifice pieces are set up in the ritual, she appears to tell you to activate it
+        },
         CHARLIE_HAND = "Want something?",
 
         NITRE_FORMATION = "Bunch of Pow Rocks",
@@ -5516,7 +5550,7 @@ return{
         BATTLESONG_INSTANT_REVIVE = "Biiiig mouth sounds",
 
         WATHGRITHR_IMPROVEDHAT = "Tweeter hat",
-        SPEAR_WATHGRITHR_LIGHTNING = "Pokey Stick make zzzzt",
+        SPEAR_WATHGRITHR_LIGHTNING = "Pokey stick make zzzzt",
 
         BATTLESONG_CONTAINER = "Biiiig mouth sounds go here",
 
@@ -5542,8 +5576,8 @@ return{
             BURNT = "Patuey Fly likes fire too much",
         },
 
-        DRAGONBOAT_KIT = "Fancy Floaty!",
-        DRAGONBOAT_PACK = "All the fancy Floaty bits!",
+        DRAGONBOAT_KIT = "Fancy floaty!",
+        DRAGONBOAT_PACK = "All the fancy floaty bits!",
 
         BOATRACE_CHECKPOINT = "That way!",
         BOATRACE_CHECKPOINT_THROWABLE_DEPLOYKIT = "Need to plant it on the water",
@@ -5554,14 +5588,14 @@ return{
         BOATRACE_SPECTATOR_DRAGONLING = "Will try not to splash!",
 
         YOTD_STEERINGWHEEL = "Shiny wheel",
-        YOTD_STEERINGWHEEL_ITEM = "For pointing Floaty",
+        YOTD_STEERINGWHEEL_ITEM = "For pointing floaty",
         YOTD_OAR = "Aaah! Oh, is not real.",
         YOTD_ANCHOR = "Hold onto sea bottom",
         YOTD_ANCHOR_ITEM = "Heavy...",
         MAST_YOTD = "Friend is all dressed up",
-        MAST_YOTD_ITEM = "Tall friend for Floater",
-        BOAT_BUMPER_YOTD = "Thank you for keeping Floaty safe!",
-        BOAT_BUMPER_YOTD_KIT = "Will help protect Floaty",
+        MAST_YOTD_ITEM = "Tall friend for floaty",
+        BOAT_BUMPER_YOTD = "Thank you for keeping floaty safe!",
+        BOAT_BUMPER_YOTD_KIT = "Will help protect floaty",
         BOATRACE_SEASTACK = "Look out!",
         BOATRACE_SEASTACK_THROWABLE_DEPLOYKIT = "Throw into water! Wheee!",
         BOATRACE_SEASTACK_MONKEY = "Look out!",
@@ -5579,8 +5613,8 @@ return{
         WAXED_PLANT = "Screaming! Friends are screaming!", -- Used for all waxed plants, from farm plants to trees.
 
         STORAGE_ROBOT = {
-            GENERIC = "Go, Grabby Friend!",
-            BROKEN = "Help! Grabby Friend is hurt!",
+            GENERIC = "Go, Grabby Buddy!",
+            BROKEN = "Help! Grabby Buddy is hurt!",
         },
 
         SCRAP_MONOCLEHAT = "Can see friends far away!",
@@ -5597,15 +5631,15 @@ return{
 
         -- Meta 4 / Ocean QoL
 
-        OTTER = "Hi, Stealy Friend",
+        OTTER = "Hi, Stealy Seal",
         OTTERDEN = {
             GENERIC = "No things",
-            HAS_LOOT = "Steal from Stealy Friend?",
+            HAS_LOOT = "Steal from Stealy Seal?",
         },
         OTTERDEN_DEAD = "Broken! Uh oh...",
 
         BOAT_ANCIENT_ITEM = "Needs water",
-        BOAT_ANCIENT_CONTAINER = "Put stuff in Floaty's belly",
+        BOAT_ANCIENT_CONTAINER = "Put stuff in floaty's belly",
         WALKINGPLANK_ANCIENT = "Splashy jump spot",
 
         ANCIENTTREE_SEED = "Hello, baby friend!",
@@ -5695,7 +5729,7 @@ return{
         RABBITKINGHORN_CHEST = "Thanks Squee Hopper!",
         RABBITKINGSPEAR = "Mean Squee Hopper stick",
         RABBITHAT = "Squee Hopper hat",
-        WORM_BOSS = "Hello, big wiggly!",
+        WORM_BOSS = "Hello, Big Wiggly!",
 
         STONE_TABLE = -- Shared between the round and square tables.
         {
@@ -5750,10 +5784,10 @@ return{
         YOTS_WORM = "Shiny wiggly?",
         YOTS_LANTERN_POST = 
         {
-            GENERIC = "Pretty tall friend",
-            BURNT = "Poor tall friend",
+            GENERIC = "Pretty tall light",
+            BURNT = "Poor tall light",
         },
-        YOTS_LANTERN_POST_ITEM = "Make tall friend!",
+        YOTS_LANTERN_POST_ITEM = "Make tall light!",
         CHESSPIECE_DEPTHWORM  = "Little wiggly",
 
         -- Meta 5
@@ -5788,7 +5822,7 @@ return{
         },
 
         SHALLOW_GRAVE = "Quiet friend",
-        THULECITEBUGNET = "Bug friends, don't be scared!",
+        THULECITEBUGNET = "Bugs, don't be scared!",
 
         -- Deck of Cards
         DECK_OF_CARDS = "For play with friends",
@@ -5802,7 +5836,7 @@ return{
 			FILLED = "Friend inside",
 		},
 		WAGBOSS_ROBOT_SECRET = "What hiding?",
-        WAGBOSS_ROBOT = "Big-big robot friend?",
+        WAGBOSS_ROBOT = "Big-big robot... friend?",
         WAGBOSS_ROBOT_POSSESSED = "Bad friend! Bad friend!",
 		WAGBOSS_ROBOT_LEG = "Poor bad robot friend lose leg!",
 		ALTERGUARDIAN_PHASE1_LUNARRIFT = "Night Ball ball more light?",
@@ -5810,19 +5844,19 @@ return{
         ALTERGUARDIAN_PHASE4_LUNARRIFT = "Friend hurting because friend hurting",
 		WAGDRONE_ROLLING =
         {
-            GENERIC = "Why, spinning friends, why?",
-            INACTIVE = "Sleeping friend",
-            DAMAGED = "Fix spinning friend, or take spinning friend parts",
-            FRIENDLY = "Nice spinning friend",
+            GENERIC = "Why, spinning buddies, why?",
+            INACTIVE = "Sleeping buddy",
+            DAMAGED = "Fix spinning buddy, or take spinning buddy parts",
+            FRIENDLY = "Nice spinning buddy",
         },
         WAGDRONE_FLYING =
         {
-            GENERIC = "Bad flying robot friends!",
-            INACTIVE = "Sleeping friend",
-            DAMAGED = "Bye flying robot friend, thank you for parts",
+            GENERIC = "Bad flying robot buddies!",
+            INACTIVE = "Sleeping buddy",
+            DAMAGED = "Bye flying robot buddy, thank you for parts",
         },
-		WAGDRONE_PARTS = "Friend parts?",
-		WAGDRONE_BEACON = "Friend can't cross",
+		WAGDRONE_PARTS = "Buddy parts?",
+		WAGDRONE_BEACON = "Buddy can't cross",
 
         WAGPUNK_WORKSTATION = "Building table build shiny things?",
         WAGPUNK_LEVER = "Danger?",
@@ -5832,7 +5866,7 @@ return{
 		WAGSTAFF_ITEM_1 = "Can touch hand shirt!",
 		WAGSTAFF_ITEM_2 = "Board friend real",
 
-        HERMITCRAB_RELOCATION_KIT = "Find crabby friend new home",
+        HERMITCRAB_RELOCATION_KIT = "Find crabby lady new home",
 
         WANDERINGTRADER =
         {
@@ -5848,16 +5882,16 @@ return{
         WAGBOSS_ROBOT_CONSTRUCTIONSITE = "Half big-big robot friend",
         WAGBOSS_ROBOT_CONSTRUCTIONSITE_KIT = "Big-big robot friend inside!",
         WAGBOSS_ROBOT_CREATION_PARTS = "Found parts for big-big robot friend!",
-        MOONSTORM_STATIC_CATCHER = "No friend",
-        COOLANT = "Bubble friend",
+        MOONSTORM_STATIC_CATCHER = "No little fire",
+        COOLANT = "Bubbles",
 
         FENCE_ELECTRIC = {
-            LINKED = "Zap friends!",      --NOTE: the fence post is fully linked to two other posts
-            GENERIC = "No friend for zap friend",           --NOTE: no links or electricity, just boring ol fence post
+            LINKED = "Zap!",      --NOTE: the fence post is fully linked to two other posts
+            GENERIC = "No zaps",           --NOTE: no links or electricity, just boring ol fence post
         },
-        FENCE_ELECTRIC_ITEM = "Help zap friend?",
+        FENCE_ELECTRIC_ITEM = "Where put zap stick?",
 
-        MUTATEDBIRD = "Tweeter, friend?",
+        MUTATEDBIRD = "Tweeter, what wrong?",
 
         BIRDCORPSE =
         {
@@ -5880,8 +5914,8 @@ return{
         -- Rifts 6
 
         SHADOWTHRALL_CENTIPEDE = {
-            HEAD = "Hello, legs friend head", --The head segment
-            BODY = "Legs friend many legs", --The body segment
+            HEAD = "Hello, many legs head", --The head segment
+            BODY = "Many legs", --The body segment
             FLIPPED = "Up down, down up", --When it's flipped over (either head or body segment)
         },
 
@@ -5905,8 +5939,8 @@ return{
 
 		ABYSSPILLAR_MINION =
 		{
-			GENERIC = "Friend sleeping", --off, looks like decor/statue
-			ACTIVATED = "Where friend going?", --turned on and hopping over puzzle pillars
+			GENERIC = "Sleeping", --off, looks like decor/statue
+			ACTIVATED = "Where going?", --turned on and hopping over puzzle pillars
 		},
 		ABYSSPILLAR_TRIAL = "Pull?",
 
@@ -5917,14 +5951,14 @@ return{
             UNPOWERED = "No spark",
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
-		VAULT_ORB = "Who friend lose ball?",
+		VAULT_ORB = "Who lose ball?",
         VAULT_LOBBY_EXIT = "Leave friend string for climbing?",
 		VAULT_CHANDELIER_BROKEN = "Ball fall down",
 
-		ANCIENT_HUSK = "Why, friends? Why?",
-		MASK_ANCIENT_HANDMAIDHAT = "Friend face hard!",
+		ANCIENT_HUSK = "Why, bug people? Why?",
+		MASK_ANCIENT_HANDMAIDHAT = "Bug lady face hard!",
 		MASK_ANCIENT_ARCHITECTHAT = "Science man?",
-		MASK_ANCIENT_MASONHAT = "Friend face strong!",
+		MASK_ANCIENT_MASONHAT = "Bug man face strong!",
 
         TREE_ROCK_SEED = "Baby friend!",
         TREE_ROCK_SAPLING = "Hey kid",
@@ -5934,16 +5968,16 @@ return{
 
 		VAULT_TORCH =
 		{
-			GENERIC = "Torch friend",
-			BROKEN = "Torch friend broke?", --the torch still functions, just the lever is broken
+			GENERIC = "Fire cup",
+			BROKEN = "Fire cup broke?", --the torch still functions, just the lever is broken
 		},
 
         CAVE_VENT_MITE =
 		{
-			DEAD = "Gassy friend not sleeping",
-			GENERIC = "Hello gassy friend",
-			SLEEPING = "Dream rock friends or bug friends?",
-            VENTING = "Gassy friend gassing!", -- in the shield state and venting out gasses
+			DEAD = "Gassy bug not sleeping",
+			GENERIC = "Hello gassy bug",
+			SLEEPING = "Dream rock or bug?",
+            VENTING = "Gassy bug gassing!", -- in the shield state and venting out gasses
         },
 
 		--Hallowed Nights 2025
@@ -6009,8 +6043,8 @@ return{
             DONE_SALT = "Some salty",
 			ABANDONED = "Broken",
         },
-		HERMITHOUSE_ORNAMENT = "Pretty stuff for crabby friend house",
-		HERMITHOUSE_LAUNDRY = "Crabby friend things",
+		HERMITHOUSE_ORNAMENT = "Pretty stuff for crabby lady house",
+		HERMITHOUSE_LAUNDRY = "Crabby lady things",
 
         PETALS_DRIED = "Dry stuff",
         PETALS_EVIL_DRIED = "Dry stuff",
@@ -6036,14 +6070,14 @@ return{
         NONSLIPGRITBOOSTED = "More no whoops",
         DESICCANT = "Make unwet!",
         DESICCANTBOOSTED = "No wet?",
-        HERMITCRAB_SHELL = "To crabby friend!",
+        HERMITCRAB_SHELL = "To crabby lady!",
         SALTY_DOGHAT = "Salty head thing!",
         SALTY_DOG = "Sea Woofer!",
 
         HERMITCRAB_TEASHOP =
         {
-            GENERIC = "Where crabby friend?", -- Inactive state, no Pearl inside.
-            ACTIVE = "Like crabby friend tea!", -- Active, Pearl is inside, can buy from her
+            GENERIC = "Where crabby lady?", -- Inactive state, no Pearl inside.
+            ACTIVE = "Like crabby lady tea!", -- Active, Pearl is inside, can buy from her
             BREWING = "Thirsty time", -- A trade just happened and she's brewing the tea!|
             BURNT = "Bad fire!", -- burnt strings.
         },
@@ -6091,14 +6125,14 @@ return{
             GENERIC = "Fly sky light!", -- Floating in the sky!
         },
 
-        YOTH_KNIGHTSTICK = "Make faster friend",
-        YOTH_CHAIR_ROCKING_ITEM = "Rocking friend!", -- The chair itself uses WOOD_CHAIR inspect states.
+        YOTH_KNIGHTSTICK = "Neigh stick!",
+        YOTH_CHAIR_ROCKING_ITEM = "Neigh chair!", -- The chair itself uses WOOD_CHAIR inspect states.
 
 		-- Meta 6
 
-		WX78_DRONE_SCOUT = "Thanks, brave friend!",
-		WX78_DRONE_DELIVERY = "Helpful friend",
-		WX78_DRONE_ZAP = "Flying zapper friend",
+		WX78_DRONE_SCOUT = "Thanks, brave buddy!",
+		WX78_DRONE_DELIVERY = "Helpful buddy",
+		WX78_DRONE_ZAP = "Flying zapper buddy",
 		WX78_DRONE_ZAP_REMOTE =
 		{
 			GENERIC = "Only robot friend play",
@@ -6141,11 +6175,11 @@ return{
 
         SHADOW_HEART_VEIN = "Cold friend gift?",
 
-        WX78_SHADOWDRONE_DEBUFFER = "Tell robot friend how to fight friends",
-        WX78_SHADOWDRONE_HARVESTER = "Friend get things",
+        WX78_SHADOWDRONE_DEBUFFER = "Tell robot friend how to fight",
+        WX78_SHADOWDRONE_HARVESTER = "Buddy get things",
 
         -- Rifts 7
-        STALKER_NPC = "Friend...?",
+        STALKER_NPC = "Big Bone Roarer... friend...?",
 
         MITEGLAND =
         {
@@ -6207,11 +6241,11 @@ return{
         HEALINGSALVE_FUMAROLE = "Ahhh. Feel nice",
 
 		VAULT_PILLAR_GUARD = "Mean rock!",
-		VAULT_PILLAR_GUARD_CRAFTED = "Tall rock friend nice!",
-		VAULT_PILLAR_GUARD_DORMANT = "Tall rock friend",
-		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "Why friend still sleeping?",
-		VAULT_PILLAR_GUARD_CONSTR = "Baby rock friend soon tall rock friend",
-		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where put baby rock friend?",
+		VAULT_PILLAR_GUARD_CRAFTED = "Tall rock thing nice!",
+		VAULT_PILLAR_GUARD_DORMANT = "Tall rock thing",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "Why tall rock thing still sleeping?",
+		VAULT_PILLAR_GUARD_CONSTR = "Baby rock thing soon tall rock thing",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where put baby rock thing?",
 		VAULT_CRAWLER =
 		{
 			GENERIC = "Rolly glow bug",
@@ -6228,8 +6262,8 @@ return{
             GENERIC = "Scared to take", -- Keystone is on it, ready to take
             PICKED = "Gone", -- No more keystone on it, we already took it, or someone else did.
         },
-        VAULT_ORB_REFINED = "Shiny friend!",
-        VAULT_PILLAR_GUARD_PIECE = "For tall friend",
+        VAULT_ORB_REFINED = "Shiny!",
+        VAULT_PILLAR_GUARD_PIECE = "For tall rock thing",
         VAULT_REFINER_PEDESTAL = "Make old things",
 
         VAULT_COMPASS =
@@ -6239,42 +6273,104 @@ return{
             KEYROOM = "Found it!", -- We're already in the key room! Compass marker is in a success state.
         },
 
-        CEILING_ROPE = "Helpful friend",
-        VAULT_KEY_EXIT = "Nowhere tie helpful friend?",--There's no where to tie a rope. Exit, but no re-entry.
+        CEILING_ROPE = "Helpful string",
+        VAULT_KEY_EXIT = "Nowhere tie helpful string?",--There's no where to tie a rope. Exit, but no re-entry.
 
         -- Crow Carnival 2026
 
-        CARNIVALGAME_GOLFGAME_KIT_EASY = "Fun friend",
-        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Middle friend",
-        CARNIVALGAME_GOLFGAME_KIT_HARD = "Tricky friend",
-        CARNIVALGAME_GOLFGAME_KIT_DIY = "Make special friend!",
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Fun game",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Middle game",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Tricky game",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Make special game!",
 
         CARNIVALGAME_GOLF_TEE =
         {
             GENERIC = "Need shiny?",  -- Ready to take a game token, reference other carnival game strings
             PLAYING = "Already has shiny", -- The game is active and in play
-            INACTIVE = "Friend not finished", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+            INACTIVE = "Not finished", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
         },
-        CARNIVALGAME_GOLF_HOLE = "Ball friend go here",
+        CARNIVALGAME_GOLF_HOLE = "Ball go here",
 
-        CARNIVALGAME_GOLF_TEE_KIT = "Where start friend?",
-        CARNIVALGAME_GOLF_HOLE_KIT = "Where end friend?",
+        CARNIVALGAME_GOLF_TEE_KIT = "Where start?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where end?",
 
-        CARNIVALGAME_GOLFCLUB = "Gentle hit ball friend",
-        CARNIVALGAME_GOLFBALL = "Sorry, ball friend",
+        CARNIVALGAME_GOLFCLUB = "To hit ball",
+        CARNIVALGAME_GOLFBALL = "Sorry, ball",
 
-        CARNIVALGAME_GOLFPROP_FENCE = "Keep friend inside",
+        CARNIVALGAME_GOLFPROP_FENCE = "Keep ball inside",
 
-        CARNIVALGAME_GOLFPROP_SPINNER = "Dizzy friend", -- All 4 spin plates(size/rotation) use the same inspect
-        CARNIVALGAME_GOLFPROP_CUTOUT = "Fake friend?", -- All 10 prop wood cutouts use the same inspect
-        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Up friend, down friend", -- All colored moving walls use this space inspect
+        CARNIVALGAME_GOLFPROP_SPINNER = "Make ball dizzy", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Flat", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Up-down wall", -- All colored moving walls use this space inspect
 
-        CARNIVALGAME_GOLFPROP_WORMHOLE = "Eat ball friend?", -- a fake wormhole, that lets the ball travel to another random wormhole
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Eat ball?", -- a fake wormhole, that lets the ball travel to another random wormhole
 
-        CARNIVALGAME_GOLFPROP_SPRING = "Bye ball friend!", -- spring that pops up to launch the ball
+        CARNIVALGAME_GOLFPROP_SPRING = "Bye ball!", -- spring that pops up to launch the ball
 
-        CARNIVALGAME_GOLFPROP_FAN = "Windy friend", -- fan that blows wind and pushes in a direction
+        CARNIVALGAME_GOLFPROP_FAN = "Spinny winder", -- fan that blows wind and pushes in a direction
 
+        -- Rifts 8
+
+        ROCKY_BOSS =
+        {
+            GENERIC = "Big pinchy!",
+            BOULDER = "Rock?", -- in boulder form
+            ACID = "Big pinchy ouchie?",
+        },
+		ROCKY_BOSS_SHADOW = "What wrong big pinchy?",
+        BAT_BOSS =
+        {
+            GENERIC = "Flying mouth!",
+            ACID = "Big glow eyes!",
+        },
+		BAT_BOSS_SHADOW = "Flying mouth all shadow!",
+
+        BATBOSSCAVE =
+        {
+            GENERIC = "Who inside?", -- boss bat is inside,
+            VACANT = "No one home?", -- boss bat is not inside anymore
+        },
+
+        WORM_BOSS_SHADOW = "Oh no!",
+
+        ARMOR_ROCKY = "Where Rock Pinchy insides?",
+        BAT_BOSSCORPSEHAT = "Flying mouth hat?",
+
+        ATRIUM_RITUAL_ORGAN_ROCKY =
+        {
+            GENERIC = "Big pinchy pincher",
+            IN_RITUAL = "How float?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_BAT =
+        {
+            GENERIC = "From inside flying mouth",
+            IN_RITUAL = "How float?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+        ATRIUM_RITUAL_ORGAN_WORM =
+        {
+            GENERIC = "Smell big wiggly poop!",
+            IN_RITUAL = "How float?", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+        },
+
+		CHARLIE_BOSS = "How lady is three?",
+		SHROUDEN =
+		{
+			GENERIC = "Never friend",
+			PUDDLE = "Bye bye never friend!",
+		},
+
+        CHARLIEARENA_SPIKE = "Pretty pointy rock",
+
+        KING_CANE =
+        {
+            GENERIC = "Shiny shiny stick", -- has a gem slotted in
+            EMPTY = "Where shiny?", -- can socket a gem inside (can be heavy on hint)
+        },
+        QUEEN_TORCH = "Lady fire stick?",
+        
+        CHARLIEARENA_TELEPORTER = "Take all things",
+
+        MASK_CHARLIE_BOSSHAT = "Lady... face",
     },
 
     DESCRIBE_GENERIC = "Friend?",
@@ -6299,6 +6395,4 @@ return{
     },
 
     WENDY_SKILLTREE_EASTEREGG = "only_used_by_wendy",
-
-
 }

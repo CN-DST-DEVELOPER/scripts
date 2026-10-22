@@ -232,6 +232,7 @@ local function NumHoundsToSpawn(inst)
     return num - numFollowers
 end
 
+local DIET = { FOODTYPE.MEAT, FOODTYPE.HORRIBLE }
 local function fncommon()
     local inst = CreateEntity()
 
@@ -329,8 +330,7 @@ local function fncommon()
     inst:AddComponent("inspectable")
 
     inst:AddComponent("eater")
-    inst.components.eater:SetDiet({ FOODTYPE.MEAT }, { FOODTYPE.MEAT })
-    inst.components.eater:SetCanEatHorrible()
+    inst.components.eater:SetDiet(DIET, DIET)
     inst.components.eater:SetStrongStomach(true) -- can eat monster meat!
 
     inst:AddComponent("sleeper")

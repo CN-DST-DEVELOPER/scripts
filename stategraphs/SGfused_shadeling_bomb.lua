@@ -38,7 +38,12 @@ local states = {
     },
 }
 
-CommonStates.AddSimpleState(states, "bounce", "bounce", {"busy"}, "idle_ground")
+CommonStates.AddSimpleState(states, "bounce", "bounce", {"busy"}, "idle_ground",
+{
+    FrameEvent(0, function(inst) -- not in onenter since bounce is init state, we want it to be in position first
+        inst.SoundEmitter:PlaySound("rifts2/parasitic_shadeling/dreadmite_bounce")
+    end),
+})
 CommonStates.AddSimpleState(states, "idle_ground", "idle_ground", { "idle" }, "idle_ground")
 CommonStates.AddSimpleState(states, "spawn", "spawn", {"busy"}, nil, nil,
 {

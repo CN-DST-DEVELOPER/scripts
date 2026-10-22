@@ -4,9 +4,15 @@ local function PlayWarningSound(proxy, sound, playanywhere)
 	local player = ThePlayer
 	if playanywhere then
 		--anywhere except vault =)
-		if player and TheWorld.Map:IsPointInAnyVault(player.Transform:GetWorldPosition()) then
-			return
-		end
+            -- and charlie arena =)
+        if player then
+            local x, y, z = player.Transform:GetWorldPosition()
+            if TheWorld.Map:IsPointInAnyVault(x, y, z) then
+                return
+            elseif TheWorld.Map:IsPointInCharlieBossArena(x, y, z) then
+                return
+            end
+        end
 	elseif not (player and
 				player.components.areaaware and
 				player.components.areaaware:CurrentlyInTag("Nightmare"))

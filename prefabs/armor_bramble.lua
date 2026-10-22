@@ -28,7 +28,7 @@ local function DoThorns(inst, owner)
 end
 
 local function OnBlocked(owner, data, inst)
-    if inst._cdtask == nil and data ~= nil and not data.redirected then
+	if inst._cdtask == nil and ShouldProcOnAttackedOrBlocked(inst, owner, data) then
         DoThorns(inst, owner)
     end
 end

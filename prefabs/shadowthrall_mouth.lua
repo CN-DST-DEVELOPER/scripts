@@ -34,12 +34,11 @@ local function DisplayNameFn(inst)
 	return ThePlayer and ThePlayer:HasTag("player_shadow_aligned") and STRINGS.NAMES.SHADOWTHRALL_MOUTH_ALLEGIANCE or nil
 end
 
-local function OnNewState(inst)
+local function OnNewState(inst, data)
 	if inst.sg:HasStateTag("stealth") then
 		if not inst._stealth then
 			inst._stealth = true
 			inst.Transform:SetNoFaced()
-			inst.AnimState:SetLightOverride(1)
 			inst.DynamicShadow:Enable(false)
 			RemovePhysicsColliders(inst)
 			inst:AddTag("stealth")
@@ -47,10 +46,17 @@ local function OnNewState(inst)
 			inst.components.combat:SetAttackPeriod(TUNING.SHADOWTHRALL_MOUTH_STEALTH_ATTACK_PERIOD)
 			inst.components.combat:SetRange(TUNING.SHADOWTHRALL_MOUTH_STEALTH_ATTACK_RANGE)
 		end
+		if not inst._stealthlit and not (data and data.statename == "stealth_on") then
+			inst._stealthlit = true
+			inst.AnimState:SetLightOverride(1)
+		end
 	elseif inst._stealth then
 		inst._stealth = nil
 		inst.Transform:SetSixFaced()
-		inst.AnimState:SetLightOverride(0)
+		if inst._stealthlit then
+			inst._stealthlit = nil
+			inst.AnimState:SetLightOverride(0)
+		end
 		inst.DynamicShadow:Enable(true)
 		ChangeToCharacterPhysics(inst)
 		inst:RemoveTag("stealth")
@@ -58,6 +64,19 @@ local function OnNewState(inst)
 		inst.components.combat:SetAttackPeriod(TUNING.SHADOWTHRALL_MOUTH_ATTACK_PERIOD)
 		inst.components.combat:SetRange(TUNING.SHADOWTHRALL_MOUTH_ATTACK_RANGE)
 	end
+end
+
+local function OnRooted(inst)
+	if inst.dupe.components.rooted == nil then
+		inst.dupe:AddComponent("rooted")
+	end
+	inst.dupe.components.rooted:AddSource(inst)
+end
+
+local function OnUnrooted(inst)
+	if inst.dupe.components.rooted then
+		inst.dupe.components.rooted:RemoveSource(inst)
+    end
 end
 
 local function RetargetFn(inst)
@@ -148,11 +167,54 @@ local function OnLoad(inst, data)
 	end
 end
 
+--------------------------------------------------------------------------
+
+local function OnCollide(inst, other, world_position_on_a_x, world_position_on_a_y, world_position_on_a_z, world_position_on_b_x, world_position_on_b_y, world_position_on_b_z, world_normal_on_b_x, world_normal_on_b_y, world_normal_on_b_z, lifetime_in_frames)
+	if other.prefab == "charliearena_spike" and
+		not inst.sg.statemem.collided and
+		(	inst.sg.currentstate.name == "shrouden_bite" or
+			inst.sg.currentstate.name == "shrouden_bite_loop"
+		) and
+		inst:IsValid()
+	then
+		local rot = inst.Transform:GetRotation()
+		local rot1 = inst:GetAngleToPoint(world_position_on_a_x, 0, world_position_on_a_z)
+		if DiffAngle(rot, rot1) < 75 then
+			inst.sg.statemem.collided = true
+		end
+	end
+end
+
+local function OnShroudenSummon(inst, shrouden, target)
+	inst.shrouden = shrouden
+	inst.persists = false
+	inst.OnEntitySleep = inst.Remove
+	inst:ListenForEvent("resetboss", function() inst:Remove() end, shrouden)
+
+	inst:SetPrefabNameOverride(shrouden.prefab) -- for death announce
+	inst:AddTag("NOCLICK")
+	inst:AddTag("notarget")
+	inst:AddTag("toughworker")
+	inst:SetBrain(nil)
+	inst.components.health:SetInvincible(true)
+	inst.components.combat:SetRetargetFunction(nil)
+	inst.components.combat:SetKeepTargetFunction(nil)
+	inst.components.planardamage:AddBonus(shrouden, TUNING.SHROUDEN_SUMMONS_BONUS_PLANAR_DAMAGE, "summoned")
+	inst.components.lootdropper:SetLoot(nil)
+	inst.components.lootdropper:SetLootSetupFn(nil)
+	--inst.components.lootdropper.GetWintersFeastOrnaments = nil
+
+	inst.Physics:SetCollisionCallback(OnCollide)
+
+	inst.sg:GoToState("shrouden_bite", target)
+end
+
+--------------------------------------------------------------------------
+
 --Runs on clients
 local function CanMouseThrough(inst)
 	return inst:HasTag("stealth"), true
 end
-
 
 local function lootsetfn(lootdropper)
     lootdropper:AddChanceLoot("lucky_goldnugget", 1)
@@ -161,7 +223,6 @@ local function lootsetfn(lootdropper)
     lootdropper:AddChanceLoot("lucky_goldnugget", 1)
     lootdropper:AddChanceLoot("lucky_goldnugget", 1)    
 end
-
 
 local function fn()
 	local inst = CreateEntity()
@@ -186,6 +247,10 @@ local function fn()
 	inst.AnimState:SetBank("shadow_thrall_mouth")
 	inst.AnimState:SetBuild("shadow_thrall_mouth")
 	inst.AnimState:PlayAnimation("idle", true)
+	inst.AnimState:SetSymbolLightOverride("fin_red", 1)
+	inst.AnimState:SetSymbolLightOverride("fx_red", 1)
+	inst.AnimState:SetSymbolLightOverride("fx_red_particle", 1)
+	inst.AnimState:SetSymbolLightOverride("smile_parts_02", 1)
 
 	inst.CanMouseThrough = CanMouseThrough
 	inst.displaynamefn = DisplayNameFn
@@ -250,6 +315,8 @@ local function fn()
 	inst:SetBrain(brain)
 
 	inst:ListenForEvent("newstate", OnNewState)
+	inst.dupe:ListenForEvent("rooted", OnRooted, inst)
+	inst.dupe:ListenForEvent("unrooted", OnUnrooted, inst)
 
 	inst._bite_target = nil
 	inst.TryRegisterBiteTarget = TryRegisterBiteTarget
@@ -257,7 +324,7 @@ local function fn()
 	inst.OnRemoveEntity = OnRemoveEntity_Server
 	inst.OnSave = OnSave
 	inst.OnLoad = OnLoad
-
+	inst.OnShroudenSummon = OnShroudenSummon
 
     if IsSpecialEventActive(SPECIAL_EVENTS.YOTS) then
         inst.components.lootdropper:SetLootSetupFn(lootsetfn)
@@ -297,6 +364,7 @@ local function dupefxfn()
 
 	inst.AnimState:SetBank("shadow_thrall_mouth")
 	inst.AnimState:SetBuild("shadow_thrall_mouth")
+	inst.AnimState:SetSymbolLightOverride("fin_red", 1)
 
 	inst.entity:SetPristine()
 

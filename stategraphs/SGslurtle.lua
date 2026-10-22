@@ -33,7 +33,7 @@ local events=
             if use_corpse_state then
                 inst.sg:GoToState("corpse", true)
             elseif inst.sg.mem.dissolving then
-                inst.sg:GoToState("salt_death_pst", data)
+                inst.sg:GoToState("dissolved_death", data)
             else
                 inst.sg:GoToState("death", data)
             end
@@ -51,7 +51,7 @@ local states =
         tags = {"idle", "canrotate"},
         onenter = function(inst, playanim)
             if inst.sg.mem.dissolving then
-                inst.sg:GoToState("salt_death_pre")
+                inst.sg:GoToState("dissolving_pre")
                 return
             end
 
@@ -66,7 +66,7 @@ local states =
 
         timeline =
         {
-		    TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/idle") end ),
+		    FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/idle") end ),
         },
 
         events=
@@ -85,9 +85,9 @@ local states =
 
         timeline =
         {
-            TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
-            TimeEvent(20*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
-            TimeEvent(33*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
+            FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
+            FrameEvent(20, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
+            FrameEvent(33, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/taunt") end ),
         },
 
 
@@ -116,7 +116,7 @@ local states =
 
     State{
     	name = "shield",
-    	tags = {"busy","hiding"},
+		tags = { "busy", "hiding", "shield" },
 
     	onenter = function(inst)
             --If taking fire damage, spawn fire effect.
@@ -135,7 +135,7 @@ local states =
 
         timeline =
         {
-            TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/hide") end ),
+            FrameEvent(1, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/hide") end ),
         },
 	},
 
@@ -149,7 +149,7 @@ local states =
 
         timeline =
         {
-            TimeEvent(1*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/emerge") end ),
+            FrameEvent(1, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/emerge") end ),
         },
 
         events=
@@ -168,9 +168,10 @@ local states =
 
         timeline =
         {
-            TimeEvent(11*FRAMES, function(inst)
-            inst:PerformBufferedAction()
-            inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/bite") end ), --take food
+            FrameEvent(9, function(inst)
+                inst:PerformBufferedAction() --take food
+                inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/bite")
+            end),
         },
 
         events =
@@ -190,8 +191,8 @@ local states =
 
         timeline =
         {
-            TimeEvent(7*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/eat") end ),
-            TimeEvent(17*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/eat") end ),
+            FrameEvent(7, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/eat") end ),
+            FrameEvent(17, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/eat") end ),
         },
 
         events =
@@ -224,18 +225,18 @@ local states =
 
         timeline =
         {
-            TimeEvent(11*FRAMES, function(inst) inst:PerformBufferedAction() end),
+            FrameEvent(11, function(inst) inst:PerformBufferedAction() end),
         },
     },
 
     -- Oh you poor thing...
     State{
-        name = "salt_death_pre",
+        name = "dissolving_pre",
         tags = { "busy", "hiding", "dissolving" },
 
         onenter = function(inst)
             inst.sg.mem.dissolving = true
-            if inst.components.locomotor ~= nil then
+            if inst.components.locomotor then
                 inst.components.locomotor:StopMoving()
             end
 
@@ -249,18 +250,18 @@ local states =
         {
             EventHandler("animover", function(inst)
                 if inst.AnimState:AnimDone() then
-                    inst.sg:GoToState("salt_death_loop")
+                    inst.sg:GoToState("dissolving_loop")
                 end
             end),
         },
     },
 
     State{
-        name = "salt_death_loop",
+        name = "dissolving_loop",
         tags = { "busy", "hiding", "dissolving" },
 
         onenter = function(inst)
-            if inst.components.locomotor ~= nil then
+            if inst.components.locomotor then
                 inst.components.locomotor:StopMoving()
             end
 
@@ -281,13 +282,14 @@ local states =
     },
 
     State{
-        name = "salt_death_pst",
+        name = "dissolved_death",
         tags = { "busy", "dead", "dissolving" },
 
         onenter = function(inst, data)
             if inst.components.locomotor ~= nil then
                 inst.components.locomotor:StopMoving()
             end
+            RemovePhysicsColliders(inst)
 
             inst.AnimState:PlayAnimation("salt_death_pst")
             inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/death_salty_pst")
@@ -311,19 +313,19 @@ CommonStates.AddWalkStates(states,
 {
     starttimeline =
     {
-	    TimeEvent(0*FRAMES, function(inst) inst.Physics:Stop() end ),
+	    FrameEvent(0, function(inst) inst.Physics:Stop() end ),
     },
 	walktimeline = {
-        TimeEvent(0*FRAMES, function(inst)
+        FrameEvent(0, function(inst)
 		    inst.Physics:Stop()
             if math.random() <= 0.33 then inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/idle") end
             inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/slide_out")
         end),
-        TimeEvent(13*FRAMES, function(inst)
+        FrameEvent(13, function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/slide_in")
             inst.components.locomotor:WalkForward()
         end),
-        TimeEvent(21*FRAMES, function(inst)
+        FrameEvent(21, function(inst)
             inst.Physics:Stop()
         end),
 	},
@@ -348,14 +350,14 @@ CommonStates.AddCombatStates(states,
 {
     attacktimeline =
     {
-        TimeEvent(10*FRAMES, function(inst) 
+        FrameEvent(9, function(inst)
             inst.components.combat:DoAttack()
             inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/bite")
         end),
     },
     deathtimeline =
     {
-        TimeEvent(1*FRAMES, function(inst)
+        FrameEvent(1, function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/slurtle/death")
         end),
     },
@@ -368,7 +370,7 @@ combatanims,
 
     onhitanimover = function(inst)
         if inst.AnimState:AnimDone() then
-            inst.sg:GoToState(inst.sg.mem.dissolving and "salt_death_pre" or "idle")
+            inst.sg:GoToState(inst.sg.mem.dissolving and "dissolving_pre" or "idle")
         end
     end,
 },
@@ -383,7 +385,7 @@ nil, --anims
 {   --fns
     onanimover = function(inst)
         if inst.AnimState:AnimDone() then
-            inst.sg:GoToState(inst.sg.mem.dissolving and "salt_death_pre" or "idle")
+            inst.sg:GoToState(inst.sg.mem.dissolving and "dissolving_pre" or "idle")
         end
     end,
 })

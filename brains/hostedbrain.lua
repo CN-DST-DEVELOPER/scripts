@@ -120,6 +120,7 @@ function HostedBrain:OnStart()
     local root =
         PriorityNode(
         {
+            BrainCommon.RunAwayFromQueenTorch(self.inst),
             WhileNode(function() return CanAttackTarget(self.inst) end, "Target available?",
                 ChaseAndAttack(self.inst, MAX_CHASE_TIME, MAX_CHASE_DIST)
             ),

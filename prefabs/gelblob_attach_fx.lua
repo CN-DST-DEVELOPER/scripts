@@ -8,7 +8,19 @@ local assets =
 local function ConnectorLerpTo(inst, x, z, scale)
 	inst._x = (inst._x or x) * 0.92 + x * 0.08
 	inst._z = (inst._z or z) * 0.92 + z * 0.08
-	inst.Transform:SetPosition(inst._x, 0, inst._z)
+
+	local parent = inst.entity:GetParent()
+	local dir = parent and parent.Transform:GetRotation() or 0
+	if dir ~= 0 then
+		local theta = dir * DEGREES
+		local costheta = math.cos(theta)
+		local sintheta = math.sin(theta)
+		x = inst._x * costheta - inst._z * sintheta
+		z = inst._x * sintheta + inst._z * costheta
+		inst.Transform:SetPosition(x, 0, z)
+	else
+		inst.Transform:SetPosition(inst._x, 0, inst._z)
+	end
 
 	inst._scale = scale
 	inst.AnimState:SetScale(1, scale)
@@ -115,13 +127,15 @@ local function OnUpdate(inst)
 	end
 
 	local x, y, z = inst.Transform:GetWorldPosition()
-	local x1, y1, z1 = inst.mainblob:value().Transform:GetWorldPosition()
+	local x1, y1, z1 = blob.Transform:GetWorldPosition()
 	local dx = x - x1
 	local dz = z - z1
 	local dsq = dx * dx + dz * dz
-	if dsq ~= 0 and dsq < 9 then
+	local r1 = blob:GetPhysicsRadius(0) + 0.5
+	local r2 = r1 + 1.5
+	if dsq ~= 0 and dsq < r2 * r2 then
 		local dist = math.sqrt(dsq)
-		local scale = easing.outQuad(math.clamp(dist, 1.5, 3) - 1.5, 1, -0.4, 1.5)
+		local scale = easing.outQuad(math.clamp(dist, r1, r2) - r1, 1, -0.4, r2 - r1)
 
 		local perplen = 0.3 / dist
 		local perpdx = dz * perplen
@@ -165,6 +179,9 @@ local function OnMainBlobDirty(inst)
 		if inst.connector1 == nil then
 			inst.connector1 = CreateConnectorBlob()
 			inst.connector1.entity:SetParent(blob.entity)
+			if blob.prefab == "shrouden" then
+				inst.connector1.AnimState:SetLightOverride(1)
+			end
 		elseif inst.connector1.highlightparent then
 			table.removearrayvalue(inst.connector1.highlightchildren, inst.connector1)
 			inst.connector1.highlightparent = nil
@@ -173,6 +190,9 @@ local function OnMainBlobDirty(inst)
 		if inst.connector2 == nil then
 			inst.connector2 = CreateConnectorBlob()
 			inst.connector2.entity:SetParent(blob.entity)
+			if blob.prefab == "shrouden" then
+				inst.connector2.AnimState:SetLightOverride(1)
+			end
 		elseif inst.connector2.highlightparent then
 			table.removearrayvalue(inst.connector2.highlightchildren, inst.connector2)
 			inst.connector2.highlightparent = nil
@@ -190,6 +210,7 @@ local function OnMainBlobDirty(inst)
 		if inst.components.updatelooper == nil then
 			inst:AddComponent("updatelooper")
 			inst.components.updatelooper:AddOnUpdateFn(OnUpdate)
+			OnUpdate(inst)
 		end
 	else
 		OnMainBlobLost(inst)
@@ -279,6 +300,9 @@ local function SetupBlob(inst, mainblob, target)
 		RegisterTargetLocomotorDebuff(inst, target)
 	end
 
+	if mainblob.prefab == "shrouden" then
+		inst.AnimState:SetLightOverride(1)
+	end
 	inst.mainblob:set(mainblob)
 	OnMainBlobDirty(inst)
 end
@@ -316,14 +340,6 @@ local function OnRemoveEntity_Client(inst)
 		table.removearrayvalue(inst.highlightparent.highlightchildren, inst)
 		inst.highlightparent = nil
 	end
-end
-
-local function OnRemoveEntity_Server(inst)
-	OnRemoveEntity_Client(inst)
-	local parent = inst.entity:GetParent()
-	if parent then
-		parent:RemoveTag("gelblobbed")
-	end
 	if inst.connector1 then
 		inst.connector1:Remove()
 		inst.connector1 = nil
@@ -331,6 +347,14 @@ local function OnRemoveEntity_Server(inst)
 	if inst.connector2 then
 		inst.connector2:Remove()
 		inst.connector2 = nil
+	end
+end
+
+local function OnRemoveEntity_Server(inst)
+	OnRemoveEntity_Client(inst)
+	local parent = inst.entity:GetParent()
+	if parent then
+		parent:RemoveTag("gelblobbed")
 	end
 	UnregisterTargetLocomotorDebuff(inst)
 end

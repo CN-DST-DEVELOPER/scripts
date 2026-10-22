@@ -170,13 +170,15 @@ function Wx78_TaserBuildup:DoShockExplosion()
     end
 end
 
-function Wx78_TaserBuildup:OnAttacked()
-    self.is_draining = false
-    self.last_buildup_time = GetTime()
-    self.effect_cooldown = self.effect_cooldown * .5
+function Wx78_TaserBuildup:OnAttacked(data)
+	if not IsEquipmentOnAttackedOrBlocked(self.inst, self.inst, data) then
+		self.is_draining = false
+		self.last_buildup_time = GetTime()
+		self.effect_cooldown = self.effect_cooldown * 0.5
 
-    local delta = self:GetBuildupGainRate() * TUNING.SKILLS.WX78.TASER_BUILDUP_GAIN_RATE --* (1 - self:GetPercent())
-    self:DoDelta(delta)
+		local delta = self:GetBuildupGainRate() * TUNING.SKILLS.WX78.TASER_BUILDUP_GAIN_RATE --* (1 - self:GetPercent())
+		self:DoDelta(delta)
+	end
 end
 
 function Wx78_TaserBuildup:DoDelta(delta)

@@ -22,6 +22,12 @@ bug1
 bug2
 bug3
 ]]
+--[[
+scenes:
+lore1 - king
+lore2 - gateway with ancients and bugs surrounding
+lore3 - the guards protecting the key
+]]
 
 local MINIMAP =
 {
@@ -52,7 +58,22 @@ local function SetScene(inst, scene)
 end
 
 local function GetStatus(inst)--, viewer)
+	if inst.scene == "lore1" then
+		local stalker = TheWorld.components.stalkermanager and TheWorld.components.stalkermanager:GetStalker()
+		if stalker and stalker.npcstalker then
+			-- if both are in the vault room, or if its close enough (debug case outside the vault)
+			if (TheWorld.Map:IsPointInVaultRoom(inst.Transform:GetWorldPosition()) and TheWorld.Map:IsPointInVaultRoom(stalker.Transform:GetWorldPosition()))
+				or inst:GetDistanceSqToInst(stalker) <= 16 * 16 then
+				return "LORE1_STALKER"
+			end
+		end
+	end
+	--
 	return string.upper(inst.scene)
+end
+
+local function GetStalkerInspectOverride(inst)
+	return "vault_statue_"..inst.scene
 end
 
 local function OnSave(inst, data)
@@ -100,6 +121,9 @@ local function fn()
 
 	inst:AddComponent("inspectable")
 	inst.components.inspectable.getstatus = GetStatus
+
+	inst:AddComponent("stalkerinspectable")
+	inst.components.stalkerinspectable:SetNameOverride(GetStalkerInspectOverride)
 
 	inst.id = "king"
 	inst.scene = "lore1"
