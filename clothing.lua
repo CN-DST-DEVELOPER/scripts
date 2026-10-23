@@ -1700,10 +1700,11 @@ CLOTHING =
 	{
 		type = "body",
 		skin_tags = { "PIRATE", "CLOTHING_BODY", "CLOTHING", },
-		symbol_overrides = { "arm_upper", "leg", "torso", },
+		symbol_overrides = { "arm_upper", "leg", "torso", "torso_pelvis", },
 		symbol_overrides_by_character = { default = { leg = "leg_wilson", torso = "torso", },walter = { leg = "leg_walter", torso = "torso_walter", },wanda = { leg = "leg_wanda", torso = "torso_wanda", },warly = { leg = "leg_warly", torso = "torso_warly", },waxwell = { leg = "leg_waxwell", torso = "torso_waxwell", },webber = { leg = "leg_webber", torso = "torso_webber", },wormwood = { leg = "leg_wormwood", torso = "torso_wormwood", },wortox = { leg = "leg_wortox", torso = "torso_wortox", },wurt = { leg = "leg_wurt", torso = "torso_wurt", },wx78 = { leg = "leg_wx78", torso = "torso_wx78", },},
 		symbol_overrides_old = { torso = "torso_old", torso_pelvis = "torso_pelvis_old", },
-		torso_tuck = "untucked",
+		symbol_hides = { "skirt", },
+		torso_tuck = "skirt",
 		rarity = "Distinguished",
 		rarity_modifier = "Woven",
 		release_group = 186,
@@ -7937,7 +7938,7 @@ CLOTHING =
 	hand_wanda_survivor =
 	{
 		type = "hand",
-		skin_tags = { "VICTORIAN", "CLOTHING_HAND", "CLOTHING", },
+		skin_tags = { "SURVIVOR", "CLOTHING_HAND", "CLOTHING", },
 		symbol_overrides = { "arm_lower_cuff", },
 		rarity = "Spiffy",
 		rarity_modifier = "Woven",

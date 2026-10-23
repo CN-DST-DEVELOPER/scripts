@@ -122,7 +122,8 @@ end
 
 local function TrackingTaskTick(inst, owner, cane)
     if cane:IsValid() and cane.components.equippable:IsEquipped() then
-        if owner:IsValid() and owner.entity:IsVisible() then
+        local caneowner = cane.components.inventoryitem.owner
+        if caneowner == owner and owner:IsValid() and owner.entity:IsVisible() then
             local mounted = owner.components.rider and owner.components.rider:IsRiding()
             local radius = (mounted and 1 or .5) + .5 -- NOTES(JBK): Keep in sync with prefabskin.lua. [CSTRC]
             radius = radius * 2 -- These instances stick around so make the padding double for a lingering trail of where the player was.
@@ -190,7 +191,6 @@ local function MakeChessFX(name, netvarindex, prefabs)
         end
 
         inst.persists = false
-        inst.OnEntitySleep = inst.Remove
         inst.SetOwnerAffinity = SetOwnerAffinity
         inst.TrackOwnerAndCane = TrackOwnerAndCane
         inst.fadingouttask = inst:DoTaskInTime(1.5, FadeOut)

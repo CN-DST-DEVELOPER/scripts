@@ -6345,7 +6345,7 @@ return{
         ATRIUM_RITUAL_ORGAN_WORM =
         {
             GENERIC = "POOPSACK FROM A FLESHSACK",
-            IN_RITUAL = "DISGUSTING PAYLOAD SECURED`", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
+            IN_RITUAL = "DISGUSTING PAYLOAD SECURED", -- it's floating as part of the ritual circle (can reuse same string for all IN_RITUAL)
         },
 
 		CHARLIE_BOSS = "HOST CORRUPTED",

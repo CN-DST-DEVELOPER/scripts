@@ -3124,11 +3124,24 @@ local function cane_do_trail(inst)
     if offset ~= nil then
         local fx = SpawnPrefab(inst.trail_fx)
         fx.Transform:SetPosition(x + offset.x, 0, z + offset.z)
-        if fx.SetOwnerAffinity and owner.components.skilltreeupdater then
-            if owner.components.skilltreeupdater:HasSkillTag("lunar_favor") then
-                fx:SetOwnerAffinity("LUNAR")
-            elseif owner.components.skilltreeupdater:HasSkillTag("shadow_favor") then
-                fx:SetOwnerAffinity("SHADOW")
+        if fx.SetOwnerAffinity then
+            local skilltreeowner = owner
+            if skilltreeowner.prefab == "wx78_backupbody_inventory" then
+                -- Hack to move the reference to the backupbody.
+                local parent = skilltreeowner.entity:GetParent()
+                if parent and parent.prefab == "wx78_backupbody" then
+                    skilltreeowner = parent
+                end
+            end
+            if skilltreeowner.wx78_classified then
+                skilltreeowner = skilltreeowner.wx78_classified:GetOwningPlayer() or skilltreeowner
+            end
+            if skilltreeowner.components.skilltreeupdater then
+                if skilltreeowner.components.skilltreeupdater:HasSkillTag("lunar_favor") then
+                    fx:SetOwnerAffinity("LUNAR")
+                elseif skilltreeowner.components.skilltreeupdater:HasSkillTag("shadow_favor") then
+                    fx:SetOwnerAffinity("SHADOW")
+                end
             end
         end
         if fx.TrackOwnerAndCane then
