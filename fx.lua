@@ -3714,6 +3714,54 @@ local fx =
 		fn = FinalOffset2,
     },
     {
+        name = "leafpile_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile",
+        anim = "leaves_shatter",
+        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_red_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile_red_build",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_red_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile_red_build",
+        anim = "leaves_shatter",
+        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_yellow_spawn_fx",
+        bank = "leafpile",
+        build = "leafpile_yellow_build",
+        anim = "leaves_fall",
+        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        fn = FinalOffset2,
+    },
+    {
+        name = "leafpile_yellow_shatter_fx",
+        bank = "leafpile",
+        build = "leafpile_yellow_build",
+        anim = "leaves_shatter",
+        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        fn = FinalOffset2,
+    },
+    {
         name = "shadowthrall_parasite_attach_poof_fx",
         bank = "shadow_thrall_parasite_transition_fx",
         build = "shadow_thrall_parasite_transition_fx",

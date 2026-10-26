@@ -188,7 +188,13 @@ end
 
 local function DoSpitOut(inst, target)
 	if IsDevouring(inst, target) then
-		target.sg.currentstate:HandleEvent(target.sg, "spitout", { spitter = inst, rot = inst.Transform:GetRotation(), radius = inst:GetPhysicsRadius(0) + 3, strengthmult = 0.667 })
+		target.sg.currentstate:HandleEvent(target.sg, "spitout", {
+			spitter = inst,
+			rot = inst.Transform:GetRotation(),
+			radius = inst:GetPhysicsRadius(0) + 3,
+			strengthmult = 0.667,
+			starthigh = true,
+		})
 		if not inst.components.health:IsDead() then
 			inst.components.combat:SetTarget(target)
 		end

@@ -353,14 +353,14 @@ local function frenzyfn()
     inst:AddTag("FX")
     inst:AddTag("NOCLICK")
 
-    inst._kill = net_event(inst.GUID, "willow_frenzy._kill", "killdirty")
+	inst._kill = net_event(inst.GUID, "willow_frenzy._kill")
 
     inst.OnFrenzyKilled = OnFrenzyKilled
     inst.FrenzyDoOnClientInit = FrenzyDoOnClientInit
 
     -- Dedicated server does not need the fx.
     if not TheNet:IsDedicated() then
-        inst:ListenForEvent("killdirty", inst.OnFrenzyKilled)
+		inst:ListenForEvent("willow_frenzy._kill", inst.OnFrenzyKilled)
 
         inst:FrenzyDoOnClientInit()
     end

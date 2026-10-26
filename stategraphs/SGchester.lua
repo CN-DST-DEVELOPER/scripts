@@ -70,6 +70,7 @@ local events=
     CommonHandlers.OnStep(),
     CommonHandlers.OnSleep(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnLocomote(false,true),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
@@ -79,7 +80,7 @@ local events=
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				inst.SoundEmitter:PlaySound(inst.sounds.hurt)
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 				inst.SoundEmitter:PlaySound(inst.sounds.hurt)
 			end
@@ -88,13 +89,6 @@ local events=
     EventHandler("morph", function(inst, data)
         inst.sg:GoToState("morph", data.morphfn)
     end),
-
-    EventHandler("knockback", function(inst, data)
-        if not inst.components.health:IsDead() then
-            inst.sg:GoToState("knockbacklanded", data)
-        end
-    end),
-
     EventHandler("devoured", function(inst, data)
         if not inst.components.health:IsDead() and data ~= nil and data.attacker ~= nil and data.attacker:IsValid() then
             inst.sg:GoToState("devoured", data)
@@ -284,7 +278,8 @@ local states=
 
     State{
         name = "transition",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
+
         onenter = function(inst)
             inst.Physics:Stop()
 
@@ -336,7 +331,8 @@ local states=
 
     State{
         name = "morph",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
+
         onenter = function(inst, morphfn)
             inst.Physics:Stop()
 
@@ -399,123 +395,9 @@ local states=
         end,
     },
 
-
-    State{
-        name = "knockbacklanded",
-		tags = { "knockback", "busy", "nopredict", "nomorph", "nointerrupt", "jumping", "noelectrocute" },
-
-        onenter = function(inst, data)
-            ClearStatusAilments(inst)
-            inst.components.locomotor:Stop()
-            inst:ClearBufferedAction()
-
-            inst.AnimState:PlayAnimation("idle_loop")
-
-            if data ~= nil then
-
-                if data.radius ~= nil and data.knocker ~= nil and data.knocker:IsValid() then
-                    local x, y, z = data.knocker.Transform:GetWorldPosition()
-                    local distsq = inst:GetDistanceSqToPoint(x, y, z)
-                    local rangesq = data.radius * data.radius
-                    local rot = inst.Transform:GetRotation()
-                    local rot1 = distsq > 0 and inst:GetAngleToPoint(x, y, z) or data.knocker.Transform:GetRotation() + 180
-                    local drot = math.abs(rot - rot1)
-                    while drot > 180 do
-                        drot = math.abs(drot - 360)
-                    end
-                    local k = distsq < rangesq and .3 * distsq / rangesq - 1 or -.7
-                    inst.sg.statemem.speed = (data.strengthmult or 1) * 8 * k
-                    inst.sg.statemem.dspeed = 0
-                    if drot > 90 then
-                        inst.sg.statemem.reverse = true
-                        inst.Transform:SetRotation(rot1 + 180)
-                        inst.Physics:SetMotorVel(-inst.sg.statemem.speed, 0, 0)
-                    else
-                        inst.Transform:SetRotation(rot1)
-                        inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
-                    end
-                end
-            end
-
-            if inst:IsOnPassablePoint(true) then
-                inst.sg.statemem.safepos = inst:GetPosition()
-            elseif data ~= nil and data.knocker ~= nil and data.knocker:IsValid() and data.knocker:IsOnPassablePoint(true) then
-                local x1, y1, z1 = data.knocker.Transform:GetWorldPosition()
-                local radius = data.knocker:GetPhysicsRadius(0) - inst:GetPhysicsRadius(0)
-                if radius > 0 then
-                    local x, y, z = inst.Transform:GetWorldPosition()
-                    local dx = x - x1
-                    local dz = z - z1
-                    local dist = radius / math.sqrt(dx * dx + dz * dz)
-                    x = x1 + dx * dist
-                    z = z1 + dz * dist
-                    if TheWorld.Map:IsPassableAtPoint(x, 0, z, true) then
-                        x1, z1 = x, z
-                    end
-                end
-                inst.sg.statemem.safepos = Vector3(x1, 0, z1)
-            end
-
-            inst.sg:SetTimeout(11 * FRAMES)
-        end,
-
-        onupdate = function(inst)
-            if inst.sg.statemem.speed ~= nil then
-                inst.sg.statemem.speed = inst.sg.statemem.speed + inst.sg.statemem.dspeed
-                if inst.sg.statemem.speed < 0 then
-                    inst.sg.statemem.dspeed = inst.sg.statemem.dspeed + .075
-                    inst.Physics:SetMotorVel(inst.sg.statemem.reverse and -inst.sg.statemem.speed or inst.sg.statemem.speed, 0, 0)
-                else
-                    inst.sg.statemem.speed = nil
-                    inst.sg.statemem.dspeed = nil
-                    inst.Physics:Stop()
-                end
-            end
-            local safepos = inst.sg.statemem.safepos
-            if safepos ~= nil then
-                if inst:IsOnPassablePoint(true) then
-                    safepos.x, safepos.y, safepos.z = inst.Transform:GetWorldPosition()
-                elseif inst.sg.statemem.landed then
-                    local mass = inst.Physics:GetMass()
-                    if mass > 0 then
-                        inst.sg.statemem.restoremass = mass
-                        inst.Physics:SetMass(99999)
-                    end
-                    inst.Physics:Teleport(safepos.x, 0, safepos.z)
-                    inst.sg.statemem.safepos = nil
-                end
-            end
-        end,
-
-        timeline =
-        {
-            TimeEvent(9 * FRAMES, function(inst)
-                inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
-            end),
-            FrameEvent(10, function(inst)
-                inst.sg.statemem.landed = true
-                inst.sg:RemoveStateTag("nointerrupt")
-                inst.sg:RemoveStateTag("jumping")
-            end),
-        },
-
-        ontimeout = function(inst)
-            inst.sg:GoToState("idle", true)
-        end,
-
-        onexit = function(inst)
-            if inst.sg.statemem.restoremass ~= nil then
-                inst.Physics:SetMass(inst.sg.statemem.restoremass)
-            end
-            if inst.sg.statemem.speed ~= nil then
-                inst.Physics:Stop()
-            end
-        end,
-    },
-
     State{
         name = "devoured",
-		tags = { "devoured", "invisible", "noattack", "notalking", "nointerrupt", "busy", "silentmorph", "noelectrocute" },
+		tags = { "devoured", "invisible", "noattack", "notalking", "nointerrupt", "busy", "silentmorph", "noelectrocute", "noknockback" },
 
         onenter = function(inst, data)
             local attacker = data.attacker
@@ -743,6 +625,25 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 		SetContainerCanBeOpened(inst, true)
 	end,
 })
+
+local function _knockbackonenter(inst)
+	ClearStatusAilments(inst)
+	inst:ClearBufferedAction()
+	SetContainerCanBeOpened(inst, false)
+end
+local function _knockbackonexit(inst)
+	SetContainerCanBeOpened(inst, true)
+end
+CommonStates.AddKnockbackStates(states,
+nil, --timelines
+nil, --anims
+{ --fns
+	knockback_onenter = _knockbackonenter,
+	knockback_onexit = _knockbackonexit,
+	knockbacklanded_onenter = _knockbackonenter,
+	knockbacklanded_onexit = _knockbackonexit,
+})
+_knockbackonenter, _knockbackonexit = nil, nil
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

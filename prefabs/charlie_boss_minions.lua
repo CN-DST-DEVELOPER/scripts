@@ -95,6 +95,7 @@ local function InitMinion(inst, speed, caster, targets)
 		end
 		inst:ListenForEvent("onattackother", inst._onattackother, caster)
 
+		AOEUtil.Work(inst, 2.4, targets, caster)
 		inst.components.updatelooper:AddOnUpdateFn(OnUpdate)
 		OnUpdate(inst, 0)
 	end

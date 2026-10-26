@@ -71,7 +71,11 @@ local function OnOpen(inst)
 end
 
 local function OnClose(inst)
-    if not inst.components.health:IsDead() and inst.sg.currentstate.name ~= "morph" then
+	if not inst.components.health:IsDead() and
+		inst.sg.currentstate.name ~= "morph" and
+		not inst.sg:HasAnyStateTag("electrocute", "knockback")
+	then
+		inst.sg.statemem.closing = true
         inst.sg:GoToState("close")
     end
 end

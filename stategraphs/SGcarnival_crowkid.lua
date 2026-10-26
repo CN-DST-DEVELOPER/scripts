@@ -60,7 +60,7 @@ local events=
     EventHandler("ontalk", function(inst, data)
         if not inst.sg:HasStateTag("talking") and not inst.sg:HasStateTag("busy") and not inst.sg:HasStateTag("game_over") then
 			if inst.components.minigame_spectator ~= nil then
-				--if not inst.components.locomotor.wantstomoveforward then
+				--if not inst.components.locomotor:WantsToMoveForward() then
 				--	inst.sg:GoToState("talkto")
 				--else
 				    inst.SoundEmitter:PlaySound("summerevent/characters/crowkid/neutral")

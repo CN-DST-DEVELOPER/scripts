@@ -25,6 +25,7 @@ local events =
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnDeath(),
+	CommonHandlers.OnKnockback(),
 
 	EventHandler("attacked", function(inst, data)
         --V2C: health check since corpse shares this SG
@@ -33,10 +34,10 @@ local events =
 				return
 			elseif not inst.sg:HasStateTag("electrocute") then
 				if inst:HasAnyTag("spider_warrior", "spider_spitter", "spider_moon") then
-					if not inst.sg:HasAnyStateTag("attack", "moving") then -- don't interrupt attack, exit shield or moviment
+					if not inst.sg:HasAnyStateTag("attack", "moving", "knockback") or inst.sg:HasStateTag("caninterrupt") then -- don't interrupt attack, exit shield or moviment
 						inst.sg:GoToState("hit") -- can still attack
 					end
-				elseif not inst.sg:HasStateTag("shield") then
+				elseif not inst.sg:HasAnyStateTag("shield", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 					inst.sg:GoToState("hit_stunlock")  -- can't attack during hit reaction
 				end
 			end
@@ -574,7 +575,7 @@ local states =
 
     State{
         name = "trapped",
-		tags = { "busy", "trapped", "noelectrocute" },
+		tags = { "busy", "trapped", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -591,7 +592,7 @@ local states =
 
     State{
         name = "mutate",
-		tags = { "busy", "mutating", "noelectrocute" },
+		tags = { "busy", "mutating", "noelectrocute", "noknockback" },
 
         onenter = function(inst, start_anim)
             inst.Physics:Stop()
@@ -646,7 +647,7 @@ local states =
 
     State{
         name = "mutate_pst",
-		tags = { "busy", "mutating", "noelectrocute" },
+		tags = { "busy", "mutating", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -661,7 +662,7 @@ local states =
 
     State{
         name = "parasite_revive",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.sg.statemem.bank = inst.AnimState:GetBankHash()
@@ -701,6 +702,7 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

@@ -147,6 +147,7 @@ local function fn()
 
     inst:SetStateGraph("SGcarrat")
 	inst.sg.mem.noelectrocute = true --sg is shared by carrats that support electrocute
+	inst.sg.mem.noknockback = true --sg is shared by carrats that support knockback
 
     inst:SetBrain(brain)
 

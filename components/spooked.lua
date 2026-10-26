@@ -44,10 +44,13 @@ local Spooked = Class(function(self, inst)
     self.lastspooktime = GetTime()
 end)
 
+function Spooked:IsSpookImmune()
+    return self.inst:HasDebuff("halloweenpotion_bravery_buff") or
+        self.inst:HasTag("wereplayer")
+end
+
 function Spooked:ShouldSpook()
-    if self.spookedlevel <= self.spookedthreshold or
-        (self.inst:HasDebuff("halloweenpotion_bravery_buff")) or
-        self.inst:HasTag("wereplayer") then
+    if self.spookedlevel <= self.spookedthreshold or self:IsSpookImmune() then
         return false
     end
     local k = (self.spookedlevel - self.spookedthreshold) / (self.maxspookedlevel - self.spookedthreshold)
@@ -111,6 +114,18 @@ function Spooked:TryCustomSpook(source, fxprefab, mult)
 		self.spookedlevel = 0
 		return fx
 	end
+end
+
+function Spooked:TryForcingCustomSpook(source, fxprefab)
+    if self:IsSpookImmune() then
+        return false
+    end
+
+    local x, _, z = source.Transform:GetWorldPosition()
+    local fx = SpawnPrefab(fxprefab).Transform:SetPosition(x, 0, z)
+    self.inst:DoTaskInTime(10 * FRAMES, DoSpooked, source)
+    self.spookedlevel = 0
+    return true
 end
 
 function Spooked:GetDebugString()

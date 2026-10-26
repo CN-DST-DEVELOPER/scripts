@@ -147,7 +147,7 @@ local function fn()
     MakeHauntableLaunch(inst)
 
     inst._onlocomote = function(owner)
-        if owner.components.locomotor.wantstomoveforward then
+        if owner.components.locomotor:WantsToMoveForward() then
             if not inst.components.fueled.consuming then
                 inst.components.fueled:StartConsuming()
                 inst.components.insulator:SetInsulation(TUNING.INSULATION_SMALL)

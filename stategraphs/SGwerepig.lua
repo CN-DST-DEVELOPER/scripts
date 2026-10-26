@@ -13,6 +13,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(nil, TUNING.PIG_MAX_STUN_LOCKS),
     CommonHandlers.OnDeath(),
@@ -26,7 +27,7 @@ local events =
         end
     end),
     EventHandler("giveuptarget", function(inst, data)
-		if data.target and not inst.sg:HasStateTag("electrocute") and not inst.components.health:IsDead() then
+		if data.target and (not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt")) and not inst.components.health:IsDead() then
             inst.sg:GoToState("howl")
         end
     end),
@@ -333,6 +334,7 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states, nil, { knockback = "smacked" })
 CommonStates.AddSimpleActionState(states, "eat", "eat", 20 * FRAMES, { "busy" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)

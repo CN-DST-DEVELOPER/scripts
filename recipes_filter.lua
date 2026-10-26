@@ -380,6 +380,8 @@ CRAFTING_FILTERS.SPECIAL_EVENT.recipes =
 
 	"madscience_lab",
 	"candybag",
+	"pumpkinhat",
+	"witchbroom",
 
 	"perdshrine",
 	"wargshrine",
@@ -904,6 +906,7 @@ CRAFTING_FILTERS.TOOLS.recipes =
 	"compass",
 	"walking_stick",
 	"cane",
+	"witchbroom",
 	"fence_rotator",
 	"sewing_kit",
 	"sewing_tape",

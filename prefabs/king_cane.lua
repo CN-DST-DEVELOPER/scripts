@@ -166,7 +166,7 @@ local function SetGem(inst, gemtype)
 
     inst.castsound = "dontstarve/wilson/use_kingcane"
     inst.castsoundparams = { corrupted = iscorrupted and 0.5 or 0 }
-    inst.components.inventoryitem:ChangeImageName("king_cane_"..inst.gem)
+    inst.components.inventoryitem:ChangeImageName((inst:GetSkinName() or "king_cane") .. "_" .. inst.gem)
     inst.fx:SetGemType(gemtype)
 end
 
@@ -357,6 +357,9 @@ local function fn()
     inst:ListenForEvent("weapononprojectilelaunched", DoCorruption)
 
     MakeHauntableLaunch(inst)
+
+    inst:AddComponent("itemmimicconfig")
+    inst.components.itemmimicconfig:AddActionForceMimicReveal(ACTIONS.GIVE) -- These gems are not real.
 
     inst.DoGemShine = DoGemShine
     inst.SetFxOwner = SetFxOwner -- for moonbase

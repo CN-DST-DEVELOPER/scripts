@@ -10,6 +10,9 @@ local IMPASSABLE = WORLD_TILES.IMPASSABLE
 
 if TheSim then -- updateprefabs guard
     AddIsTileInvalidForPathing_VirtualRoomSet(VIRTUALROOMSETS.ATRIUM, function(map, tx, ty)
+        if TheWorld.Map:IsVirtualRoomSetInLobby(VIRTUALROOMSETS.ATRIUM) then
+            return false
+        end
         return TileGroupManager:IsInvalidTile(map:GetTile(tx, ty))
     end)
 end

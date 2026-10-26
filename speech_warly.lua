@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Oh! I must remember to take all my things!",
 
         MASK_CHARLIE_BOSSHAT = "A face of horror.",
+
+        -- Halloween 2026
+        LEAFPILE = "It is that time of year!",
+        PUMPKIN_BOMB = "This brings new meaning to a food fight!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "A tidy kitchen makes for a happy chef!", -- normal version
+            LIVING = "A broom with spirit!",
+        },
+
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

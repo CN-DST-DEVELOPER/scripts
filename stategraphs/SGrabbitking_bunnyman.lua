@@ -6,6 +6,7 @@ local events = {
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(nil, TUNING.BUNNYMAN_MAX_STUN_LOCKS),
     CommonHandlers.OnDeath(),
@@ -36,7 +37,7 @@ local states =
 {
     State{
         name = "burrowaway",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:Stop()
             inst.persists = false
@@ -71,7 +72,7 @@ local states =
     },
     State{
         name = "burrowto",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
         onenter = function(inst, data)
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("despawn")
@@ -307,6 +308,7 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

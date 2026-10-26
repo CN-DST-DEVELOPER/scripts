@@ -1,9 +1,5 @@
 local function onbrushable(self, value)
-    if value then
-        self.inst:AddTag("brushable")
-    else
-        self.inst:RemoveTag("brushable")
-    end
+    self.inst:AddOrRemoveTag("brushable", value)
 end
 
 local Brushable = Class(function(self, inst)

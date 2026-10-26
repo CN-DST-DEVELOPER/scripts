@@ -11,11 +11,12 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("attacked", function(inst, data)
         if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
         end
@@ -280,7 +281,7 @@ local states=
 
     State{
         name = "trapped",
-		tags = { "busy", "trapped", "noelectrocute" },
+		tags = { "busy", "trapped", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -311,6 +312,7 @@ local states=
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

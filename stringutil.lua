@@ -432,6 +432,10 @@ end
 -- When calling GetActionFailString, must pass actual instance of entity if it might be used when ghost
 -- Otherwise, handing inst.prefab directly to the function call is okay
 function GetActionFailString(inst, action, reason)
+    if reason == "ITEMMIMIC" then
+        action = "GENERIC" -- Funnel all responses to this one.
+    end
+
     local character =
         type(inst) == "string"
         and inst

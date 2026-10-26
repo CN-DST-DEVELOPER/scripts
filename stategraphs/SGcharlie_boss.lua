@@ -31,7 +31,7 @@ end
 local function ShouldVineCounter(inst, data) --data from "attacked" event
 	return inst.canvinecounter
 		and data and data.attacker and data.attacker:IsValid()
-		and inst:IsNear(data.attacker, 4 + data.attacker:GetPhysicsRadius(0))
+		and inst:IsNear(data.attacker, (IsRangedWeapon(data.weapon or data.attacker) and 4 or 5) + data.attacker:GetPhysicsRadius(0))
 		and inst.components.combat:CanTarget(data.attacker)
 		or false
 end
@@ -587,7 +587,7 @@ local states =
 					local lastattacktime = inst.sg.mem.recent_attackers[target]
 					if lastattacktime and lastattacktime + RECENT_ATTACKERS_DURATION >= GetTime() then
 						local x1, _, z1 = target.Transform:GetWorldPosition()
-						local range = TUNING.CHARLIE_BOSS_COUNTERATTACK_RANGE + inst:GetPhysicsRadius(0)
+						local range = TUNING.CHARLIE_BOSS_COUNTERATTACK_RANGE + target:GetPhysicsRadius(0)
 						if inst:GetDistanceSqToPoint(x1, 0, z1) < range * range and
 							inst:IsInArena() == TheWorld.Map:IsPointInCharlieBossArena(x1, 0, z1) and
 							ChooseAttack(inst, target)

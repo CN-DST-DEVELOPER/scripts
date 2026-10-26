@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "It would be prudent to collect everything before entering.",
 
         MASK_CHARLIE_BOSSHAT = "A cursed relic of the abhorrent triune.",
+
+        -- Halloween 2026
+        LEAFPILE = "Trees shed leaves to conserve energy for the winter season.",
+        PUMPKIN_BOMB = "I daresay this year's pranks will be quite the sensation.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "A classic tool of domestic labor.", -- normal version
+            LIVING = "So the old tales were not entirely fanciful!",
+        },
+
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

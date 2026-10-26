@@ -25,7 +25,7 @@ local events =
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
+			elseif not inst.sg:HasAnyStateTag("attack", "electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
 		end
@@ -40,7 +40,7 @@ local events =
     end),
     EventHandler("doattack", function(inst, data)
         if not inst.components.health:IsDead() and
-			((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy"))
+			((inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt"))
 		then
             inst.sg:GoToState("attack", data.target)
         end
@@ -49,7 +49,7 @@ local events =
 	--warglet needs this, since it uses wargbrain
 	EventHandler("dohowl", function(inst)
 		if not inst.components.health:IsDead() then
-			if inst.sg:HasStateTag("hit") or not inst.sg:HasStateTag("busy") then
+			if (inst.sg:HasStateTag("hit") and not inst.sg:HasStateTag("electrocute")) or not inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("caninterrupt") then
 				TryHowl(inst)
 			else
 				inst.sg.mem.dohowl = true
@@ -62,6 +62,7 @@ local events =
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
     EventHandler("startle", function(inst)
         if not (inst.sg:HasStateTag("startled") or
@@ -1074,6 +1075,7 @@ CommonStates.AddRunStates(states,
 })
 CommonStates.AddFrozenStates(states, HideEyeFX, ShowEyeFX)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddCorpseStates(states,
 { -- anims

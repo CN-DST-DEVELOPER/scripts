@@ -11,6 +11,7 @@ local events =
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreezeEx(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
     CommonHandlers.OnLocomote(false, true),
 
@@ -249,6 +250,18 @@ CommonStates.AddSleepExStates(states,
 
 CommonStates.AddFrozenStates(states, lower_flying_creature, raise_flying_creature)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(14, lower_flying_creature),
+		FrameEvent(28, raise_flying_creature),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onexit = raise_flying_creature,
+})
 
 CommonStates.AddWalkStates(states)
 

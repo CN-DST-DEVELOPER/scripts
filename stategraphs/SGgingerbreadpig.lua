@@ -12,9 +12,20 @@ local events=
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
-    EventHandler("attacked", function(inst) if not inst.components.health:IsDead() and not inst.sg:HasStateTag("transform") then inst.sg:GoToState("hit") end end),
+	CommonHandlers.OnKnockback(),
+	EventHandler("attacked", function(inst)
+		if not inst.components.health:IsDead() and (not inst.sg:HasAnyStateTag("transform", "knockback") or inst.sg:HasStateTag("caninterrupt")) then
+			inst.sg:GoToState("hit")
+		end
+	end),
     EventHandler("death", function(inst) inst.sg:GoToState("death") end),
-    EventHandler("onplayernear", function(inst) inst.sg:GoToState("scared") end),
+	EventHandler("onplayernear", function(inst)
+		if not (inst.sg:HasStateTag("knockback") and inst.sg:HasStateTag("busy")) then
+			inst.sg:GoToState("scared")
+		else
+			inst.sg.mem.scared = true
+		end
+	end),
 }
 
 local states =
@@ -81,6 +92,7 @@ local states =
         tags = { "busy" },
 
         onenter = function(inst)
+			inst.sg.mem.scared = nil
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("scare")
 
@@ -145,5 +157,39 @@ CommonStates.AddRunStates (states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddSleepStates(states)
+
+local function _scaredonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		inst.sg:GoToState("scared")
+	end
+end
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	--these will be merged with default timeline in commonstates.lua
+	knockback =
+	{
+		FrameEvent(35, function(inst)
+			if inst.sg.mem.scared then
+				inst.sg:GoToState("scared")
+			end
+		end),
+	},
+	knockbacklanded =
+	{
+		FrameEvent(12, function(inst)
+			if inst.sg.mem.scared then
+				inst.sg:GoToState("scared")
+			end
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = _scaredonanimover,
+	knocbacklanded_onanimover = _scaredonanimover,
+})
+
+_scaredonanimover = nil
 
 return StateGraph("gingerbreadpig", states, events, "idle", actionhandlers)

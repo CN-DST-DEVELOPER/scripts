@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "I better not leave anything behind.",
 
         MASK_CHARLIE_BOSSHAT = "I'm sorry, Charlie.",
+
+        -- Halloween 2026
+        LEAFPILE = "Someone should sweep up around here.",
+        PUMPKIN_BOMB = "I'd better not find one on my doorstep.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "I have better things to do than sweep.", -- normal version
+            LIVING = "A little magic makes all the difference.",
+        },
+
     },
 
     DESCRIBE_GENERIC = "You tell me.",

@@ -10,6 +10,7 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
@@ -194,7 +195,7 @@ local states=
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "noelectrocute" },
+		tags = { "flight", "busy", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:Stop()
 	        inst.DynamicShadow:Enable(false)
@@ -261,6 +262,7 @@ CommonStates.AddSleepStates(states,
     onwake = RaiseFlyingCreature,
 })
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

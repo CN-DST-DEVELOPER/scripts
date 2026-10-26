@@ -24,7 +24,7 @@ local events =
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasAnyStateTag("attack", "electrocute") then
+			elseif not inst.sg:HasAnyStateTag("attack", "electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
         end
@@ -48,6 +48,7 @@ local events =
     CommonHandlers.OnLocomote(true, false),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
 	-- Corpse handlers
 	CommonHandlers.OnCorpseChomped(),
@@ -214,7 +215,7 @@ local states =
 
     State{
         name = "spawn",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             dimLight(inst, false, false, true, 20*FRAMES)
@@ -238,7 +239,7 @@ local states =
 
     State{
         name = "despawn",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             dimLight(inst,true)
@@ -1118,6 +1119,7 @@ CommonStates.AddWalkStates(states, nil, nil, nil, true)
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states,

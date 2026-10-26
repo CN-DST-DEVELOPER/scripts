@@ -14,6 +14,7 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     EventHandler("entershield", function(inst)
@@ -116,7 +117,7 @@ local states =
 
     State{
     	name = "shield",
-		tags = { "busy", "hiding", "shield" },
+		tags = { "busy", "hiding", "shield", "noknockback" },
 
     	onenter = function(inst)
             --If taking fire damage, spawn fire effect.
@@ -379,15 +380,44 @@ combatanims,
 })
 
 CommonStates.AddFrozenStates(states)
+
+local function _dissolveonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		inst.sg:GoToState(inst.sg.mem.dissolving and "dissolving_pre" or "idle")
+	end
+end
+
 CommonStates.AddElectrocuteStates(states,
 nil, --timeline
 nil, --anims
 {   --fns
-    onanimover = function(inst)
-        if inst.AnimState:AnimDone() then
-            inst.sg:GoToState(inst.sg.mem.dissolving and "dissolving_pre" or "idle")
-        end
-    end,
+	onanimover = _dissolveonanimover,
+})
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(32, function(inst)
+			if inst.sg.mem.dissolving then
+				inst.sg:GoToState("dissolving_pre")
+			end
+		end),
+	},
+	knockbacklanded =
+	{
+		FrameEvent(8, function(inst)
+			if inst.sg.mem.dissolving then
+				inst.sg:GoToState("dissolving_pre")
+			end
+		end),
+	},
+},
+{ --anims
+	knockbacklanded = "hit_out",
+},
+{ --fns
+	knockback_onanimover = _dissolveonanimover,
+	knockbacklanded_onanimover = _dissolveonanimover,
 })
 
 CommonStates.AddInitState(states, "idle")

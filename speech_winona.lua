@@ -6373,6 +6373,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Better not leave nothin' behind.",
 
         MASK_CHARLIE_BOSSHAT = "This is horrible, Charlie.",
+
+        -- Halloween 2026
+        LEAFPILE = "High time for some fall cleanin'.",
+        PUMPKIN_BOMB = "The kids are gonna love this.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Just add elbow grease, and it gets the job done.", -- normal version
+            LIVING = "Ain't right for a broom to feel this eerie.",
+        },
+
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

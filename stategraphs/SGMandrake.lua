@@ -6,12 +6,13 @@ local events =
     CommonHandlers.OnLocomote(false, true),
 	CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("attacked", function(inst, data)
         if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/hit")
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 				inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/hit")
 			end
@@ -75,7 +76,7 @@ local states =
 
     State{
         name = "item",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("object")
@@ -84,7 +85,7 @@ local states =
 
     State{
         name = "ground",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.AnimState:PlayAnimation("ground", true)
@@ -93,7 +94,7 @@ local states =
 
     State{
         name = "picked",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.SoundEmitter:PlaySound("dontstarve/creatures/mandrake/pullout")
@@ -115,7 +116,7 @@ local states =
 
     State{
         name = "plant",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -158,5 +159,6 @@ CommonStates.AddWalkStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 return StateGraph("mandrake", states, events, "idle")

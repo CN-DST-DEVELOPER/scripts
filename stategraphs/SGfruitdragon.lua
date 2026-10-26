@@ -13,6 +13,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnLocomote(true, true),
     CommonHandlers.OnSink(),
@@ -41,14 +42,14 @@ local events =
 	end),
 
 	EventHandler("wake_up_to_challenge", function(inst)
-		if not inst.sg:HasStateTag("electrocute") then
+		if not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 			inst.sg:GoToState("hit")
 		end
 	end),
 
 
 	EventHandler("lostfruitdragonchallenge", function(inst)
-		if not inst.sg:HasStateTag("electrocute") then
+		if not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 			inst.sg:GoToState("challenge_lose")
 		end
 	end),
@@ -401,6 +402,7 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 

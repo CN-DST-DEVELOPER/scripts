@@ -81,6 +81,10 @@ PREFAB_SKINS = {
 		"armor_lunarplant_husk_brave",
 		"armor_lunarplant_husk_knight",
 	},
+	armor_rocky =
+	{
+		"armor_rocky_spikey",
+	},
 	armor_sanity =
 	{
 		"armor_sanity_curve",
@@ -191,6 +195,10 @@ PREFAB_SKINS = {
 		"backpack_smallbird",
 		"backpack_spider",
 		"backpack_splumonkey",
+	},
+	bat_bosscorpsehat =
+	{
+		"hatbat_bosscorpse_vampire",
 	},
 	batbat =
 	{
@@ -760,6 +768,7 @@ PREFAB_SKINS = {
 		"fence_fantasy",
 		"fence_gingerbread",
 		"fence_gothic",
+		"fence_hallowed",
 		"fence_picketbrown",
 		"fence_pickettan",
 		"fence_picketwhite",
@@ -774,6 +783,7 @@ PREFAB_SKINS = {
 		"fence_gate_ancient",
 		"fence_gate_gingerbread",
 		"fence_gate_gothic",
+		"fence_gate_hallowed",
 		"fence_gate_picketbrown",
 		"fence_gate_pickettan",
 		"fence_gate_picketwhite",
@@ -788,6 +798,7 @@ PREFAB_SKINS = {
 		"fencegate_ancient_item",
 		"fencegate_gingerbread_item",
 		"fencegate_gothic_item",
+		"fencegate_hallowed_item",
 		"fencegate_picketbrown_item",
 		"fencegate_pickettan_item",
 		"fencegate_picketwhite_item",
@@ -804,6 +815,7 @@ PREFAB_SKINS = {
 		"fence_fantasy_item",
 		"fence_gingerbread_item",
 		"fence_gothic_item",
+		"fence_hallowed_item",
 		"fence_picketbrown_item",
 		"fence_pickettan_item",
 		"fence_picketwhite_item",
@@ -1094,6 +1106,10 @@ PREFAB_SKINS = {
 	{
 		"insanityrock_fantasy",
 		"insanityrock_gothic",
+	},
+	king_cane =
+	{
+		"king_cane_scorpion",
 	},
 	krampus_sack =
 	{
@@ -1425,6 +1441,7 @@ PREFAB_SKINS = {
 	{
 		"pighouse_cabin",
 		"pighouse_gothic",
+		"pighouse_hallowed",
 		"pighouse_logcabin",
 	},
 	pitchfork =
@@ -1497,6 +1514,10 @@ PREFAB_SKINS = {
 	{
 		"amulet_purple_relic",
 		"amulet_purple_shadow",
+	},
+	queen_torch =
+	{
+		"queen_torch_lotus",
 	},
 	rabbithouse =
 	{
@@ -1786,6 +1807,7 @@ PREFAB_SKINS = {
 		"stagehand_carpet",
 		"stagehand_cawnival",
 		"stagehand_cawnival_alt",
+		"stagehand_chess",
 		"stagehand_dragonfly",
 		"stagehand_vintage",
 	},
@@ -2054,10 +2076,12 @@ PREFAB_SKINS = {
 	wall_hay =
 	{
 		"wall_hay_corn",
+		"wall_hay_hallowed",
 	},
 	wall_hay_item =
 	{
 		"wall_hay_cornitem",
+		"wall_hay_halloweditem",
 	},
 	wall_moonrock =
 	{

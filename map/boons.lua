@@ -9,7 +9,7 @@ local Any = {
 			areas = {
 				item_area = function()
 					if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-						return {"candybag", "halloweencandy_1", "halloweencandy_2", "trinket_4"}
+						return {"candybag", "halloweencandy_1", "halloweencandy_2", "trinket_4", "pumpkin_bomb"}
 					else
 						return PickSome(1, {"shovel","axe"})
 					end
@@ -45,7 +45,7 @@ local Any = {
 			areas = {
 				item_area = function()
 					if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-						return {"candybag", "halloweencandy_3", "halloweencandy_4", "halloweencandy_5", "halloweencandy_6"}
+						return {"candybag", "halloweencandy_3", "halloweencandy_4", "halloweencandy_5", "halloweencandy_6", "pumpkin_bomb", "pumpkin_bomb", }
 					else
 						return PickSome(1, {"torch", "trap"})
 					end
@@ -63,14 +63,14 @@ local Any = {
 			areas = {
 				item_area = function()
 					if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-						return {"trinket_4", "candybag", "trinket_9", "skeleton", "skeleton", "skeleton"}
+						return {"trinket_4", "candybag", "trinket_9", "skeleton", "skeleton", "skeleton", "pumpkin_bomb", }
 					else
 						return  nil
 					end
 				end,
 				resource_area = function()
 					if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
-						return {"trinket_13", "trinket_9", "trinket_9", "halloweencandy_7", "skeleton", "skeleton"}
+						return {"trinket_13", "trinket_9", "trinket_9", "halloweencandy_7", "skeleton", "skeleton", "pumpkin_bomb", "pumpkin_bomb",}
 					else
 						return PickSomeWithDups(math.random(3,5), {"twigs"})
 					end

@@ -21,6 +21,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(nil, TUNING.PIG_MAX_STUN_LOCKS),
     CommonHandlers.OnDeath(),
@@ -138,7 +139,7 @@ local states =
 
     State{
         name = "transformNormal",
-		tags = { "transform", "busy", "sleeping", "noelectrocute" },
+		tags = { "transform", "busy", "sleeping", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -352,6 +353,18 @@ CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 CommonStates.AddIpecacPoopState(states)
 CommonStates.AddParasiteReviveState(states)
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	--these will be merged with default timeline in commonstates.lua
+	knockback =
+	{
+		FrameEvent(3, function(inst) inst.SoundEmitter:PlaySound("dontstarve/pig/scream") end),
+	},
+},
+{ --anims
+	knockback = "smacked",
+})
 
 -- werepig uses a different stategraph
 CommonStates.AddInitState(states, "idle")

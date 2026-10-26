@@ -1562,6 +1562,15 @@ MISC_ITEMS =
 		rarity_modifier = "Woven",
 		release_group = 173,
 	},
+	mysterybox_trickortreat_2026 =
+	{
+		type = "mysterybox",
+		skin_tags = { "MYSTERYBOX", },
+		build_name_override = "pack_hallowed",
+		box_build = "box_shop_hallowed",
+		rarity = "Loyal",
+		release_group = 187,
+	},
 	mysterybox_trickortreat_alt =
 	{
 		type = "mysterybox",
@@ -3049,6 +3058,20 @@ MISC_ITEMS =
 		display_items = {  "wx78_wip", "body_wx78_wip", "hand_wx78_wip", "feet_wx78_wip", },
 		output_items = {  "wx78_wip", "body_wx78_wip", "hand_wx78_wip", "feet_wx78_wip", },
 		release_group = 106,
+	},
+	pack_hallowednights_2026 =
+	{
+		type = "purchase",
+		skin_tags = { },
+		featured_pack = true,
+		display_order = 1,
+		build_name_override = "pack_common",
+		display_atlas = "images/iap_images_hallowednights_2026.xml",
+		display_tex = "hallowednights_2026.tex",
+		box_build = "box_shop_plain",
+		display_items = {  "fence_hallowed", "fence_gate_hallowed", "wall_hay_hallowed", "pighouse_hallowed", },
+		output_items = {  "fence_hallowed", "fence_gate_hallowed", "wall_hay_hallowed", "pighouse_hallowed", },
+		release_group = 187,
 	},
 	pack_hamlet_wormwood =
 	{

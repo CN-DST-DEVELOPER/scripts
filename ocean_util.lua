@@ -110,7 +110,9 @@ function FindRandomPointOnShoreFromOcean(x, y, z, excludeclosest)
 
     for i, node in ipairs(TheWorld.topology.nodes) do
 		if node.type ~= NODE_TYPE.Blank and node.type ~= NODE_TYPE.Blocker and node.type ~= NODE_TYPE.SeparatedRoom then
-			table.insert(nodes, {n = node, distsq = VecUtil_LengthSq(x - node.x, z - node.y)})
+            if not IsPointInWalledOffVRS(node.cent[1], 0, node.cent[2]) then
+                table.insert(nodes, {n = node, distsq = VecUtil_LengthSq(x - node.x, z - node.y)})
+            end
 		end
 	end
 	table.sort(nodes, function(a, b) return a.distsq < b.distsq end)
@@ -131,7 +133,7 @@ function FindRandomPointOnShoreFromOcean(x, y, z, excludeclosest)
 	local dest_x, dest_y, dest_z
 	for _, c in ipairs(closest) do
 		dest_x, dest_y, dest_z = FindLandBetweenPoints(x, z, c.n.x, c.n.y)
-		if dest_x ~= nil and TheSim:WorldPointInPoly(dest_x, dest_z, c.n.poly) then
+		if dest_x ~= nil and TheSim:WorldPointInPoly(dest_x, dest_z, c.n.poly) and not IsPointInWalledOffVRS(dest_x, 0, dest_z) then
 			return dest_x, dest_y, dest_z
 		end
 	end
@@ -140,7 +142,7 @@ function FindRandomPointOnShoreFromOcean(x, y, z, excludeclosest)
 		local c = nodes[i]
 		if c ~= nil then
 			dest_x, dest_y, dest_z = FindLandBetweenPoints(x, z, c.n.x, c.n.y)
-			if dest_x ~= nil and TheSim:WorldPointInPoly(dest_x, dest_z, c.n.poly) then
+			if dest_x ~= nil and TheSim:WorldPointInPoly(dest_x, dest_z, c.n.poly) and not IsPointInWalledOffVRS(dest_x, 0, dest_z) then
 				return dest_x, dest_y, dest_z
 			end
 		end

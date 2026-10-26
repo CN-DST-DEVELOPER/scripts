@@ -485,6 +485,7 @@ local function fncommon(bank, build, morphlist, custombrain, tag, data)
 
         if tag == "clay" then
 			inst:AddTag("electricdamageimmune")
+			inst:AddTag("heavybody") --for knockback
 
             inst._eyeflames = net_bool(inst.GUID, "clayhound._eyeflames", "eyeflamesdirty")
             inst:ListenForEvent("eyeflamesdirty", OnEyeFlamesDirty)

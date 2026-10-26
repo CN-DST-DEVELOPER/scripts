@@ -6377,6 +6377,16 @@ return {
         CHARLIEARENA_TELEPORTER = "I'd better take everything with me.",
 
         MASK_CHARLIE_BOSSHAT = "I think it's her... face.",
+
+        -- Halloween 2026
+        LEAFPILE = "I should sweep that up.",
+        PUMPKIN_BOMB = "Well, that's one way to accelerate decomposition!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "A simple, yet effective cleaning apparatus!", -- normal version
+            LIVING = "I always knew magic was a dirty business!", -- transformed into living log version, lets you "fly"
+        },
+
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

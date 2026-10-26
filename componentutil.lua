@@ -1319,7 +1319,7 @@ end
 local ISTILEINVALIDFORPATHING_HASHES = {}
 function AddIsTileInvalidForPathing_VirtualRoomSet(roomsetname, fn)
     -- NOTES(JBK): This uses the hash of the roomsetname for networking on clients.
-    ISTILEINVALIDFORPATHING_HASHES[hash(roomsetname)] = fn
+    ISTILEINVALIDFORPATHING_HASHES[VIRTUALROOMSETNAMETOHASH[roomsetname]] = fn
 end
 
 local function GetRoomSetHashes(map, virtualroomsethashes, fx, fy, fz, tx, ty, tz)
@@ -1405,6 +1405,19 @@ function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
     end
 
     return true
+end
+
+function IsPointInWalledOffVRS(x, y, z)
+    local map = TheWorld.Map
+
+    local roomsetname = map:GetVirtualRoomSetNameAtPoint(x, y, z)
+    if roomsetname == VIRTUALROOMSETS.ATRIUM then
+        return not map:IsVirtualRoomSetInLobby(roomsetname)
+    elseif roomsetname then
+        return true
+    end
+
+    return false
 end
 
 local function IsVisibleRespectingVRSFromVRSToVRS(map, alwaysoutsidevrs, from_roomsethash, to_roomsethash, fx, fy, fz, tx, ty, tz)
@@ -2315,7 +2328,7 @@ local function IsItemInReadOnlyContainer(item)
         item.components.inventoryitem.owner.components.container ~= nil and
         item.components.inventoryitem.owner.components.container.readonlycontainer
 end
-function ShouldItemMimicBeRevealedFor(item, user)
+function ShouldItemMimicBeRevealedFor(item, user, action)
     if item == nil then
         return false
     end
@@ -2337,15 +2350,16 @@ function ShouldItemMimicBeRevealedFor(item, user)
     end
 
     local userprocsmimics = user.components.socket_shadow_mimicry == nil
+    local forcemimicprocs = false
     if itemisamimic then
-        -- Special cases to always force mimic reveals.
-        if item:HasTag("castonrecipes") then
-            -- Ingredients must be earned.
-            return true
+        -- Special cases to always force mimic reveals handled on a per item basis.
+        if item.components.itemmimicconfig then
+            forcemimicprocs = item.components.itemmimicconfig:DoesActionForceMimicReveal(action or item.components.itemmimicconfig:GetLastAction())
+            item.components.itemmimicconfig:SetLastAction(action) -- Most actions defer mimic responses until later so store the last action to have it do its response in the followup nil action callback.
         end
     end
 
-    return itemisamimic and userprocsmimics
+    return itemisamimic and (forcemimicprocs or userprocsmimics)
 end
 
 --------------------------------------------------------------------------

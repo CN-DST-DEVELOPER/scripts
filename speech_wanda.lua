@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "I'll not leave anything behind this time.",
 
         MASK_CHARLIE_BOSSHAT = "A face I'll not soon forget.",
+
+        -- Halloween 2026
+        LEAFPILE = "What a mess.",
+        PUMPKIN_BOMB = "This pumpkin's days are numbered.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Time to clean!", -- normal version
+            LIVING = "There's something about this broom...",
+        },
+
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

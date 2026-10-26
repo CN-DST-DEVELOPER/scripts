@@ -1440,7 +1440,8 @@ function LocoMotor:OnUpdate(dt, arrive_check_only)
         local tx, ty = TheWorld.Map:GetTileCoordsAtPoint(x, 0, z)
         if tx ~= self.lastpos.x or ty ~= self.lastpos.y then
             self:UpdateGroundSpeedMultiplier()
-            self.lastpos = { x = tx, y = ty }
+            self.lastpos.x = tx
+            self.lastpos.y = ty
         end
     end
 

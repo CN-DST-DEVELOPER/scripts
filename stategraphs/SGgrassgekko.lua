@@ -10,6 +10,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     EventHandler("locomote",
@@ -228,7 +229,7 @@ local states=
 
     State{
         name = "emerge",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -253,6 +254,7 @@ local states=
             end),
 			FrameEvent(45, function(inst)
 				inst.sg:RemoveStateTag("noelectrocute")
+				inst.sg:RemoveStateTag("noknockback")
 			end),
         },
 
@@ -314,15 +316,37 @@ CommonStates.AddFrozenStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)
 
+local function _gotoscare(inst)
+	inst.sg:GoToState("scare")
+end
+
 CommonStates.AddElectrocuteStates(states,
 {
 	pst =
 	{
-		FrameEvent(4, function(inst)
-			inst.sg:GoToState("scare")
-		end),
+		FrameEvent(4, _gotoscare),
 	},
 })
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(33, _gotoscare),
+	},
+	knockbacklanded =
+	{
+		FrameEvent(10, _gotoscare),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = "scare",
+	knockbacklanded_onanimover = "scare",
+})
+
+_gotoscare = nil
+
 CommonStates.AddCorpseStates(states)
 CommonStates.AddInitState(states, "idle")
 

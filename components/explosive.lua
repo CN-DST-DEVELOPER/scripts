@@ -23,6 +23,10 @@ function Explosive:SetPvpAttacker(attacker)
 	self.pvpattacker = attacker
 end
 
+function Explosive:SetKnockbackData(knockbackdata)
+    self.knockbackdata = knockbackdata
+end
+
 local CANT_TAGS = { "INLIMBO", "notarget" }
 function Explosive:OnBurnt(target) -- pass target to only do it on this ent (e.g. due to being inside a worm)
 	if not self.skip_camera_flash then
@@ -55,8 +59,9 @@ function Explosive:OnBurnt(target) -- pass target to only do it on this ent (e.g
     local workablecount = TUNING.EXPLOSIVE_MAX_WORKABLE_INVENTORYITEMS
 
     local function ExplodeEnt(v)
+        local notpvp = (self.pvpattacker == nil or v == self.pvpattacker or not v.isplayer)
 		if v ~= self.inst and not v:IsInLimbo() and v:IsValid() and
-			(self.pvpattacker == nil or v == self.pvpattacker or not v:HasTag("player"))
+			(notpvp or (self.knockbackdata and self.knockbackdata.forcepvp))
 			then
 			local damagetypemult = self.inst.components.damagetypebonus ~= nil and self.inst.components.damagetypebonus:GetBonus(v) or 1
 
@@ -108,7 +113,12 @@ function Explosive:OnBurnt(target) -- pass target to only do it on this ent (e.g
 
 					--V2C: still passing self.inst instead of attacker here, so we don't
 					--     use attacker for calculating damage mods.
-					v.components.combat:GetAttacked(self.inst, dmg, nil, nil, spdmg) -- NOTES(JBK): The component combat might remove itself in the GetAttacked callback!
+                    if notpvp then
+					    v.components.combat:GetAttacked(self.inst, dmg, nil, nil, spdmg) -- NOTES(JBK): The component combat might remove itself in the GetAttacked callback!
+                    end
+                    if self.knockbackdata then
+                        v:PushEventImmediate("knockback", { knocker = self.inst, radius = self.knockbackdata.radius, strengthmult = self.knockbackdata.strengthmult, forcelanded = self.knockbackdata.forcelanded })
+                    end
 
 					if attacker ~= nil and v.components.combat ~= nil and not (v.components.health ~= nil and v.components.health:IsDead()) and v:IsValid() then
 						if attacker:IsValid() then

@@ -402,7 +402,7 @@ local function commonfn(common_postinit, server_postinit)
     inst:AddTag("soulless")
     inst:AddTag("lunar_aligned")
 
-    inst._musicdirty = net_event(inst.GUID, "alterguardian_phase1._musicdirty", "musicdirty")
+	inst._musicdirty = net_event(inst.GUID, "alterguardian_phase1._musicdirty")
     inst._playingmusic = false
     --inst._musictask = nil
     OnMusicDirty(inst)
@@ -414,7 +414,7 @@ local function commonfn(common_postinit, server_postinit)
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
-        inst:ListenForEvent("musicdirty", OnMusicDirty)
+		inst:ListenForEvent("alterguardian_phase1._musicdirty", OnMusicDirty)
 
         return inst
     end

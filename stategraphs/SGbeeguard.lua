@@ -8,6 +8,7 @@ local events =
     CommonHandlers.OnDeath(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
     EventHandler("doattack", function(inst)
@@ -66,7 +67,7 @@ local states =
 
     State{
         name = "spawnin",
-		tags = { "busy", "nosleep", "nofreeze", "noattack", "noelectrocute" },
+		tags = { "busy", "nosleep", "nofreeze", "noattack", "noelectrocute", "noknockback" },
 
         onenter = function(inst, queen)
             StopBuzz(inst)
@@ -180,7 +181,7 @@ local states =
 
     State{
         name = "flyaway",
-		tags = { "busy", "nosleep", "nofreeze", "noelectrocute", "flight" },
+		tags = { "busy", "nosleep", "nofreeze", "noelectrocute", "noknockback", "flight" },
 
         onenter = function(inst)
             inst.components.locomotor:StopMoving()
@@ -353,6 +354,23 @@ CommonStates.AddFrozenStates(states,
         RaiseFlyingCreature(inst)
     end)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(13, LandFlyingCreature),
+		FrameEvent(25, StartBuzz),
+		FrameEvent(28, RaiseFlyingCreature),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onenter = StopBuzz,
+	knockback_onexit = function(inst)
+		StartBuzz(inst)
+		RaiseFlyingCreature(inst)
+	end,
+})
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

@@ -14,11 +14,12 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("attacked", function(inst, data)
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
 		end
@@ -26,7 +27,7 @@ local events=
     CommonHandlers.OnDeath(),
     EventHandler("flyaway", function(inst, data)
                 if not inst.components.health:IsDead() then
-					if inst.sg:HasStateTag("electrocute") then
+					if inst.sg:HasAnyStateTag("electrocute", "knockback") then
 						inst.sg.mem.flyaway = true
 					else
 						inst.sg:GoToState("flyaway")
@@ -331,7 +332,7 @@ local states=
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "notarget" , "flyaway", "noelectrocute" },
+		tags = { "flight", "busy", "notarget" , "flyaway", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.components.locomotor:Stop()
@@ -395,7 +396,7 @@ local states=
 
     State{
         name = "glide",
-		tags = { "idle", "flight", "notarget", "busy", "noelectrocute" },
+		tags = { "idle", "flight", "notarget", "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.readytogather = nil
@@ -575,6 +576,52 @@ nil, --timeline
 		end
 	end,
 })
+
+local function _knockbackonenter(inst)
+	inst.sg:AddStateTag("ground")
+	inst:RemoveTag("flying")
+end
+
+local function _knockbackonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		if inst.sg.mem.flyaway then
+			inst.sg:GoToState("flyaway")
+		else
+			inst.sg.statemem.stayonground = true
+			inst.sg:GoToState("idle_ground")
+		end
+	end
+end
+
+local function _knockbackonexit(inst)
+	inst.sg.mem.flyaway = nil
+	if not inst.sg.statemem.stayonground then
+		inst:AddTag("flying")
+	end
+end
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(32, function(inst)
+			if inst.sg.mem.flyaway then
+				inst.sg:GoToState("flyaway")
+			end
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onenter = _knockbackonenter,
+	knockbacklanded_onenter = _knockbackonenter,
+	knockback_onanimover = _knockbackonanimover,
+	knockbacklanded_onanimover = _knockbackonanimover,
+	knockback_onexit = _knockbackonexit,
+	knockbacklanded_onexit = _knockbackonexit,
+})
+
+_knockbackonenter, _knockbackonexit, _knockbackonanimover = nil, nil, nil
 
 CommonStates.AddInitState(states, "glide")
 CommonStates.AddCorpseStates(states)

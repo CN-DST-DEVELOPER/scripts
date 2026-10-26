@@ -14,7 +14,7 @@ local events =
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
         end
@@ -28,9 +28,9 @@ local events =
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     EventHandler("locomote", function(inst)
-        if not (inst.sg:HasStateTag("busy") or inst.sg:HasStateTag("attack")) and
-            inst.sg:HasStateTag("moving") ~= inst.components.locomotor:WantsToMoveForward() then
+		if not inst.sg:HasAnyStateTag("busy", "attack") and inst.sg:HasStateTag("moving") ~= inst.components.locomotor:WantsToMoveForward() then
             inst.sg:GoToState(inst.sg:HasStateTag("moving") and "idle" or "premoving")
         end
     end),
@@ -372,6 +372,7 @@ CommonStates.AddFrozenStates(states,
     end)
 
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

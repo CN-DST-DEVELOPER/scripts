@@ -64,6 +64,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
@@ -264,7 +265,7 @@ local states =
 
     State{
         name = "transform_to_king",
-		tags = { "busy", "transforming", "nospellcasting", "noelectrocute" },
+		tags = { "busy", "transforming", "nospellcasting", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -487,7 +488,7 @@ local states =
 
     State{
         name = "revive_lunar",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst:RemoveTag("lunar_merm_revivable")
@@ -847,7 +848,7 @@ local states =
 
     State{
         name = "lunar_transform",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst, data)
             if data.oldbuild then
@@ -886,7 +887,7 @@ local states =
 
     State{
         name = "lunar_revert",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst, data)
             if data.oldbuild then
@@ -1056,6 +1057,7 @@ CommonStates.AddSimpleActionState(states, "gohome", "pig_pickup", 4*FRAMES, {"bu
 CommonStates.AddSimpleState(states, "refuse", "pig_reject", { "busy" })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states, nil, { knockback = "smacked" })
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

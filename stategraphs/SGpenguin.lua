@@ -20,6 +20,7 @@ local events=
     CommonHandlers.OnStep(),
     CommonHandlers.OnSleep(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
@@ -73,7 +74,7 @@ local events=
                             end),
     EventHandler("flyaway", function(inst)
         if not inst.components.health:IsDead() and not inst.sg:HasStateTag("flight") then
-			if inst.sg:HasStateTag("electrocute") then
+			if inst.sg:HasAnyStateTag("electrocute", "knockback") and inst.sg:HasStateTag("busy") then
 				inst.sg.mem.flyaway = true
 			else
 				inst.sg:GoToState("flyaway")
@@ -458,7 +459,7 @@ local states=
         },
 
     State{ name = "flyaway",
-		tags = { "flight", "busy", "noelectrocute" },
+		tags = { "flight", "busy", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:Stop()
             inst.Physics:ClearCollisionMask()
@@ -545,6 +546,17 @@ CommonStates.AddSleepStates(states,
     })
 
 CommonStates.AddSimpleState(states,"hit","hit", {"busy"})
+
+local function _flyawayonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		inst.sg:GoToState(inst.sg.mem.flyaway and "flyaway" or "idle")
+	end
+end
+
+local function _clearflyaway(inst)
+	inst.sg.mem.flyaway = nil
+end
+
 CommonStates.AddElectrocuteStates(states, nil, nil,
 {
 	loop_onexit = function(inst)
@@ -552,15 +564,39 @@ CommonStates.AddElectrocuteStates(states, nil, nil,
 			inst.sg.mem.flyaway = nil
 		end
 	end,
-	onanimover = function(inst)
-		if inst.AnimState:AnimDone() then
-			inst.sg:GoToState(inst.sg.mem.flyaway and "flyaway" or "idle")
-		end
-	end,
-	pst_onexit = function(inst)
-		inst.sg.mem.flyaway = nil
-	end,
+	onanimover = _flyawayonanimover,
+	pst_onexit = _clearflyaway,
 })
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(35, function(inst)
+			if inst.sg.mem.flyaway then
+				inst.sg:GoToState("flyaway")
+			end
+		end),
+	},
+	knockbacklanded =
+	{
+		FrameEvent(8, function(inst)
+			if inst.sg.mem.flyaway then
+				inst.sg:GoToState("flyaway")
+			end
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = _flyawayonanimover,
+	knockback_onexit = _clearflyaway,
+	knockbacklanded_onanimover = _flyawayonanimover,
+	knockbacklanded_onexit = _clearflyaway,
+})
+
+_flyawayonanimover = nil
+_clearflyaway = nil
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddCorpseStates(states)

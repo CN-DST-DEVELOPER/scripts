@@ -19,6 +19,7 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("newcombattarget", function(inst)
 		if not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("attack", "busy")) then
 			inst.sg:GoToState("taunt_newtarget")
@@ -28,13 +29,15 @@ local events=
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not (inst.sg:HasAnyStateTag("attack", "electrocute") or CommonHandlers.HitRecoveryDelay(inst, nil, TUNING.WALRUS_MAX_STUN_LOCKS)) then
+			elseif (not inst.sg:HasAnyStateTag("attack", "electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt")) and
+				not CommonHandlers.HitRecoveryDelay(inst, nil, TUNING.WALRUS_MAX_STUN_LOCKS)
+			then
 				inst.sg:GoToState("hit")
 			end
 		end
 	end),
     EventHandler("doattack", function(inst)
-		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+		if not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("electrocute", "knockback")) then
             if inst.components.combat.target and inst:IsNear(inst.components.combat.target, TUNING.WALRUS_MELEE_RANGE) then
                 inst.sg:GoToState("attack")
             else
@@ -259,6 +262,7 @@ CommonStates.AddIdle(states, "funny_idle")
 CommonStates.AddSimpleActionState(states, "gohome", "pig_take", 15*FRAMES, {"busy"})
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddSinkAndWashAshoreStates(states)
 
 CommonStates.AddInitState(states, "idle")

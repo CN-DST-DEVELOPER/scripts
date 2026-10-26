@@ -87,8 +87,8 @@ local function OnPreHit(inst, attacker, target)
 end
 
 local function OnHit(inst, attacker, target)
-	if target and target:IsValid() then
-		if attacker and attacker:IsValid() then
+	if attacker and target and target:IsValid() then
+		if attacker:IsValid() then
 			if inst.ammo_def and inst.ammo_def.onhit then
 				inst.ammo_def.onhit(inst, attacker, target)
 			end
@@ -393,9 +393,13 @@ local function OnHit_Distraction(inst, attacker, target)
 	if target ~= nil and target:IsValid() and target.components.combat ~= nil then
 		local targets_target = target.components.combat.target
 		if targets_target == nil or targets_target == attacker then
-            target.components.combat:SetShouldAvoidAggro(attacker)
-			target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
-            target.components.combat:RemoveShouldAvoidAggro(attacker)
+			if attacker then
+				target.components.combat:SetShouldAvoidAggro(attacker)
+				target:PushEvent("attacked", { attacker = attacker, damage = 0, weapon = inst })
+				target.components.combat:RemoveShouldAvoidAggro(attacker)
+			else
+				target:PushEvent("attacked", { damage = 0, weapon = inst })
+			end
 
 			if not target:HasTag("epic") then
 				target.components.combat:DropTarget()

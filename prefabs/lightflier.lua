@@ -56,7 +56,7 @@ local function LeaderOnUpdate(inst)
 
         local r = -(leader.target.Transform:GetRotation() / RADIANS)
 
-        local targetoffsetdistance = leader.target.components.locomotor.walkspeed * (leader.target.components.locomotor.wantstomoveforward and FORMATION_MAX_OFFSET or 0)
+        local targetoffsetdistance = leader.target.components.locomotor.walkspeed * (leader.target.components.locomotor:WantsToMoveForward() and FORMATION_MAX_OFFSET or 0)
         local targetoffset_x = tx + math.cos(r) * targetoffsetdistance
         local targetoffset_z = tz + math.sin(r) * targetoffsetdistance
 

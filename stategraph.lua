@@ -638,6 +638,21 @@ function StateGraphInstance:HasAnyStateTag(...)
     return false
 end
 
+if BRANCH == "dev" then
+	local _hasstatetag = StateGraphInstance.HasStateTag
+	local _hasanystatetag = StateGraphInstance.HasAnyStateTag
+
+	function StateGraphInstance:HasStateTag(...)
+		assert(select('#', ...) == 1 and type(select(1, ...)) ~= "table", "Did you mean to use HasAnyStateTag?")
+		return _hasstatetag(self, ...)
+	end
+
+	function StateGraphInstance:HasAnyStateTag(...)
+		assert(select('#', ...) > 1 or type(select(1, ...)) == "table", "Did you mean to use HasStateTag?")
+		return _hasanystatetag(self, ...)
+	end
+end
+
 function StateGraphInstance:SetTimeout(time)
     SGManager:OnSetTimeout(self)
     self.timeout = time

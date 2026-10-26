@@ -1821,6 +1821,12 @@ local COMPONENT_ACTIONS =
 			end
         end,
 
+        sweeper = function(inst, doer, target, actions, right)
+            if right and target:HasTag("sweepable") then
+                table.insert(actions, ACTIONS.SWEEP)
+            end
+        end,
+
 		tacklesketch = function(inst, doer, target, actions)
 			if target:HasTag("tacklestation") and
 				not (target:HasTag("fire") or target:HasTag("smolder")) then
@@ -2482,6 +2488,12 @@ local COMPONENT_ACTIONS =
                 if not crushitemcast or crushitemcast and (doer.replica.rider == nil or not doer.replica.rider:IsRiding()) and (doer.replica.inventory == nil or not doer.replica.inventory:IsHeavyLifting()) then
                     table.insert(actions, ACTIONS.CASTSPELL)
                 end
+            end
+        end,
+
+        sweeper = function(inst, doer, target, actions, right)
+            if right and target:HasTag("sweepable") then
+                table.insert(actions, ACTIONS.SWEEP)
             end
         end,
 

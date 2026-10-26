@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "No plunder shall be left behind!",
 
         MASK_CHARLIE_BOSSHAT = "T'was an honor to battle thee, Lady of Shadows.",
+
+        -- Halloween 2026
+        LEAFPILE = "Even a warrior's heart doth soften at autumn's beauty.",
+        PUMPKIN_BOMB = "A gourd of glorious destruction!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "A mighty weapon to vanquish to filth of this world!", -- normal version
+            LIVING = "Mayhap I shall ride it into battle!",
+        },
+
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

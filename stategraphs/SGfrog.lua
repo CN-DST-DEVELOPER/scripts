@@ -13,6 +13,7 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnHop(),
 	CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
@@ -191,7 +192,7 @@ local states=
 
     State{
         name = "fall",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
         onenter = function(inst)
 			inst.Physics:SetDamping(0)
             inst.Physics:SetMotorVel(0,-20+math.random()*10,0)
@@ -256,7 +257,7 @@ local states=
 
     State{
         name = "trapped",
-		tags = { "busy", "trapped", "noelectrocute" },
+		tags = { "busy", "trapped", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -279,6 +280,7 @@ CommonStates.AddSleepStates(states,
 })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddHopStates(states, true, {loop = "jump"})--, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

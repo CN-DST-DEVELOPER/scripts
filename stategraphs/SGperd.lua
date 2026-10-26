@@ -14,18 +14,19 @@ local events=
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 	EventHandler("attacked", function(inst, data)
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
 		end
 	end),
     CommonHandlers.OnDeath(),
 	EventHandler("doattack", function(inst)
-		if not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+		if not inst.components.health:IsDead() and (not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt")) then
 			inst.sg:GoToState("attack")
 		end
 	end),
@@ -247,6 +248,7 @@ CommonStates.AddSimpleActionState(states, "gohome", "hit", 4 * FRAMES, { "busy" 
 CommonStates.AddSimpleActionState(states, "pick", "take", 9 * FRAMES, { "busy" })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

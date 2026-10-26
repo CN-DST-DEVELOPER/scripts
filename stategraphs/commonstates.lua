@@ -27,7 +27,9 @@ end
 
 --------------------------------------------------------------------------
 local function onsleep(inst)
-	if not (inst.components.health and inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+	if not (inst.components.health and inst.components.health:IsDead()) and
+		(not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasState("caninterrupt"))
+	then
         local fallingreason = inst.components.drownable and inst.components.drownable:GetFallingReason() or nil
         if fallingreason ~= nil and inst.sg:HasStateTag("jumping") then
             if fallingreason == FALLINGREASON.OCEAN then
@@ -1065,7 +1067,7 @@ CommonStates.AddAmphibiousCreatureHopStates = function(states, config, anims, ti
 				end
             elseif inst.sg.statemem.timeout or
                    (inst.sg.statemem.tryexit and inst.sg.statemem.swimming == TheWorld.Map:IsVisualGroundAtPoint(inst.Transform:GetWorldPosition())) or
-                   (not inst.components.locomotor.dest and not inst.components.locomotor.wantstomoveforward) then
+                   (not inst.components.locomotor.dest and not inst.components.locomotor:WantsToMoveForward()) then
 				inst.components.embarker:Cancel()
 				local x, y, z = inst.Transform:GetWorldPosition()
 				inst.sg:GoToState("hop_pst", not TheWorld.Map:IsVisualGroundAtPoint(x, y, z) and inst:GetCurrentPlatform() == nil)
@@ -3098,5 +3100,308 @@ CommonStates.AddStalkerCorruptionStates = function(states, timelines, fns)
             inst.AnimState:SetMultColour(1, 1, 1, 1)
             inst.AnimState:ClearOverrideBuild("stalker_corrupt_fx_build")
         end,
+	})
+end
+
+--------------------------------------------------------
+-- Knockback
+
+local function onknockback(inst, data)
+	--if using a shared SG then set sg.mem.noknockback = true
+	if not (inst.components.health and inst.components.health:IsDead() or
+			inst.sg:HasAnyStateTag("nointerrupt", "noknockback") or
+			inst.sg.mem.noknockback)
+	then
+		local swimming = inst:HasTag("swimming")
+		if inst.sg:HasState("knockbacklanded") and
+			(	data.forcelanded or
+				swimming or
+				inst:HasTag("heavybody") or
+				(inst.components.inventory and inst.components.inventory:EquipHasTag("heavyarmor"))
+			)
+		then
+			inst.sg:GoToState("knockbacklanded", data)
+		elseif inst.sg:HasState("knockback") and not swimming then
+			inst.sg:GoToState("knockback", data)
+		end
+	end
+end
+
+CommonHandlers.OnKnockback = function()
+	return EventHandler("knockback", onknockback)
+end
+
+local _knockback_timeline =
+{
+	FrameEvent(12, function(inst)
+		if inst.components.drownable then
+			inst.components.drownable:CheckDrownable()
+			if not inst:IsValid() or inst.sg.currentstate.name ~= "knockback" then
+				return
+			end
+		end
+		if inst.components.amphibiouscreature then
+			inst.components.amphibiouscreature:CheckSwimming()
+			if inst.sg.currentstate.name ~= "knockback" then
+				return
+			end
+		end
+		if inst.sg.statemem.limitmask then
+			inst.Physics:CollidesWith(inst.sg.statemem.limitmask)
+			inst.sg.statemem.limitmask = nil
+		end
+		if not inst:HasTag("flying") then
+			inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
+		end
+		inst.sg.statemem.landed = true
+	end),
+	FrameEvent(14, function(inst)
+		inst.sg:RemoveStateTag("nofreeze")
+		inst.sg:RemoveStateTag("noelectrocute")
+	end),
+	FrameEvent(32, function(inst)
+		if inst.components.sleeper then
+			inst.components.sleeper:WakeUp()
+		end
+		inst.sg:RemoveStateTag("nosleep")
+		inst.sg:AddStateTag("caninterrupt")
+	end),
+	FrameEvent(35, function(inst)
+		inst.sg:RemoveStateTag("busy")
+	end),
+}
+
+local _knockbacklanded_timeline =
+{
+	FrameEvent(6, function(inst)
+		inst.sg:RemoveStateTag("nofreeze")
+		inst.sg:RemoveStateTag("noelectrocute")
+		if inst.components.sleeper then
+			inst.components.sleeper:WakeUp()
+		end
+		inst.sg:RemoveStateTag("nosleep")
+		inst.sg:AddStateTag("caninterrupt")
+	end),
+}
+
+local function _knockback_onexit(inst)
+	if inst.sg.statemem.speed then
+		inst.Physics:ClearMotorVelOverride()
+		inst.Physics:Stop()
+	end
+	if inst.sg.statemem.limitmask then
+		inst.Physics:CollidesWith(inst.sg.statemem.limitmask)
+	end
+end
+
+CommonStates.AddKnockbackStates = function(states, timelines, anims, fns, speedmult)
+	speedmult = speedmult or 1
+
+	table.insert(states, State{
+		name = "knockback",
+		tags = { "knockback", "busy", "nosleep", "nofreeze", "noelectrocute", "jumping" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation(anims and anims.knockback or "knockback")
+
+			local speed = 0
+			local x, z
+			if data and data.radius and data.knocker and data.knocker:IsValid() then
+				local x1, _, z1 = data.knocker.Transform:GetWorldPosition()
+				x, _, z = inst.Transform:GetWorldPosition()
+				local dx = x1 - x
+				local dz = z1 - z
+				local dsq = dx * dx + dz * dz
+				local rangesq = data.radius * data.radius
+				local k = dsq < rangesq and 0.3 * dsq / rangesq - 1 or -0.7
+				speed = (data.strengthmult or 1) * 10 * k
+				if speed < 0 then
+					local rot = inst.Transform:GetRotation()
+					local rot1 = dsq > 0 and math.atan2(-dz, dx) * RADIANS or data.knocker.Transform:GetRotation() + 180
+					if DiffAngle(rot, rot1) > 90 then
+						inst.sg.statemem.reverse = true
+						inst.Transform:SetRotation(rot1 + 180)
+						inst.Physics:SetMotorVelOverride(-speed * speedmult, 0, 0)
+					else
+						inst.Transform:SetRotation(rot1)
+						inst.Physics:SetMotorVelOverride(speed * speedmult, 0, 0)
+					end
+				end
+			end
+
+			if speed < 0 then
+				inst.sg.statemem.speed = speed
+				inst.sg.statemem.dspeed = 0
+
+				if not (inst:HasTag("companion") or IsPointInWalledOffVRS(x, 0, z)) then
+					local limitmask = bit.band(inst.Physics:GetCollisionMask(), COLLISION.LIMITS)
+					if limitmask ~= 0 then
+						inst.Physics:ClearCollidesWith(limitmask)
+						inst.sg.statemem.limitmask = limitmask
+					end
+				end
+			end
+
+			if fns and fns.knockback_onenter then
+				fns.knockback_onenter(inst, data)
+			end
+		end,
+
+		onupdate = function(inst)
+			local speed = inst.sg.statemem.speed
+			if speed then
+				speed = speed + inst.sg.statemem.dspeed
+				if speed < 0 then
+					inst.sg.statemem.speed = speed
+					inst.sg.statemem.dspeed = inst.sg.statemem.dspeed + 0.075
+					inst.Physics:SetMotorVelOverride((inst.sg.statemem.reverse and -speed or speed) * speedmult, 0, 0)
+				else
+					inst.sg.statemem.speed = nil
+					inst.sg.statemem.dspeed = nil
+					inst.Physics:ClearMotorVelOverride()
+					inst.Physics:Stop()
+					if inst.sg.statemem.landed then
+						inst.sg:RemoveStateTag("jumping")
+					end
+
+					if inst.sg.statemem.limitmask then
+						inst.Physics:CollidesWith(inst.sg.statemem.limitmask)
+						inst.sg.statemem.limitmask = nil
+					end
+				end
+			end
+		end,
+
+		timeline =
+			timelines and
+			timelines.knockback and
+			shallowcopy(_knockback_timeline, timelines.knockback) or
+			_knockback_timeline,
+
+		events =
+		{
+			EventHandler("ms_enterwater", function(inst)
+				local _, sz, _ = GetCombatFxSize(inst)
+				local x, _, z = inst.Transform:GetWorldPosition()
+				SpawnPrefab((sz == "tiny" and "splash_green_small") or (sz == "large" and "splash_green_large") or "splash_green").Transform:SetPosition(x, 0, z)
+
+				if inst.sg.mem.sleeping then
+					inst.sg:GoToState("sleep")
+				else
+					inst.sg:GoToState("idle")
+				end
+			end),
+			EventHandler("animover", function(inst)
+				if inst.AnimState:AnimDone() then
+					if inst.components.drownable then
+						inst.components.drownable:CheckDrownable()
+						if inst.sg.currentstate.name ~= "knockback" then
+							return
+						end
+					end
+					if inst.sg.mem.sleeping then
+						inst.sg:GoToState("sleep")
+					else
+						local nextstate = fns and fns.knockback_onanimover or "idle"
+						if type(nextstate) == "string" then
+							inst.sg:GoToState(nextstate)
+						else
+							nextstate(inst)
+						end
+					end
+				end
+			end),
+		},
+
+		onexit =
+			fns and
+			fns.knockback_onexit and
+			function(inst)
+				_knockback_onexit(inst)
+				fns.knockback_onexit(inst)
+			end or
+			_knockback_onexit,
+	})
+
+	table.insert(states, State{
+		name = "knockbacklanded",
+		tags = { "knockback", "busy", "nosleep", "nofreeze", "noelectrocute", "jumping" },
+
+		onenter = function(inst, data)
+			inst.components.locomotor:StopMoving()
+			inst.AnimState:PlayAnimation(anims and anims.knockbacklanded or "hit")
+
+			local speed = 0
+			if data and data.radius and data.knocker and data.knocker:IsValid() then
+				local x, _, z = inst.Transform:GetWorldPosition()
+				local x1, _, z1 = data.knocker.Transform:GetWorldPosition()
+				local dx = x1 - x
+				local dz = z1 - z
+				local dsq = dx * dx + dz * dz
+				local rangesq = data.radius * data.radius
+				local k = dsq < rangesq and 0.3 * dsq / rangesq - 1 or -0.7
+				speed = (data.strengthmult or 1) * 9 * k
+				if speed < 0 then
+					local rot = inst.Transform:GetRotation()
+					local rot1 = dsq > 0 and math.atan2(-dz, dx) * RADIANS or data.knocker.Transform:GetRotation() + 180
+					if DiffAngle(rot, rot1) > 90 then
+						inst.sg.statemem.reverse = true
+						inst.Transform:SetRotation(rot1 + 180)
+						inst.Physics:SetMotorVelOverride(-speed * speedmult, 0, 0)
+					else
+						inst.Transform:SetRotation(rot1)
+						inst.Physics:SetMotorVelOverride(speed * speedmult, 0, 0)
+					end
+				end
+			end
+
+			if speed < 0 then
+				inst.sg.statemem.speed = speed
+				inst.sg.statemem.dspeed = 0
+			end
+
+			if fns and fns.knockbacklanded_onenter then
+				fns.knockbacklanded_onenter(inst, data)
+			end
+		end,
+
+		onupdate = function(inst)
+			local speed = inst.sg.statemem.speed
+			if speed then
+				speed = speed + inst.sg.statemem.dspeed
+				if speed < 0 then
+					inst.sg.statemem.speed = speed
+					inst.sg.statemem.dspeed = inst.sg.statemem.dspeed + 0.15
+					inst.Physics:SetMotorVelOverride((inst.sg.statemem.reverse and -speed or speed) * speedmult, 0, 0)
+				else
+					inst.sg.statemem.speed = nil
+					inst.sg.statemem.dspeed = nil
+					inst.Physics:ClearMotorVelOverride()
+					inst.Physics:Stop()
+					inst.sg:RemoveStateTag("jumping")
+				end
+			end
+		end,
+
+		timeline =
+			timelines and
+			timelines.knockbacklanded and
+			shallowcopy(_knockbacklanded_timeline, timelines.knockbacklanded) or
+			_knockbacklanded_timeline,
+
+		events =
+		{
+			CommonHandlers.OnNoSleepAnimOver(fns and fns.knockbacklanded_onanimover or "idle")
+		},
+
+		onexit =
+			fns and
+			fns.knockbacklanded_onexit and
+			function(inst)
+				_knockback_onexit(inst)
+				fns.knockbacklanded_onexit(inst)
+			end or
+			_knockback_onexit,
 	})
 end

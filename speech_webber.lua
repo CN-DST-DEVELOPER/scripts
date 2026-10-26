@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "We can't leave anything behind!",
 
         MASK_CHARLIE_BOSSHAT = "We wanna wear the lady's face!",
+
+        -- Halloween 2026
+        LEAFPILE = "We can help sweep up!",
+        PUMPKIN_BOMB = "What should we explode?", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Aw, we have to do chores?", -- normal version
+            LIVING = "Is it a magic broom?",
+        },
+
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

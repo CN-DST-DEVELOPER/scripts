@@ -6371,6 +6371,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Take all things",
 
         MASK_CHARLIE_BOSSHAT = "Lady... face",
+
+        -- Halloween 2026
+        LEAFPILE = "Little friends back where begin",
+        PUMPKIN_BOMB = "Pumpkin friend... scared?", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Stick friend help clean!", -- normal version
+            LIVING = "Hello? Friend?",
+        },
+
     },
 
     DESCRIBE_GENERIC = "Friend?",

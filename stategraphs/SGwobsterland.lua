@@ -7,6 +7,7 @@ local events =
 
     CommonHandlers.OnFreezeEx(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
     EventHandler("attacked", function(inst, data)
 		if inst.components.health and not inst.components.health:IsDead() then
@@ -185,6 +186,7 @@ CommonStates.AddSleepExStates(states)
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddHitState(states,
 {

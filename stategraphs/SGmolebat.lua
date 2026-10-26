@@ -14,12 +14,15 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
 
     EventHandler("summon", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+		if inst.components.health and not inst.components.health:IsDead() and
+			not (inst.sg:HasAnyStateTag("electrocute", "knockback") and inst.sg:HasStateTag("busy"))
+		then
             inst.sg:GoToState("summon_ally")
         end
     end),
@@ -156,7 +159,7 @@ local states =
 
     State{
         name = "fall",
-		tags = { "busy", "noattack", "noelectrocute" },
+		tags = { "busy", "noattack", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:SetActive(false)
@@ -183,6 +186,7 @@ local states =
                 inst.sg.statemem.physics_disabled = false
                 inst.sg:RemoveStateTag("noattack")
 				inst.sg:RemoveStateTag("noelectrocute")
+				inst.sg:RemoveStateTag("noknockback")
             end),
         },
 
@@ -380,6 +384,7 @@ nil,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

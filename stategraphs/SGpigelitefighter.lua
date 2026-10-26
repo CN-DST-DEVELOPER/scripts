@@ -8,6 +8,7 @@ local events =
     CommonHandlers.OnAttack(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
@@ -124,7 +125,7 @@ local states =
 
     State{
         name = "spawnin",
-		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation(inst.sg.mem.variation == "3" and "side_lob" or "front_lob")
@@ -187,7 +188,7 @@ local states =
 
     State{
         name = "despawn",
-		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -253,6 +254,18 @@ CommonStates.AddSleepExStates(states,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	--these will be merged with default timeline in commonstates.lua
+	knockback =
+	{
+		FrameEvent(3, function(inst) inst.SoundEmitter:PlaySound("dontstarve/pig/scream") end),
+	},
+},
+{ --anims
+	knockback = "smacked",
+})
 
 --in order: blue, red, white, green
 local BUILD_VARIATIONS =

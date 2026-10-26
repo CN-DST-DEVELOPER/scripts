@@ -6367,6 +6367,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Remember take all my stuff. Florp.",
 
         MASK_CHARLIE_BOSSHAT = "Florp! Me can be scary night lady! Ha!",
+
+        -- Halloween 2026
+        LEAFPILE = "Me best sweeper! Flort!",
+        PUMPKIN_BOMB = "Hee-hee, surprise for Pigman.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Sweep, sweep! No more dirties!", -- normal version
+            LIVING = "Huh? Weird broom.",
+        },
+
     },
 
     DESCRIBE_GENERIC = "What that?",

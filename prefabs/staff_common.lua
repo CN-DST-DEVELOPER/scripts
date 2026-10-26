@@ -772,6 +772,9 @@ function fns.green(inst, notinit)
     inst.components.spellcaster:SetSpellFn(destroystructure)
 
     AddHauntableCustomReaction(inst, onhauntgreen, true, false, true)
+
+    inst:AddComponent("itemmimicconfig")
+    inst.components.itemmimicconfig:AddActionForceMimicReveal(ACTIONS.CASTSPELL) -- Ingredients must be earned.
 end
 
 ------- yellow/opal

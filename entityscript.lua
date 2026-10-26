@@ -581,7 +581,6 @@ function EntityScript:HasTags(...)
         return self.entity:HasAllTags(...)
     end
 end
-EntityScript.HasAllTags = EntityScript.HasTags
 
 function EntityScript:HasOneOfTags(...)
     local tags = select(1, ...)
@@ -591,6 +590,29 @@ function EntityScript:HasOneOfTags(...)
         return self.entity:HasAnyTag(...)
     end
 end
+
+if BRANCH == "dev" then
+	local _hastag = EntityScript.HasTag
+	local _hastags = EntityScript.HasTags
+	local _hasoneoftags = EntityScript.HasOneOfTags
+
+	function EntityScript:HasTag(...)
+		assert(select('#', ...) == 1 and type(select(1, ...)) ~= "table", "Did you mean to use HasAllTags or HasAnyTag?")
+		return _hastag(self, ...)
+	end
+
+	function EntityScript:HasTags(...)
+		assert(select('#', ...) > 1 or type(select(1, ...)) == "table", "Did you mean to use HasTag?")
+		return _hastags(self, ...)
+	end
+
+	function EntityScript:HasOneOfTags(...)
+		assert(select('#', ...) > 1 or type(select(1, ...)) == "table", "Did you mean to use HasTag?")
+		return _hasoneoftags(self, ...)
+	end
+end
+
+EntityScript.HasAllTags = EntityScript.HasTags
 EntityScript.HasAnyTag = EntityScript.HasOneOfTags
 
 require("entityreplica")

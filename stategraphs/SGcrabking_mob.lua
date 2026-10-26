@@ -61,6 +61,7 @@ local events =
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
 
     EventHandler("onsink", function(inst, data)
         if (inst.components.health == nil or not inst.components.health:IsDead()) and not inst.sg:HasStateTag("drowning") and (inst.components.drownable ~= nil and inst.components.drownable:ShouldDrown()) then
@@ -72,7 +73,7 @@ local events =
         if not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasAnyStateTag("attack", "moving", "electrocute") then
+			elseif not inst.sg:HasAnyStateTag("attack", "moving", "electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
                 inst.sg:GoToState("hit")
             end
         end
@@ -625,6 +626,17 @@ CommonStates.AddSleepExStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states,
+nil, --timelines
+nil, --anims
+{ --fns
+	knockbacklanded_onenter = function(inst, data)
+		inst.AnimState:Hide("FX")
+	end,
+	knockbacklanded_onexit = function(inst)
+		inst.AnimState:Show("FX")
+	end,
+})
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
 return StateGraph("crabking_mob", states, events, "idle", actionhandlers)

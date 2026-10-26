@@ -1554,6 +1554,14 @@ function Map:IsWagPunkArenaBarrierUp()
     return world.net.components.wagpunk_floor_helper:IsBarrierUp()
 end
 
+function Map:GetVirtualRoomSetNameAtPoint(x, y, z)
+    local hash = self:GetVirtualRoomSetHashAtPoint(x, y, z)
+    if not hash then
+        return nil
+    end
+
+    return VIRTUALROOMSETHASHTONAME[hash]
+end
 function Map:IsPointInVaultRoom(x, y, z)
     return self:IsPointInVirtualRoomSet(VIRTUALROOMSETS.VAULT, x, y, z)
 end

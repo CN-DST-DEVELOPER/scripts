@@ -36,6 +36,7 @@ local events =
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
@@ -568,6 +569,7 @@ nil,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddHopStates(states, true, { pre = "boat_jump_pre", loop = "boat_jump_loop", pst = "boat_jump_pst"})
 
 CommonStates.AddInitState(states, "idle")

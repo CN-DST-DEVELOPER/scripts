@@ -6387,6 +6387,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Pack it all before the fall!",
 
         MASK_CHARLIE_BOSSHAT = "A bad case of broken face! Hyuyu!",
+
+        -- Halloween 2026
+        LEAFPILE = "Fallen from grace, are we?",
+        PUMPKIN_BOMB = "This will make a delightful mess!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Chores aren't really an imp thing.", -- normal version
+            LIVING = "It has soul!",
+        },
+
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

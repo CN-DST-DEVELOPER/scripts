@@ -6368,6 +6368,16 @@ return{
         CHARLIEARENA_TELEPORTER = "We better pack up before we jump in there, Lucy.",
 
         MASK_CHARLIE_BOSSHAT = "Think it's bad luck to wear it, Lucy?",
+
+        -- Halloween 2026
+        LEAFPILE = "If I chop all the trees, there'll be no leaves to sweep.",
+        PUMPKIN_BOMB = "That's one way to clear the yard.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Not as satisfyin' as choppin' wood, but it'll do.", -- normal version
+            LIVING = "Whaddya mean you know that broom, Luce?",
+        },
+
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

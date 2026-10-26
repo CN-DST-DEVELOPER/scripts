@@ -40,11 +40,20 @@ local events = {
 				end)
 			then
 				return
-			elseif not inst.sg:HasAnyStateTag("ability", "electrocute") then
+			elseif not inst.sg:HasAnyStateTag("ability", "electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit")
 			end
         end
     end),
+    EventHandler("knockback", function(inst, data)
+		if not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("nointerrupt", "noknockback")) then
+			if not data.forcelanded then
+				inst.sg:GoToState("knockback", data)
+			elseif not inst.sg:HasStateTag("ability") then
+				inst.sg:GoToState("knockbacklanded", data)
+			end
+		end
+	end),
     EventHandler("trapped", function(inst)
         inst.sg:GoToState("trapped")
     end),
@@ -314,7 +323,7 @@ local states = {
     },
     State{
         name = "burrowaway",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:Stop()
             if inst.components.inventoryitem then
@@ -347,7 +356,7 @@ local states = {
     },
     State{
         name = "burrowto",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
         onenter = function(inst, data)
             inst.Physics:Stop()
             if inst.components.inventoryitem then
@@ -683,7 +692,7 @@ local states = {
     },
     State{
         name = "fall",
-		tags = { "busy", "stunned", "noelectrocute" },
+		tags = { "busy", "stunned", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:SetDamping(0)
             inst.Physics:SetMotorVel(0,-20+math.random()*10,0)
@@ -728,7 +737,7 @@ local states = {
     },
     State{
         name = "trapped",
-		tags = { "busy", "trapped", "noelectrocute" },
+		tags = { "busy", "trapped", "noelectrocute", "noknockback" },
         onenter = function(inst)
             inst.Physics:Stop()
             inst:ClearBufferedAction()
@@ -828,6 +837,8 @@ nil, --timeline
 		end
 	end,
 })
+
+CommonStates.AddKnockbackStates(states)
 
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

@@ -818,7 +818,7 @@ local states =
 					local lastattacktime = inst.sg.mem.recent_attackers[target]
 					if lastattacktime and lastattacktime + RECENT_ATTACKERS_DURATION >= GetTime() then
 						local x1, _, z1 = target.Transform:GetWorldPosition()
-						local range = TUNING.SHROUDEN_COUNTERATTACK_RANGE + inst:GetPhysicsRadius(0)
+						local range = TUNING.SHROUDEN_COUNTERATTACK_RANGE + target:GetPhysicsRadius(0)
 						if inst:GetDistanceSqToPoint(x1, 0, z1) < range * range and
 							inst:IsInArena() == TheWorld.Map:IsPointInCharlieBossArena(x1, 0, z1)
 						then
@@ -843,7 +843,7 @@ local states =
 						local lastattacktime = inst.sg.mem.recent_attackers[target]
 						if lastattacktime and lastattacktime + RECENT_ATTACKERS_DURATION >= GetTime() then
 							local x1, _, z1 = target.Transform:GetWorldPosition()
-							local range = TUNING.SHROUDEN_COUNTERATTACK_RANGE + inst:GetPhysicsRadius(0)
+							local range = TUNING.SHROUDEN_COUNTERATTACK_RANGE + target:GetPhysicsRadius(0)
 							if inst:GetDistanceSqToPoint(x1, 0, z1) < range * range and
 								inst:IsInArena() == TheWorld.Map:IsPointInCharlieBossArena(x1, 0, z1) and
 								ChooseAttack(inst, target)

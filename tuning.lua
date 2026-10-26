@@ -9682,7 +9682,7 @@ function Tune(overrides)
 		CHARLIE_BOSS_ATTACK_PERIOD = 3,
 		CHARLIE_BOSS_ATTACK_PERIOD2 = 2,
 		CHARLIE_BOSS_ATTACK_RANGE = 4.5,
-		CHARLIE_BOSS_COUNTERATTACK_RANGE = 8,
+		CHARLIE_BOSS_COUNTERATTACK_RANGE = 14,
 		CHARLIE_BOSS_PLAYERDAMAGEPERCENT = 0.75,
 		CHARLIE_BOSS_DAMAGE = 150,
 		CHARLIE_BOSS_PLANAR_DAMAGE = 30,
@@ -9721,7 +9721,7 @@ function Tune(overrides)
 		SHROUDEN_HIT_RECOVERY = 1.5,
 		SHROUDEN_ATTACK_PERIOD = { 3, 2.75, 2.5 }, --threat levels
 		SHROUDEN_ATTACK_RANGE = 11,
-		SHROUDEN_COUNTERATTACK_RANGE = 16,
+		SHROUDEN_COUNTERATTACK_RANGE = 20,
 		SHROUDEN_DAMAGE = 225,
 		SHROUDEN_PLANAR_DAMAGE = 35,
 		SHROUDEN_SUMMONS_BONUS_PLANAR_DAMAGE = 5,
@@ -9783,6 +9783,29 @@ function Tune(overrides)
         },
         SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_INTERVAL = 7,
         SANITYMONSTERS_CHARLIEARENA_POP_CHANGE_VARIANCE = 7,
+
+        -- Halloween 2026
+        LEAFPILEMANAGER_SPACING = 10, -- In tiles for each world partition.
+        LEAFPILEMANAGER_DENSITY = 1, -- Max number of created leafpile prefabs to create per partition.
+        LEAFPILEMANAGER_SECONDS_PER_SPAWN = 10,
+        LEAFPILEMANAGER_SECONDS_PER_DESPAWN = 0.5,
+        LEAFPILE_TIME_TO_GROW = seg_time * 8,
+        LEAFPILE_TIME_TO_GROW_VARIANCE = seg_time * 2,
+        LEAFPILE_ADDITIONAL_LOOT_PER_STAGE_CHANCE = 0.5,
+        LEAFPILE_TRICK_SPOOK_CHANCE = 0.25, -- Chance of any trick being a spook.
+        LEAFPILE_TRICK_CHANCE = 0.3,
+        LEAFPILE_TREAT_CHANCE = 0.5,
+        LEAFPILE_SIZE_ODDS_BIAS_PER_STAGE = 0.1, -- Shifting the odds away from tricks if the pile is left to grow bigger allowing for debris to take its place.
+
+        WITCHBROOM_USES = 125,
+        WITCHBROOM_WEAPON_ATTACKWEAR = 5,
+        WITCHBROOM_LIVING_SPEED_MULT = 1.1,
+        WITCHBROOM_LOCOMOTE_WEAR = 125 / (10 * total_day_time), -- ticks every second, lasts 10 days
+
+        PUMPKIN_BOMB_RANGE = 3.5,
+		PUMPKIN_BOMB_DAMAGE = 50,
+        PUMPKIN_BOMB_SEED_CHANCE = 0.1,
+        PUMPKIN_BOMB_BUILDING_DAMAGE = 4,
     }
 
     TUNING_MODIFIERS = {}

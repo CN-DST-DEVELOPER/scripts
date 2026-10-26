@@ -855,7 +855,7 @@ SPECIAL_EVENTS =
     YOTS = "year_of_the_snake",
     YOTH = "year_of_the_knight",
 }
-WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.NONE
+WORLD_SPECIAL_EVENT = SPECIAL_EVENTS.HALLOWED_NIGHTS
 WORLD_EXTRA_EVENTS = {}
 
 FESTIVAL_EVENTS =
@@ -909,8 +909,8 @@ SPECIAL_EVENT_MUSIC =
 	--hallowed nights
 	[SPECIAL_EVENTS.HALLOWED_NIGHTS] =
 	{
-		bank = "music_frontend_hallowednights2024.fsb",
-		sound = "dontstarve/music/music_FE_hallowednights2025",
+		bank = "music_frontend_rifts8.fsb",
+		sound = "dontstarve/music/music_FE_rifts8",
 	},
 
     --winter's feast carol
@@ -3051,6 +3051,13 @@ VIRTUALROOMSETS = {
     LOBBYVAULT = "LOBBYVAULT", -- Intentionally backwards for search string isolation.
     ATRIUM = "ATRIUM",
 }
+VIRTUALROOMSETHASHTONAME = {}
+if rawget(_G, "TheSim") then -- updateprefabs guard and rawget is used for worldgen without hash function defined
+    for _, roomsetname in pairs(VIRTUALROOMSETS) do
+        VIRTUALROOMSETHASHTONAME[hash(roomsetname)] = roomsetname
+    end
+end
+VIRTUALROOMSETNAMETOHASH = table.invert(VIRTUALROOMSETHASHTONAME)
 VIRTUALROOMCONTEXT = {
     NONE = "NONE", -- Default fallback.
     MARKER = "MARKER",

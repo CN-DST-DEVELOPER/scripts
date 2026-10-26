@@ -82,15 +82,21 @@
 
 require("class")
 
-net_event = Class(function(self, guid, event)
-    self._bool = net_bool(guid, event, event)
-end)
+net_event = Class(
+	BRANCH == "dev" and
+	function(self, guid, event, NOT_USED)
+		assert(NOT_USED == nil, "net_event does NOT take 3 args; the 2nd arg (string id) is used as the event name.")
+		self._bool = net_bool(guid, event, event)
+	end or
+	function(self, guid, event)
+		self._bool = net_bool(guid, event, event)
+	end
+)
 
 function net_event:push()
     self._bool:set_local(true)
     self._bool:set(true)
 end
-
 
 -- NOTES(JBK): This should be used sparingly but it will return a networked variable integer that best holds the count requirement.
 -- Caller should assign this as a variable with a suffix of _net_enum for file searches.

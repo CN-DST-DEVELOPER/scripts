@@ -75,6 +75,19 @@ local function potion_onputinfire(inst, target)
     end
 end
 
+local function UseableTargetedItem_ValidTarget(inst, target, doer)
+	return target.prefab == "witchbroom" and not target:HasTag("flyingbroom")
+end
+
+local function OnUsedOnTargetedItem(inst, target, doer)
+    if target.MakeLiving then
+        target:MakeLiving()
+        inst.components.stackable:Get():Remove()
+        return true
+    end
+    return false
+end
+
 local function fn()
     local inst = CreateEntity()
 
@@ -95,6 +108,8 @@ local function fn()
     end
 
     MakeInventoryFloatable(inst, "small", 0.2)
+
+    inst.UseableTargetedItem_ValidTarget = UseableTargetedItem_ValidTarget
 
     inst.scrapbook_specialinfo = "PLANTABLE"
 
@@ -128,6 +143,10 @@ local function fn()
     inst:AddComponent("deployable")
     inst.components.deployable:SetDeployMode(DEPLOYMODE.PLANT)
     inst.components.deployable.ondeploy = ondeploy
+
+	inst:AddComponent("useabletargeteditem")
+	inst.components.useabletargeteditem:SetOnUseFn(OnUsedOnTargetedItem)
+    inst.components.useabletargeteditem:SetUsingItemDoesNotToggleUseability(true)
 
     inst.beattask = nil
     ondropped(inst)

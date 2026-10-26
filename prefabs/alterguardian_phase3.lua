@@ -389,14 +389,15 @@ local function fn()
 
     inst.scrapbook_proxy = "alterguardian_phase1"
 
-    inst._musicdirty = net_event(inst.GUID, "alterguardian_phase3._musicdirty", "musicdirty")
+	inst._musicdirty = net_event(inst.GUID, "alterguardian_phase3._musicdirty")
     inst._playingmusic = false
     --inst._musictask = nil
     OnMusicDirty(inst)
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
-        inst:ListenForEvent("musicdirty", OnMusicDirty)
+		inst:ListenForEvent("alterguardian_phase3._musicdirty", OnMusicDirty)
 
         return inst
     end

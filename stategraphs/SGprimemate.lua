@@ -20,6 +20,7 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(1),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
@@ -295,21 +296,11 @@ local states =
 
 CommonStates.AddWalkStates(states,
 {
-    starttimeline =
-    {
-
-    },
-
 	walktimeline =
     {
         TimeEvent(0, PlayFootstep),
         TimeEvent(12 * FRAMES, PlayFootstep),
 	},
-
-    endtimeline =
-    {
-
-    },
 })
 
 
@@ -375,6 +366,7 @@ end},
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states, nil, { knockback = "smacked" })
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states, nil, nil, "prime_matecorpse")

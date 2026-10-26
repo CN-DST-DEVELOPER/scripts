@@ -15,11 +15,14 @@ local AmphibiousCreature = Class(function(self, inst)
 
     self.transitiondistance = 2.5
 
-	if not self.inst:IsAsleep() and not IsEntityDead(self.inst) then
-		self.inst:StartUpdatingComponent(self)
+	if TheWorld.has_ocean then
+		if not (inst:IsAsleep() or IsEntityDead(inst)) then
+			self.inst:StartUpdatingComponent(self)
+		end
+		inst:ListenForEvent("death", OnDeath)
+	else
+		self.no_ocean = true
 	end
-
-    self.inst:ListenForEvent("death", OnDeath)
 end)
 
 function AmphibiousCreature:OnRemoveFromEntity()
@@ -31,7 +34,7 @@ function AmphibiousCreature:OnEntitySleep()
 end
 
 function AmphibiousCreature:OnEntityWake()
-    if not IsEntityDead(self.inst) then
+	if not (self.no_ocean or IsEntityDead(self.inst)) then
 	    self.inst:StartUpdatingComponent(self)
     end
 end
@@ -49,18 +52,23 @@ function AmphibiousCreature:GetTransitionDistance()
     return self.transitiondistance
 end
 
-function AmphibiousCreature:OnUpdate(dt)
-	if self.inst.sg == nil or not self.inst.sg:HasStateTag("jumping") then
-		local x, y, z = self.inst.Transform:GetWorldPosition()
-		local is_on_land = TheWorld.Map:IsPassableAtPoint(x, y, z)
-
-		if self.in_water == is_on_land then
-			if is_on_land then
-				self:OnExitOcean()
-			else
-				self:OnEnterOcean()
-			end
+function AmphibiousCreature:CheckSwimming()
+	if self.no_ocean then
+		return
+	end
+	local is_on_land = TheWorld.Map:IsPassableAtPoint(self.inst.Transform:GetWorldPosition())
+	if self.in_water == is_on_land then
+		if is_on_land then
+			self:OnExitOcean()
+		else
+			self:OnEnterOcean()
 		end
+	end
+end
+
+function AmphibiousCreature:OnUpdate(dt)
+	if not (self.inst.sg and self.inst.sg:HasStateTag("jumping")) then
+		self:CheckSwimming()
 	end
 end
 
@@ -82,6 +90,7 @@ function AmphibiousCreature:OnEnterOcean()
 		if self.enterwaterfn then
 			self.enterwaterfn(self.inst)
 		end
+		self.inst:PushEventImmediate("ms_enterwater")
 	end
 end
 
@@ -95,6 +104,7 @@ function AmphibiousCreature:OnExitOcean()
 		if self.exitwaterfn then
 			self.exitwaterfn(self.inst)
 		end
+		self.inst:PushEventImmediate("ms_exitwater")
 	end
 end
 

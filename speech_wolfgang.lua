@@ -6368,6 +6368,16 @@ return{
         CHARLIEARENA_TELEPORTER = "Remember to bring all Wolfgang things.",
 
         MASK_CHARLIE_BOSSHAT = "All that is left of scary night lady. So sad.",
+
+        -- Halloween 2026
+        LEAFPILE = "Wolfgang make clean sweep of all leaf pile!",
+        PUMPKIN_BOMB = "PUMPKIN FULL OF SURPRISE!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "Even strongman must do chore.", -- normal version
+            LIVING = "Is there scary witch missing this broom?",
+        },
+
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

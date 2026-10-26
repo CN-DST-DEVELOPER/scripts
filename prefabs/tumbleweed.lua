@@ -169,12 +169,6 @@ local function MakeLoot(inst)
         {chance = 0.33, item = "feather_canary"},
         {chance = 1,    item = "trinket_3"},
         {chance = 1,    item = "beefalowool"},
-        {chance = 0.1,  item = "rabbit"},
-        {chance = 0.1,  item = "mole"},
-        {chance = 0.1,  item = "spider", aggro = true},
-        {chance = 0.1,  item = "frog", aggro = true},
-        {chance = 0.1,  item = "bee", aggro = true},
-        {chance = 0.1,  item = "mosquito", aggro = true},
         {chance = 1,    item = "butterflywings"},
         {chance = .02,  item = "beardhair"},
         {chance = 1,    item = "berries"},
@@ -188,6 +182,24 @@ local function MakeLoot(inst)
         {chance = 0.25, item = "cookingrecipecard"},
         {chance = 0.25,  item = "scrapbook_page"},
     }
+    if TUNING.RABBIT_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "rabbit"})
+    end
+    if TUNING.MOLE_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "mole"})
+    end
+    if TUNING.SPIDERDEN_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "spider", aggro = true})
+    end
+    if TUNING.FROG_POND_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "frog", aggro = true})
+    end
+    if TUNING.BEEHIVE_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "bee", aggro = true})
+    end
+    if TUNING.MOSQUITO_POND_ENABLED then
+        table.insert(possible_loot, {chance = 0.1,  item = "mosquito", aggro = true})
+    end
 
     local chessunlocks = TheWorld.components.chessunlocks
     if chessunlocks ~= nil then

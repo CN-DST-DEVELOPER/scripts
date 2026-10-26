@@ -23,7 +23,9 @@ local events =
     CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnHop(),
+	CommonHandlers.OnFallInVoid(),
     CommonHandlers.OnDeath(),
 
 	EventHandler("attacked", function(inst, data)
@@ -31,7 +33,7 @@ local events =
 		if inst.components.health and not inst.components.health:IsDead() then
 			if CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 				inst.sg:GoToState("hit") -- can still attack
 			end
         end
@@ -466,7 +468,7 @@ local states =
 
     State {
         name = "trapped",
-		tags = { "busy", "trapped", "noelectrocute" },
+		tags = { "busy", "trapped", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -484,7 +486,7 @@ local states =
 
     State {
         name = "mutate",
-		tags = { "busy", "mutating", "noelectrocute" },
+		tags = { "busy", "mutating", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -507,7 +509,7 @@ local states =
 
     State {
         name = "mutate_pst",
-		tags = { "busy", "mutating", "noelectrocute" },
+		tags = { "busy", "mutating", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -536,6 +538,7 @@ CommonStates.AddSleepExStates(states,
 })
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddAmphibiousCreatureHopStates(states,
 { -- config
     swimming_clear_collision_frame = 5*FRAMES,
@@ -564,6 +567,7 @@ nil,
         end),
     }
 })
+CommonStates.AddVoidFallStates(states)
 
 CommonStates.AddWalkStates(states)
 

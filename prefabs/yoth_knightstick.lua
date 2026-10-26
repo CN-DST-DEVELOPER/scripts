@@ -91,7 +91,7 @@ local function fn()
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
 
     inst._onlocomote = function(owner)
-        if owner.components.locomotor.wantstomoveforward then
+        if owner.components.locomotor:WantsToMoveForward() then
             if not inst.components.fueled.consuming then
                 inst.components.fueled:StartConsuming()
             end

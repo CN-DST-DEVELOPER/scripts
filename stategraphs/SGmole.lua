@@ -60,6 +60,11 @@ local events =
     EventHandler("stunbomb", function(inst)
         inst.sg:GoToState("stunned", true)
     end),
+	EventHandler("knockback", function(inst, data)
+		if not (data and data.forcelanded) and not (inst.components.health:IsDead() or inst.sg:HasStateTag("noattack")) then
+			inst.sg:GoToState("stunned", false)
+		end
+	end),
 
 	-- Corpse handlers
 	CommonHandlers.OnCorpseChomped(),

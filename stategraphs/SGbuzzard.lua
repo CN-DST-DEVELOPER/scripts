@@ -120,6 +120,7 @@ local events =
 	CommonHandlers.OnWakeEx(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSink(),
     CommonHandlers.OnFallInVoid(),
@@ -159,8 +160,11 @@ local events =
     end),
 
 	EventHandler("onignite", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasAnyStateTag("electrocute", "stunned"))
-            and ShouldDistress(inst) then
+		if inst.components.health and not inst.components.health:IsDead() and
+			not inst.sg:HasAnyStateTag("electrocute", "stunned") and
+			(not inst.sg:HasStateTag("knockback") or inst.sg:HasStateTag("caninterrupt")) and
+			ShouldDistress(inst)
+		then
 			inst.sg:GoToState("distress_pre")
 		end
 	end),
@@ -319,7 +323,7 @@ local states =
 
     State{
         name = "glide",
-		tags = { "idle", "flight", "busy", "noelectrocute", "nosleep" },
+		tags = { "idle", "flight", "busy", "noelectrocute", "noknockback", "nosleep" },
         onenter= function(inst)
             inst.AnimState:PlayAnimation("glide", true)
 			inst.DynamicShadow:Enable(false)
@@ -424,7 +428,7 @@ local states =
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "canrotate", "noelectrocute", "nosleep" },
+		tags = { "flight", "busy", "canrotate", "noelectrocute", "noknockback", "nosleep" },
         onenter = function(inst)
 			if IsStuck(inst) then
 				inst.sg:GoToState("distress_pre")
@@ -635,7 +639,7 @@ local states =
 
     State{
 		name = "flamethrower_loop",
-		tags = { "attack", "busy", "noattack", "noelectrocute", "flamethrowering" }, -- To dodge electric fence.
+		tags = { "attack", "busy", "noattack", "noelectrocute", "noknockback", "flamethrowering" }, -- To dodge electric fence.
 
 		onenter = function(inst, targets)
             inst.components.locomotor:Stop()
@@ -861,7 +865,7 @@ local states =
 
     State{
         name = "fall",
-		tags = { "noattack", "busy", "noelectrocute", "nosleep" },
+		tags = { "noattack", "busy", "noelectrocute", "noknockback", "nosleep" },
         onenter = function(inst)
             inst.Physics:Stop()
 			inst.DynamicShadow:Enable(false)
@@ -1066,7 +1070,7 @@ local states =
 
     State{
         name = "corpse_fall",
-		tags = { "corpse", "busy", "noelectrocute" },
+		tags = { "corpse", "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -1174,6 +1178,35 @@ nil, --timeline
 		end
 	end,
 })
+
+local function _knockback_onanimover(inst)
+	if inst.AnimState:AnimDone() then
+		if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+			inst.sg:GoToState("distress_pre")
+		else
+			inst.sg:GoToState("idle")
+		end
+	end
+end
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(32, function(inst)
+			if inst.components.burnable and inst.components.burnable:IsBurning() and ShouldDistress(inst) then
+				inst.sg:GoToState("distress_pre")
+			end
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = _knockback_onanimover,
+	knockbacklanded_onanimover =_knockback_onanimover,
+})
+
+_knockback_onanimover = nil
 
 CommonStates.AddLunarRiftMutationStates(states, nil, nil,
 { -- fns

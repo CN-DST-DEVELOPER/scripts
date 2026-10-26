@@ -257,7 +257,10 @@ local function GetWaveAmounts()
 		-- amount of hounds relative to our age
 		-- if we never saw a warning or have lived shorter than the minimum wave delay then don't spawn hounds to us
 		local playerInGame = GetTime() - player.components.age.spawntime
-		local spawnsToRelease = (playerInGame > _warnduration and playerAge >= attackdelaybase) and CalcPlayerAttackSize(player) or 0
+		local spawnsToRelease = 0
+		if (_wave_pre_upgraded == "available") or (playerInGame > _warnduration and playerAge >= attackdelaybase) then
+			spawnsToRelease = CalcPlayerAttackSize(player)
+		end
 
 		if spawnsToRelease > 0 then
 			if groupmap[group] == nil then
@@ -948,6 +951,7 @@ local function HandleSpawnInfoRec(dt, i, spawninforec, groupsdone)
 				upgrade, houndcount, local_wave_pre_upgraded = _spawndata.ShouldUpgrade(spawninforec.players[target], local_wave_pre_upgraded )
 
 				if local_wave_pre_upgraded == "used" then
+					_wave_pre_upgraded = nil
 					for key, data in pairs(_delayedplayerspawninfo) do
 						data._wave_pre_upgraded = nil
 					end

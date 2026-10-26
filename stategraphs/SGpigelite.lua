@@ -20,6 +20,7 @@ local events =
     CommonHandlers.OnAttack(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
@@ -59,11 +60,6 @@ local events =
 			then
 				inst.sg:GoToState("hit")
 			end
-        end
-    end),
-    EventHandler("knockback", function(inst, data)
-        if not inst.components.health:IsDead() then
-            inst.sg:GoToState("knockback", data)
         end
     end),
     EventHandler("pickprop", function(inst, data)
@@ -257,106 +253,6 @@ local states =
     },
 
     State{
-        name = "knockback",
-		tags = { "knockback", "busy", "nosleep", "nofreeze", "noelectrocute", "jumping" },
-
-        onenter = function(inst, data)
-            inst.components.locomotor:Stop()
-            inst.AnimState:PlayAnimation("smacked")
-
-            if data ~= nil then
-                if data.propsmashed then
-                    local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-                    local pos
-                    if item ~= nil then
-                        pos = inst:GetPosition()
-                        pos.y = TUNING.KNOCKBACK_DROP_ITEM_HEIGHT_HIGH
-                        local dropped = inst.components.inventory:DropItem(item, true, true, pos)
-                        if dropped ~= nil then
-                            dropped:PushEvent("knockbackdropped", { owner = inst, knocker = data.knocker, delayinteraction = TUNING.KNOCKBACK_DELAY_INTERACTION_HIGH, delayplayerinteraction = TUNING.KNOCKBACK_DELAY_PLAYER_INTERACTION_HIGH })
-                        end
-                    end
-                    if item == nil or not item:HasTag("propweapon") then
-                        item = inst.components.inventory:FindItem(IsMinigameItem)
-                        if item ~= nil then
-                            pos = pos or inst:GetPosition()
-                            pos.y = TUNING.KNOCKBACK_DROP_ITEM_HEIGHT_LOW
-                            item = inst.components.inventory:DropItem(item, false, true, pos)
-                            if item ~= nil then
-                                item:PushEvent("knockbackdropped", { owner = inst, knocker = data.knocker, delayinteraction = TUNING.KNOCKBACK_DELAY_INTERACTION_LOW, delayplayerinteraction = TUNING.KNOCKBACK_DELAY_PLAYER_INTERACTION_LOW })
-                            end
-                        end
-                    end
-                end
-                if data.radius ~= nil and data.knocker ~= nil and data.knocker:IsValid() then
-                    local x, y, z = data.knocker.Transform:GetWorldPosition()
-                    local distsq = inst:GetDistanceSqToPoint(x, y, z)
-                    local rangesq = data.radius * data.radius
-                    local rot = inst.Transform:GetRotation()
-                    local rot1 = distsq > 0 and inst:GetAngleToPoint(x, y, z) or data.knocker.Transform:GetRotation() + 180
-                    local drot = math.abs(rot - rot1)
-                    while drot > 180 do
-                        drot = math.abs(drot - 360)
-                    end
-                    local k = distsq < rangesq and .3 * distsq / rangesq - 1 or -.7
-                    inst.sg.statemem.speed = (data.strengthmult or 1) * 10 * k
-                    inst.sg.statemem.dspeed = 0
-                    if drot > 90 then
-                        inst.sg.statemem.reverse = true
-                        inst.Transform:SetRotation(rot1 + 180)
-                        inst.Physics:SetMotorVel(-inst.sg.statemem.speed, 0, 0)
-                    else
-                        inst.Transform:SetRotation(rot1)
-                        inst.Physics:SetMotorVel(inst.sg.statemem.speed, 0, 0)
-                    end
-                end
-            end
-        end,
-
-        onupdate = function(inst)
-            if inst.sg.statemem.speed ~= nil then
-                inst.sg.statemem.speed = inst.sg.statemem.speed + inst.sg.statemem.dspeed
-                if inst.sg.statemem.speed < 0 then
-                    inst.sg.statemem.dspeed = inst.sg.statemem.dspeed + .075
-                    inst.Physics:SetMotorVel(inst.sg.statemem.reverse and -inst.sg.statemem.speed or inst.sg.statemem.speed, 0, 0)
-                else
-                    inst.sg.statemem.speed = nil
-                    inst.sg.statemem.dspeed = nil
-                    inst.Physics:Stop()
-                end
-            end
-        end,
-
-        timeline =
-        {
-            TimeEvent(3 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/pig/scream") end),
-            TimeEvent(12 * FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt") end),
-            TimeEvent(14 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("nofreeze")
-				inst.sg:RemoveStateTag("noelectrocute")
-            end),
-            TimeEvent(32 * FRAMES, function(inst)
-                inst.components.sleeper:WakeUp()
-                inst.sg:RemoveStateTag("nosleep")
-            end),
-            TimeEvent(35 * FRAMES, function(inst)
-                inst.sg:RemoveStateTag("busy")
-            end),
-        },
-
-        events =
-        {
-            CommonHandlers.OnNoSleepAnimOver("idle"),
-        },
-
-        onexit = function(inst)
-            if inst.sg.statemem.speed ~= nil then
-                inst.Physics:Stop()
-            end
-        end,
-    },
-
-    State{
         name = "attack",
         tags = { "propattack", "attack", "busy" },
 
@@ -452,7 +348,7 @@ local states =
 
     State{
         name = "dive",
-		tags = { "busy", "jumping", "nosleep", "nofreeze", "noelectrocute" },
+		tags = { "busy", "jumping", "nosleep", "nofreeze", "noelectrocute", "noknockback" },
 
         onenter = function(inst, item)
             if CanTakeItem(inst, item, GOLD_DIVE_RANGE) then
@@ -519,6 +415,7 @@ local states =
             TimeEvent(7 * FRAMES, function(inst)
                 inst.sg:RemoveStateTag("nofreeze")
 				inst.sg:RemoveStateTag("noelectrocute")
+				inst.sg:RemoveStateTag("noknockback")
             end),
             TimeEvent(8 * FRAMES, function(inst)
                 inst.sg.statemem.pick = true
@@ -554,7 +451,7 @@ local states =
 
     State{
         name = "flipout",
-		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
 
         onenter = function(inst, data)
             inst.AnimState:PlayAnimation(inst.sg.mem.variation == "3" and "side_lob" or "front_lob")
@@ -629,7 +526,7 @@ local states =
 
     State{
         name = "pose",
-		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "intropose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -650,6 +547,7 @@ local states =
                     inst.sg:RemoveStateTag("noattack")
                     inst.sg:RemoveStateTag("jumping")
 					inst.sg:RemoveStateTag("noelectrocute")
+					inst.sg:RemoveStateTag("noknockback")
                     inst.sg:AddStateTag("idle")
                 end
             end),
@@ -662,7 +560,7 @@ local states =
 
     State{
         name = "endpose_pre",
-		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -716,7 +614,7 @@ local states =
 
     State{
         name = "endpose_loop",
-		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -740,7 +638,7 @@ local states =
 
     State{
         name = "endpose_jump",
-		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute" },
+		tags = { "endpose", "busy", "nofreeze", "nosleep", "noattack", "jumping", "noelectrocute", "noknockback" },
         --jumping tag to disable brain activity
 
         onenter = function(inst)
@@ -816,6 +714,45 @@ nil, --anims
 {	--fns
 	loop_onenter = function(inst)
 		inst:SetCheatFlag()
+	end,
+})
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	--these will be merged with default timeline in commonstates.lua
+	knockback =
+	{
+		FrameEvent(3, function(inst) inst.SoundEmitter:PlaySound("dontstarve/pig/scream") end),
+	},
+},
+{ --anims
+	knockback = "smacked",
+},
+{ --fns
+	knockback_onenter = function(inst, data)
+		if data and data.propsmashed then
+			local item = inst.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+			local pos
+			if item then
+				pos = inst:GetPosition()
+				pos.y = TUNING.KNOCKBACK_DROP_ITEM_HEIGHT_HIGH
+				local dropped = inst.components.inventory:DropItem(item, true, true, pos)
+				if dropped then
+					dropped:PushEvent("knockbackdropped", { owner = inst, knocker = data.knocker, delayinteraction = TUNING.KNOCKBACK_DELAY_INTERACTION_HIGH, delayplayerinteraction = TUNING.KNOCKBACK_DELAY_PLAYER_INTERACTION_HIGH })
+				end
+			end
+			if item == nil or not item:HasTag("propweapon") then
+				item = inst.components.inventory:FindItem(IsMinigameItem)
+				if item then
+					pos = pos or inst:GetPosition()
+					pos.y = TUNING.KNOCKBACK_DROP_ITEM_HEIGHT_LOW
+					item = inst.components.inventory:DropItem(item, false, true, pos)
+					if item then
+						item:PushEvent("knockbackdropped", { owner = inst, knocker = data.knocker, delayinteraction = TUNING.KNOCKBACK_DELAY_INTERACTION_LOW, delayplayerinteraction = TUNING.KNOCKBACK_DELAY_PLAYER_INTERACTION_LOW })
+					end
+				end
+			end
+		end
 	end,
 })
 

@@ -41,14 +41,14 @@ local function on_unequipped(inst, data)
 end
 
 local function turn_evil_redirect(inst, owner)
-    if ShouldItemMimicBeRevealedFor(inst, owner) then
+    if ShouldItemMimicBeRevealedFor(inst, owner, nil) then
         inst.components.itemmimic:TurnEvil(owner)
     end
 end
 
 local function interacted_with_redirect(inst)
     local owner = inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner() or nil
-    if ShouldItemMimicBeRevealedFor(inst, owner) then
+    if ShouldItemMimicBeRevealedFor(inst, owner, nil) then
         if owner and owner.components.talker then
             owner.components.talker:Say(GetActionFailString(owner, "GENERIC", "ITEMMIMIC"))
         end
@@ -111,7 +111,7 @@ local ItemMimic = Class(function(self, inst)
 
     self.OnRefreshPauseStates = function(inst, data)
         local owner = data and data.owner or inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner() or nil
-        if (data == nil or not data.forceadd) and ShouldItemMimicBeRevealedFor(inst, owner) then
+        if (data == nil or not data.forceadd) and ShouldItemMimicBeRevealedFor(inst, owner, nil) then
             self:RemovePauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
         else
             self:AddPauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
@@ -209,7 +209,7 @@ function ItemMimic:TurnEvil(target)
         end
     end
 
-    local shoulddrainsanity = ShouldItemMimicBeRevealedFor(self.inst, target)
+    local shoulddrainsanity = ShouldItemMimicBeRevealedFor(self.inst, target, nil)
 
     local replaced = ReplacePrefab(self.inst, "itemmimic_revealed")
     if self.noloot then

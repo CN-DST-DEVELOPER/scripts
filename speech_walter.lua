@@ -6409,6 +6409,16 @@ return{
         CHARLIEARENA_TELEPORTER = "We better not leave anything behind, Woby!",
 
         MASK_CHARLIE_BOSSHAT = "Ooooh, what's that on the back!",
+
+        -- Halloween 2026
+        LEAFPILE = "I love the sound of crunching leaves!",
+        PUMPKIN_BOMB = "This is gonna blow chunks!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "A Pinetree Pioneer always does his duty!", -- normal version
+            LIVING = "You sense it too, eh Woby?",
+        },
+
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

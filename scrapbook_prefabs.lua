@@ -2127,6 +2127,12 @@ local PREFABS =
 
     ["mask_charlie_bosshat"] = true,
 
+    -- [[ Halloween 2026 ]]
+
+    ["pumpkin_bomb"] = true,
+    ["leafpile"] = true,
+    ["witchbroom"] = true,
+
     -----------------------------------------------
 
     --["archive_switch"] = true, proxy for archive_switch_base

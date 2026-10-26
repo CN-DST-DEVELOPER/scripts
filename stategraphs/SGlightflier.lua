@@ -10,13 +10,14 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleepEx(),
     CommonHandlers.OnWakeEx(),
 
     EventHandler("startled", function(inst)
-		if not inst.sg:HasStateTag("electrocute") then
+		if not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt") then
 			inst.sg:GoToState("startled")
 		end
     end),
@@ -161,5 +162,8 @@ CommonStates.AddCombatStates(states,
 
 CommonStates.AddFrozenStates(states, Land, Liftoff)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
+
+Land, Liftoff = nil, nil
 
 return StateGraph("lightflier", states, events, "idle", actionhandlers)

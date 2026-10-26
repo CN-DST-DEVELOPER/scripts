@@ -3,6 +3,7 @@ local assets =
     Asset("ANIM", "anim/ds_pig_basic.zip"),
     Asset("ANIM", "anim/ds_pig_actions.zip"),
     Asset("ANIM", "anim/ds_pig_attacks.zip"),
+	Asset("ANIM", "anim/ds_pig_elite.zip"),
     Asset("ANIM", "anim/ds_pig_boat_jump.zip"),
     Asset("ANIM", "anim/pig_build.zip"),
     Asset("ANIM", "anim/pigspotted_build.zip"),
@@ -754,7 +755,6 @@ local function normal()
     inst:AddComponent("drownable")
 
     inst.build = builds[math.random(#builds)]
-    inst.AnimState:SetBuild(inst.build)
     inst.components.werebeast:SetOnNormalFn(SetNormalPig)
     SetNormalPig(inst)
 
@@ -775,7 +775,6 @@ local function guard()
     inst:AddComponent("drownable")
 
     inst.build = guardbuilds[math.random(#guardbuilds)]
-    inst.AnimState:SetBuild(inst.build)
     inst.components.werebeast:SetOnNormalFn(SetGuardPig)
     SetGuardPig(inst)
     return inst

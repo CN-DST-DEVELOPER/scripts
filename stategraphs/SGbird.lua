@@ -41,6 +41,7 @@ local events =
     end),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnDeath(),
 	EventHandler("attacked", function(inst, data)
         --V2C: health check since corpse shares this SG
@@ -58,7 +59,9 @@ local events =
         end
     end),
     EventHandler("onignite", function(inst)
-		if inst.components.health and not (inst.components.health:IsDead() or inst.sg:HasStateTag("electrocute")) then
+		if inst.components.health and not inst.components.health:IsDead() and
+			(not inst.sg:HasAnyStateTag("electrocute", "knockback") or inst.sg:HasStateTag("caninterrupt"))
+		then
             inst.sg:GoToState("distress_pre")
         end
     end),
@@ -223,7 +226,7 @@ local states =
 
     State{
         name = "delay_glide",
-		tags = { "busy", "notarget", "noelectrocute" },
+		tags = { "busy", "notarget", "noelectrocute", "noknockback" },
 
         onenter = function(inst, delay)
             inst:AddTag("NOCLICK")
@@ -252,7 +255,7 @@ local states =
 
     State{
         name = "glide",
-		tags = { "idle", "flight", "notarget", "noelectrocute" },
+		tags = { "idle", "flight", "notarget", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
 			inst:AddTag("NOCLICK")
@@ -362,7 +365,7 @@ local states =
 
     State{
         name = "flyaway",
-		tags = { "flight", "busy", "notarget", "noelectrocute" },
+		tags = { "flight", "busy", "notarget", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
 			if IsStuck(inst) then
@@ -489,7 +492,7 @@ local states =
 
     State{
         name = "fall",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -517,7 +520,7 @@ local states =
 
     State{
         name = "trapped",
-		tags = { "busy", "noelectrocute" },
+		tags = { "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -559,7 +562,7 @@ local states =
 
     State{
         name = "corpse_fall",
-		tags = { "corpse", "busy", "noelectrocute" },
+		tags = { "corpse", "busy", "noelectrocute", "noknockback" },
 
         onenter = function(inst)
             inst.Physics:Stop()
@@ -867,18 +870,42 @@ ANGLE = 90
 
 CommonStates.AddSleepStates(states)
 CommonStates.AddFrozenStates(states)
+
+local function _flyawayonanimover(inst)
+	if inst.AnimState:AnimDone() then
+		if inst.components.burnable and inst.components.burnable:IsBurning() then
+			inst.sg:GoToState("distress_pre")
+		else
+			inst.sg:GoToState("flyaway")
+		end
+	end
+end
+
 CommonStates.AddElectrocuteStates(states, nil, nil,
 {
-	onanimover = function(inst)
-		if inst.AnimState:AnimDone() then
+	onanimover = _flyawayonanimover,
+})
+
+CommonStates.AddKnockbackStates(states,
+{ --timelines
+	knockback =
+	{
+		FrameEvent(32, function(inst)
 			if inst.components.burnable and inst.components.burnable:IsBurning() then
 				inst.sg:GoToState("distress_pre")
 			else
 				inst.sg:GoToState("flyaway")
 			end
-		end
-	end,
+		end),
+	},
+},
+nil, --anims
+{ --fns
+	knockback_onanimover = _flyawayonanimover,
+	knockbacklanded_onanimover =_flyawayonanimover,
 })
+
+_flyawayonanimover = nil
 
 CommonStates.AddCorpseStates(states, nil, nil, "birdcorpse")
 -- Mutant birds use a different sg, so we do not actually use the _pst here!

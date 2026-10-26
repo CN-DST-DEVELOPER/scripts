@@ -5,6 +5,7 @@ local events=
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
     CommonHandlers.OnSleep(),
@@ -326,7 +327,7 @@ local states =
 
     State{
 			name = "ruinsrespawn",
-			tags = { "idle", "noelectrocute" },
+			tags = { "idle", "noelectrocute", "noknockback" },
 
 			onenter = function(inst)
 				inst.AnimState:PlayAnimation("spawn")
@@ -360,5 +361,6 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 
 return StateGraph("slurper", states, events, "idle")

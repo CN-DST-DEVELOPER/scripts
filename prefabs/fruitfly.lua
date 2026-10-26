@@ -223,6 +223,7 @@ local function fn()
 
     inst:SetStateGraph("SGfruitfly")
 	inst.sg.mem.burn_on_electrocute = true
+	inst.sg.mem.noknockback = true
     inst:SetBrain(brain)
 
     common_server(inst)

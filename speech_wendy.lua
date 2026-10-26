@@ -6371,6 +6371,16 @@ return{
         CHARLIEARENA_TELEPORTER = "I'd better take everything before I jump.",
 
         MASK_CHARLIE_BOSSHAT = "And that's how she'll be remembered.",
+
+        -- Halloween 2026
+        LEAFPILE = "We are all just leaves on a tree waiting to fall.",
+        PUMPKIN_BOMB = "Better to explode than simply rot away, I suppose.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
+        WITCHBROOM =
+        {
+            GENERIC = "If only grief could be swept away.", -- normal version
+            LIVING = "It seems even a broom can be haunted.",
+        },
+
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

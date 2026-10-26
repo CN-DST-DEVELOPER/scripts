@@ -332,12 +332,10 @@ local function ShouldAggro(inst, target)
     if target:HasTag("rabbitking_manrabbit") then
         TryToSwitchLeader(inst, target)
         return false
-    end
-    if target:HasAnyTag("rabbitking") then
+	elseif target:HasTag("rabbitking") then
         SwitchLeaderToRabbitKing(inst, target)
         return false
     end
-
     return true
 end
 

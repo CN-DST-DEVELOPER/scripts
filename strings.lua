@@ -1212,6 +1212,10 @@ STRINGS =
         -- Rifts 8
 
         CORRUPTNIGHTMARE = "Corrupt",
+
+        -- Halloween 2026
+
+        SWEEP = "Sweep",
     },
 
 	WOBY_COMMANDS =
@@ -4789,6 +4793,12 @@ STRINGS =
         MASK_CHARLIE_BOSSHAT = "Queen's Visage",
 
         CHARLIEARENA_TELEPORTER = "Chasm",
+
+        -- Halloween 2026
+        LEAFPILE = "Leaf Pile",
+        PUMPKIN_BOMB = "Pumpkin Bomb",
+        WITCHBROOM = "Witch's Broom",
+        WITCHBROOM_LIVING = "Enchanted Witch's Broom",
 	},
 
     NAME_DETAIL_EXTENTION =
@@ -6078,6 +6088,8 @@ STRINGS =
 
         -- Rifts 8
 
+        -- Halloween 2026
+        WITCHBROOM = "Less cackling, more sweeping!",
     },
 
     -- MAXWELL_TEST = {"Say pal, you don't look so good.", "You better find something to eat before night comes!"},

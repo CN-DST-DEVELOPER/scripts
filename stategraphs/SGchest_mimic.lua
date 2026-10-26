@@ -10,7 +10,7 @@ local actionhandlers =
 local events =
 {
     EventHandler("attacked", function(inst)
-        if not inst.components.health:IsDead() and not inst.sg:HasStateTag("attack") then
+		if not inst.components.health:IsDead() and (not inst.sg:HasAnyStateTag("attack", "knockback") or inst.sg:HasStateTag("caninterrupt")) then
             inst.sg:GoToState("hit")
         end
     end),
@@ -27,6 +27,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnLocomote(false, true),
     CommonHandlers.OnFreeze(),
+	CommonHandlers.OnKnockback(),
 }
 
 local states =
@@ -335,5 +336,6 @@ CommonStates.AddSimpleState(states, "eat_pst", "eat_pst", {"busy"}, nil, {
 })
 
 CommonStates.AddFrozenStates(states)
+CommonStates.AddKnockbackStates(states)
 
 return StateGraph("chest_mimic", states, events, "taunt", actionhandlers)

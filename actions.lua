@@ -741,6 +741,9 @@ ACTIONS =
 
     -- Rifts 8
     CORRUPTNIGHTMARE = Action({ distance = 20, mount_valid = true, invalid_hold_action = true, }),
+
+    -- Halloween 2026
+    SWEEP = Action({ distance = 2.5, mount_valid = false, invalid_hold_action = true, })
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -1693,7 +1696,7 @@ local function DoToolWork(act, workaction)
         act.target.components.workable:GetWorkAction() == workaction and
         (act.invobject == nil or act.doer == nil or act.invobject.components.equippable == nil or not act.invobject.components.equippable:IsRestricted(act.doer))
     then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, workaction) then
             return false, "ITEMMIMIC"
         end
 
@@ -2283,6 +2286,13 @@ ACTIONS.GIVE.fn = function(act)
     end
 
     if act.target ~= nil then
+        if ShouldItemMimicBeRevealedFor(act.target, act.doer, act.action) then
+            if act.target.components.itemmimic then
+                act.target.components.itemmimic:TurnEvil(act.doer) -- This action is not deferred via itemmimic component.
+            end
+            return false, "ITEMMIMIC"
+        end
+
         if act.target:HasTag("playbill_lecturn") and act.invobject.components.playbill then
             act.target.components.playbill_lecturn:SwapPlayBill(act.invobject, act.doer)
             return true
@@ -3440,7 +3450,7 @@ ACTIONS.CASTSPELL.fn = function(act)
         if staff:HasTag("nomagiccast") then
             return false
         end
-        if ShouldItemMimicBeRevealedFor(staff, act.doer) then
+        if ShouldItemMimicBeRevealedFor(staff, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
         if staff:HasTag("crushitemcast") then
@@ -3567,7 +3577,7 @@ ACTIONS.BLINK.fn = function(act)
         if act.invobject:HasTag("nomagiccast") then
             return false
         end
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
         if act.invobject.components.blinkstaff ~= nil then
@@ -3756,7 +3766,7 @@ ACTIONS.FEED.strfn = function(act)
 end
 
 ACTIONS.FEED.fn = function(act)
-    if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+    if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
         return false, "ITEMMIMIC"
     end
 
@@ -3932,7 +3942,7 @@ end
 
 ACTIONS.FAN.fn = function(act)
     if act.invobject ~= nil and act.invobject.components.fan ~= nil then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -3968,7 +3978,7 @@ ACTIONS.TOSS.fn = function(act)
         return nil
     end
 
-    if ShouldItemMimicBeRevealedFor(projectile, act.doer) then
+    if ShouldItemMimicBeRevealedFor(projectile, act.doer, act.action) then
         return false, "ITEMMIMIC"
     end
 
@@ -4166,7 +4176,7 @@ ACTIONS.SADDLE.fn = function(act)
         return false, "TARGETINCOMBAT"
     elseif act.target.components.health ~= nil and act.target.components.health:IsDead() then
         return false
-    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
         return false, "ITEMMIMIC"
     elseif act.target.components.rideable ~= nil then
         --V2C: currently, rideable component implies saddleable always
@@ -4182,7 +4192,7 @@ ACTIONS.UNSADDLE.fn = function(act)
         return false, "TARGETINCOMBAT"
     elseif act.target.components.health ~= nil and act.target.components.health:IsDead() then
         return false
-    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
         return false, "ITEMMIMIC"
     elseif act.target.components.rideable ~= nil then
         --V2C: currently, rideable component implies saddleable always
@@ -4197,7 +4207,7 @@ ACTIONS.BRUSH.fn = function(act)
         return false, "TARGETINCOMBAT"
     elseif act.target.components.health ~= nil and act.target.components.health:IsDead() then
         return false
-    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+    elseif ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
         return false, "ITEMMIMIC"
     elseif act.target.components.brushable ~= nil then
         act.target.components.brushable:Brush(act.doer, act.invobject)
@@ -4309,7 +4319,7 @@ ACTIONS.START_CHANNELCAST.fn = function(act)
 			--off-hand channel casting
 			return act.doer.components.channelcaster:StartChanneling()
 		elseif act.invobject.components.channelcastable and not act.invobject.components.channelcastable:IsAnyUserChanneling() then
-            if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+            if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
                 return false, "ITEMMIMIC"
             end
 			--equipped item channel casting
@@ -4326,7 +4336,7 @@ ACTIONS.STOP_CHANNELCAST.fn = function(act)
 		act.invobject.components.channelcastable and
 		act.invobject.components.channelcastable:IsUserChanneling(act.doer)
 	then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 		act.invobject.components.channelcastable:StopChanneling()
@@ -4525,7 +4535,7 @@ end
 ACTIONS.CASTAOE.fn = function(act)
 	local act_pos = act:GetActionPoint()
     if act.invobject ~= nil and act.invobject.components.aoespell ~= nil and act.invobject.components.aoespell:CanCast(act.doer, act_pos) then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 		return act.invobject.components.aoespell:CastSpell(act.doer, act_pos)
@@ -4534,7 +4544,7 @@ end
 
 ACTIONS.SCYTHE.fn = function(act)
     if act.invobject ~= nil and act.invobject.DoScythe then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
         act.invobject:DoScythe(act.target, act.doer)
@@ -4546,7 +4556,7 @@ end
 
 ACTIONS.NABBAG.fn = function(act)
     if act.doer and act.doer.components.inventory and act.invobject and act.invobject.components.nabbag then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -4702,7 +4712,7 @@ end
 ACTIONS.TILL.fn = function(act)
     local tiller = act.invobject or act.doer
     if tiller ~= nil then
-        if ShouldItemMimicBeRevealedFor(tiller, act.doer) then
+        if ShouldItemMimicBeRevealedFor(tiller, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -4943,7 +4953,7 @@ end
 
 ACTIONS.CAST_NET.fn = function(act)
     if act.invobject and act.invobject.components.fishingnet then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5182,7 +5192,7 @@ end
 
 ACTIONS.OCEAN_TOSS.fn = function(act)
     if act.invobject and act.doer then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5405,7 +5415,7 @@ end
 
 ACTIONS.POUR_WATER.fn = function(act)
     if act.invobject ~= nil and act.invobject:IsValid() then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5435,7 +5445,7 @@ end
 ACTIONS.PLANTREGISTRY_RESEARCH_FAIL.fn = function(act)
     local targ = act.target or act.invobject
     if targ then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5451,7 +5461,7 @@ ACTIONS.PLANTREGISTRY_RESEARCH.fn = function(act)
     local targ = act.target or act.invobject
 
     if targ ~= nil then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5490,7 +5500,7 @@ ACTIONS.ASSESSPLANTHAPPINESS.fn = function(act)
     local targ = act.target or act.invobject
 
     if targ ~= nil then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5536,7 +5546,7 @@ end
 
 ACTIONS.WAX.fn = function(act)
     if act.target.components.waxable then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
         return act.target.components.waxable:Wax(act.doer, act.invobject)
@@ -5692,7 +5702,7 @@ end
 ACTIONS.LIFT_DUMBBELL.fn = function(act)
     local dumbbell = act.invobject
     if act.doer ~= nil and dumbbell ~= nil then
-        if ShouldItemMimicBeRevealedFor(dumbbell, act.doer) then
+        if ShouldItemMimicBeRevealedFor(dumbbell, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5865,7 +5875,7 @@ end
 
 ACTIONS.ROTATE_FENCE.fn = function(act)
     if act.invobject ~= nil then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -5881,7 +5891,7 @@ end
 
 ACTIONS.USEMAGICTOOL.fn = function(act)
 	if act.doer.components.magician ~= nil then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 		return act.doer.components.magician:StartUsingTool(act.invobject)
@@ -6021,7 +6031,7 @@ end
 
 ACTIONS.REMOTE_TELEPORT.fn = function(act)
 	if act.invobject and act.invobject.components.remoteteleporter then
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -6570,7 +6580,7 @@ end
 ACTIONS.POUNCECAPTURE.fn = function(act)
 	local cage = act.invobject
 	if cage and cage.components.gestaltcage then
-        if ShouldItemMimicBeRevealedFor(cage, act.doer) then
+        if ShouldItemMimicBeRevealedFor(cage, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -6584,7 +6594,7 @@ end
 ACTIONS.DIVEGRAB.fn = function(act)
     local catcher = act.invobject
     if catcher and catcher.components.moonstormstaticcatcher then
-        if ShouldItemMimicBeRevealedFor(catcher, act.doer) then
+        if ShouldItemMimicBeRevealedFor(catcher, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
@@ -6623,7 +6633,7 @@ ACTIONS.REMOVELUNARBUILDUP.fn = function(act)
         return false
     end
 
-    if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+    if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
         return false, "ITEMMIMIC"
     end
 
@@ -6679,7 +6689,7 @@ ACTIONS.JOUST.fn = function(act)
         if not act.invobject.components.joustsource then
             return
         end
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
         return joustuser:CanJoust()
@@ -7105,10 +7115,19 @@ ACTIONS.CORRUPTNIGHTMARE.fn = function(act)
         if act.invobject:HasTag("nomagiccast") then
             return false
         end
-        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer) then
+        if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
             return false, "ITEMMIMIC"
         end
 
         return act.invobject.components.corruption:CorruptEnt(act.target, act.doer)
+    end
+end
+
+ACTIONS.SWEEP.fn = function(act)
+    if ShouldItemMimicBeRevealedFor(act.invobject, act.doer, act.action) then
+        return false, "ITEMMIMIC"
+    elseif act.target.components.sweepable ~= nil then
+        act.target.components.sweepable:Sweep(act.doer, act.invobject)
+        return true
     end
 end

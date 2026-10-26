@@ -333,14 +333,15 @@ local function common_fn(data)
     -- Optimization tags
     inst:AddTag("sleeper")      -- From sleeper component
 
-    inst._musicdirty = net_event(inst.GUID, "eyeofterror._musicdirty", "musicdirty")
+	inst._musicdirty = net_event(inst.GUID, "eyeofterror._musicdirty")
     inst._playingmusic = false
     --inst._musictask = nil
     OnMusicDirty(inst)
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
-        inst:ListenForEvent("musicdirty", OnMusicDirty)
+		inst:ListenForEvent("eyeofterror._musicdirty", OnMusicDirty)
 
         return inst
     end

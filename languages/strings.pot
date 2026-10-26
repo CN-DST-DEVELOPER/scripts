@@ -2058,6 +2058,11 @@ msgctxt "STRINGS.ACTIONS.SWAPBODIES_MAP"
 msgid "Transfer Consciousness"
 msgstr ""
 
+#. STRINGS.ACTIONS.SWEEP
+msgctxt "STRINGS.ACTIONS.SWEEP"
+msgid "Sweep"
+msgstr ""
+
 #. STRINGS.ACTIONS.TACKLE
 msgctxt "STRINGS.ACTIONS.TACKLE"
 msgid "Charge"
@@ -14623,6 +14628,11 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.LEAFLOAF"
 msgid "Mystery leaf meat."
 msgstr ""
 
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.LEAFPILE"
+msgid "I should sweep that up."
+msgstr ""
+
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.LEAFYMEATBURGER"
 msgid "Vegetarian, but not cruelty-free."
@@ -17671,6 +17681,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.PUMPKINPIE"
 msgid "I should probably just eat the whole thing... for science."
+msgstr ""
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.PUMPKIN_BOMB"
+msgid "Well, that's one way to accelerate decomposition!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.PUMPKIN_COOKED
@@ -23136,6 +23151,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "I need a pine cone for that."
+msgstr ""
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "A simple, yet effective cleaning apparatus!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.WITCHBROOM.LIVING"
+msgid "I always knew magic was a dirty business!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.WOBSTER_DEN
@@ -34023,6 +34048,11 @@ msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.LEAFLOAF"
 msgid "I guess it's one way to eat your vegetables."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.LEAFPILE"
+msgid "I love the sound of crunching leaves!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.LEAFYMEATBURGER"
 msgid "It's not quite the same."
@@ -37031,6 +37061,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.PUMPKINPIE"
 msgid "Mmmm, cut me a big slice!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.PUMPKIN_BOMB"
+msgid "This is gonna blow chunks!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.PUMPKIN_COOKED
@@ -42461,6 +42496,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "All set up and ready for a tree."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "A Pinetree Pioneer always does his duty!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.WITCHBROOM.LIVING"
+msgid "You sense it too, eh Woby?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.WOBSTER_DEN
@@ -53178,6 +53223,11 @@ msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.LEAFLOAF"
 msgid "The loaf has been set very fashionably in jelly."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.LEAFPILE"
+msgid "What a mess."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.LEAFYMEATBURGER"
 msgid "It has a very interesting texture."
@@ -56221,6 +56271,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.PUMPKINPIE"
 msgid "Why waste time cutting it into slices when I can just eat the whole thing?"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.PUMPKIN_BOMB"
+msgid "This pumpkin's days are numbered."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.PUMPKIN_COOKED
@@ -61636,6 +61691,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "It will only accept pine cones, apparently."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Time to clean!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.WITCHBROOM.LIVING"
+msgid "There's something about this broom..."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.WOBSTER_DEN
@@ -72148,6 +72213,11 @@ msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.LEAFLOAF"
 msgid "A basic recipe, elevated through the use of this strange meat!"
 msgstr ""
 
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.LEAFPILE"
+msgid "It is that time of year!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.LEAFYMEATBURGER"
 msgid "Perhaps this is how we'll convince Mademoiselle Wigfrid to eat her vegetables?"
@@ -75156,6 +75226,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.PUMPKINPIE"
 msgid "Simple and classic."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.PUMPKIN_BOMB"
+msgid "This brings new meaning to a food fight!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.PUMPKIN_COOKED
@@ -79906,6 +79981,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "A pinecone should get things rolling."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "A tidy kitchen makes for a happy chef!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.WITCHBROOM.LIVING"
+msgid "A broom with spirit!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.WOBSTER_DEN
@@ -90478,6 +90563,11 @@ msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.LEAFLOAF"
 msgid "It has a suspiciously non-meat smell to it."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.LEAFPILE"
+msgid "Even a warrior's heart doth soften at autumn's beauty."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.LEAFYMEATBURGER"
 msgid "This will suffice until I find real meat."
@@ -93486,6 +93576,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.PUMPKINPIE"
 msgid "Tis surely a delicious meat pie in disguise!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.PUMPKIN_BOMB"
+msgid "A gourd of glorious destruction!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.PUMPKIN_COOKED
@@ -98901,6 +98996,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "It awaits a grand tree!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "A mighty weapon to vanquish to filth of this world!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Mayhap I shall ride it into battle!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.WOBSTER_DEN
@@ -109548,6 +109653,11 @@ msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.LEAFLOAF"
 msgid "Exceptionally mediocre."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.LEAFPILE"
+msgid "Someone should sweep up around here."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.LEAFYMEATBURGER"
 msgid "How pedestrian."
@@ -112556,6 +112666,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.PUMPKINPIE"
 msgid "Well... perhaps just a slice."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.PUMPKIN_BOMB"
+msgid "I'd better not find one on my doorstep."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.PUMPKIN_COOKED
@@ -117976,6 +118091,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "How repulsively festive."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "I have better things to do than sweep."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WITCHBROOM.LIVING"
+msgid "A little magic makes all the difference."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.WOBSTER_DEN
@@ -128548,6 +128673,11 @@ msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.LEAFLOAF"
 msgid "Not quite how mother used to make it."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.LEAFPILE"
+msgid "We can help sweep up!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.LEAFYMEATBURGER"
 msgid "This hamburger tastes kind of... grassy?"
@@ -131556,6 +131686,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.PUMPKINPIE"
 msgid "We'd like a big slice, please!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.PUMPKIN_BOMB"
+msgid "What should we explode?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.PUMPKIN_COOKED
@@ -136971,6 +137106,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "It's just a boring planter without a tree."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Aw, we have to do chores?"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Is it a magic broom?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.WOBSTER_DEN
@@ -147578,6 +147723,11 @@ msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.LEAFLOAF"
 msgid "It's nothing like any meatloaf I've tried."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.LEAFPILE"
+msgid "We are all just leaves on a tree waiting to fall."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.LEAFYMEATBURGER"
 msgid "It's drab and flavorless..."
@@ -150586,6 +150736,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.PUMPKINPIE"
 msgid "Is it sweet enough to help me forget the bitterness in my heart?"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.PUMPKIN_BOMB"
+msgid "Better to explode than simply rot away, I suppose."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.PUMPKIN_COOKED
@@ -156001,6 +156156,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "We can plant a Winter's Feast tree."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "If only grief could be swept away."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.WITCHBROOM.LIVING"
+msgid "It seems even a broom can be haunted."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.WOBSTER_DEN
@@ -166613,6 +166778,11 @@ msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.LEAFLOAF"
 msgid "Such an unusual flavor!"
 msgstr ""
 
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.LEAFPILE"
+msgid "Trees shed leaves to conserve energy for the winter season."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.LEAFYMEATBURGER"
 msgid "At least I shouldn't have to worry about it being undercooked."
@@ -169621,6 +169791,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.PUMPKINPIE"
 msgid "Perhaps just a nibble..."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.PUMPKIN_BOMB"
+msgid "I daresay this year's pranks will be quite the sensation."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.PUMPKIN_COOKED
@@ -175036,6 +175211,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "Let's grow a proper tree, shall we?"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "A classic tool of domestic labor."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WITCHBROOM.LIVING"
+msgid "So the old tales were not entirely fanciful!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.WOBSTER_DEN
@@ -185608,6 +185793,11 @@ msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.LEAFLOAF"
 msgid "Uh, is it supposed to be green?"
 msgstr ""
 
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.LEAFPILE"
+msgid "Bonfire season!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.LEAFYMEATBURGER"
 msgid "Does this burger taste weird to anyone else?"
@@ -188616,6 +188806,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.PUMPKINPIE"
 msgid "Yep, I'm eating this whole thing."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.PUMPKIN_BOMB"
+msgid "Now that's my kinda pumpkin."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.PUMPKIN_COOKED
@@ -194036,6 +194231,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "Are we gonna grow a tree?"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Heh. Bet it could sweep up a crime scene."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Hm. Spooky broom."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.WOBSTER_DEN
@@ -204688,6 +204893,11 @@ msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.LEAFLOAF"
 msgid "It's hard to pin down the flavor..."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.LEAFPILE"
+msgid "High time for some fall cleanin'."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.LEAFYMEATBURGER"
 msgid "It's not like any burger I've ever tried."
@@ -207696,6 +207906,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.PUMPKINPIE"
 msgid "Tis the season for some good eatin'!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.PUMPKIN_BOMB"
+msgid "The kids are gonna love this."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.PUMPKIN_COOKED
@@ -213121,6 +213336,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "Just needs a tree."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Just add elbow grease, and it gets the job done."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Ain't right for a broom to feel this eerie."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.WOBSTER_DEN
@@ -223723,6 +223948,11 @@ msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.LEAFLOAF"
 msgid "This food confuses Wolfgang."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.LEAFPILE"
+msgid "Wolfgang make clean sweep of all leaf pile!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.LEAFYMEATBURGER"
 msgid "Wolfgang want to eat cow, not eat LIKE cow."
@@ -226731,6 +226961,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.PUMPKINPIE"
 msgid "Wolfgang's belly is going to grow bigger than muscles..."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.PUMPKIN_BOMB"
+msgid "PUMPKIN FULL OF SURPRISE!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.PUMPKIN_COOKED
@@ -232146,6 +232381,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "Very nice little pot!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Even strongman must do chore."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Is there scary witch missing this broom?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.WOBSTER_DEN
@@ -242693,6 +242938,11 @@ msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.LEAFLOAF"
 msgid "Not my cup of tea."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.LEAFPILE"
+msgid "If I chop all the trees, there'll be no leaves to sweep."
+msgstr ""
+
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.LEAFYMEATBURGER"
 msgid "It never tastes the same as actual meat..."
@@ -245706,6 +245956,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.PUMPKINPIE"
 msgid "I won't say no to some pie."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.PUMPKIN_BOMB"
+msgid "That's one way to clear the yard."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.PUMPKIN_COOKED
@@ -251121,6 +251376,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "I'm sure I have an extra pine cone somewhere."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Not as satisfyin' as choppin' wood, but it'll do."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Whaddya mean you know that broom, Luce?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.WOBSTER_DEN
@@ -261718,6 +261983,11 @@ msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.LEAFLOAF"
 msgid "Is friend? Or not friend?"
 msgstr ""
 
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.LEAFPILE"
+msgid "Little friends back where begin"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.LEAFYMEATBURGER"
 msgid "Hmmm"
@@ -264726,6 +264996,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.PUMPKINPIE"
 msgid "Mmmm..."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.PUMPKIN_BOMB"
+msgid "Pumpkin friend... scared?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.PUMPKIN_COOKED
@@ -270141,6 +270416,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "For friends"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Stick friend help clean!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Hello? Friend?"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.WOBSTER_DEN
@@ -280868,6 +281153,11 @@ msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.LEAFLOAF"
 msgid "Even the mortals don't seem to care for it."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.LEAFPILE"
+msgid "Fallen from grace, are we?"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.LEAFYMEATBURGER"
 msgid "Mortals seem to get quite irritated when you mess with their food."
@@ -283876,6 +284166,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.PUMPKINPIE"
 msgid "Don't be shy, try the pie!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.PUMPKIN_BOMB"
+msgid "This will make a delightful mess!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.PUMPKIN_COOKED
@@ -289291,6 +289586,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "A tree is meant to be inside."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Chores aren't really an imp thing."
+msgstr ""
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.WITCHBROOM.LIVING"
+msgid "It has soul!"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.WOBSTER_DEN
@@ -299978,6 +300283,11 @@ msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.LEAFLOAF"
 msgid "Nuh-uh."
 msgstr ""
 
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.LEAFPILE"
+msgid "Me best sweeper! Flort!"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.LEAFYMEATBURGER"
 msgid "Glurph, not real veggie!"
@@ -302986,6 +303296,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.PUMPKINPIE"
 msgid "Mmmmmmmmmm!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.PUMPKIN_BOMB"
+msgid "Hee-hee, surprise for Pigman."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.PUMPKIN_COOKED
@@ -308406,6 +308721,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "Gotta find pine cone!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "Sweep, sweep! No more dirties!"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.WITCHBROOM.LIVING"
+msgid "Huh? Weird broom."
 msgstr ""
 
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.WOBSTER_DEN
@@ -319098,6 +319423,11 @@ msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.LEAFLOAF"
 msgid "IT CONTAINS A SATISFACTORY AMOUNT OF NUTRIENTS"
 msgstr ""
 
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.LEAFPILE
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.LEAFPILE"
+msgid "FILTHY TREES LITTERING EVERYWHERE"
+msgstr ""
+
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.LEAFYMEATBURGER
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.LEAFYMEATBURGER"
 msgid "INSERT FOOD INTO FACEPLATE"
@@ -322106,6 +322436,11 @@ msgstr ""
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.PUMPKINPIE
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.PUMPKINPIE"
 msgid "THE SWEET PUMPKIN MUSH FUELS ME"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.PUMPKIN_BOMB
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.PUMPKIN_BOMB"
+msgid "DETONATION WILL ENHANCE FESTIVE ATMOSPHERE"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.PUMPKIN_COOKED
@@ -327536,6 +327871,16 @@ msgstr ""
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.WINTER_TREESTAND.GENERIC
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.WINTER_TREESTAND.GENERIC"
 msgid "MY MINIONS HAVE PROMISED IT WILL GROW A SPECIAL TREE"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.WITCHBROOM.GENERIC
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.WITCHBROOM.GENERIC"
+msgid "CHORES ARE BENEATH ME"
+msgstr ""
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.WITCHBROOM.LIVING
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.WITCHBROOM.LIVING"
+msgid "BROOM IS CORRUPTED"
 msgstr ""
 
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.WOBSTER_DEN
@@ -343698,6 +344043,11 @@ msgctxt "STRINGS.NAMES.LEAFLOAF"
 msgid "Leafy Meatloaf"
 msgstr ""
 
+#. STRINGS.NAMES.LEAFPILE
+msgctxt "STRINGS.NAMES.LEAFPILE"
+msgid "Leaf Pile"
+msgstr ""
+
 #. STRINGS.NAMES.LEAFYMEATBURGER
 msgctxt "STRINGS.NAMES.LEAFYMEATBURGER"
 msgid "Veggie Burger"
@@ -346356,6 +346706,11 @@ msgstr ""
 #. STRINGS.NAMES.PUMPKINPIE
 msgctxt "STRINGS.NAMES.PUMPKINPIE"
 msgid "Pumpkin Pie"
+msgstr ""
+
+#. STRINGS.NAMES.PUMPKIN_BOMB
+msgctxt "STRINGS.NAMES.PUMPKIN_BOMB"
+msgid "Pumpkin Bomb"
 msgstr ""
 
 #. STRINGS.NAMES.PUMPKIN_COOKED
@@ -351326,6 +351681,16 @@ msgstr ""
 #. STRINGS.NAMES.WINTER_TREESTAND
 msgctxt "STRINGS.NAMES.WINTER_TREESTAND"
 msgid "Festive Tree Planter"
+msgstr ""
+
+#. STRINGS.NAMES.WITCHBROOM
+msgctxt "STRINGS.NAMES.WITCHBROOM"
+msgid "Witch's Broom"
+msgstr ""
+
+#. STRINGS.NAMES.WITCHBROOM_LIVING
+msgctxt "STRINGS.NAMES.WITCHBROOM_LIVING"
+msgid "Enchanted Witch's Broom"
 msgstr ""
 
 #. STRINGS.NAMES.WOBSTER_DEN
@@ -358866,6 +359231,11 @@ msgstr ""
 #. STRINGS.RECIPE_DESC.WINTER_TREESTAND
 msgctxt "STRINGS.RECIPE_DESC.WINTER_TREESTAND"
 msgid "Plant and decorate a Winter's Feast tree!"
+msgstr ""
+
+#. STRINGS.RECIPE_DESC.WITCHBROOM
+msgctxt "STRINGS.RECIPE_DESC.WITCHBROOM"
+msgid "Less cackling, more sweeping!"
 msgstr ""
 
 #. STRINGS.RECIPE_DESC.WOBY_TREAT
@@ -369248,6 +369618,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.armor_marble_valkyrie"
 msgid "This armor may be heavy, but it makes your warrior's spirit soar."
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.armor_rocky_spikey
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.armor_rocky_spikey"
+msgid "Spikes are very punk rock."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.armor_ruins_an
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.armor_ruins_an"
 msgid "This armor is a wearable work of art."
@@ -375143,6 +375518,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_gate_gothic"
 msgid "Letting people in is overrated."
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.fence_gate_hallowed
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_gate_hallowed"
+msgid "It lets you in with a creepy grin."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.fence_gate_picketbrown
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_gate_picketbrown"
 msgid "The natural wood finish adds a warm, countrified touch."
@@ -375201,6 +375581,16 @@ msgstr ""
 #. STRINGS.SKIN_DESCRIPTIONS.fence_gothic_item
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_gothic_item"
 msgid "A decorative way to say \"keep out\"."
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.fence_hallowed
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_hallowed"
+msgid "Plant a perimeter of peculiar pumpkins."
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.fence_hallowed_item
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.fence_hallowed_item"
+msgid "n/a"
 msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.fence_picketbrown
@@ -375295,6 +375685,11 @@ msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.fencegate_gothic_item
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.fencegate_gothic_item"
+msgid "n/a"
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.fencegate_hallowed_item
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.fencegate_hallowed_item"
 msgid "n/a"
 msgstr ""
 
@@ -376813,6 +377208,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.hat_woodcarved_swamp"
 msgid "Somehow, it works. You'll be stumped."
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.hatbat_bosscorpse_vampire
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.hatbat_bosscorpse_vampire"
+msgid "Feel your life force slowly drain away... in style."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.heatrock_fantasy
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.heatrock_fantasy"
 msgid "A warm glow radiates from deep within the crystal."
@@ -377081,6 +377481,11 @@ msgstr ""
 #. STRINGS.SKIN_DESCRIPTIONS.insanityrock_gothic
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.insanityrock_gothic"
 msgid "Was that pillar there before? Have you finally gone mad?"
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.king_cane_scorpion
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.king_cane_scorpion"
+msgid "A scorpion can't help but poison all it touches."
 msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.kitten_black
@@ -379553,6 +379958,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.mysterybox_trickortreat_2025"
 msgid "This chest contains\nHallowed Nights curios."
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.mysterybox_trickortreat_2026
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.mysterybox_trickortreat_2026"
+msgid "This chest contains\nHallowed Nights curios."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.mysterybox_trickortreat_alt
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.mysterybox_trickortreat_alt"
 msgid "This chest contains\na Hallowed Nights costume."
@@ -380236,6 +380646,11 @@ msgstr ""
 #. STRINGS.SKIN_DESCRIPTIONS.pack_hallowed_wx78
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.pack_hallowed_wx78"
 msgid "This Unfinished Chest contains WX-78's complete set of Hallowed Nights skin items."
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.pack_hallowednights_2026
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.pack_hallowednights_2026"
+msgid "This Pumpkin Patch Chest contains the following skin items: Haunted Hovel, Pumpkin Patch Wall, Pumpkin Patch Gate, and Pumpkin Patch Fence."
 msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.pack_hamlet_wormwood
@@ -382391,6 +382806,11 @@ msgstr ""
 #. STRINGS.SKIN_DESCRIPTIONS.pighouse_gothic
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.pighouse_gothic"
 msgid "Despite years of neglect, this manor still maintains its imposing atmosphere."
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.pighouse_hallowed
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.pighouse_hallowed"
+msgid "You'd better hope no one's home."
 msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.pighouse_logcabin
@@ -384613,6 +385033,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.purchasebox_tencent"
 msgid "n/a"
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.queen_torch_lotus
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.queen_torch_lotus"
+msgid "Even in deepest darkness, life persists."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.rabbithouse_carrat
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.rabbithouse_carrat"
 msgid "A cozy abode fashioned after the adorable carrat."
@@ -385468,6 +385893,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.stagehand_cawnival_alt"
 msgid "A small, festive \"table\" that reminds you of feathered friends."
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.stagehand_chess
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.stagehand_chess"
+msgid "A table fit for a knight, but not for chess."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.stagehand_dragonfly
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.stagehand_dragonfly"
 msgid "An \"endtable\" inspired by the most opulent of bloodthirsty monsters."
@@ -386275,6 +386705,16 @@ msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.wall_hay_cornitem
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.wall_hay_cornitem"
+msgid "n/a"
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.wall_hay_hallowed
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.wall_hay_hallowed"
+msgid "Enjoy the last flowers of autumn, before they wither away."
+msgstr ""
+
+#. STRINGS.SKIN_DESCRIPTIONS.wall_hay_halloweditem
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.wall_hay_halloweditem"
 msgid "n/a"
 msgstr ""
 
@@ -389901,6 +390341,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.armor_marble_valkyrie
 msgctxt "STRINGS.SKIN_NAMES.armor_marble_valkyrie"
 msgid "Marble Victory Armor"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.armor_rocky_spikey
+msgctxt "STRINGS.SKIN_NAMES.armor_rocky_spikey"
+msgid "Spiky Carapace"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.armor_ruins_an
@@ -395798,6 +396243,11 @@ msgctxt "STRINGS.SKIN_NAMES.fence_gate_gothic"
 msgid "Stained Glass Gate"
 msgstr ""
 
+#. STRINGS.SKIN_NAMES.fence_gate_hallowed
+msgctxt "STRINGS.SKIN_NAMES.fence_gate_hallowed"
+msgid "Pumpkin Patch Gate"
+msgstr ""
+
 #. STRINGS.SKIN_NAMES.fence_gate_picketbrown
 msgctxt "STRINGS.SKIN_NAMES.fence_gate_picketbrown"
 msgid "Walnut Garden Gate"
@@ -395856,6 +396306,16 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.fence_gothic_item
 msgctxt "STRINGS.SKIN_NAMES.fence_gothic_item"
 msgid "Gothic Fence"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.fence_hallowed
+msgctxt "STRINGS.SKIN_NAMES.fence_hallowed"
+msgid "Pumpkin Patch Fence"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.fence_hallowed_item
+msgctxt "STRINGS.SKIN_NAMES.fence_hallowed_item"
+msgid "Pumpkin Patch Fence"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.fence_picketbrown
@@ -395951,6 +396411,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.fencegate_gothic_item
 msgctxt "STRINGS.SKIN_NAMES.fencegate_gothic_item"
 msgid "Stained Glass Gate"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.fencegate_hallowed_item
+msgctxt "STRINGS.SKIN_NAMES.fencegate_hallowed_item"
+msgid "Pumpkin Patch Gate"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.fencegate_picketbrown_item
@@ -397468,6 +397933,11 @@ msgctxt "STRINGS.SKIN_NAMES.hat_woodcarved_swamp"
 msgid "Dampwood Hat"
 msgstr ""
 
+#. STRINGS.SKIN_NAMES.hatbat_bosscorpse_vampire
+msgctxt "STRINGS.SKIN_NAMES.hatbat_bosscorpse_vampire"
+msgid "Vampire Bat Hat"
+msgstr ""
+
 #. STRINGS.SKIN_NAMES.heatrock_fantasy
 msgctxt "STRINGS.SKIN_NAMES.heatrock_fantasy"
 msgid "Charmed Heatstone"
@@ -397736,6 +398206,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.insanityrock_gothic
 msgctxt "STRINGS.SKIN_NAMES.insanityrock_gothic"
 msgid "Dark Pillar"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.king_cane_scorpion
+msgctxt "STRINGS.SKIN_NAMES.king_cane_scorpion"
+msgid "Scorpion Cane"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.kitten_black
@@ -400208,6 +400683,11 @@ msgctxt "STRINGS.SKIN_NAMES.mysterybox_trickortreat_2025"
 msgid "Trick or Treat Chest"
 msgstr ""
 
+#. STRINGS.SKIN_NAMES.mysterybox_trickortreat_2026
+msgctxt "STRINGS.SKIN_NAMES.mysterybox_trickortreat_2026"
+msgid "Trick or Treat Chest"
+msgstr ""
+
 #. STRINGS.SKIN_NAMES.mysterybox_trickortreat_alt
 msgctxt "STRINGS.SKIN_NAMES.mysterybox_trickortreat_alt"
 msgid "Trick or Treat Chest"
@@ -400891,6 +401371,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.pack_hallowed_wx78
 msgctxt "STRINGS.SKIN_NAMES.pack_hallowed_wx78"
 msgid "The Unfinished Chest"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.pack_hallowednights_2026
+msgctxt "STRINGS.SKIN_NAMES.pack_hallowednights_2026"
+msgid "Pumpkin Patch Chest"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.pack_hamlet_wormwood
@@ -403046,6 +403531,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.pighouse_gothic
 msgctxt "STRINGS.SKIN_NAMES.pighouse_gothic"
 msgid "Derelict Manor"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.pighouse_hallowed
+msgctxt "STRINGS.SKIN_NAMES.pighouse_hallowed"
+msgid "Haunted Hovel"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.pighouse_logcabin
@@ -405268,6 +405758,11 @@ msgctxt "STRINGS.SKIN_NAMES.purchasebox_tencent"
 msgid "n/a"
 msgstr ""
 
+#. STRINGS.SKIN_NAMES.queen_torch_lotus
+msgctxt "STRINGS.SKIN_NAMES.queen_torch_lotus"
+msgid "Dark Bloom Torch"
+msgstr ""
+
 #. STRINGS.SKIN_NAMES.rabbithouse_carrat
 msgctxt "STRINGS.SKIN_NAMES.rabbithouse_carrat"
 msgid "Carrat Cottage"
@@ -406123,6 +406618,11 @@ msgctxt "STRINGS.SKIN_NAMES.stagehand_cawnival_alt"
 msgid "Cawnival Stagehand"
 msgstr ""
 
+#. STRINGS.SKIN_NAMES.stagehand_chess
+msgctxt "STRINGS.SKIN_NAMES.stagehand_chess"
+msgid "Knightstand"
+msgstr ""
+
 #. STRINGS.SKIN_NAMES.stagehand_dragonfly
 msgctxt "STRINGS.SKIN_NAMES.stagehand_dragonfly"
 msgid "Dragonfly Stagehand"
@@ -406931,6 +407431,16 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.wall_hay_cornitem
 msgctxt "STRINGS.SKIN_NAMES.wall_hay_cornitem"
 msgid "Maize Wall"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.wall_hay_hallowed
+msgctxt "STRINGS.SKIN_NAMES.wall_hay_hallowed"
+msgid "Pumpkin Patch Wall"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.wall_hay_halloweditem
+msgctxt "STRINGS.SKIN_NAMES.wall_hay_halloweditem"
+msgid "Pumpkin Patch Wall"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.wall_moonrock_victorian
@@ -412868,6 +413378,11 @@ msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.ARMORMARBLE"
 msgid "Marble Suit"
 msgstr ""
 
+#. STRINGS.SKIN_TAG_CATEGORIES.ITEM.ARMORROCKY
+msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.ARMORROCKY"
+msgid "Craggy Carapace"
+msgstr ""
+
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.ARMORRUINS
 msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.ARMORRUINS"
 msgid "Thulecite Suit"
@@ -413298,6 +413813,11 @@ msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.HAMMER"
 msgid "Hammer"
 msgstr ""
 
+#. STRINGS.SKIN_TAG_CATEGORIES.ITEM.HATBATBOSSCORPSE
+msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.HATBATBOSSCORPSE"
+msgid "Bat Hat"
+msgstr ""
+
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.HAWAIIANSHIRT
 msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.HAWAIIANSHIRT"
 msgid "Floral Shirt"
@@ -413341,6 +413861,11 @@ msgstr ""
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.INSANITYROCK
 msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.INSANITYROCK"
 msgid "Obelisk"
+msgstr ""
+
+#. STRINGS.SKIN_TAG_CATEGORIES.ITEM.KINGCANE
+msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.KINGCANE"
+msgid "King's Staff"
 msgstr ""
 
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.KRAMPUS_SACK
@@ -413576,6 +414101,11 @@ msgstr ""
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.PREMIUMWATERINGCAN
 msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.PREMIUMWATERINGCAN"
 msgid "Waterfowl Can"
+msgstr ""
+
+#. STRINGS.SKIN_TAG_CATEGORIES.ITEM.QUEENTORCH
+msgctxt "STRINGS.SKIN_TAG_CATEGORIES.ITEM.QUEENTORCH"
+msgid "Queen's Torch"
 msgstr ""
 
 #. STRINGS.SKIN_TAG_CATEGORIES.ITEM.RABBITHOUSE
