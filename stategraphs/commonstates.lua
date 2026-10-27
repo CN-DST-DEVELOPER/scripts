@@ -3276,7 +3276,7 @@ CommonStates.AddKnockbackStates = function(states, timelines, anims, fns, speedm
 		timeline =
 			timelines and
 			timelines.knockback and
-			shallowcopy(_knockback_timeline, timelines.knockback) or
+			ConcatArrays(timelines.knockback, _knockback_timeline) or
 			_knockback_timeline,
 
 		events =
@@ -3387,7 +3387,7 @@ CommonStates.AddKnockbackStates = function(states, timelines, anims, fns, speedm
 		timeline =
 			timelines and
 			timelines.knockbacklanded and
-			shallowcopy(_knockbacklanded_timeline, timelines.knockbacklanded) or
+			ConcatArrays(timelines.knockbacklanded, _knockbacklanded_timeline) or
 			_knockbacklanded_timeline,
 
 		events =

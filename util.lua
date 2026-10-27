@@ -321,14 +321,16 @@ end
 
 -- Appends array-style tables to the first one passed in
 function ConcatArrays(ret, ...)
-	for i,array in ipairs({...}) do
-		for j,val in ipairs(array) do
-			table.insert(ret, val)
+	for i = 1, select('#', ...) do
+		local array = select(i, ...)
+		if array then
+			for _, val in ipairs(array) do
+				table.insert(ret, val)
+			end
 		end
 	end
 	return ret
 end
-
 
 -- concatenate two or more array-style tables
 function JoinArrays(...)

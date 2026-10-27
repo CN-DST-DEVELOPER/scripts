@@ -80,10 +80,10 @@ local LOOTDATA = {
     TREAT = {
         --totalchance = 0,
         drops = {
-            {chance = 0.15, candy = true,}, -- Random halloweencandy.
+            {chance = 0.1, candy = true,}, -- Random halloweencandy.
             {chance = 0.3, item = "pumpkin_bomb",},
             {chance = 0.4, trinket = true,}, -- Random Hallowed Nights trinket.
-            {chance = 0.15, ornament = true,}, -- Random ornament.
+            {chance = 0.1, ornament = true,}, -- Random ornament.
         },
     },
     TRICK = {

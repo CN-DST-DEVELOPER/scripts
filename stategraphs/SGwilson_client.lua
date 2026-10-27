@@ -8749,7 +8749,7 @@ local states =
                 end
             end),
             EventHandler("animover", function(inst)
-                inst.sg:GoToState("run_gallop")
+                inst.sg:GoToState("run_flyingbroom")
             end),
         },
     },

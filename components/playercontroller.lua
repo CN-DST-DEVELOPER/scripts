@@ -2060,6 +2060,8 @@ local function GetPickupAction(self, target, tool)
         return ACTIONS.BRUSH
     elseif self.inst.components.revivablecorpse ~= nil and target:HasTag("corpse") and ValidateCorpseReviver(target, self.inst) then
         return ACTIONS.REVIVE_CORPSE
+    elseif tool ~= nil and tool:HasActionComponent("sweeper") and target:HasTag("sweepable") then
+        return ACTIONS.SWEEP
     end
     --no action found
 end
@@ -2244,6 +2246,7 @@ function PlayerController:GetActionButtonAction(force_target)
                 "tendable_farmplant",
                 "inventoryitemholder_take",
 				"client_forward_action_target",
+                "sweepable",
             }
             if tool ~= nil then
                 if tool:HasTag("MINE_tool") then

@@ -355375,7 +355375,7 @@ msgstr ""
 
 #. STRINGS.RECIPE_DESC.CARNIVALDECOR_EGGRIDE5_KIT
 msgctxt "STRINGS.RECIPE_DESC.CARNIVALDECOR_EGGRIDE5_KIT"
-msgid "A new spin on Canwival decor."
+msgid "A new spin on Cawnival decor."
 msgstr ""
 
 #. STRINGS.RECIPE_DESC.CARNIVALDECOR_EGGRIDE6_KIT

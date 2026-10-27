@@ -9793,8 +9793,8 @@ function Tune(overrides)
         LEAFPILE_TIME_TO_GROW_VARIANCE = seg_time * 2,
         LEAFPILE_ADDITIONAL_LOOT_PER_STAGE_CHANCE = 0.5,
         LEAFPILE_TRICK_SPOOK_CHANCE = 0.25, -- Chance of any trick being a spook.
-        LEAFPILE_TRICK_CHANCE = 0.3,
-        LEAFPILE_TREAT_CHANCE = 0.5,
+        LEAFPILE_TRICK_CHANCE = 0.25,
+        LEAFPILE_TREAT_CHANCE = 0.6,
         LEAFPILE_SIZE_ODDS_BIAS_PER_STAGE = 0.1, -- Shifting the odds away from tricks if the pile is left to grow bigger allowing for debris to take its place.
 
         WITCHBROOM_USES = 125,
@@ -9806,6 +9806,7 @@ function Tune(overrides)
 		PUMPKIN_BOMB_DAMAGE = 50,
         PUMPKIN_BOMB_SEED_CHANCE = 0.1,
         PUMPKIN_BOMB_BUILDING_DAMAGE = 4,
+        PUMPKIN_BOMB_PIGKING_TRADE_CHANCE = 0.33,
     }
 
     TUNING_MODIFIERS = {}

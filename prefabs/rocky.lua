@@ -67,6 +67,20 @@ local function grow(inst, dt)
     end
 end
 
+local function UpdateAcidComponents(inst)
+    -- Not putting it in acidinfusible component because it is not made to be well optimized despite being added on thousands of entities
+    -- so just special case for rocky to actually respect acid rain immune biomes
+    local x, y, z = inst.Transform:GetWorldPosition()
+    local canacidrain = TheWorld.Map:CanPointHaveAcidRain(x, y, z)
+    if inst.components.acidlevel then
+        inst.components.acidlevel:SetIgnoreAcidRainTicks(not canacidrain)
+    end
+    if inst.components.acidinfusible then
+        inst.components.acidinfusible:SetFXLevel(canacidrain and 3 or 0) -- 0 means disabled
+    end
+    return canacidrain
+end
+
 --dt is nil from task, not nil from OnLongUpdate
 local function on_size_update(inst, dt)
 	if inst.sizeupdatetask then
@@ -86,7 +100,8 @@ local function on_size_update(inst, dt)
 			end
 		end
 
-		if inst.components.rainimmunity == nil and TheWorld.state.isacidraining then
+        local canacidrain = UpdateAcidComponents(inst)
+		if inst.components.rainimmunity == nil and TheWorld.state.isacidraining and canacidrain then
 			if inst.components.scaler.scale > TUNING.ROCKY_MIN_SCALE then
 				local new_scale = math.max(
 					inst.components.scaler.scale - TUNING.ROCKY_ACIDRAIN_SHRINK_RATE * steps * taskdt,
@@ -137,10 +152,12 @@ end
 
 local function OnInfuse(inst)
     OnGrowthStateDirty(inst)
+    UpdateAcidComponents(inst)
 end
 
 local function OnUninfuse(inst)
     OnGrowthStateDirty(inst)
+    UpdateAcidComponents(inst)
 end
 
 local function SetNitre(inst)
