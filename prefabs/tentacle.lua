@@ -22,21 +22,15 @@ SetSharedLootTable( 'tentacle',
 
 local RETARGET_MUST_TAGS = { "_combat", "_health" }
 local RETARGET_CANT_TAGS = { "prey" }
+local function IsValidTarget(guy, inst)
+    return guy.prefab ~= inst.prefab
+        and guy.entity:IsVisible()
+        and not guy.components.health:IsDead()
+        and (guy.components.combat.target == inst or guy:HasAnyTag("character", "monster", "animal"))
+        and not guy.mummy -- mummy merm
+end
 local function retargetfn(inst)
-    return FindEntity(
-        inst,
-        TUNING.TENTACLE_ATTACK_DIST,
-        function(guy)
-            return guy.prefab ~= inst.prefab
-                and guy.entity:IsVisible()
-                and not guy.components.health:IsDead()
-                and (guy.components.combat.target == inst or
-                    guy:HasTag("character") or
-                    guy:HasTag("monster") or
-                    guy:HasTag("animal"))
-        end,
-        RETARGET_MUST_TAGS,
-        RETARGET_CANT_TAGS)
+    return FindEntity(inst, TUNING.TENTACLE_ATTACK_DIST, IsValidTarget, RETARGET_MUST_TAGS, RETARGET_CANT_TAGS)
 end
 
 local function shouldKeepTarget(inst, target)

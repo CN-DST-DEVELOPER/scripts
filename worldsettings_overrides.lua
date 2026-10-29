@@ -642,7 +642,7 @@ local applyoverrides_pre = {
             never = {
                 HOUNDMOUND_ENABLED = false,
             },
-            few = {
+            rare = {
                 HOUNDMOUND_HOUNDS_MIN = 1,
                 HOUNDMOUND_HOUNDS_MAX = 2,
                 HOUNDMOUND_REGEN_TIME = TUNING.SEG_TIME * 12,
@@ -657,7 +657,7 @@ local applyoverrides_pre = {
                 HOUNDMOUND_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 HOUNDMOUND_HOUNDS_MIN = 3,
                 HOUNDMOUND_HOUNDS_MAX = 5,
                 HOUNDMOUND_REGEN_TIME = TUNING.SEG_TIME * 4,
@@ -679,7 +679,7 @@ local applyoverrides_pre = {
                 BATCAVE_ENABLED = false,
                 CAVE_ENTRANCE_BATS_ENABLED = false,
             },
-            few = {
+            rare = {
                 BATCAVE_REGEN_PERIOD = TUNING.SEG_TIME * 8,
                 BATCAVE_SPAWN_PERIOD = 40,
                 BATCAVE_MAX_CHILDREN = 3,
@@ -699,7 +699,7 @@ local applyoverrides_pre = {
                 CAVE_ENTRANCE_BATS_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 BATCAVE_REGEN_PERIOD = TUNING.SEG_TIME * 2,
                 BATCAVE_SPAWN_PERIOD = 10,
                 BATCAVE_MAX_CHILDREN = 6,
@@ -724,7 +724,7 @@ local applyoverrides_pre = {
             never = {
                 MOLEBAT_ENABLED = false,
             },
-            few = {
+            rare = {
                 MOLEBAT_ALLY_COOLDOWN = TUNING.TOTAL_DAY_TIME * 4,
             },
             --[[
@@ -733,7 +733,7 @@ local applyoverrides_pre = {
                 MOLEBAT_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MOLEBAT_ALLY_COOLDOWN = TUNING.TOTAL_DAY_TIME * 1,
             },
             always = {
@@ -748,7 +748,7 @@ local applyoverrides_pre = {
             never = {
                 ITEMMIMIC_CAP = 0,
             },
-            few = {
+            rare = {
                 ITEMMIMIC_CAP = 5,
             },
             --[[
@@ -756,7 +756,7 @@ local applyoverrides_pre = {
                 ITEMMIMIC_CAP = 10,
             },
             --]]
-            many = {
+            often = {
                 ITEMMIMIC_CAP = 20,
             },
             always = {
@@ -771,7 +771,7 @@ local applyoverrides_pre = {
             never = {
                 CHEST_MIMIC_CHANCE = 0.00,
             },
-            few = {
+            rare = {
                 CHEST_MIMIC_CHANCE = 0.165,
             },
             --[[
@@ -779,11 +779,43 @@ local applyoverrides_pre = {
                 CHEST_MIMIC_CHANCE = 0.33,
             },
             --]]
-            many = {
+            often = {
                 CHEST_MIMIC_CHANCE = 0.66,
             },
             always = {
                 CHEST_MIMIC_CHANCE = 1.00,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    cave_vent_mite = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                CAVE_MITE_ENABLED = false,
+            },
+            rare = {
+                CAVE_MITE_RELEASE_TIME = 40,
+                CAVE_MITE_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 2,
+                CAVE_MITE_MAX_CHILDREN = 2,
+            },
+            --[[
+            default = {
+                CAVE_MITE_RELEASE_TIME = 20,
+                CAVE_MITE_REGEN_TIME = TUNING.TOTAL_DAY_TIME,
+                CAVE_MITE_MAX_CHILDREN = 3,
+                CAVE_MITE_ENABLED = true,
+            },
+            --]]
+            often = {
+                CAVE_MITE_RELEASE_TIME = 10,
+                CAVE_MITE_REGEN_TIME = TUNING.TOTAL_DAY_TIME / 2,
+                CAVE_MITE_MAX_CHILDREN = 4,
+            },
+            always = {
+                CAVE_MITE_RELEASE_TIME = 5,
+                CAVE_MITE_REGEN_TIME = TUNING.TOTAL_DAY_TIME / 4,
+                CAVE_MITE_MAX_CHILDREN = 5,
             },
         }
         OverrideTuningVariables(tuning_vars[difficulty])
@@ -794,7 +826,7 @@ local applyoverrides_pre = {
             never = {
                 MUSHGNOME_ENABLED = false,
             },
-            few = {
+            rare = {
                 MUSHGNOME_RELEASE_TIME = 40,
                 MUSHGNOME_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 2,
                 MUSHGNOME_MAX_CHILDREN = 1,
@@ -807,7 +839,7 @@ local applyoverrides_pre = {
                 MUSHGNOME_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MUSHGNOME_RELEASE_TIME = 10,
                 MUSHGNOME_REGEN_TIME = TUNING.TOTAL_DAY_TIME / 2,
                 MUSHGNOME_MAX_CHILDREN = 1,
@@ -827,7 +859,7 @@ local applyoverrides_pre = {
                 NIGHTMARELIGHT_ENABLED = false,
                 NIGHTMAREFISSURE_ENABLED = false,
             },
-            few = {
+            rare = {
                 NIGHTMARELIGHT_RELEASE_TIME = TUNING.SEG_TIME * 2,
                 NIGHTMARELIGHT_REGEN_TIME = 10,
                 NIGHTMARELIGHT_MINCHILDREN = 1,
@@ -851,7 +883,7 @@ local applyoverrides_pre = {
                 NIGHTMAREFISSURE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 NIGHTMARELIGHT_RELEASE_TIME = TUNING.SEG_TIME / 2,
                 NIGHTMARELIGHT_REGEN_TIME = 5,
                 NIGHTMARELIGHT_MINCHILDREN = 2,
@@ -881,7 +913,7 @@ local applyoverrides_pre = {
                 SHARK_SPAWN_CHANCE = 0,
                 SHARK_TEST_RADIUS = 0,
             },
-            few = {
+            rare = {
                 SHARK_SPAWN_CHANCE = 0.0375,
                 SHARK_TEST_RADIUS = 150,
             },
@@ -891,7 +923,7 @@ local applyoverrides_pre = {
                 SHARK_TEST_RADIUS = 100,
             },
             --]]
-            many = {
+            often = {
                 SHARK_SPAWN_CHANCE = 0.15,
                 SHARK_TEST_RADIUS = 75,
             },
@@ -908,7 +940,7 @@ local applyoverrides_pre = {
             never = {
                 SPIDERDEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 SPIDERDEN_SPIDERS = {2, 4, 6},
                 SPIDERDEN_WARRIORS = {0, 0, 2},
                 SPIDERDEN_EMERGENCY_WARRIORS = {0, 2, 4},
@@ -925,7 +957,7 @@ local applyoverrides_pre = {
                 SPIDERDEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 SPIDERDEN_SPIDERS = {4, 8, 12},
                 SPIDERDEN_WARRIORS = {0, 2, 6},
                 SPIDERDEN_EMERGENCY_WARRIORS = {0, 8, 16},
@@ -962,7 +994,7 @@ local applyoverrides_pre = {
             never = {
                 SPIDERHOLE_ENABLED = false,
             },
-            few = {
+            rare = {
                 SPIDERHOLE_RELEASE_TIME = TUNING.TOTAL_DAY_TIME,
                 SPIDERHOLE_REGEN_TIME = TUNING.TOTAL_DAY_TIME/2,
                 SPIDERHOLE_MIN_CHILDREN = 1,
@@ -977,7 +1009,7 @@ local applyoverrides_pre = {
                 SPIDERHOLE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 SPIDERHOLE_RELEASE_TIME = TUNING.TOTAL_DAY_TIME/4,
                 SPIDERHOLE_REGEN_TIME = TUNING.TOTAL_DAY_TIME/8,
                 SPIDERHOLE_MIN_CHILDREN = 3,
@@ -998,7 +1030,7 @@ local applyoverrides_pre = {
             never = {
                 SPIDERHOLE_SPITTER_CHANCE = 0,
             },
-            few = {
+            rare = {
                 SPIDERHOLE_SPITTER_CHANCE = 0.16,
             },
             --[[
@@ -1006,7 +1038,7 @@ local applyoverrides_pre = {
                 SPIDERHOLE_SPITTER_CHANCE = 0.33,
             },
             --]]
-            many = {
+            often = {
                 SPIDERHOLE_SPITTER_CHANCE = 0.5,
             },
             always = {
@@ -1021,7 +1053,7 @@ local applyoverrides_pre = {
             never = {
                 DROPPERWEB_ENABLED = false,
             },
-            few = {
+            rare = {
                 DROPPERWEB_RELEASE_TIME = TUNING.TOTAL_DAY_TIME,
                 DROPPERWEB_REGEN_TIME = TUNING.TOTAL_DAY_TIME/2,
                 DROPPERWEB_MIN_CHILDREN = 1,
@@ -1036,7 +1068,7 @@ local applyoverrides_pre = {
                 DROPPERWEB_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 DROPPERWEB_RELEASE_TIME = TUNING.TOTAL_DAY_TIME/4,
                 DROPPERWEB_REGEN_TIME = TUNING.TOTAL_DAY_TIME/8,
                 DROPPERWEB_MIN_CHILDREN = 3,
@@ -1072,7 +1104,7 @@ local applyoverrides_pre = {
                     ["full"] = 0,
                 },
             },
-            few = {
+            rare = {
                 SQUID_TEST_RADIUS = 120,
                 SQUID_MAX_FISH = 15,
                 SQUID_MAX_NUMBERS = {
@@ -1110,7 +1142,7 @@ local applyoverrides_pre = {
                 },
             },
             --]]
-            many = {
+            often = {
                 SQUID_TEST_RADIUS = 60,
                 SQUID_MAX_FISH = 8,
                 SQUID_MAX_NUMBERS = {
@@ -1155,7 +1187,7 @@ local applyoverrides_pre = {
             never = {
                 WASPHIVE_ENABLED = false,
             },
-            few = {
+            rare = {
                 WASPHIVE_RELEASE_TIME = 40,
                 WASPHIVE_REGEN_TIME = 40,
                 WASPHIVE_WASPS = 4,
@@ -1172,7 +1204,7 @@ local applyoverrides_pre = {
                 WASPHIVE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 WASPHIVE_RELEASE_TIME = 10,
                 WASPHIVE_REGEN_TIME = 10,
                 WASPHIVE_WASPS = 7,
@@ -1196,7 +1228,7 @@ local applyoverrides_pre = {
                 MERMHOUSE_ENABLED = false,
                 MERMWATCHTOWER_ENABLED = false,
             },
-            few = {
+            rare = {
                 MERMHOUSE_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 8,
                 MERMHOUSE_MERMS = 2,
 
@@ -1214,7 +1246,7 @@ local applyoverrides_pre = {
                 MERMWATCHTOWER_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MERMHOUSE_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 2,
                 MERMHOUSE_MERMS = 4,
 
@@ -1237,7 +1269,7 @@ local applyoverrides_pre = {
             never = {
                 WALRUS_REGEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 WALRUS_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*5,
             },
             --[[
@@ -1246,7 +1278,7 @@ local applyoverrides_pre = {
                 WALRUS_REGEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 WALRUS_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*1.5,
             },
             always = {
@@ -1261,7 +1293,7 @@ local applyoverrides_pre = {
             never = {
                 COOKIECUTTER_SPAWNER_ENABLED = false,
             },
-            few = {
+            rare = {
                 COOKIECUTTER_SPAWNER_REGEN_TIME = 6*TUNING.SEG_TIME,
                 COOKIECUTTER_SPAWNER_MAX_CHILDREN = 3,
             },
@@ -1272,7 +1304,7 @@ local applyoverrides_pre = {
                 COOKIECUTTER_SPAWNER_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 COOKIECUTTER_SPAWNER_REGEN_TIME = 2*TUNING.SEG_TIME,
                 COOKIECUTTER_SPAWNER_MAX_CHILDREN = 12,
             },
@@ -1289,7 +1321,7 @@ local applyoverrides_pre = {
             never = {
                 PIRATE_RAIDS_ENABLED = false,
             },
-            few = {
+            rare = {
                 PIRATE_RAIDS_CHANCE_MODIFIER = 0.5,
             },
             --[[
@@ -1297,7 +1329,7 @@ local applyoverrides_pre = {
                 PIRATE_RAIDS_CHANCE_MODIFIER = 1.0,
             },
             --]]
-            many = {
+            often = {
                 PIRATE_RAIDS_CHANCE_MODIFIER = 2.0,
             },
             always = {
@@ -1493,7 +1525,7 @@ local applyoverrides_pre = {
                 BEEHIVE_ENABLED = false,
                 BEEBOX_ENABLED = false,
             },
-            few = {
+            rare = {
                 BEEHIVE_BEES = 3,
                 BEEHIVE_EMERGENCY_BEES = 4,
                 BEEHIVE_RELEASE_TIME = TUNING.DAY_TIME_DEFAULT/3,
@@ -1515,7 +1547,7 @@ local applyoverrides_pre = {
                 BEEBOX_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 BEEHIVE_BEES = 8,
                 BEEHIVE_EMERGENCY_BEES = 12,
                 BEEHIVE_RELEASE_TIME = TUNING.DAY_TIME_DEFAULT/9,
@@ -1542,7 +1574,7 @@ local applyoverrides_pre = {
             never = {
                 CATCOONDEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 CATCOONDEN_REGEN_TIME = TUNING.SEG_TIME*8,
                 CATCOONDEN_MAXCHILDREN = 1,
             },
@@ -1553,7 +1585,7 @@ local applyoverrides_pre = {
                 CATCOONDEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 CATCOONDEN_REGEN_TIME = TUNING.SEG_TIME*2,
                 CATCOONDEN_MAXCHILDREN = 1,
             },
@@ -1570,7 +1602,7 @@ local applyoverrides_pre = {
             never = {
                 FROG_POND_ENABLED = false,
             },
-            few = {
+            rare = {
                 FROG_POND_REGEN_TIME = TUNING.DAY_TIME_DEFAULT/1,
                 FROG_POND_SPAWN_TIME = TUNING.DAY_TIME_DEFAULT/2,
                 FROG_POND_CHILDREN = {min = 2, max = 3},
@@ -1583,7 +1615,7 @@ local applyoverrides_pre = {
                 FROG_POND_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 FROG_POND_REGEN_TIME = TUNING.DAY_TIME_DEFAULT/4,
                 FROG_POND_SPAWN_TIME = TUNING.DAY_TIME_DEFAULT/8,
                 FROG_POND_CHILDREN = {min = 5, max = 7},
@@ -1603,7 +1635,7 @@ local applyoverrides_pre = {
                 GRASSGEKKO_MORPH_CHANCE = 0,
                 GRASSGEKKO_MORPH_ENABLED = false,
             },
-            few = {
+            rare = {
                 GRASSGEKKO_MORPH_DELAY = TUNING.TOTAL_DAY_TIME * 40,
                 GRASSGEKKO_MORPH_DELAY_VARIANCE = TUNING.TOTAL_DAY_TIME * 10,
                 GRASSGEKKO_MORPH_CHANCE = 0.5 / 100,
@@ -1616,7 +1648,7 @@ local applyoverrides_pre = {
                 GRASSGEKKO_MORPH_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 GRASSGEKKO_MORPH_DELAY = TUNING.TOTAL_DAY_TIME * 17.5,
                 GRASSGEKKO_MORPH_DELAY_VARIANCE = TUNING.TOTAL_DAY_TIME * 2.5,
                 GRASSGEKKO_MORPH_CHANCE = 2 / 100,
@@ -1635,7 +1667,7 @@ local applyoverrides_pre = {
             never = {
                 MOLE_ENABLED = false,
             },
-            few = {
+            rare = {
                 MOLE_RESPAWN_TIME = TUNING.DAY_TIME_DEFAULT*6*TUNING.MULTIPLAYER_WILDLIFE_RESPAWN_MODIFIER
             },
             --[[
@@ -1644,7 +1676,7 @@ local applyoverrides_pre = {
                 MOLE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MOLE_RESPAWN_TIME = TUNING.DAY_TIME_DEFAULT*2*TUNING.MULTIPLAYER_WILDLIFE_RESPAWN_MODIFIER
             },
             always = {
@@ -1659,7 +1691,7 @@ local applyoverrides_pre = {
             never = {
                 MOSQUITO_POND_ENABLED = false,
             },
-            few = {
+            rare = {
                 MOSQUITO_POND_REGEN_TIME = TUNING.DAY_TIME_DEFAULT/1,
                 MOSQUITO_POND_SPAWN_TIME = TUNING.DAY_TIME_DEFAULT/2,
                 MOSQUITO_POND_CHILDREN = {min = 2, max = 3},
@@ -1672,7 +1704,7 @@ local applyoverrides_pre = {
                 MOSQUITO_POND_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MOSQUITO_POND_REGEN_TIME = TUNING.DAY_TIME_DEFAULT/4,
                 MOSQUITO_POND_SPAWN_TIME = TUNING.DAY_TIME_DEFAULT/8,
                 MOSQUITO_POND_CHILDREN = {min = 5, max = 7},
@@ -1691,7 +1723,7 @@ local applyoverrides_pre = {
             never = {
                 RABBIT_ENABLED = false,
             },
-            few = {
+            rare = {
                 RABBIT_RESPAWN_TIME = TUNING.DAY_TIME_DEFAULT*6*TUNING.MULTIPLAYER_WILDLIFE_RESPAWN_MODIFIER,
             },
             --[[
@@ -1700,7 +1732,7 @@ local applyoverrides_pre = {
                 RABBIT_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 RABBIT_RESPAWN_TIME = TUNING.DAY_TIME_DEFAULT*2*TUNING.MULTIPLAYER_WILDLIFE_RESPAWN_MODIFIER,
             },
             always = {
@@ -1715,7 +1747,7 @@ local applyoverrides_pre = {
             never = {
                 WOBSTER_DEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 WOBSTER_DEN_REGEN_PERIOD = 6*TUNING.SEG_TIME,
                 WOBSTER_DEN_SPAWN_PERIOD = 8*TUNING.SEG_TIME,
             },
@@ -1727,7 +1759,7 @@ local applyoverrides_pre = {
                 WOBSTER_DEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 WOBSTER_DEN_REGEN_PERIOD = 1.5*TUNING.SEG_TIME,
                 WOBSTER_DEN_SPAWN_PERIOD = 2*TUNING.SEG_TIME,
                 WOBSTER_DEN_MAX_CHILDREN = 3,
@@ -1746,7 +1778,7 @@ local applyoverrides_pre = {
             never = {
                 PIGHOUSE_ENABLED = false,
             },
-            few = {
+            rare = {
                 PIGHOUSE_SPAWN_TIME = TUNING.TOTAL_DAY_TIME * 6,
             },
             --[[
@@ -1755,7 +1787,7 @@ local applyoverrides_pre = {
                 PIGHOUSE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 PIGHOUSE_SPAWN_TIME = TUNING.TOTAL_DAY_TIME * 2,
             },
             always = {
@@ -1770,7 +1802,7 @@ local applyoverrides_pre = {
             never = {
                 SLURTLEHOLE_ENABLED = false,
             },
-            few = {
+            rare = {
                 SLURTLEHOLE_REGEN_PERIOD = TUNING.SEG_TIME*8,
                 SLURTLEHOLE_CHILDREN = {min = 1, max = 2},
             },
@@ -1781,7 +1813,7 @@ local applyoverrides_pre = {
                 SLURTLEHOLE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 SLURTLEHOLE_REGEN_PERIOD = TUNING.SEG_TIME*2,
                 SLURTLEHOLE_CHILDREN = {min = 2, max = 4},
             },
@@ -1798,13 +1830,13 @@ local applyoverrides_pre = {
             never = {
                 SLURTLEHOLE_RARECHILD_CHANCE = 0.0,
             },
-            few = {
+            rare = {
                 SLURTLEHOLE_RARECHILD_CHANCE = 0.05,
             },
             default = {
                 SLURTLEHOLE_RARECHILD_CHANCE = 0.1,
             },
-            many = {
+            often = {
                 SLURTLEHOLE_RARECHILD_CHANCE = 0.25,
             },
             always = {
@@ -1819,7 +1851,7 @@ local applyoverrides_pre = {
             never = {
                 RABBITHOUSE_ENABLED = false,
             },
-            few = {
+            rare = {
                 RABBITHOUSE_SPAWN_TIME = TUNING.TOTAL_DAY_TIME * 2,
             },
             --[[
@@ -1828,7 +1860,7 @@ local applyoverrides_pre = {
                 RABBITHOUSE_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 RABBITHOUSE_SPAWN_TIME = TUNING.TOTAL_DAY_TIME * 0.75,
             },
             always = {
@@ -1843,7 +1875,7 @@ local applyoverrides_pre = {
             never = {
                 ROCKYHERD_SPAWNER_DENSITY = 0,
             },
-            few = {
+            rare = {
                 ROCKYHERD_SPAWNER_DENSITY = 3,
             },
             --[[
@@ -1851,7 +1883,7 @@ local applyoverrides_pre = {
                 ROCKYHERD_SPAWNER_DENSITY = 6,
             },
             --]]
-            many = {
+            often = {
                 ROCKYHERD_SPAWNER_DENSITY = 9,
             },
             always = {
@@ -1866,7 +1898,7 @@ local applyoverrides_pre = {
             never = {
                 MONKEYBARREL_ENABLED = false,
             },
-            few = {
+            rare = {
                 MONKEYBARREL_REGEN_PERIOD = TUNING.SEG_TIME*6,
                 MONKEYBARREL_SPAWN_PERIOD = TUNING.SEG_TIME*2,
                 MONKEYBARREL_CHILDREN = {min = 3, max = 4},
@@ -1879,7 +1911,7 @@ local applyoverrides_pre = {
                 MONKEYBARREL_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MONKEYBARREL_REGEN_PERIOD = TUNING.SEG_TIME*2,
                 MONKEYBARREL_SPAWN_PERIOD = TUNING.SEG_TIME,
                 MONKEYBARREL_CHILDREN = {min = 4, max = 6},
@@ -1892,13 +1924,112 @@ local applyoverrides_pre = {
         }
         OverrideTuningVariables(tuning_vars[difficulty])
     end,
+    lightninggoat_setting = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                LIGHTNING_GOAT_ENABLED = true,
+            },
+            rare = {
+                LIGHTNINGGOATHERD_MAX_SIZE = 4,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*3,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*1,
+            },
+            --[[
+            default = {
+                LIGHTNINGGOATHERD_MAX_SIZE = 6,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*1.5,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.5,
+            },
+            --]]
+            often = {
+                LIGHTNINGGOATHERD_MAX_SIZE = 9,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*1,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.25,
+            },
+            always = {
+                LIGHTNINGGOATHERD_MAX_SIZE = 12,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*0.5,
+                LIGHTNING_GOAT_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.25,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    beefalo_setting = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                BEEFALO_MAX_SIZE = 8,
+                BEEFALO_MATING_SEASON_BABYDELAY = NEVER_TIME,
+                BEEFALO_MATING_SEASON_BABYDELAY_VARIANCE = NEVER_TIME,
+            },
+            rare = {
+                BEEFALO_MAX_SIZE = 8,
+                BEEFALO_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*4,
+                BEEFALO_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*1,
+            },
+            --[[
+            default = {
+                BEEFALO_MAX_SIZE = 12,
+                BEEFALO_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*1.5,
+                BEEFALO_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.5,
+            },
+            --]]
+            often = {
+                BEEFALO_MAX_SIZE = 16,
+                BEEFALO_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*1,
+                BEEFALO_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.25,
+            },
+            always = {
+                BEEFALO_MAX_SIZE = 20,
+                BEEFALO_MATING_SEASON_BABYDELAY = TUNING.TOTAL_DAY_TIME*0.5,
+                BEEFALO_MATING_SEASON_BABYDELAY_VARIANCE = TUNING.TOTAL_DAY_TIME*0.25,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
+    buzzard_setting = function(difficulty)
+        local tuning_vars =
+        {
+            never = {
+                BUZZARDSPAWNER_ENABLED = false,
+            },
+            rare = {
+                BUZZARDSPAWNER_MAX_CHILDREN = {1, 1},
+                BUZZARD_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*3,
+                BUZZARD_SPAWN_PERIOD = TUNING.SEG_TIME*1.5,
+                BUZZARD_SPAWN_VARIANCE = TUNING.SEG_TIME*0.5,
+            },
+            --[[
+            default = {
+                BUZZARDSPAWNER_MAX_CHILDREN = {1, 2},
+                BUZZARD_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*3,
+                BUZZARD_SPAWN_PERIOD = TUNING.SEG_TIME*1.5,
+                BUZZARD_SPAWN_VARIANCE = TUNING.SEG_TIME*0.5,
+            },
+            --]]
+            often = {
+                BUZZARDSPAWNER_MAX_CHILDREN = {2, 3},
+                BUZZARD_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*2,
+                BUZZARD_SPAWN_PERIOD = TUNING.SEG_TIME*1,
+                BUZZARD_SPAWN_VARIANCE = TUNING.SEG_TIME*0.25,
+            },
+            always = {
+                BUZZARDSPAWNER_MAX_CHILDREN = {3, 4},
+                BUZZARD_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME*1,
+                BUZZARD_SPAWN_PERIOD = TUNING.SEG_TIME*1,
+                BUZZARD_SPAWN_VARIANCE = TUNING.SEG_TIME*0.25,
+            },
+        }
+        OverrideTuningVariables(tuning_vars[difficulty])
+    end,
     dustmoths = function(difficulty)
         local tuning_vars =
         {
             never = {
                 DUSTMOTHDEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 DUSTMOTHDEN_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 15,
                 DUSTMOTHDEN_RELEASE_TIME = TUNING.SEG_TIME * 2,
                 DUSTMOTHDEN_MAX_CHILDREN = 1,
@@ -1911,7 +2042,7 @@ local applyoverrides_pre = {
                 DUSTMOTHDEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 DUSTMOTHDEN_REGEN_TIME = TUNING.TOTAL_DAY_TIME * 7.5,
                 DUSTMOTHDEN_RELEASE_TIME = TUNING.SEG_TIME * 0.75,
                 DUSTMOTHDEN_MAX_CHILDREN = 1,
@@ -1931,7 +2062,7 @@ local applyoverrides_pre = {
                 LIGHTFLIER_FLOWER_REGROW_TIME = NEVER_TIME,
                 LIGHTFLIER_FLOWER_PICKABLE = false,
             },
-            few = {
+            rare = {
                 LIGHTFLIER_FLOWER_REGROW_TIME = TUNING.TOTAL_DAY_TIME * 18,
             },
             --[[
@@ -1940,7 +2071,7 @@ local applyoverrides_pre = {
                 LIGHTFLIER_FLOWER_PICKABLE = true,
             },
             --]]
-            many = {
+            often = {
                 LIGHTFLIER_FLOWER_REGROW_TIME = TUNING.TOTAL_DAY_TIME * 8,
             },
             always = {
@@ -1956,7 +2087,7 @@ local applyoverrides_pre = {
                 GNARWAIL_SPAWN_CHANCE = 0,
                 GNARWAIL_TEST_RADIUS = 0,
             },
-            few = {
+            rare = {
                 GNARWAIL_SPAWN_CHANCE = 0.05,
                 GNARWAIL_TEST_RADIUS = 150,
             },
@@ -1966,7 +2097,7 @@ local applyoverrides_pre = {
                 GNARWAIL_TEST_RADIUS = 100,
             },
             --]]
-            many = {
+            often = {
                 GNARWAIL_SPAWN_CHANCE = 0.2,
                 GNARWAIL_TEST_RADIUS = 75,
             },
@@ -1983,7 +2114,7 @@ local applyoverrides_pre = {
             never = {
                 SCHOOL_SPAWNER_FISH_OCEAN_PERCENT = 1.1,
             },
-            few = {
+            rare = {
                 SCHOOL_SPAWN_DELAY = {min=1*TUNING.SEG_TIME, max=4*TUNING.SEG_TIME},
                 SCHOOL_SPAWNER_FISH_CHECK_RADIUS = 60,
                 SCHOOL_SPAWNER_FISH_OCEAN_PERCENT = 0.25,
@@ -2001,7 +2132,7 @@ local applyoverrides_pre = {
                 SCHOOL_SPAWNER_BLOCKER_LIFETIME = TUNING.TOTAL_DAY_TIME,
             },
             --]]
-            many = {
+            often = {
                 SCHOOL_SPAWN_DELAY = {min=0.25*TUNING.SEG_TIME, max=1*TUNING.SEG_TIME},
                 SCHOOL_SPAWNER_FISH_CHECK_RADIUS = 20,
                 SCHOOL_SPAWNER_FISH_OCEAN_PERCENT = 0.05,
@@ -2026,7 +2157,7 @@ local applyoverrides_pre = {
             never = {
                 OTTERDEN_ENABLED = false,
             },
-            few = {
+            rare = {
                 OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 10,
             },
             --[[
@@ -2035,7 +2166,7 @@ local applyoverrides_pre = {
                 OTTERDEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 OTTERDEN_REGEN_PERIOD = TUNING.TOTAL_DAY_TIME * 3,
             },
             always = {
@@ -3140,7 +3271,7 @@ local applyoverrides_pre = {
                 SANITYMONSTERS_INDUCED_MAXPOP = 0,
                 SANITYMONSTERS_MAXPOP = {0, 0},
             },
-            few = {
+            rare = {
                 SANITYMONSTERS_INDUCED_MAXPOP = 3,
                 SANITYMONSTERS_INDUCED_CHANCES = {
                     inc = 0.35,
@@ -3243,7 +3374,7 @@ local applyoverrides_pre = {
             never = {
                 GESTALT_MIN_SANITY_TO_SPAWN = math.huge,
             },
-            few = {
+            rare = {
                 GESTALT_MIN_SANITY_TO_SPAWN = 0.5,
 
                 GESTALT_POPULATION_LEVEL =
@@ -3285,7 +3416,7 @@ local applyoverrides_pre = {
                 GESTALT_POP_CHANGE_VARIANCE = 2,
             },
             --]]
-            many = {
+            often = {
                 GESTALT_POPULATION_LEVEL =
                 {
                     {
@@ -3505,7 +3636,7 @@ local applyoverrides_pre = {
             never = {
                 MOONSPIDERDEN_ENABLED = false, -- This also disables the mutation
             },
-            few = {
+            rare = {
                 MOONSPIDERDEN_SPIDERS = {1, 2, 3},
                 MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*4,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*6,
@@ -3523,7 +3654,7 @@ local applyoverrides_pre = {
                 MOONSPIDERDEN_ENABLED = true,
             },
             --]]
-            many = {
+            often = {
                 MOONSPIDERDEN_SPIDERS = {3, 4, 5},
                 MOONSPIDERDEN_SPIDER_REGENTIME = TUNING.SEG_TIME*1,
                 MOONSPIDERDEN_RELEASE_TIME = TUNING.SEG_TIME*1.5,

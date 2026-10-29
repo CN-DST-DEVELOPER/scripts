@@ -1733,9 +1733,17 @@ local function NPCOnNewTarget(inst, data)
 end
 
 local function NPCOnAttacked(inst, data)
-    if data.attacker ~= nil then
-        inst.components.combat:SetTarget(data.attacker)
+    if not data then
+        return
     end
+
+    local weapon = data.weapon or (data.attacker and data.attacker.components.inventory and data.attacker.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS))
+    if weapon and weapon:HasTag("shadowlure") then
+        inst.components.health:Kill()
+    end
+    -- if data.attacker ~= nil then
+    --     inst.components.combat:SetTarget(data.attacker)
+    -- end
 end
 
 local function npc_common_postinit(inst)
@@ -1780,7 +1788,7 @@ local function npc_master_postinit(inst)
 
     -- TODO commenting for now
     -- inst:ListenForEvent("newcombattarget", NPCOnNewTarget)
-    -- inst:ListenForEvent("attacked", NPCOnAttacked)
+    inst:ListenForEvent("attacked", NPCOnAttacked)
 end
 
 ------------------------------------------------

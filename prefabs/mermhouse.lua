@@ -120,7 +120,7 @@ local function onhit(inst, worker)
 end
 
 local function StartSpawning(inst)
-    if not TheWorld.state.iswinter and inst.components.childspawner ~= nil and not inst:HasTag("burnt") then
+    if (inst.ismummyhouse or not TheWorld.state.iswinter) and inst.components.childspawner ~= nil and not inst:HasTag("burnt") then
         inst.components.childspawner:StartSpawning()
     end
 end
@@ -134,7 +134,11 @@ end
 local function OnSpawned(inst, child)
     if not inst:HasTag("burnt") then
         inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
-        if TheWorld.state.isday and
+        if inst.ismummyhouse and child.MakeMummyMerm then
+            child:MakeMummyMerm()
+        end
+        if not inst.ismummyhouse and
+                TheWorld.state.isday and
                 inst.components.childspawner ~= nil and
                 inst.components.childspawner:CountChildrenOutside() >= 1 and
                 child.components.combat.target == nil then
@@ -146,8 +150,9 @@ end
 local function OnGoHome(inst, child)
     if not inst:HasTag("burnt") then
         inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
-        if inst.components.childspawner ~= nil and
-            inst.components.childspawner:CountChildrenOutside() < 1 then
+        if inst.ismummyhouse and (
+            inst.components.childspawner ~= nil and
+            inst.components.childspawner:CountChildrenOutside() < 1) then
             StartSpawning(inst)
         end
     end
@@ -157,11 +162,23 @@ local function onsave(inst, data)
     if inst:HasTag("burnt") or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
         data.burnt = true
     end
+    if inst.ismummyhouse ~= nil then
+        data.ismummyhouse = inst.ismummyhouse or inst.wasmummyhouse
+    end
 end
 
 local function onload(inst, data)
-    if data ~= nil and data.burnt then
-        inst.components.burnable.onburnt(inst)
+    if data ~= nil then
+        if data.burnt then
+            inst.components.burnable.onburnt(inst)
+        end
+	    if data.ismummyhouse ~= nil then
+	    	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+	    		inst.ismummyhouse = data.ismummyhouse
+	    	else
+	    		inst.wasmummyhouse = data.ismummyhouse
+	    	end
+	    end
     end
 end
 
@@ -179,7 +196,7 @@ local function OnIsDay(inst, isday)
     if isday then
         StopSpawning(inst)
     elseif not inst:HasTag("burnt") then
-        if not TheWorld.state.iswinter then
+        if inst.ismummyhouse or not TheWorld.state.iswinter then
             inst.components.childspawner:ReleaseAllChildren()
         end
         StartSpawning(inst)
@@ -241,7 +258,7 @@ local function MakeMermHouse(name, common_postinit, master_postinit)
         local childspawner = inst:AddComponent("childspawner")
         childspawner.childname = "merm"
         childspawner:SetSpawnedFn(OnSpawned)
-        childspawner:SetGoHomeFn(OnGoHome)        
+        childspawner:SetGoHomeFn(OnGoHome)
 
         childspawner.emergencychildname = "merm"
         childspawner:SetEmergencyRadius(TUNING.MERMHOUSE_EMERGENCY_RADIUS)
@@ -255,6 +272,10 @@ local function MakeMermHouse(name, common_postinit, master_postinit)
         inst:WatchWorldState("isday", OnIsDay)
 
         StartSpawning(inst)
+
+        if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+			inst.ismummyhouse = math.random() <= TUNING.HN_MONSTER_CHANCE
+        end
 
         MakeMediumBurnable(inst, nil, nil, true)
         MakeLargePropagator(inst)

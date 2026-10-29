@@ -2803,7 +2803,7 @@ STRINGS =
 		TABLE_WINTERS_FEAST = "Winter's Feast Table",
 
 		HALLOWEEN_ORNAMENT_1 = "Ghost Decoration",
-		HALLOWEEN_ORNAMENT_2 = "Bat Decoration",
+		HALLOWEEN_ORNAMENT_2 = "Batilisk Decoration",
 		HALLOWEEN_ORNAMENT_3 = "Spider Decoration",
 		HALLOWEEN_ORNAMENT_4 = "Tentacle Decoration",
 		HALLOWEEN_ORNAMENT_5 = "Dangling Depth Dweller Decoration",
@@ -4795,10 +4795,18 @@ STRINGS =
         CHARLIEARENA_TELEPORTER = "Chasm",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Frankenswine",
+		MUMMY_MERM = "Mermummy",
+		VAMPIRE_BUNNY = "Vamphare",
         LEAFPILE = "Leaf Pile",
         PUMPKIN_BOMB = "Pumpkin Bomb",
         WITCHBROOM = "Witch's Broom",
         WITCHBROOM_LIVING = "Enchanted Witch's Broom",
+
+		HALLOWEEN_ORNAMENT_7 = "Frankenswine Decoration", -- frankenstein pig
+		HALLOWEEN_ORNAMENT_8 = "Mermummy Decoration", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Vamphare Decoration", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Hound Batilisk Decoration", -- hound batilisk
 	},
 
     NAME_DETAIL_EXTENTION =

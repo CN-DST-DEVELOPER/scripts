@@ -307,6 +307,8 @@ local function fn()
     inst.components.lootdropper:AddRandomLoot("batnose", 1)
     inst.components.lootdropper.numrandomloot = 1
 
+    inst:AddComponent("drownable")
+
     inst:AddComponent("eater")
     inst.components.eater:SetDiet({ FOODGROUP.OMNI }, { FOODGROUP.OMNI })
     inst.components.eater:SetStrongStomach(true)

@@ -4,6 +4,8 @@ end
 
 local CarefulWalker = Class(function(self, inst)
     self.inst = inst
+
+    self.enabled = true
     self.careful = false
     self.carefulwalkingspeedmult = TUNING.CAREFUL_SPEED_MOD
     self.targets = {}
@@ -11,7 +13,20 @@ local CarefulWalker = Class(function(self, inst)
 end)
 
 function CarefulWalker:OnRemoveFromEntity()
-    inst:RemoveEventCallback("unevengrounddetected", OnUnevenGroundDetected)
+    self.inst:RemoveEventCallback("unevengrounddetected", OnUnevenGroundDetected)
+end
+
+function CarefulWalker:Enable(enable)
+    if enable then
+        if not self.enabled then
+            self.enabled = true
+        end
+    elseif self.enabled then
+        self.targets = {}
+        self:ToggleCareful(false)
+        self.inst:StopUpdatingComponent(self)
+        self.enabled = false
+    end
 end
 
 function CarefulWalker:SetCarefulWalkingSpeedMultiplier(mult)
@@ -37,6 +52,9 @@ function CarefulWalker:SetCarefulWalkingSpeedMultiplier(mult)
 end
 
 function CarefulWalker:TrackTarget(target, radius, duration)
+    if not self.enabled then
+        return
+    end
     local data = self.targets[target]
     if data == nil then
         data = {}

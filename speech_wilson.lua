@@ -6379,6 +6379,9 @@ return {
         MASK_CHARLIE_BOSSHAT = "I think it's her... face.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Has he done something different with his hair?",
+		MUMMY_MERM = "Mummy!!",
+		VAMPIRE_BUNNY = "That bunnyman is looking a little batty.",
         LEAFPILE = "I should sweep that up.",
         PUMPKIN_BOMB = "Well, that's one way to accelerate decomposition!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
@@ -6387,6 +6390,10 @@ return {
             LIVING = "I always knew magic was a dirty business!", -- transformed into living log version, lets you "fly"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Frankly, the stitching could use some work.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "I always get so wrapped up in decorating!", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "I count this decoration among my favorites.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "The others have been hounding me to put this on the tree.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "It's a... thing.",

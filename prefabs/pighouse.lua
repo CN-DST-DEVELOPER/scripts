@@ -13,6 +13,11 @@ local prefabs =
     "splash_sink",
 }
 
+local function IsFrankenPig(inst)
+    local child = inst.components.spawner and inst.components.spawner.child
+    return child and child.franken
+end
+
 --Client update
 local function OnUpdateWindow(window, inst, snow)
     if inst:HasTag("burnt") then
@@ -120,9 +125,9 @@ local function onnormal(child)
     end
 end
 
-local function onoccupieddoortask(inst)
+local function onoccupieddoortask(inst, child)
     inst.doortask = nil
-    if not inst.components.playerprox:IsPlayerClose() then
+    if inst.components.playerprox and not inst.components.playerprox:IsPlayerClose() then
         LightsOn(inst)
     end
 end
@@ -228,14 +233,23 @@ local function onstartdaylighttask(inst)
 end
 
 local function OnStartDay(inst)
-    --print(inst, "OnStartDay")
+    if not inst:HasTag("burnt") and inst.components.spawner:IsOccupied() then
+
+        if inst.doortask ~= nil then
+            inst.doortask:Cancel()
+        end
+        inst.doortask = inst:DoTaskInTime(1 + math.random() * 2, onstartdaylighttask)
+    end
+end
+
+local function OnStartDusk(inst)
     if not inst:HasTag("burnt")
         and inst.components.spawner:IsOccupied() then
 
         if inst.doortask ~= nil then
             inst.doortask:Cancel()
         end
-        inst.doortask = inst:DoTaskInTime(1 + math.random() * 2, onstartdaylighttask)
+        inst.doortask = inst:DoTaskInTime(2 + math.random() * 4, onstartdaydoortask)
     end
 end
 
@@ -283,16 +297,60 @@ end
 
 local function spawncheckday(inst)
     inst.inittask = nil
-    inst:WatchWorldState("startcaveday", OnStartDay)
-    if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
-        if TheWorld.state.iscaveday or
-            (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
-            inst.components.spawner:ReleaseChild()
-        else
-            inst.components.playerprox:ForceUpdate()
-            onoccupieddoortask(inst)
+    if IsFrankenPig(inst) then
+        inst:WatchWorldState("startcavedusk", OnStartDusk)
+
+        if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+            if not TheWorld.state.iscaveday or
+                (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+                inst.components.spawner:ReleaseChild()
+            end
+        end
+    else
+        inst:WatchWorldState("startcaveday", OnStartDay)
+
+        if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+            if TheWorld.state.iscaveday or
+                (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+                inst.components.spawner:ReleaseChild()
+            else
+                inst.components.playerprox:ForceUpdate()
+                onoccupieddoortask(inst)
+            end
         end
     end
+end
+
+local function EnableFrankenPigHouse(inst, franken)
+    if franken then
+        if not inst.franken then
+            inst.franken = true
+            if inst.inittask == nil then
+                inst:StopWatchingWorldState("startcaveday", OnStartDay)
+                inst:WatchWorldState("startcavedusk", OnStartDusk)
+            end
+
+            LightsOff(inst)
+            inst:RemoveComponent("playerprox")
+        end
+    elseif inst.franken then
+        inst.franken = nil
+        if inst.inittask == nil then
+            inst:WatchWorldState("startcaveday", OnStartDay)
+            inst:StopWatchingWorldState("startcavedusk", OnStartDusk)
+        end
+
+        if not inst.components.playerprox then
+            inst:AddComponent("playerprox")
+            inst.components.playerprox:SetDist(10, 13)
+            inst.components.playerprox:SetOnPlayerNear(onnear)
+            inst.components.playerprox:SetOnPlayerFar(onfar)
+        end
+    end
+end
+
+local function onchildkilled(inst, child)
+    EnableFrankenPigHouse(inst, false)
 end
 
 local function oninit(inst)
@@ -372,7 +430,7 @@ local function fn()
     MakeObstaclePhysics(inst, 1)
 
     inst.MiniMapEntity:SetIcon("pighouse.png")
---{anim="level1", sound="dontstarve/common/campfire", radius=2, intensity=.75, falloff=.33, colour = {197/255,197/255,170/255}},
+
     inst.Light:SetFalloff(1)
     inst.Light:SetIntensity(.5)
     inst.Light:SetRadius(1)
@@ -384,7 +442,7 @@ local function fn()
     inst.AnimState:PlayAnimation("idle", true)
 
     inst:AddTag("structure")
-    inst:AddTag("pig_house")    
+    inst:AddTag("pig_house")
 
     MakeSnowCoveredPristine(inst)
 
@@ -416,6 +474,7 @@ local function fn()
     inst.components.spawner:Configure("pigman", TUNING.PIGHOUSE_SPAWN_TIME)
     inst.components.spawner.onoccupied = onoccupied
     inst.components.spawner.onvacate = onvacate
+    inst.components.spawner:SetOnKilledFn(onchildkilled)
     inst.components.spawner:SetWaterSpawning(false, true)
     inst.components.spawner:CancelSpawning()
 
@@ -425,7 +484,6 @@ local function fn()
     inst.components.playerprox:SetOnPlayerFar(onfar)
 
     inst:AddComponent("inspectable")
-
     inst.components.inspectable.getstatus = getstatus
 
     MakeSnowCovered(inst)
@@ -445,6 +503,8 @@ local function fn()
     inst.inittask = inst:DoTaskInTime(0, oninit)
 
     inst.OnPreLoad = OnPreLoad
+
+    inst.EnableFrankenPigHouse = EnableFrankenPigHouse
 
     return inst
 end

@@ -102,7 +102,7 @@ local function ontradeforgold(inst, item, giver)
             end
         end
 
-        local numbombs = math.floor(numcandies % 6)
+        local numbombs = math.floor(numcandies % 8)
 
         for k = 1, numcandies do
             local candy = SpawnPrefab("halloweencandy_"..GetRandomItem(candytypes))
@@ -692,8 +692,6 @@ local function fn()
     inst.components.trader.onaccept = OnGetItemFromPlayer
     inst.components.trader.onrefuse = OnRefuseItem
 
-    inst.TestGame = StartMinigame --TODO: remove me
-    inst.CancelGame = CancelGame --TODO: remove me
     inst.EnableCameraFocus = EnableCameraFocus
     inst.IsMinigameActive = IsMinigameActive
     inst.GetMinigameScore = GetMinigameScore

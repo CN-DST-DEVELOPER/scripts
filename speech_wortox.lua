@@ -6389,14 +6389,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "A bad case of broken face! Hyuyu!",
 
         -- Halloween 2026
+		FRANKEN_PIG = "A ponderously plodding patchwork piggy!",
+		MUMMY_MERM = "What did that merm get wrapped up in? Hyuyu!",
+		VAMPIRE_BUNNY = "Blood is a trifling thing compared to sucking up souls.",
         LEAFPILE = "Fallen from grace, are we?",
         PUMPKIN_BOMB = "This will make a delightful mess!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Chores aren't really an imp thing.", -- normal version
-            LIVING = "It has soul!",
+            LIVING = "It has soul!"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "A piggy pendant for the tree.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "A mummification decoration.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "What a batty old bunny.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Left in the trees to flutter in the breeze.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Ooo, a mystery!",

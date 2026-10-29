@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "T'was an honor to battle thee, Lady of Shadows.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "The dead walk among us!",
+		MUMMY_MERM = "The fish beast must be grievously injured to be bandaged so!",
+		VAMPIRE_BUNNY = "I can see the bloodlust in thine eyes, fiend! Let us fight!",
         LEAFPILE = "Even a warrior's heart doth soften at autumn's beauty.",
         PUMPKIN_BOMB = "A gourd of glorious destruction!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "A mighty weapon to vanquish to filth of this world!", -- normal version
-            LIVING = "Mayhap I shall ride it into battle!",
+            LIVING = "Mayhap I shall ride it into battle!"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "To ward off evil spirits.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "I shall affix thee to a sturdy branch.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "A fearsome sight!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "I shall hang it high, for all to see!", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

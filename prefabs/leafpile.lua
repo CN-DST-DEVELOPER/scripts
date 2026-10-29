@@ -27,6 +27,8 @@ local prefabs = {
     "pumpkin_bomb",
     "spider",
     "frog",
+    "fire", -- burnable
+    "ash", -- Burnt.
 }
 
 local prefabs_trinkets = {}
@@ -145,7 +147,7 @@ local function UpdatePotentialDrops()
             end
         end
     end
-    
+
     for _, loottable in orderedPairs(LOOTDATA) do
         local totalchance = 0
         for _, dropinfo in ipairs(loottable.drops) do
@@ -173,6 +175,9 @@ local function RollLootFor(inst, doer)
         loot.istrick = true
     elseif roll < trick_chance + TUNING.LEAFPILE_TREAT_CHANCE then -- [trick, trick + treat)
         loottable = LOOTDATA.TREAT
+        if doer and doer.SoundEmitter then
+            doer.SoundEmitter:PlaySound("hallowednights2025/spooks/treat")
+        end
     else -- [trick + treat, 1]
         loottable = LOOTDATA.DEBRIS
     end
@@ -217,6 +222,7 @@ local function DropLootFor(inst, doer)
     local launchspeedvariance = launchspeed * 0.25
     local x, y, z = inst.Transform:GetWorldPosition()
     local didspook = false
+    local isburnt = inst.burnt or inst.components.burnable.burning
     for _, dropinfo in ipairs(loot.drops) do
         local spookreplaceditem = false
         if not didspook and loot.istrick and doer and doer.components.spooked then
@@ -230,7 +236,7 @@ local function DropLootFor(inst, doer)
             end
         end
         if not spookreplaceditem then
-            local itemprefab = dropinfo.item
+            local itemprefab = isburnt and "ash" or dropinfo.item
             if not itemprefab then
                 if dropinfo.candy then
                     itemprefab = prefabs_candies[math.random(#prefabs_candies)]
@@ -261,6 +267,12 @@ local function DropLootFor(inst, doer)
             end
         end
     end
+end
+
+local function OnBurnt(inst)
+    inst.burnt = true
+    inst:DropLootFor(nil)
+    inst:Remove()
 end
 
 local function GetCachedTilePos(inst)
@@ -387,6 +399,16 @@ local function SetLeafSize(inst, leafsize, instant)
         else
             inst.components.timer:StopTimer(TIMER_GROW_NAME)
         end
+        if leafsize == LEAFSIZES.SMALL then
+            inst.components.burnable:SetFXLevel(2)
+            inst.components.burnable:SetBurnTime(TUNING.SMALL_BURNTIME)
+        elseif leafsize == LEAFSIZES.MEDIUM then
+            inst.components.burnable:SetFXLevel(3)
+            inst.components.burnable:SetBurnTime(TUNING.MED_BURNTIME)
+        else--if leafsize == LEAFSIZES.LARGE then
+            inst.components.burnable:SetFXLevel(4)
+            inst.components.burnable:SetBurnTime(TUNING.LARGE_BURNTIME)
+        end
     end
 end
 
@@ -511,6 +533,7 @@ local function fn()
 
     inst:AddComponent("workable")
     inst.components.workable:SetWorkAction(nil)
+    inst.components.workable:SetWorkLeft(1)
     inst.components.workable:SetOnFinishCallback(OnWorkFinished)
 
     inst:AddComponent("sweepable")
@@ -522,6 +545,14 @@ local function fn()
 
     MakeSnowCovered(inst)
     SetLunarHailBuildupAmountSmall(inst)
+    inst:AddComponent("burnable")
+    inst.components.burnable:AddBurnFX("fire", Vector3(0, 0, 0))
+    inst.components.burnable:SetFXLevel(2)
+    inst.components.burnable:SetBurnTime(TUNING.SMALL_BURNTIME)
+    inst.components.burnable:SetOnIgniteFn(DefaultBurnFn)
+    inst.components.burnable:SetOnExtinguishFn(DefaultExtinguishFn)
+    inst.components.burnable:SetOnBurntFn(OnBurnt)
+    MakeSmallPropagator(inst)
 
     inst:ListenForEvent("onterraform", function(_world, data)
         local x, y = data.x, data.y

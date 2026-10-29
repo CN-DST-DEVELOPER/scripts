@@ -14,6 +14,18 @@ local prefabs =
     "mermkingcorpse",
 }
 
+local EXCLUDE_PIG_CANDY =
+{
+    [11] = true, -- NO CHOCO PIGS!
+}
+local validcandytypes = {}
+for i = 1, NUM_HALLOWEENCANDY do
+    if not EXCLUDE_PIG_CANDY[i] then
+        table.insert(validcandytypes, i)
+        table.insert(prefabs, "halloweencandy_"..i)
+    end
+end
+
 local loot =
 {
     "pondfish",
@@ -67,6 +79,10 @@ local function OnAttacked(inst, data)
     end
 end
 
+local function is_event_item(inst, item)
+    return IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) and item.components.tradable and item.components.tradable.halloweencandyvalue and item.components.tradable.halloweencandyvalue > 0
+end
+
 local function launchitem(item, angle)
     local speed = math.random() * 4 + 2
     angle = (angle + math.random() * 60 - 30) * DEGREES
@@ -88,50 +104,91 @@ local function TradeItem(inst)
         angle = math.atan2(down.z, down.x) * RADIANS
     end
 
-    local selected_index = math.random(#inst.trading_items)
-    local selected_item = inst.trading_items[selected_index]
+    if not is_event_item(inst, item) then
+        local selected_index = math.random(#inst.trading_items)
+        local selected_item = inst.trading_items[selected_index]
 
-    local isabigheavyfish = item.components.weighable and item.components.weighable:GetWeightPercent() >= TUNING.WEIGHABLE_HEAVY_WEIGHT_PERCENT or false
-    local bigheavyreward = isabigheavyfish and math.random(1, 2) or 0
+        local isabigheavyfish = item.components.weighable and item.components.weighable:GetWeightPercent() >= TUNING.WEIGHABLE_HEAVY_WEIGHT_PERCENT or false
+        local bigheavyreward = isabigheavyfish and math.random(1, 2) or 0
 
-    local filler_min = 2 -- Not biasing minimum for filler.
-    local filler_max = 4 + bigheavyreward
-    local reward_count = math.random(selected_item.min_count, selected_item.max_count) + bigheavyreward
+        local filler_min = 2 -- Not biasing minimum for filler.
+        local filler_max = 4 + bigheavyreward
+        local reward_count = math.random(selected_item.min_count, selected_item.max_count) + bigheavyreward
 
-    for _ = 1, reward_count do
-        local reward_item = SpawnPrefab(selected_item.prefabs[math.random(#selected_item.prefabs)])
-        reward_item.Transform:SetPosition(x, y, z)
-        launchitem(reward_item, angle)
-    end
-
-    if selected_item.add_filler then
-        for _ = filler_min, filler_max do
-            local filler_item = SpawnPrefab(trading_filler[math.random(#trading_filler)])
-            filler_item.Transform:SetPosition(x, y, z)
-            launchitem(filler_item, angle)
-        end
-    end
-    if item:HasTag("oceanfish") then
-        local goldmin, goldmax, goldprefab = 1, 2, "goldnugget"
-        if item.prefab:find("oceanfish_medium_") == 1 then
-            goldmin, goldmax = 2, 4
-            if item.prefab == "oceanfish_medium_6_inv" or item.prefab == "oceanfish_medium_7_inv" then -- YoT events.
-                goldprefab = "lucky_goldnugget"
-            end
-        end
-
-        local amt = math.random(goldmin, goldmax) + bigheavyreward
-        for _ = 1, amt do
-            local reward_item = SpawnPrefab(goldprefab)
+        for _ = 1, reward_count do
+            local reward_item = SpawnPrefab(selected_item.prefabs[math.random(#selected_item.prefabs)])
             reward_item.Transform:SetPosition(x, y, z)
             launchitem(reward_item, angle)
         end
+
+        if selected_item.add_filler then
+            for _ = filler_min, filler_max do
+                local filler_item = SpawnPrefab(trading_filler[math.random(#trading_filler)])
+                filler_item.Transform:SetPosition(x, y, z)
+                launchitem(filler_item, angle)
+            end
+        end
+        if item:HasTag("oceanfish") then
+            local goldmin, goldmax, goldprefab = 1, 2, "goldnugget"
+            if item.prefab:find("oceanfish_medium_") == 1 then
+                goldmin, goldmax = 2, 4
+                if item.prefab == "oceanfish_medium_6_inv" or item.prefab == "oceanfish_medium_7_inv" then -- YoT events.
+                    goldprefab = "lucky_goldnugget"
+                end
+            end
+
+            local amt = math.random(goldmin, goldmax) + bigheavyreward
+            for _ = 1, amt do
+                local reward_item = SpawnPrefab(goldprefab)
+                reward_item.Transform:SetPosition(x, y, z)
+                launchitem(reward_item, angle)
+            end
+        end
+
+        -- Cycle out rewards.
+        table.remove(inst.trading_items, selected_index)
+        if #inst.trading_items == 0 or selected_item.reset then
+            inst.trading_items = deepcopy(trading_items)
+        end
     end
 
-    -- Cycle out rewards.
-    table.remove(inst.trading_items, selected_index)
-    if #inst.trading_items == 0 or selected_item.reset then
-        inst.trading_items = deepcopy(trading_items)
+    -- similar to pig king loot
+    if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+        -- pick out up to 3 types of candies to throw out
+        local candytypes = { GetRandomItem(validcandytypes), GetRandomItem(validcandytypes), GetRandomItem(validcandytypes) }
+        local numcandies = (item.components.tradable and item.components.tradable.halloweencandyvalue or 1) + math.random(2) + 2
+
+        -- only people in costumes get a good amount of candy!
+        if giver ~= nil and giver.components.skinner ~= nil then
+            for _, item in pairs(giver.components.skinner:GetClothing()) do
+                if DoesItemHaveTag(item, "COSTUME") or DoesItemHaveTag(item, "HALLOWED") then
+                    numcandies = numcandies + math.random(4) + 2
+                    break
+                end
+            end
+        end
+
+        local numbombs = math.floor(numcandies % 8)
+
+        for k = 1, numcandies do
+            local candy = SpawnPrefab("halloweencandy_"..GetRandomItem(candytypes))
+            candy.Transform:SetPosition(x, y, z)
+            launchitem(candy, angle)
+        end
+
+        if numbombs > 0 and TryLuckRoll(giver, TUNING.PUMPKIN_BOMB_PIGKING_TRADE_CHANCE, LuckFormulas.LootDropperChance) then
+            for k = 1, numbombs do
+                local bomb = SpawnPrefab("pumpkin_bomb")
+                bomb.Transform:SetPosition(x, y, z)
+                launchitem(bomb, angle)
+            end
+        end
+
+        if TryLuckRoll(giver, TUNING.HALLOWEEN_PUMPKINCARVER_PIGKING_TRADE_CHANCE, LuckFormulas.LootDropperChance) then
+            local pumpkincarver = SpawnPrefab("pumpkincarver"..math.random(NUM_HALLOWEEN_PUMPKINCARVERS))
+            pumpkincarver.Transform:SetPosition(x, y, z)
+            launchitem(pumpkincarver, angle)
+        end
     end
 
     inst.itemtotrade = nil
@@ -149,7 +206,7 @@ local function ShouldAcceptItem(inst, item, giver)
 
     local can_eat = (item.components.edible and inst.components.eater:CanEat(item))
         and (inst.components.hunger and inst.components.hunger:GetPercent() < 1)
-    if can_eat or item:HasTag("fish") then
+    if can_eat or item:HasTag("fish") or is_event_item(inst, item) then
         return true
     end
 
@@ -169,10 +226,15 @@ local function ShouldAcceptItem(inst, item, giver)
 end
 
 local function OnGetItemFromPlayer(inst, giver, item)
-    if item.components.edible ~= nil then
-        if inst.components.combat:TargetIs(giver) then
-            inst.components.combat:SetTarget(nil)
-        end
+    if inst.components.combat:TargetIs(giver) then
+        inst.components.combat:SetTarget(nil)
+    end
+
+    if is_event_item(inst, item) then
+        inst.sg:GoToState("trade")
+        inst.itemtotrade = item
+        inst.tradegiver = giver
+    elseif item.components.edible ~= nil then
 
         if not item:HasTag("fish") and inst.components.eater:CanEat(item) then
             local hunger = item.components.edible:GetHunger(inst)

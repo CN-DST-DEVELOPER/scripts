@@ -27,7 +27,11 @@ local assets =
 
     Asset("ANIM", "anim/merm_guard_transformation.zip"),
 
-    Asset("ANIM", "anim/ds_pig_parasite_death.zip"),    
+	Asset("ANIM", "anim/ds_pig_parasite_death.zip"),
+
+	Asset("ANIM", "anim/ds_pig_halloween.zip"),
+	Asset("ANIM", "anim/werepig_actions.zip"),
+	Asset("ANIM", "anim/merm_mummy_build.zip"),
 
     Asset("SOUND", "sound/merm.fsb"),
 }
@@ -52,7 +56,15 @@ local prefabs =
     "merm_soil_marker",
 
     "mermcorpse",
+
+    "pumpkin_bomb",
+    "halloween_ornament_8", -- mermummy decoration
 }
+
+-- for mermummy
+for i = 1, NUM_HALLOWEENCANDY do
+    table.insert(prefabs, "halloweencandy_"..i)
+end
 
 local merm_loot =
 {
@@ -112,12 +124,11 @@ local function FindInvaderFn(guy, inst)
         leader_guy = leader_guy.components.inventoryitem:GetGrandOwner()
     end
 
-    return (guy:HasTag("character") and not guy:HasTag("merm")) and
-           not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere()) and
-           not (leader and leader:HasTag("player")) and
-           not (leader_guy and (leader_guy:HasTag("merm")) and
-                not guy:HasTag("pig") and
-                not guy:HasTag("wonkey"))
+	return guy:HasTag("character")
+		and not guy:HasTag("merm")
+		and not (TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere())
+		and not (leader and leader.isplayer)
+		and not (leader_guy and leader_guy:HasTag("merm") and not guy:HasAnyTag("pig", "wonkey"))
 end
 
 local function RetargetFn(inst)
@@ -153,6 +164,9 @@ local DECIDROOTTARGET_MUST_TAGS = { "_combat", "_health", "merm" }
 local DECIDROOTTARGET_CANT_TAGS = { "INLIMBO" }
 
 local function OnAttackedByDecidRoot(inst, attacker)
+	if inst.mummy then
+		return
+	end
     local isguard = inst:HasTag("mermguard")
     local share_target_dist = (isguard and TUNING.MERM_GUARD_SHARE_TARGET_DIST) or TUNING.MERM_SHARE_TARGET_DIST
     local max_target_shares = (isguard and TUNING.MERM_GUARD_MAX_TARGET_SHARES) or TUNING.MERM_MAX_TARGET_SHARES
@@ -162,7 +176,7 @@ local function OnAttackedByDecidRoot(inst, attacker)
     local num_helpers = 0
 
     for _, helper in ipairs(combat_helpers) do
-        if helper ~= inst and not helper.components.health:IsDead() then
+		if helper ~= inst and not (helper.components.health:IsDead() or helper.mummy) then
             helper:PushEvent("suggest_tree_target", { tree = attacker })
             num_helpers = num_helpers + 1
             if num_helpers >= max_target_shares then
@@ -173,20 +187,26 @@ local function OnAttackedByDecidRoot(inst, attacker)
 end
 
 local function IsNonPlayerMerm(this)
-    return not this.isplayer and this:HasTag("merm")
+	return not (this.isplayer or this.mummy) and this:HasTag("merm")
 end
 
 local function IsHost(dude)
     return dude:HasTag("shadowthrall_parasite_hosted")
 end 
 
+local function IsMummy(dude, inst)
+	return dude.mummy and dude.prefab == inst.prefab
+end
+
 local function resolve_on_attacked(inst, attacker)
-    if attacker.prefab == "deciduous_root" and attacker.owner ~= nil then
-        OnAttackedByDecidRoot(inst, attacker.owner)
-
-    elseif attacker.prefab ~= "deciduous_root" and inst.components.combat:CanTarget(attacker) then
-
-        if inst:HasTag("shadowthrall_parasite_hosted") then
+	if attacker.prefab == "deciduous_root" then
+		if attacker.owner then
+			OnAttackedByDecidRoot(inst, attacker.owner)
+		end
+	elseif inst.components.combat:CanTarget(attacker) then
+		if inst.mummy then
+			inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsMummy, TUNING.MERM_MAX_TARGET_SHARES)
+		elseif inst:HasTag("shadowthrall_parasite_hosted") then
             inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsHost, TUNING.MERM_MAX_TARGET_SHARES)
         else
             local isguard = inst:HasTag("mermguard")
@@ -663,6 +683,7 @@ local function OnSave(inst, data)
     if inst.wantstoteleport then
         data.wantstoteleport = true
     end
+	data.mummy = inst.mummy or inst.wasmummy
 end
 
 local function spawn_shadow_merm(inst)
@@ -694,10 +715,17 @@ local function spawn_shadow_merm(inst)
     shadowmerm:PushEvent("shadowmerm_spawn")
 end
 
-local function OnLoad(inst, data)
-    if data then
-        inst.wantstoteleport = data.wantstoteleport or inst.wantstoteleport
-    end
+local function OnPreLoad(inst, data)--, ents)
+	if data then
+		inst.wantstoteleport = data.wantstoteleport or inst.wantstoteleport
+		if data.mummy then
+			if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+				inst:MakeMummyMerm()
+			else
+				inst.wasmummy = true
+			end
+		end
+	end
 end
 
 local function TestForShadowDeath(inst)
@@ -1029,7 +1057,9 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
 
         inst:AddTag("character")
         inst:AddTag("merm")
-        inst:AddTag("wet")
+		if not (data and data.unliving) then
+			inst:AddTag("wet")
+		end
         inst:AddTag("canwearhat")
 
         inst:AddTag("merm_npc")
@@ -1063,7 +1093,7 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         inst.DoCheer = DoCheer
         inst.DoDisapproval = DoDisapproval
         inst.OnSave = OnSave
-        inst.OnLoad = OnLoad
+		inst.OnPreLoad = OnPreLoad
 
         inst:AddComponent("locomotor")
         -- boat hopping setup
@@ -1084,6 +1114,7 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         inst.components.health:StartRegen(TUNING.MERM_HEALTH_REGEN_AMOUNT, TUNING.MERM_HEALTH_REGEN_PERIOD)
 
         inst:AddComponent("combat")
+		inst.components.combat:SetHitArc(TUNING.DEFAULT_HIT_ARC)
         inst.components.combat.GetBattleCryString = battlecry
         inst.components.combat.hiteffectsymbol = "pig_torso"
 
@@ -1299,9 +1330,103 @@ local function guard_master(inst)
     inst.initialize_task = inst:DoTaskInTime(0, inst.OnGuardInitialize)
 end
 
+local mummymermbrain, mummymermloot
+
+local function MummyRetargetFn(inst)
+	local player, dsq = inst:GetNearestPlayer(true)
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+end
+
+local function MummyKeepTargetFn(inst, target)
+	return inst.components.combat:CanTarget(target)
+end
+
+local function MakeMummyMerm(inst)
+	mummymermbrain = mummymermbrain or require("brains/mummymermbrain")
+	mummymermloot = mummymermloot or { "monstermeat", "monstermeat" }
+
+	inst:AddTag("monster")
+	inst:AddTag("hostile")
+	inst:AddTag("scarytoprey")
+	inst:SetBrain(mummymermbrain)
+	inst.AnimState:SetBuild("merm_mummy_build")
+	if inst.AnimState:IsCurrentAnimation("idle_loop") then
+		local t = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime()
+		inst.AnimState:PlayAnimation("halloween_idle_loop", true)
+		t = inst.AnimState:GetCurrentAnimationLength() - t
+		if t > 0 then
+			inst.AnimState:SetTime(t)
+		end
+	end
+	inst.mummy = true
+	inst.sg.mem.nocorpse = true
+	inst.sg.mem.nolunarmutate = true
+	inst.sg.mem.noparasitehost = true
+	inst.sg.mem.mummy_idle_sound_delay = GetTime() + 0.1 + math.random()
+
+	--V2C: -clients do this in common_OnEntityReplicated using "monster" tag.
+	--     -this is higher priority than "named", so we can use the halloween
+	--      name without losing the saved name.
+	inst.displaynamefn = nil
+	inst:SetPrefabNameOverride("mummy_merm")
+
+	inst:RemoveComponent("sleeper")
+
+	inst.components.health:SetMaxHealth(TUNING.HN_MONSTER_HEALTH)
+	inst.components.health:StopRegen()
+	inst.components.health:AddRegenSource(inst, TUNING.HN_MONSTER_HEALTH_REGEN_AMOUNT, TUNING.HN_MONSTER_HEALTH_REGEN_PERIOD, "hn_monster_regen")
+
+	inst.components.combat:SetDefaultDamage(TUNING.HN_MONSTER_DAMAGE)
+	inst.components.combat:SetAttackPeriod(TUNING.HN_MONSTER_ATTACK_PERIOD)
+	inst.components.combat:SetRange(2.5, 3)
+	inst.components.combat:SetRetargetFunction(3, MummyRetargetFn)
+	inst.components.combat:SetKeepTargetFunction(MummyKeepTargetFn)
+	inst.components.combat:SetTarget(nil)
+
+	inst:AddComponent("sanityaura")
+	inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
+
+	inst.components.locomotor.runspeed = TUNING.HN_MONSTER_RUNSPEED
+	inst.components.locomotor.walkspeed = TUNING.HN_MONSTER_WALKSPEED
+
+	inst.components.lootdropper:SetLoot(mummymermloot)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+    inst.components.lootdropper:AddChanceLoot("halloween_ornament_8", 0.1)
+
+	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
+	inst:RemoveEventCallback("entitysleep", OnEntitySleepMerm)
+	inst:RemoveEventCallback("entitywake", CancelRunHomeTask)
+	inst:RemoveEventCallback("loseloyalty", OnMarkForTeleport)
+	inst:RemoveEventCallback("stopfollowing", OnMarkForTeleport)
+	inst:RemoveEventCallback("gainloyalty", OnUnmarkForTeleport)
+	inst:RemoveEventCallback("startfollowing", OnUnmarkForTeleport)
+	inst:RemoveEventCallback("droppedtarget", droppedtarget)
+	inst:RemoveEventCallback("newcombattarget", newcombattarget)
+	inst:RemoveEventCallback("itemget", itemget)
+	inst:RemoveEventCallback("unequip", onunequip)
+	inst:RemoveEventCallback("equip", equip)
+	inst:RemoveEventCallback("onattackother", OnAttackOther)
+	inst:RemoveEventCallback("oneat", OnEat)
+
+	inst.components.trader:Disable()
+	inst.components.follower:SetLeader(nil)
+	inst.components.talker:IgnoreAll("becamemummymerm")
+end
+
 -- Common
 local function common_displaynamefn(inst)
     return (inst:HasTag("mermprince") and STRINGS.NAMES.MERM_PRINCE) or nil
+end
+
+local function common_OnEntityReplicated(inst)
+	if inst:HasTag("monster") then
+		inst.displaynamefn = nil
+		inst:SetPrefabNameOverride("mummy_merm")
+	end
 end
 
 local function common_common(inst)
@@ -1309,6 +1434,10 @@ local function common_common(inst)
     inst.AnimState:SetBuild("merm_build")
 
     inst.displaynamefn = common_displaynamefn
+
+	if not TheWorld.ismastersim then
+		inst.OnEntityReplicated = common_OnEntityReplicated
+	end
 end
 
 
@@ -1327,11 +1456,6 @@ end
 local function on_mermking_destroyed_anywhere(inst)
     inst:DoTaskInTime(math.random()*SLIGHTDELAY, on_mermking_destroyed_downgrade)
 end
-
-local function no_holes(pt)
-    return not TheWorld.Map:IsPointNearHole(pt)
-end
-
 
 local function common_master(inst)
     -- Let the lootdropper take care of adding these dependencies correctly.
@@ -1367,6 +1491,8 @@ local function common_master(inst)
     if TheWorld.components.mermkingmanager and TheWorld.components.mermkingmanager:HasKingAnywhere() then
         RoyalUpgrade(inst)
     end
+
+	inst.MakeMummyMerm = MakeMummyMerm
 end
 
 -------------------------------------------------------------------------------

@@ -18,6 +18,8 @@ local events =
     CommonHandlers.OnAttack(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("summon", function(inst)
 		if inst.components.health and not inst.components.health:IsDead() and
@@ -385,6 +387,9 @@ nil,
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddKnockbackStates(states)
+
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 CommonStates.AddInitState(states, "idle")
 CommonStates.AddCorpseStates(states)

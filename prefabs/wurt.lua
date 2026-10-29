@@ -435,7 +435,7 @@ local function common_postinit(inst)
 end
 
 local function IsNonPlayerMerm(this)
-    return this:HasTag("merm") and not this:HasTag("player")
+	return not (this.isplayer or this.mummy) and this:HasTag("merm")
 end
 
 local MAX_TARGET_SHARES = 8

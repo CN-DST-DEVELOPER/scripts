@@ -6376,14 +6376,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "A face only a monster could love.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Do you and Bernie go to the same seamstress?",
+		MUMMY_MERM = "Those soggy bandages really don't help with the swamp stink.",
+		VAMPIRE_BUNNY = "Keep those teeth where I can see them, bunny!",
         LEAFPILE = "Bonfire season!",
         PUMPKIN_BOMB = "Now that's my kinda pumpkin.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Heh. Bet it could sweep up a crime scene.", -- normal version
-            LIVING = "Hm. Spooky broom.",
+            LIVING = "Hm. Spooky broom."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "It'll look nice and spooky hanging from a tree.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "It looks alright. It'd look better on fire.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Let's get it up on the tree!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Those guys really sucked.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "I have no idea what that is!",

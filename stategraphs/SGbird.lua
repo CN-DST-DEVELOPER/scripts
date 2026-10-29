@@ -48,7 +48,7 @@ local events =
         if inst.components.health and not inst.components.health:IsDead() then
 			if not IsStuck(inst) and CommonHandlers.TryElectrocuteOnAttacked(inst, data) then
 				return
-			elseif not inst.sg:HasStateTag("electrocute") then
+			elseif not inst.sg:HasAnyStateTag("electrocute", "knockback") then
 				inst.sg:GoToState("hit")
 			end
         end
@@ -890,6 +890,16 @@ CommonStates.AddKnockbackStates(states,
 { --timelines
 	knockback =
 	{
+		FrameEvent(12, function(inst)
+			inst.components.inventoryitem:SetLanded(true, false)
+			if inst.components.floater and inst.components.floater:IsFloating() then
+				if inst.components.burnable and inst.components.burnable:IsBurning() then
+					inst.sg:GoToState("distress_pre")
+				else
+					inst.sg:GoToState("hit")
+				end
+			end
+		end),
 		FrameEvent(32, function(inst)
 			if inst.components.burnable and inst.components.burnable:IsBurning() then
 				inst.sg:GoToState("distress_pre")
@@ -909,23 +919,7 @@ _flyawayonanimover = nil
 
 CommonStates.AddCorpseStates(states, nil, nil, "birdcorpse")
 -- Mutant birds use a different sg, so we do not actually use the _pst here!
-CommonStates.AddLunarPreRiftMutationStates(states,
-{
-    mutate_timeline = {
-
-    },
-},
-{
-    mutate = "mutated_bird_reviving",
-},
-{
-    mutate_onenter = function(inst)
-
-    end,
-},
-{
-    mutated_spawn_timing = 88 * FRAMES,
-})
+CommonStates.AddLunarPreRiftMutationStates(states, nil, { mutate = "mutated_bird_reviving" }, nil, { mutated_spawn_timing = 88 * FRAMES })
 
 CommonStates.AddLunarRiftMutationStates(states, nil, nil,
 { -- fns

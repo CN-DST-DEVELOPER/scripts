@@ -274,6 +274,8 @@ local function fn()
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('penguin')
 
+    inst:AddComponent("drownable")
+
     inst:AddComponent("homeseeker")
 
     inst:AddComponent("knownlocations")
@@ -413,6 +415,8 @@ local function mutated_fn()
 
     inst:AddComponent("lootdropper")
     inst.components.lootdropper:SetChanceLootTable('mutated_penguin')
+
+    inst:AddComponent("drownable")
 
     inst:AddComponent("homeseeker")
 

@@ -35,7 +35,7 @@ local LIGHT_FALLOFF = .5
 local REWARDS = {
 
 	{
-		{ string = "BEES",      loot = {{"killerbee",   4,  "BEEHIVE_ENABLED" }}    },
+		{ string = "BEES",      loot = {{"killerbee",   4,  "WASPHIVE_ENABLED" }}    },
         { string = "HOUNDS",    loot = {{"hound",   2,      "HOUNDMOUND_ENABLED" }} },
         { string = "SPIDERS",   loot = {{"spider",  3,      "SPIDERDEN_ENABLED" }}  },
     },
@@ -50,7 +50,7 @@ local REWARDS = {
 
     -- Run away prizes, keep at the bottom.
 	{
-		{ string = "BEES",      loot = {{"killerbee",   2,  "BEEHIVE_ENABLED" }}    },
+		{ string = "BEES",      loot = {{"killerbee",   2,  "WASPHIVE_ENABLED" }}    },
         { string = "HOUNDS",    loot = {{"hound",   1,      "HOUNDMOUND_ENABLED" }} },
         { string = "SPIDERS",   loot = {{"spider",  1,      "SPIDERDEN_ENABLED" }}  },
     },
@@ -180,7 +180,7 @@ local function DoDelayedRewards(inst, doer, score)
     for i=1, #rewards.loot do
     	local loot = rewards.loot[i]
 
-		local enabled = loot[3] and TUNING[loot[3]] or nil
+        local enabled = loot[3] and TUNING[loot[3]] -- don't "or nil" this.
    		if enabled == nil or enabled then
 			inst.components.talker:Chatter("JIMBO_REWARD_"..score, STRING_REWARDS_TYPES_IDS[rewards.string] or 0)
 			inst:DoTaskInTime(2, SpawnRewards, doer, score, loot)

@@ -6373,14 +6373,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "Lady... face",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Twirly Tail okay?",
+		MUMMY_MERM = "Oh! Glub Glub hurt?",
+		VAMPIRE_BUNNY = "Sharp tooth Hopper!",
         LEAFPILE = "Little friends back where begin",
         PUMPKIN_BOMB = "Pumpkin friend... scared?", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Stick friend help clean!", -- normal version
-            LIVING = "Hello? Friend?",
+            LIVING = "Hello? Friend?"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Give to friend", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Friend wants to hold it", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "So little!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Oh. Not real", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Friend?",

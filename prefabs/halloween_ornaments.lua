@@ -11,6 +11,10 @@ local FLOATER_PROPERTIES =
     {"small",   0.1,    0.85},
     {"small",   0.1,    0.95},
     {"small",   0.1,    0.95},
+    {"small",   0.1,    0.95},
+    {"small",   0.1,    0.95},
+    {"small",   0.1,    0.95},
+    {"small",   0.1,    0.95},
 }
 
 local function MakeOrnament(ornamentid)
@@ -69,3 +73,15 @@ for i = 1, NUM_HALLOWEEN_ORNAMENTS do
 end
 
 return unpack(ornament)
+--[[ For searching:
+halloween_ornament_1 - ghost decoration
+halloween_ornament_2 - batilisk decoration
+halloween_ornament_3 - spider decoration
+halloween_ornament_4 - tentacle decoration
+halloween_ornament_5 - dangling depth dweller decoration
+halloween_ornament_6 - crow decoration
+halloween_ornament_7 - frankenswine decoration
+halloween_ornament_8 - mermummy decoration
+halloween_ornament_9 - vampire bunnyman decoration
+halloween_ornament_10 - hound batilisk decoration
+]]

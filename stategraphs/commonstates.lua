@@ -428,13 +428,12 @@ CommonStates.AddIdle = function(states, funny_idle_state, anim_override, timelin
                     inst.AnimState:PlayAnimation(pushanim)
                 end
                 inst.AnimState:PushAnimation(anim, true)
-            elseif not inst.AnimState:IsCurrentAnimation(anim) then
-                inst.AnimState:PlayAnimation(anim, true)
-            end
-
-			if not pushanim then
+			else
+				if not inst.AnimState:IsCurrentAnimation(anim) then
+					inst.AnimState:PlayAnimation(anim, true)
+				end
 				inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
-			end
+            end
         end,
 
         timeline = timeline,
@@ -445,7 +444,7 @@ CommonStates.AddIdle = function(states, funny_idle_state, anim_override, timelin
 
         events =
         {
-            EventHandler("animover", function(inst)
+			EventHandler("animqueueover", function(inst)
                 if inst.AnimState:AnimDone() then
 					inst.sg:GoToState(funny_idle_state and math.random() < 0.1 and funny_idle_state or "idle")
                 end
@@ -2536,7 +2535,7 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
 
     table.insert(states, State{
 		name = "corpse",
-		tags = { "dead", "busy", "noattack" },
+		tags = { "dead", "busy", "noattack", "noknockback" },
 
 		onenter = function(inst, loading)
             if fns and fns.corpseonenter then
@@ -2573,7 +2572,7 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
     -- For corpse prefab
     table.insert(states, State{
         name = "corpse_idle",
-        tags = { "corpse" },
+		tags = { "corpse", "noknockback" },
 
         onenter = function(inst, start_anim)
             local anim, loop = FunctionOrValue(anims.corpse, inst)
@@ -2589,7 +2588,7 @@ CommonStates.AddCorpseStates = function(states, anims, fns, overridecorpseprefab
 
     table.insert(states, State{
         name = "corpse_hit",
-        tags = { "corpse", "hit" },
+		tags = { "corpse", "hit", "noknockback" },
 
         onenter = function(inst, data)
             data = data or {}
@@ -3150,8 +3149,12 @@ local _knockback_timeline =
 			inst.Physics:CollidesWith(inst.sg.statemem.limitmask)
 			inst.sg.statemem.limitmask = nil
 		end
-		if not inst:HasTag("flying") then
+		if inst.sg.statemem.needstoland then
+			inst.sg.statemem.needstoland = nil
 			inst.SoundEmitter:PlaySound("dontstarve/movement/bodyfall_dirt")
+			if inst.components.inventoryitem then
+				inst.components.inventoryitem:SetLanded(true, false)
+			end
 		end
 		inst.sg.statemem.landed = true
 	end),
@@ -3191,6 +3194,9 @@ local function _knockback_onexit(inst)
 	end
 	if inst.sg.statemem.limitmask then
 		inst.Physics:CollidesWith(inst.sg.statemem.limitmask)
+	end
+	if inst.sg.statemem.needstoland and inst.components.inventoryitem then
+		inst.components.inventoryitem:SetLanded(true, false)
 	end
 end
 
@@ -3241,6 +3247,16 @@ CommonStates.AddKnockbackStates = function(states, timelines, anims, fns, speedm
 						inst.sg.statemem.limitmask = limitmask
 					end
 				end
+			end
+
+			if inst.components.inventoryitem and not inst:HasTag("flying") then
+				if x == nil then
+					local _
+					x, _, z = inst.Transform:GetWorldPosition()
+				end
+				inst.Transform:SetPosition(x, 0, z)
+				inst.components.inventoryitem:SetLanded(false, false)
+				inst.sg.statemem.needstoland = true
 			end
 
 			if fns and fns.knockback_onenter then

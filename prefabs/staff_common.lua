@@ -144,7 +144,9 @@ function fns.red(inst, notinit)
         inst:AddTag("rangedweapon")
         inst:AddTag("rangedlighter")
     end
-    inst:AddComponent("weapon")
+    if not inst.components.weapon then
+        inst:AddComponent("weapon")
+    end
     inst.components.weapon:SetDamage(0)
     inst.components.weapon:SetRange(8, 10)
     inst.components.weapon:SetOnAttack(onattack_red)
@@ -229,7 +231,9 @@ function fns.blue(inst, notinit)
         inst:AddTag("rangedweapon")
         inst:AddTag("extinguisher")
     end
-    inst:AddComponent("weapon")
+    if not inst.components.weapon then
+        inst:AddComponent("weapon")
+    end
     inst.components.weapon:SetDamage(0)
     inst.components.weapon:SetRange(8, 10)
     inst.components.weapon:SetOnAttack(onattack_blue)
@@ -773,7 +777,9 @@ function fns.green(inst, notinit)
 
     AddHauntableCustomReaction(inst, onhauntgreen, true, false, true)
 
-    inst:AddComponent("itemmimicconfig")
+    if not inst.components.itemmimicconfig then
+        inst:AddComponent("itemmimicconfig")
+    end
     inst.components.itemmimicconfig:AddActionForceMimicReveal(ACTIONS.CASTSPELL) -- Ingredients must be earned.
 end
 
@@ -896,6 +902,7 @@ local function cleargemstaff(inst) -- for king cane
     inst.components.weapon:SetDamage(TUNING.KING_CANE_DAMAGE)
     inst:RemoveComponent("hauntable") -- just remove and readd hauntable, easier because AddHauntableCustomReaction does a wrap :(
     MakeHauntableLaunch(inst)
+    inst.components.itemmimicconfig:RemoveActionForceMimicReveal(ACTIONS.CASTSPELL) -- From greenstaff.
 end
 
 return

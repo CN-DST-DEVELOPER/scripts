@@ -24,6 +24,8 @@ local events=
     CommonHandlers.OnFreeze(),
     CommonHandlers.OnAttacked(),
     CommonHandlers.OnDeath(),
+    CommonHandlers.OnSink(),
+    CommonHandlers.OnFallInVoid(),
 
     EventHandler("doattack", function(inst,target)
                                 local nstate = "attack"
@@ -628,6 +630,9 @@ nil,
     mutated_spawn_timing = 97 * FRAMES,
     post_mutate_state = "taunt",
 })
+
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 
 CommonStates.AddInitState(states, "idle")
 

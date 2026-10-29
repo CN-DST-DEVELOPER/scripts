@@ -210,7 +210,7 @@ local function ConfigureRunState(inst)
 		inst.sg.statemem.teetering = true
     elseif inst:HasTag("groggy") then
         inst.sg.statemem.groggy = true
-    elseif inst:IsCarefulWalking() then
+    elseif inst:IsCarefulWalking() and not inventory:EquipHasTag("flyingbroom") then
         inst.sg.statemem.careful = true
     else
         inst.sg.statemem.normal = true
@@ -8724,6 +8724,7 @@ local states =
             end
             inst.components.locomotor:RunForward()
             inst.AnimState:PlayAnimation("run_witchbroom_pre")
+            inst.SoundEmitter:PlaySound("dontstarve/movement/foley/cactus_armor", nil, nil, true)
         end,
 
         events =

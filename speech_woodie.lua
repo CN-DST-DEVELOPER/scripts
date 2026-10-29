@@ -6370,14 +6370,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "Think it's bad luck to wear it, Lucy?",
 
         -- Halloween 2026
+		FRANKEN_PIG = "A bunch of bacon bits sewn together.",
+		MUMMY_MERM = "That mummy's alive!",
+		VAMPIRE_BUNNY = "Why's he lookin' at me the way a tapper looks at a maple tree?",
         LEAFPILE = "If I chop all the trees, there'll be no leaves to sweep.",
         PUMPKIN_BOMB = "That's one way to clear the yard.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Not as satisfyin' as choppin' wood, but it'll do.", -- normal version
-            LIVING = "Whaddya mean you know that broom, Luce?",
+            LIVING = "Whaddya mean you know that broom, Luce?"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Pick out a good branch for this one, Luce.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "I was just aboot to put it on the tree.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "It'll look good on a tree.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Better hang it up, eh?", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "What's that, eh?",

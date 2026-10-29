@@ -13,24 +13,17 @@ local prefabs =
     "splash_sink",
 }
 
+local function IsVampireBunny(inst)
+    local child = inst.components.spawner and inst.components.spawner.child
+    return child and child.vampire
+end
+
 local function getstatus(inst)
-    return (inst:HasTag("burnt") and "BURNT")
-        or (inst.lightson and
-            inst.components.spawner ~= nil and
-            inst.components.spawner:IsOccupied() and
-            "FULL")
+    return inst:HasTag("burnt") and "BURNT"
         or nil
 end
 
---local function onoccupied(inst, child)
-    --inst.SoundEmitter:PlaySound("dontstarve/pig/pig_in_hut", "pigsound")
-    --inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
---end
-
 local function onvacate(inst, child)
-    --inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
-    --inst.SoundEmitter:KillSound("pigsound")
-
     if not inst:HasTag("burnt") then
         if child then
             if child.components.health ~= nil then
@@ -82,12 +75,20 @@ local function onstopcavedaydoortask(inst)
 end
 
 local function OnStopCaveDay(inst)
-    --print(inst, "OnStopCaveDay")
     if not inst:HasTag("burnt") and inst.components.spawner:IsOccupied() then
         if inst.doortask ~= nil then
             inst.doortask:Cancel()
         end
         inst.doortask = inst:DoTaskInTime(1 + math.random() * 2, onstopcavedaydoortask)
+    end
+end
+
+local function OnStopCaveNight(inst)
+    if not inst:HasTag("burnt") and inst.components.spawner:IsOccupied() then
+        if inst.doortask ~= nil then
+            inst.doortask:Cancel()
+        end
+        inst.doortask = inst:DoTaskInTime(2 + math.random() * 4, onstopcavedaydoortask)
     end
 end
 
@@ -99,14 +100,46 @@ end
 
 local function SpawnCheckCaveDay(inst)
     inst.inittask = nil
-    inst:WatchWorldState("stopcaveday", OnStopCaveDay)
-    inst:WatchWorldState("isacidraining", OnAcidRainingChanged)
-    if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
-        if not TheWorld.state.iscaveday or
-            (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
-            inst.components.spawner:ReleaseChild()
+    if IsVampireBunny(inst) then
+        inst:WatchWorldState("stopcavenight", OnStopCaveNight)
+        if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+            if TheWorld.state.iscaveday or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+                inst.components.spawner:ReleaseChild()
+            end
+        end
+    else
+        inst:WatchWorldState("stopcaveday", OnStopCaveDay)
+        inst:WatchWorldState("isacidraining", OnAcidRainingChanged)
+        if inst.components.spawner ~= nil and inst.components.spawner:IsOccupied() then
+            if not TheWorld.state.iscaveday or (inst.components.burnable ~= nil and inst.components.burnable:IsBurning()) then
+                inst.components.spawner:ReleaseChild()
+            end
         end
     end
+end
+
+local function EnableVampireBunnyHouse(inst, vampire)
+    if vampire then
+        if not inst.vampire then
+            inst.vampire = true
+            if inst.inittask == nil then
+                inst:StopWatchingWorldState("isacidraining", OnAcidRainingChanged)
+                inst:StopWatchingWorldState("stopcaveday", OnStopCaveDay)
+                inst:WatchWorldState("stopcavenight", OnStopCaveNight)
+            end
+        end
+    elseif inst.vampire then
+        inst.vampire = nil
+        if inst.inittask == nil then
+            inst:WatchWorldState("isacidraining", OnAcidRainingChanged)
+            inst:WatchWorldState("stopcaveday", OnStopCaveDay)
+            inst:StopWatchingWorldState("stopcavenight", OnStopCaveNight)
+        end
+    end
+end
+
+local function onchildkilled(inst, child)
+    EnableVampireBunnyHouse(inst, false)
 end
 
 local function oninit(inst)
@@ -171,7 +204,6 @@ local function fn()
 
     inst.entity:AddTransform()
     inst.entity:AddAnimState()
-    inst.entity:AddLight()
     inst.entity:AddSoundEmitter()
     inst.entity:AddMiniMapEntity()
     inst.entity:AddNetwork()
@@ -179,12 +211,6 @@ local function fn()
     MakeObstaclePhysics(inst, 1)
 
     inst.MiniMapEntity:SetIcon("rabbit_house.png")
---{anim="level1", sound="dontstarve/common/campfire", radius=2, intensity=.75, falloff=.33, colour = {197/255,197/255,170/255}},
-    inst.Light:SetFalloff(1)
-    inst.Light:SetIntensity(.5)
-    inst.Light:SetRadius(1)
-    inst.Light:Enable(false)
-    inst.Light:SetColour(180/255, 195/255, 50/255)
 
     inst.AnimState:SetBank("rabbithouse")
     inst.AnimState:SetBuild("rabbit_house")
@@ -211,12 +237,11 @@ local function fn()
     inst:AddComponent("spawner")
     WorldSettings_Spawner_SpawnDelay(inst, TUNING.RABBITHOUSE_SPAWN_TIME, TUNING.RABBITHOUSE_ENABLED)
     inst.components.spawner:Configure("bunnyman", TUNING.RABBITHOUSE_SPAWN_TIME)
-    --inst.components.spawner.onoccupied = onoccupied
     inst.components.spawner.onvacate = onvacate
+    inst.components.spawner:SetOnKilledFn(onchildkilled)
     inst.components.spawner:CancelSpawning()
 
     inst:AddComponent("inspectable")
-
     inst.components.inspectable.getstatus = getstatus
 
     MakeSnowCovered(inst)
@@ -236,6 +261,8 @@ local function fn()
     MakeHauntableWork(inst)
 
     inst.OnPreLoad = OnPreLoad
+
+    inst.EnableVampireBunnyHouse = EnableVampireBunnyHouse
 
     return inst
 end

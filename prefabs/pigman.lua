@@ -16,6 +16,8 @@ local assets =
     Asset("ANIM", "anim/ds_pig_parasite_death.zip"),
     Asset("SOUND", "sound/pig.fsb"),
     Asset("ANIM", "anim/merm_actions.zip"),
+	Asset("ANIM", "anim/pig_frankenswine_build.zip"),
+	Asset("ANIM", "anim/ds_pig_halloween.zip"),
 }
 
 local PIG_TOKEN_PREFAB = "pig_token"
@@ -30,8 +32,14 @@ local prefabs =
     "pigskin",
     PIG_TOKEN_PREFAB,
 
-    --"pigcorpse",
+    "pumpkin_bomb",
+    "halloween_ornament_7", -- frankenswine decoration
 }
+
+-- for frankenswine
+for i = 1, NUM_HALLOWEENCANDY do
+    table.insert(prefabs, "halloweencandy_"..i)
+end
 
 local MAX_TARGET_SHARES = 5
 local SHARE_TARGET_DIST = 30
@@ -46,8 +54,7 @@ local function ontalk(inst, script)
 end
 
 local function CalcSanityAura(inst, observer)
-    return (inst.prefab == "moonpig" and -TUNING.SANITYAURA_LARGE)
-        or (inst.components.werebeast ~= nil and inst.components.werebeast:IsInWereState() and -TUNING.SANITYAURA_LARGE)
+	return (inst.components.werebeast and inst.components.werebeast:IsInWereState() and -TUNING.SANITYAURA_LARGE)
         or (inst.components.follower ~= nil and inst.components.follower:GetLeader() == observer and TUNING.SANITYAURA_SMALL)
         or 0
 end
@@ -143,11 +150,14 @@ local SUGGESTTARGET_MUST_TAGS = { "_combat", "_health", "pig" }
 local SUGGESTTARGET_CANT_TAGS = { "werepig", "guard", "INLIMBO" }
 
 local function OnAttackedByDecidRoot(inst, attacker)
+	if inst.franken then
+		return
+	end
     local x, y, z = inst.Transform:GetWorldPosition()
     local ents = TheSim:FindEntities(x, y, z, SpringCombatMod(SHARE_TARGET_DIST) * .5, SUGGESTTARGET_MUST_TAGS, SUGGESTTARGET_CANT_TAGS)
     local num_helpers = 0
     for i, v in ipairs(ents) do
-        if v ~= inst and not v.components.health:IsDead() then
+		if v ~= inst and not (v.components.health:IsDead() or v.franken) then
             v:PushEvent("suggest_tree_target", { tree = attacker })
             num_helpers = num_helpers + 1
             if num_helpers >= MAX_TARGET_SHARES then
@@ -158,7 +168,7 @@ local function OnAttackedByDecidRoot(inst, attacker)
 end
 
 local function IsPig(dude)
-    return dude:HasTag("pig")
+	return dude:HasTag("pig") and not dude.franken
 end
 
 local function IsWerePig(dude)
@@ -166,15 +176,19 @@ local function IsWerePig(dude)
 end
 
 local function IsNonWerePig(dude)
-    return dude:HasTag("pig") and not dude:HasTag("werepig")
+	return dude:HasTag("pig") and not (dude:HasTag("werepig") or dude.franken)
 end
 
 local function IsGuardPig(dude)
-    return dude:HasTag("guard") and dude:HasTag("pig")
+	return dude:HasTags("pig", "guard")
 end
 
 local function IsHost(dude)
     return dude:HasTag("shadowthrall_parasite_hosted")
+end
+
+local function IsFranken(dude, inst)
+	return dude.franken and dude.prefab == inst.prefab
 end
 
 local function OnAttacked(inst, data)
@@ -183,12 +197,16 @@ local function OnAttacked(inst, data)
     inst:ClearBufferedAction()
 
 	if attacker ~= nil then
-		if attacker.prefab == "deciduous_root" and attacker.owner ~= nil then
-			OnAttackedByDecidRoot(inst, attacker.owner)
-		elseif attacker.prefab ~= "deciduous_root" and not attacker:HasTag("pigelite") then
+		if attacker.prefab == "deciduous_root" then
+			if attacker.owner then
+				OnAttackedByDecidRoot(inst, attacker.owner)
+			end
+		elseif not attacker:HasTag("pigelite") then
 			inst.components.combat:SetTarget(attacker)
 
-            if inst:HasTag("shadowthrall_parasite_hosted") then
+			if inst.franken then
+				inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsFranken, MAX_TARGET_SHARES)
+			elseif inst:HasTag("shadowthrall_parasite_hosted") then
                 inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
 			elseif inst:HasTag("werepig") then
 				inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsWerePig, MAX_TARGET_SHARES)
@@ -238,7 +256,7 @@ local function NormalRetargetFn(inst)
                 inst,
                 TUNING.PIG_TARGET_DIST,
                 function(guy)
-                    return guy:IsInLight() and inst.components.combat:CanTarget(guy)
+					return not IsFranken(guy, inst) and guy:IsInLight() and inst.components.combat:CanTarget(guy)
                 end,
                 RETARGET_MUST_TAGS, -- see entityreplica.lua
                 exclude_tags,
@@ -283,13 +301,22 @@ local function OnItemLose(inst, data)
 	end
 end
 
-local function SetupPigToken(inst)
+local function OnInit(inst)
+	inst._inittask = nil
 	if not inst._pigtokeninitialized then
 		inst._pigtokeninitialized = true
 		if math.random() <= (IsSpecialEventActive(SPECIAL_EVENTS.YOTP) and TUNING.PIG_TOKEN_CHANCE_YOTP or TUNING.PIG_TOKEN_CHANCE) then
 			inst.components.inventory:GiveItem(SpawnPrefab(PIG_TOKEN_PREFAB))
 		end
 	end
+    if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+        if not inst._frankeninitialized then
+            inst._frankeninitialized = true
+			if math.random() <= TUNING.HN_MONSTER_CHANCE then
+                inst:MakeFrankenPig()
+            end
+        end
+    end
 end
 
 local function ReplacePigToken(inst)
@@ -332,6 +359,8 @@ local function SetNormalPig(inst)
     inst.components.health:SetMaxHealth(TUNING.PIG_HEALTH)
     inst.components.combat:SetRetargetFunction(3, NormalRetargetFn)
     inst.components.combat:SetTarget(nil)
+
+	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
     inst:ListenForEvent("suggest_tree_target", SuggestTreeTarget)
 
     inst.components.trader:Enable()
@@ -344,17 +373,27 @@ local RETARGET_GUARD_CANT_TAGS = { "guard", "INLIMBO" }
 local RETARGET_GUARD_PLAYER_MUST_TAGS = { "player" }
 local RETARGET_GUARD_LIMBO_CANT_TAGS = { "INLIMBO" }
 
+local function NotFranken(guy)
+	return not guy.franken
+end
+
 local function GuardRetargetFn(inst)
     --defend the king, then the torch, then myself
     local home = inst.components.homeseeker ~= nil and inst.components.homeseeker.home or nil
     local defendDist = SpringCombatMod(TUNING.PIG_GUARD_DEFEND_DIST)
     local defenseTarget =
-        FindEntity(inst, defendDist, nil, KING_TAGS) or
+		FindEntity(inst, defendDist, NotFranken, KING_TAGS) or
         (home ~= nil and inst:IsNear(home, defendDist) and home) or
         inst
 
     if not defenseTarget.happy then
-        local invader = FindEntity(defenseTarget, SpringCombatMod(TUNING.PIG_GUARD_TARGET_DIST), nil, RETARGET_GUARD_MUST_TAGS, RETARGET_GUARD_CANT_TAGS)
+		local invader = FindEntity(
+			defenseTarget,
+			SpringCombatMod(TUNING.PIG_GUARD_TARGET_DIST),
+			NotFranken,
+			RETARGET_GUARD_MUST_TAGS,
+			RETARGET_GUARD_CANT_TAGS
+		)
         if invader ~= nil and
             not (defenseTarget.components.trader ~= nil and defenseTarget.components.trader:IsTryingToTradeWithMe(invader)) and
             not (inst.components.trader ~= nil and inst.components.trader:IsTryingToTradeWithMe(invader)) then
@@ -366,7 +405,8 @@ local function GuardRetargetFn(inst)
                 home,
                 home.components.burnable:GetLargestLightRadius() or 4,
                 function(guy)
-                    return guy:IsInLight()
+					return NotFranken(guy)
+						and guy:IsInLight()
                         and not (defenseTarget.components.trader ~= nil and defenseTarget.components.trader:IsTryingToTradeWithMe(guy))
                         and not (inst.components.trader ~= nil and inst.components.trader:IsTryingToTradeWithMe(guy))
                 end,
@@ -383,7 +423,7 @@ local function GuardRetargetFn(inst)
         table.insert(oneof_tags, "merm")
     end
 
-    return FindEntity(defenseTarget, defendDist, nil, {}, RETARGET_GUARD_LIMBO_CANT_TAGS, oneof_tags)
+	return FindEntity(defenseTarget, defendDist, NotFranken, {}, RETARGET_GUARD_LIMBO_CANT_TAGS, oneof_tags)
 end
 
 local function GuardKeepTargetFn(inst, target)
@@ -443,6 +483,8 @@ local function SetGuardPig(inst)
     inst.components.lootdropper:AddRandomLoot("pigskin", 1)
     inst.components.lootdropper.numrandomloot = 1
 
+	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
+
     inst.components.trader:Enable()
     inst.components.talker:StopIgnoringAll("becamewerepig")
     inst.components.follower:SetLeader(nil)
@@ -455,7 +497,8 @@ local function WerepigRetargetFn(inst)
         inst,
         SpringCombatMod(TUNING.PIG_TARGET_DIST),
         function(guy)
-            return inst.components.combat:CanTarget(guy)
+			return not guy.franken
+				and inst.components.combat:CanTarget(guy)
                 and not (guy.sg ~= nil and guy.sg:HasStateTag("transform"))
         end,
         RETARGET_MUST_TAGS, --See entityreplica.lua (re: "_combat" tag)
@@ -465,9 +508,8 @@ end
 
 local function WerepigKeepTargetFn(inst, target)
     return inst.components.combat:CanTarget(target)
-           and not target:HasTag("werepig")
-           and not target:HasTag("wereplayer")
-           and not (target.sg ~= nil and target.sg:HasStateTag("transform"))
+		and not target:HasAnyTag("werepig", "wereplayer")
+		and not (target.sg and target.sg:HasStateTag("transform"))
 end
 
 local function IsNearMoonBase(inst, dist)
@@ -482,7 +524,8 @@ local function MoonpigRetargetFn(inst)
                 inst,
                 TUNING.PIG_TARGET_DIST,
                 function(guy)
-                    return inst.components.combat:CanTarget(guy)
+					return not guy.franken
+						and inst.components.combat:CanTarget(guy)
                         and not (guy.sg ~= nil and guy.sg:HasStateTag("transform"))
                 end,
                 RETARGET_MUST_TAGS, --See entityreplica.lua (re: "_combat" tag)
@@ -506,6 +549,7 @@ local function WerepigWakeTest(inst)
 end
 
 local werepigbrain = require "brains/werepigbrain"
+local werepigloot = { "meat", "meat", "pigskin" }
 
 local function SetWerePig(inst)
     inst:AddTag("werepig")
@@ -524,7 +568,7 @@ local function SetWerePig(inst)
     inst.components.sleeper:SetSleepTest(WerepigSleepTest)
     inst.components.sleeper:SetWakeTest(WerepigWakeTest)
 
-    inst.components.lootdropper:SetLoot({ "meat", "meat", "pigskin" })
+	inst.components.lootdropper:SetLoot(werepigloot)
     inst.components.lootdropper.numrandomloot = 0
 
     inst.components.health:SetMaxHealth(TUNING.WEREPIG_HEALTH)
@@ -533,14 +577,115 @@ local function SetWerePig(inst)
     inst.components.combat:SetRetargetFunction(3, WerepigRetargetFn)
     inst.components.combat:SetKeepTargetFunction(WerepigKeepTargetFn)
 
+	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
+
     inst.components.trader:Disable()
     inst.components.follower:SetLeader(nil)
     inst.components.talker:IgnoreAll("becamewerepig")
 end
 
+local frankenpigbrain, frankenpigloot
+
+local function FrankenRetargetFn(inst)
+	local player, dsq = inst:GetNearestPlayer(true)
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+end
+
+local function FrankenKeepTargetFn(inst, target)
+	return inst.components.combat:CanTarget(target)
+end
+
+local function FrankenOnSetHome(inst, home)--, oldhome)
+    if home and home.EnableFrankenPigHouse then
+        home:EnableFrankenPigHouse(true)
+    end
+end
+
+local function MakeFrankenPig(inst)
+	frankenpigbrain = frankenpigbrain or require("brains/frankenpigbrain")
+	frankenpigloot = frankenpigloot or { "monstermeat", "monstermeat", "pigskin" }
+
+	if inst._inittask then
+		inst._inittask:Cancel()
+		inst._inittask = nil
+	end
+	inst:RemoveComponent("werebeast")
+
+	inst:RemoveTag("werepig")
+	inst:RemoveTag("guard")
+    inst:AddTag("monster")
+    inst:AddTag("hostile")
+	inst:SetBrain(frankenpigbrain)
+	inst:SetStateGraph("SGpig")
+	inst.AnimState:SetBuild("pig_frankenswine_build")
+	if inst.AnimState:IsCurrentAnimation("idle_loop") then
+		local t = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime()
+		inst.AnimState:PlayAnimation("halloween_idle_loop", true)
+		t = inst.AnimState:GetCurrentAnimationLength() - t
+		if t > 0 then
+			inst.AnimState:SetTime(t)
+		end
+	end
+	inst.franken = true
+	inst.sg.mem.nocorpse = true
+	inst.sg.mem.noparasitehost = true
+	inst.sg.mem.franken_idle_sound_delay = GetTime() + 0.1 + math.random()
+
+	--V2C: -clients do this in normal_OnEntityReplicated using "monster" tag.
+	--     -this is higher priority than "named", so we can use the halloween
+	--      name without losing the saved name.
+	inst:SetPrefabNameOverride("franken_pig")
+	inst.components.inspectable.getstatus = nil
+
+	inst.components.sleeper:SetResistance(math.huge)
+	inst.components.sleeper:SetSleepTest(WerepigSleepTest)
+	inst.components.sleeper:SetWakeTest(WerepigWakeTest)
+
+	inst.components.health:SetMaxHealth(TUNING.HN_MONSTER_HEALTH)
+	inst.components.health:StopRegen()
+	inst.components.health:AddRegenSource(inst, TUNING.HN_MONSTER_HEALTH_REGEN_AMOUNT, TUNING.HN_MONSTER_HEALTH_REGEN_PERIOD, "hn_monster_regen")
+
+	inst.components.combat:SetDefaultDamage(TUNING.HN_MONSTER_DAMAGE)
+	inst.components.combat:SetAttackPeriod(TUNING.HN_MONSTER_ATTACK_PERIOD)
+	inst.components.combat:SetRange(2.5, 3)
+	inst.components.combat:SetNoAggroTags(nil)
+	inst.components.combat:SetRetargetFunction(3, FrankenRetargetFn)
+	inst.components.combat:SetKeepTargetFunction(FrankenKeepTargetFn)
+	inst.components.combat:SetTarget(nil)
+
+	inst.components.sanityaura.aurafn = nil
+	inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
+
+	inst.components.locomotor.runspeed = TUNING.HN_MONSTER_RUNSPEED
+	inst.components.locomotor.walkspeed = TUNING.HN_MONSTER_WALKSPEED
+
+	inst.components.lootdropper:SetLoot(frankenpigloot)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+    inst.components.lootdropper:AddChanceLoot("halloween_ornament_7", 0.1)
+
+	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
+
+	inst.components.trader:Disable()
+	inst.components.follower:SetLeader(nil)
+	inst.components.talker:IgnoreAll("becamefrankenpig")
+
+    inst.homeseeker_onsethome = FrankenOnSetHome
+    local parent = inst.entity:GetParent()
+    if parent and parent.EnableFrankenPigHouse then
+        parent:EnableFrankenPigHouse(true)
+    elseif inst.components.homeseeker then
+        FrankenOnSetHome(inst, inst.components.homeseeker.home)
+    end
+end
+
 local function GetStatus(inst)
     return (inst:HasTag("werepig") and "WEREPIG")
         or (inst:HasTag("guard") and "GUARD")
+		or (inst.franken and "FRANKEN")
         or (inst.components.follower:GetLeader() ~= nil and "FOLLOWER")
         or nil
 end
@@ -550,22 +695,35 @@ local function displaynamefn(inst)
 end
 
 local function OnSave(inst, data)
+	data.franken = inst.franken or inst.wasfranken
     data.build = inst.build
 	data._pigtokeninitialized = inst._pigtokeninitialized
+	data._frankeninitialized = inst._frankeninitialized
+end
+
+local function OnPreLoad(inst, data)--, ents)
+	if data then
+		inst.build = data.build or inst.build
+		inst._pigtokeninitialized = data._pigtokeninitialized
+		inst._frankeninitialized = data._frankeninitialized
+		if data.franken then
+			if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+				inst:MakeFrankenPig()
+			else
+				inst.wasfranken = true
+			end
+		end
+	end
 end
 
 local function OnLoad(inst, data)
-    if data ~= nil then
-        inst.build = data.build or builds[1]
-        if not inst.components.werebeast:IsInWereState() then
-            inst.AnimState:SetBuild(inst.build)
-        end
-		inst._pigtokeninitialized = data._pigtokeninitialized
-    end
+	if data and not (inst.franken or inst.components.werebeast:IsInWereState()) then
+		inst.AnimState:SetBuild(inst.build)
+	end
 end
 
 local function CustomOnHaunt(inst)
-    if not inst:HasTag("werepig") and math.random() <= TUNING.HAUNT_CHANCE_OCCASIONAL then
+	if not (inst:HasTag("werepig") or inst.franken) and math.random() <= TUNING.HAUNT_CHANCE_OCCASIONAL then
         local remainingtime = TUNING.TOTAL_DAY_TIME * (1 - TheWorld.state.time)
         local mintime = TUNING.SEG_TIME
         inst.components.werebeast:SetWere(math.max(mintime, remainingtime) + math.random() * TUNING.SEG_TIME)
@@ -573,7 +731,7 @@ local function CustomOnHaunt(inst)
     end
 end
 
-local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry_up" }
+local SCRAPBOOK_HIDE_SYMBOLS = { "hat", "ARM_carry", "ARM_carry_up" }
 local DIET = { FOODGROUP.OMNI, FOODTYPE.HORRIBLE, FOODTYPE.RAW }
 
 local function common(moonbeast)
@@ -598,6 +756,7 @@ local function common(moonbeast)
     inst.AnimState:PlayAnimation("idle_loop", true)
     inst.AnimState:Hide("hat")
     inst.AnimState:Hide("ARM_carry_up")
+	inst.AnimState:Hide("ARM_carry")
 
     if IsSpecialEventActive(SPECIAL_EVENTS.YOTB) then
         inst.AnimState:AddOverrideBuild("pigman_yotb")
@@ -666,6 +825,7 @@ local function common(moonbeast)
     ------------------------------------------
     inst:AddComponent("health")
     inst:AddComponent("combat")
+	inst.components.combat:SetHitArc(TUNING.DEFAULT_HIT_ARC)
     inst.components.combat.hiteffectsymbol = "pig_torso"
 
     MakeMediumBurnableCharacter(inst, "pig_torso")
@@ -713,7 +873,7 @@ local function common(moonbeast)
     ------------------------------------------
 
     inst:AddComponent("sanityaura")
-    inst.components.sanityaura.aurafn = CalcSanityAura
+	inst.components.sanityaura.aurafn = not moonbeast and CalcSanityAura or nil
 
     ------------------------------------------
 
@@ -731,6 +891,7 @@ local function common(moonbeast)
 
     if not moonbeast then
         inst.OnSave = OnSave
+		inst.OnPreLoad = OnPreLoad
         inst.OnLoad = OnLoad
     end
 
@@ -740,10 +901,21 @@ local function common(moonbeast)
     return inst
 end
 
+local function normal_OnEntityReplicated(inst)
+	if inst:HasTag("monster") then
+		inst:SetPrefabNameOverride("franken_pig")
+	end
+end
+
 local function normal()
     local inst = common(false)
 
     if not TheWorld.ismastersim then
+		--V2C: this is ok for client... normally we don't want to leave code samples
+		--     where we call anything before client returns, due to common() already
+		--     having passed this point on servers.
+		inst.OnEntityReplicated = normal_OnEntityReplicated
+
         return inst
     end
 
@@ -758,7 +930,10 @@ local function normal()
     inst.components.werebeast:SetOnNormalFn(SetNormalPig)
     SetNormalPig(inst)
 
-	inst:DoTaskInTime(0, SetupPigToken)
+	inst._inittask = inst:DoTaskInTime(0, OnInit)
+
+	inst.MakeFrankenPig = MakeFrankenPig
+
     return inst
 end
 
@@ -842,6 +1017,8 @@ local function moon()
 
     inst.components.lootdropper:SetLoot({ "meat", "meat", "pigskin" })
     inst.components.lootdropper.numrandomloot = 0
+
+	inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
 
     inst.components.health:SetMaxHealth(TUNING.WEREPIG_HEALTH)
     inst.components.combat:SetTarget(nil)

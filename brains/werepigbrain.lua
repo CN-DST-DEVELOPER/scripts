@@ -35,17 +35,18 @@ end)
 
 function WerePigBrain:OnStart()
     --print(self.inst, "WerePigBrain:OnStart")
-    local root = PriorityNode(
-    {
-		BrainCommon.PanicTrigger(self.inst),
-        BrainCommon.ElectricFencePanicTrigger(self.inst),
-        BrainCommon.IpecacsyrupPanicTrigger(self.inst),
-        WhileNode(function() return not TargetIsAggressive(self.inst) end, "SafeToEat",
-            DoAction(self.inst, function() return FindFoodAction(self.inst) end, "EatMeat", true)
-        ),
-
-        ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)),
-        Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
+	local root = PriorityNode({
+		WhileNode(function() return not self.inst.sg:HasStateTag("jumping") end, "<busy state guard>",
+			PriorityNode({
+				BrainCommon.PanicTrigger(self.inst),
+				BrainCommon.ElectricFencePanicTrigger(self.inst),
+				BrainCommon.IpecacsyrupPanicTrigger(self.inst),
+				WhileNode(function() return not TargetIsAggressive(self.inst) end, "SafeToEat",
+					DoAction(self.inst, function() return FindFoodAction(self.inst) end, "EatMeat", true)
+				),
+				ChaseAndAttack(self.inst, SpringCombatMod(MAX_CHASE_TIME), SpringCombatMod(MAX_CHASE_DIST)),
+				Wander(self.inst, function() return self.inst.components.knownlocations:GetLocation("home") end, MAX_WANDER_DIST),
+			}, 0.5)),
     }, .5)
 
     self.bt = BT(self.inst, root)

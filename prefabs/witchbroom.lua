@@ -67,6 +67,7 @@ end
 
 local function OnSmashed(inst)
     inst.components.finiteuses:Use(TUNING.WITCHBROOM_WEAPON_ATTACKWEAR)
+    inst.SoundEmitter:PlaySound(inst.components.sweeper.sweepsound)
 end
 
 local FLOATER_LIVING_SWAP_DATA = { sym_build = "witchbroom_living_build", sym_name = "swap_witchbroom" }
@@ -93,6 +94,7 @@ end
 local function MakeLiving(inst)
     SetLiving(inst)
     inst.SoundEmitter:PlaySound("dontstarve/halloween_2018/living_tree/grow_1")
+    inst.components.finiteuses:Repair(TUNING.WITCHBROOM_USES)
 
     local owner = inst.components.inventoryitem.owner
     if owner and inst.components.equippable:IsEquipped() then
@@ -150,6 +152,7 @@ local function fn()
     --weapon (from weapon component) added to pristine state for optimization
     inst:AddTag("weapon")
     inst:AddTag("propweapon")
+    inst:AddTag("propweapon_nopvp")
 
     MakeInventoryFloatable(inst, "med", 0.05, FLOATER_SCALE, true, -15, FLOATER_SWAP_DATA)
 
@@ -179,13 +182,14 @@ local function fn()
     inst.components.finiteuses:SetOnFinished(inst.Remove)
     inst.components.finiteuses:SetConsumption(ACTIONS.SWEEP, 1)
 
-    inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(TUNING.CANE_DAMAGE)
+    inst:AddComponent("weapon") -- the stategraph takes control and doesn't talk with the combat component, so the damage set here doesn't really work
+    inst.components.weapon:SetDamage(1)
 
     inst:AddComponent("fuel")
     inst.components.fuel.fuelvalue = TUNING.LARGE_FUEL
 
     inst:AddComponent("sweeper")
+    inst.components.sweeper:SetSweepSound("yotr_2023/common/pillow_hit_petals")
 
     MakeSmallBurnable(inst, TUNING.SMALL_BURNTIME)
     MakeSmallPropagator(inst)

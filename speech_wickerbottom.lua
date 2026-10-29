@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "A cursed relic of the abhorrent triune.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Clearly the work of a mind that is equal parts brilliant and depraved.",
+		MUMMY_MERM = "I didn't realize merms practiced mummification rituals.",
+		VAMPIRE_BUNNY = "A hematophagous lagomorph? How odd!",
         LEAFPILE = "Trees shed leaves to conserve energy for the winter season.",
         PUMPKIN_BOMB = "I daresay this year's pranks will be quite the sensation.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "A classic tool of domestic labor.", -- normal version
-            LIVING = "So the old tales were not entirely fanciful!",
+            LIVING = "So the old tales were not entirely fanciful!"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "This porcine ornament should be affixed to a tree.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Our young merm friend seemed rather keen on hanging this one herself.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "It will go nicely with the seasonal decor.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "A fine bit of ornamentation for the tree.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",

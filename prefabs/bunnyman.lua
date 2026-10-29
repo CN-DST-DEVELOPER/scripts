@@ -11,6 +11,9 @@ local assets =
     Asset("ANIM", "anim/manrabbit_beard_basic.zip"),
     Asset("ANIM", "anim/manrabbit_beard_actions.zip"),
     Asset("SOUND", "sound/bunnyman.fsb"),
+
+	Asset("ANIM", "anim/manrabbit_vampire_build.zip"),
+	Asset("ANIM", "anim/manrabbit_halloween.zip"),
 }
 
 local prefabs =
@@ -25,7 +28,15 @@ local prefabs =
 	"statue_transition_2",
 
     "bunnymancorpse",
+
+    "pumpkin_bomb",
+    "halloween_ornament_9", -- frankenswine decoration
 }
+
+-- for vampire bunny
+for i = 1, NUM_HALLOWEENCANDY do
+    table.insert(prefabs, "halloweencandy_"..i)
+end
 
 local beardlordloot = { "beardhair", "beardhair", "monstermeat" }
 local forced_beardlordloot = { "nightmarefuel", "beardhair", "beardhair", "monstermeat" }
@@ -216,20 +227,32 @@ local function IsHost(dude)
     return dude:HasTag("shadowthrall_parasite_hosted")
 end
 
+local function IsBunnyMan(dude, inst)
+	return dude.prefab == inst.prefab and not dude.vampire
+end
+
+local function IsVampire(dude, inst)
+	return dude.vampire and dude.prefab == inst.prefab
+end
+
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
-    if inst:HasTag("shadowthrall_parasite_hosted") then
+	if inst.vampire then
+		inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
+	elseif inst:HasTag("shadowthrall_parasite_hosted") then
         inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
     else
-        inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+		inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsBunnyMan, MAX_TARGET_SHARES)
     end
 end
 
 local function OnNewTarget(inst, data)
-    if inst:HasTag("shadowthrall_parasite_hosted") then
+	if inst.vampire then
+		inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
+	elseif inst:HasTag("shadowthrall_parasite_hosted") then
         inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
     else
-        inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, function(dude) return dude.prefab == inst.prefab end, MAX_TARGET_SHARES)
+		inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsBunnyMan, MAX_TARGET_SHARES)
     end
 end
 
@@ -241,11 +264,10 @@ local function NormalRetargetFn(inst)
                 inst,
                 TUNING.PIG_TARGET_DIST,
                 function(guy)
-                    return inst.components.combat:CanTarget(guy)
+					return not IsVampire(guy, inst)
+						and inst.components.combat:CanTarget(guy)
                         and (guy.components.inventory == nil or not guy.components.inventory:EquipHasTag("manrabbitscarer"))
-                        and (guy:HasTag("monster")
-                            or guy:HasTag("wonkey")
-                            or guy:HasTag("pirate")
+                        and (guy:HasAnyTag("monster", "wonkey", "pirate")
                             or (guy.components.inventory ~= nil and
                                 guy:IsNear(inst, TUNING.BUNNYMAN_SEE_MEAT_DIST) and
                                 HasMeatInInventoryFor(guy)))
@@ -295,8 +317,26 @@ local function LootSetupFunction(lootdropper)
     end
 end
 
-local function OnLoad(inst)
-	if IsForcedNightmare(inst) then
+local function OnSave(inst, data)
+	data.vampire = inst.vampire or inst.wasvampire
+    data._vampireinitialized = inst._vampireinitialized
+end
+
+local function OnPreLoad(inst, data)--, ents)
+	if data then
+		inst._vampireinitialized = data._vampireinitialized
+		if data.vampire then
+			if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+				inst:MakeVampireBunny()
+			else
+				inst.wasvampire = true
+			end
+		end
+	end
+end
+
+local function OnLoad(inst, data)
+	if not inst.vampire and IsForcedNightmare(inst) then
 		SetForcedBeardLord(inst, nil)
 	end
 end
@@ -337,6 +377,116 @@ local function ShouldAggro(inst, target)
         return false
     end
     return true
+end
+
+local vampirebunnybrain, vampirebunnyloot
+
+local function VampireRetargetFn(inst)
+	local player, dsq = inst:GetNearestPlayer(true)
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+end
+
+local function VampireKeepTargetFn(inst, target)
+	return inst.components.combat:CanTarget(target)
+end
+
+local function VampireSleepTest(inst) return false end
+local function VampireWakeTest(inst) return true end
+
+local function VampireOnSetHome(inst, home)--, oldhome)
+    if home and home.EnableVampireBunnyHouse then
+        home:EnableVampireBunnyHouse(true)
+    end
+end
+
+local function MakeVampireBunny(inst)
+	vampirebunnybrain = vampirebunnybrain or require("brains/vampirebunnybrain")
+	vampirebunnyloot = vampirebunnyloot or { "monstermeat", "monstermeat", "manrabbit_tail" }
+
+	inst:AddTag("monster")
+	inst:AddTag("hostile")
+	inst:SetBrain(vampirebunnybrain)
+	inst.AnimState:SetBuild("manrabbit_vampire_build")
+	if inst.AnimState:IsCurrentAnimation("idle_loop") then
+		local t = inst.AnimState:GetCurrentAnimationLength() - inst.AnimState:GetCurrentAnimationTime()
+		inst.AnimState:PlayAnimation("halloween_idle_loop", true)
+		t = inst.AnimState:GetCurrentAnimationLength() - t
+		if t > 0 then
+			inst.AnimState:SetTime(t)
+		end
+	end
+	inst.vampire = true
+	inst.sg.mem.nocorpse = true
+	inst.sg.mem.noparasitehost = true
+	inst.sg.mem.vampire_idle_sound_delay = GetTime() + 0.1 + math.random()
+
+	--V2C: -clients do this in normal_OnEntityReplicated using "monster" tag.
+	--     -this is higher priority than "named", so we can use the halloween
+	--      name without losing the saved name.
+	inst:SetPrefabNameOverride("vampire_bunny")
+	inst.components.inspectable.getstatus = nil
+
+	inst.components.sleeper:SetResistance(math.huge)
+	inst.components.sleeper:SetSleepTest(VampireSleepTest)
+	inst.components.sleeper:SetWakeTest(VampireWakeTest)
+
+	inst.components.health:SetMaxHealth(TUNING.HN_MONSTER_HEALTH)
+	inst.components.health:StopRegen()
+	inst.components.health:AddRegenSource(inst, TUNING.HN_MONSTER_HEALTH_REGEN_AMOUNT, TUNING.HN_MONSTER_HEALTH_REGEN_PERIOD, "hn_monster_regen")
+
+	inst.components.combat:SetDefaultDamage(TUNING.HN_MONSTER_DAMAGE)
+	inst.components.combat:SetAttackPeriod(TUNING.HN_MONSTER_ATTACK_PERIOD)
+	inst.components.combat:SetRange(2.5, 3)
+	inst.components.combat:SetRetargetFunction(3, VampireRetargetFn)
+	inst.components.combat:SetKeepTargetFunction(VampireKeepTargetFn)
+    inst.components.combat:SetShouldAggroFn(nil)
+	inst.components.combat:SetTarget(nil)
+
+	inst.components.sanityaura.aurafn = nil
+	inst.components.sanityaura.aura = -TUNING.SANITYAURA_LARGE
+
+	inst.components.locomotor.runspeed = TUNING.HN_MONSTER_RUNSPEED
+	inst.components.locomotor.walkspeed = TUNING.HN_MONSTER_WALKSPEED
+
+	inst.components.lootdropper:SetLootSetupFn(nil)
+	inst.components.lootdropper:SetLoot(vampirebunnyloot)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+    inst.components.lootdropper:AddChanceLoot("halloween_ornament_9", 0.1)
+
+	inst.has_nightmare_state = nil
+	inst:RemoveEventCallback("ms_forcenightmarestate", OnForceNightmareState)
+
+	inst.components.trader:Disable()
+	inst.components.follower:SetLeader(nil)
+	inst.components.talker:IgnoreAll("becamevampirebunny")
+
+    inst.homeseeker_onsethome = VampireOnSetHome
+    local parent = inst.entity:GetParent()
+    if parent and parent.EnableVampireBunnyHouse then
+        parent:EnableVampireBunnyHouse(true)
+    elseif inst.components.homeseeker then
+        VampireOnSetHome(inst, inst.components.homeseeker.home)
+    end
+end
+
+local function OnEntityReplicated(inst)
+	if inst:HasTag("monster") then
+		inst:SetPrefabNameOverride("vampire_bunny")
+	end
+end
+
+local function OnInitHallowedNights(inst)
+	inst._inithallowednights = nil
+    if not inst._vampireinitialized then
+        inst._vampireinitialized = true
+		if TheWorld:HasTag("cave") and math.random() <= TUNING.HN_MONSTER_CHANCE then
+            inst:MakeVampireBunny()
+        end
+    end
 end
 
 local SCRAPBOOK_HIDE_LAYERS = { "hat", "ARM_carry", "HAIR_HAT" }
@@ -394,6 +544,8 @@ local function fn()
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
+		inst.OnEntityReplicated = OnEntityReplicated
+
         return inst
     end
 
@@ -421,6 +573,7 @@ local function fn()
 
     ------------------------------------------
     inst:AddComponent("combat")
+	inst.components.combat:SetHitArc(TUNING.DEFAULT_HIT_ARC)
     inst.components.combat.hiteffectsymbol = "manrabbit_torso"
     inst.components.combat.panic_thresh = TUNING.BUNNYMAN_PANIC_THRESH
 
@@ -514,6 +667,13 @@ local function fn()
 	inst.has_nightmare_state = true
 	inst:ListenForEvent("ms_forcenightmarestate", OnForceNightmareState)
 
+    if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+        inst._inithallowednights = inst:DoTaskInTime(0, OnInitHallowedNights)
+    end
+
+	inst.MakeVampireBunny = MakeVampireBunny
+	inst.OnSave = OnSave
+	inst.OnPreLoad = OnPreLoad
 	inst.OnLoad = OnLoad
 
     return inst

@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "A face of horror.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "I thought I smelled spoiled meat...",
+		MUMMY_MERM = "The fishmonger looks unwell.",
+		VAMPIRE_BUNNY = "Does it hunger for my blood?",
         LEAFPILE = "It is that time of year!",
         PUMPKIN_BOMB = "This brings new meaning to a food fight!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "A tidy kitchen makes for a happy chef!", -- normal version
-            LIVING = "A broom with spirit!",
+            LIVING = "A broom with spirit!"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "I believe I just lost my appetite.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Perhaps it's not the most tasteful decoration.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "How frightening!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Just looking at it gives me the shivers.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

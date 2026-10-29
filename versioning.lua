@@ -64,13 +64,19 @@ do -- Scope block.
     AddVersion("40", "R40_PEARLMAS", "n/a")
     AddVersion("41", "R41_ST_WX78", "n/a")
     AddVersion("42", "R42_HEATED_VAULT", "n/a")
-    -- NOTES(JBK): This is how a new version is added for an update that did not have a beta.
-    -- Use the prior mod release id and version but use a dot syntax with an incrementing value that starts at 1 with no zero padding until the next beta.
-    --AddVersion("42.1", "R42_HEATED_VAULT", "n/a")
     AddVersion("43", "R43_SHADOWYDEPTHS", "Cursed Confrontation Part 2")
+
+
+    -- NOTES(JBK): Only append to the end of this list because the last entry is the one used for the version strings.
+    -- The subversion is automatically generated from updateprefabs.bat and should not be manually adjusted.
+    -- The subversion will go back to nil when a new beta is launched and increment to 1 and above for each time after.
 end
 
-local MAJOR_VERSION = VERSIONING.GAMEIDS[#VERSIONING.GAMEIDS]
-VERSIONING.CURRENTVERSION = string.format("%s_%d", MAJOR_VERSION, require("versioning_skins").VERSION)
-VERSIONING.UPDATENAME = VERSIONING.NAMES[#VERSIONING.NAMES]
+do -- Scope block.
+    local MAJOR_VERSION = VERSIONING.GAMEIDS[#VERSIONING.GAMEIDS]
+    local SUBVERSION = require("versioning_prefabs").VERSION
+    local SUBVERSION_STRING = SUBVERSION and string.format(".%d", SUBVERSION) or ""
+    VERSIONING.CURRENTVERSION = string.format("%s%s_%d", MAJOR_VERSION, SUBVERSION_STRING, require("versioning_skins").VERSION)
+    VERSIONING.UPDATENAME = VERSIONING.NAMES[#VERSIONING.NAMES]
+end
 return VERSIONING

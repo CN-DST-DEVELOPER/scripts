@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "A face I'll not soon forget.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "That's one way to defy death, I suppose.",
+		MUMMY_MERM = "That merm is looking rather worse for wear.",
+		VAMPIRE_BUNNY = "Why do I get the impression it's imagining me as a ripe carrot?",
         LEAFPILE = "What a mess.",
         PUMPKIN_BOMB = "This pumpkin's days are numbered.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Time to clean!", -- normal version
-            LIVING = "There's something about this broom...",
+            LIVING = "There's something about this broom..."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "I suppose I can spare a moment to admire the decorations.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "It's actually quite charming at this size.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "I prefer the decoration to the original.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "I'm not sure I want to be reminded of that.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "A very particular something or other.",

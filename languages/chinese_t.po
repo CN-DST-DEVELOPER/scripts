@@ -12836,6 +12836,11 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Still missing some pieces."
 msgstr "還有些碎片沒找到。"
 
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.FRANKEN_PIG"
+msgid "Has he done something different with his hair?"
+msgstr "他是不是換髮型了？"
+
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.FRESHFRUITCREPES"
 msgid "Sugary fruit! Part of a balanced breakfast."
@@ -13606,6 +13611,11 @@ msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "A spectornament I could hang in a tree."
 msgstr "一個可以掛在樹上的裝飾物。"
 
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "The others have been hounding me to put this on the tree."
+msgstr "其他人追着催我我把它掛上樹。"
+
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Completely batty decoration."
@@ -13630,6 +13640,21 @@ msgstr "八隻手的裝飾。"
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Everyone's raven about tree decorations these days."
 msgstr "最近大家都在熱烈討論樹的裝飾。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Frankly, the stitching could use some work."
+msgstr "説實在的，這針線活還得練練。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "I always get so wrapped up in decorating!"
+msgstr "只要忙起裝飾，我就會被纏得脱不開身！"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "I count this decoration among my favorites."
+msgstr "要數我最愛的裝飾，少不了它。"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.HAMBAT"
@@ -16145,6 +16170,11 @@ msgstr "我想這是有科學道理的。"
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "It's brilliant!"
 msgstr "太高明了！"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.MUMMY_MERM"
+msgid "Mummy!!"
+msgstr "媽呀！！"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.MUSHGNOME"
@@ -21595,6 +21625,11 @@ msgstr "希望這不會讓任何人變為鰻魚！"
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.UNIMPLEMENTED"
 msgid "It doesn't look finished! It could be dangerous."
 msgstr "看起來還沒有完工！可能有危險。"
+
+#. STRINGS.CHARACTERS.GENERIC.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.VAMPIRE_BUNNY"
+msgid "That bunnyman is looking a little batty."
+msgstr "這兔人看着有點發蝠了。"
 
 #. STRINGS.CHARACTERS.GENERIC.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.GENERIC.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -32256,6 +32291,11 @@ msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "It's still missing something."
 msgstr "還是少了點什麼。"
 
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.FRANKEN_PIG"
+msgid "Actually, he should really be called Frankenswine's monster."
+msgstr "其實，應該叫它“科學怪豬的怪物”才對。"
+
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.FRESHFRUITCREPES"
 msgid "With fresh-picked wild fruits."
@@ -33026,6 +33066,11 @@ msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Spooooky!"
 msgstr "好恐怖！"
 
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "I think it's kinda cute!"
+msgstr "我覺得它還挺可愛的！"
+
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "This is my favourite time of year."
@@ -33050,6 +33095,21 @@ msgstr "奇怪的是這裡的蜘蛛怎麼只有六條腿。"
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "This decoration needs a tree to perch in."
 msgstr "這個裝飾需要放在一棵樹上。"
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "It looks just like him!"
+msgstr "它看起來就像他！"
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "It sure looks great on the tree!"
+msgstr "掛在樹上真好看！"
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "Should I hang it upside-down?"
+msgstr "要把它倒着掛嗎？"
 
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.HAMBAT"
@@ -35560,6 +35620,11 @@ msgstr "這個看起來更漂亮……但還是不能讓我們回家。"
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "It's two tools in one!"
 msgstr "這是一種二合一的工具。"
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.MUMMY_MERM"
+msgid "A bog monster AND a mummy?! This is the best day ever!"
+msgstr "既是沼澤怪物，又是木乃伊？！今天真是太棒了！"
 
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.MUSHGNOME"
@@ -40960,6 +41025,11 @@ msgstr "小小的美味。"
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.UNIMPLEMENTED"
 msgid "It's so mysterious!"
 msgstr "真是神秘！"
+
+#. STRINGS.CHARACTERS.WALTER.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.VAMPIRE_BUNNY"
+msgid "I wonder if they drink blood or carrot juice?"
+msgstr "不知道它們喝的是血，還是胡蘿蔔汁？"
 
 #. STRINGS.CHARACTERS.WALTER.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WALTER.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -51446,6 +51516,11 @@ msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "It's missing something."
 msgstr "好像少了點什麼。"
 
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.FRANKEN_PIG"
+msgid "That's one way to defy death, I suppose."
+msgstr "這也算是對抗死亡的一種辦法吧。"
+
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.FRESHFRUITCREPES"
 msgid "Kids these days, with their fancy syrup-less pancakes..."
@@ -52216,6 +52291,11 @@ msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "What a gloomy way to celebrate."
 msgstr "多麼陰鬱的慶祝方式啊。"
 
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "I'm not sure I want to be reminded of that."
+msgstr "我可不太想再記起那東西。"
+
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "I guess I could spend a little time decorating."
@@ -52240,6 +52320,21 @@ msgstr "我要是沒記錯的話，是應該掛在樹上的。"
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "There's so many real ones flying about, it seems a bit redundant."
 msgstr "有那麼多活的在飛，它似乎有點多餘了。"
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "I suppose I can spare a moment to admire the decorations."
+msgstr "我想，抽點時間欣賞一下裝飾也無妨。"
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "It's actually quite charming at this size."
+msgstr "縮到這麼小，倒還挺討人喜歡。"
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "I prefer the decoration to the original."
+msgstr "比起原來的傢伙，我還是更喜歡這個裝飾。"
 
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.HAMBAT"
@@ -54735,6 +54830,11 @@ msgstr "我感覺有人在盯著我……"
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "This will save me precious time!"
 msgstr "這個能幫我節省不少寶貴時間！"
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.MUMMY_MERM"
+msgid "That merm is looking rather worse for wear."
+msgstr "這魚人看着真是破破爛爛的。"
 
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.MUSHGNOME"
@@ -60160,6 +60260,11 @@ msgstr "烹調適當能使鰻魚的味道稍好一些。"
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.UNIMPLEMENTED"
 msgid "A remnant from a collapsed timeline."
 msgstr "一條崩潰的時間線的殘餘物。"
+
+#. STRINGS.CHARACTERS.WANDA.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Why do I get the impression it's imagining me as a ripe carrot?"
+msgstr "我怎麼覺得，它正把我想成一根熟透的胡蘿蔔？"
 
 #. STRINGS.CHARACTERS.WANDA.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WANDA.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -70521,6 +70626,11 @@ msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "There are still a few bits missing."
 msgstr "還缺了一些東西。"
 
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.FRANKEN_PIG"
+msgid "I thought I smelled spoiled meat..."
+msgstr "我就説聞到了一股臭肉味……"
+
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.FRESHFRUITCREPES"
 msgid "Is this not a thing of beauty?"
@@ -71291,6 +71401,11 @@ msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Fear upsets my stomach."
 msgstr "恐懼會刺激我的胃。"
 
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Just looking at it gives me the shivers."
+msgstr "光看着就讓我打寒顫。"
+
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Its wings are so... leathery."
@@ -71315,6 +71430,21 @@ msgstr "好奇怪。"
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "I'd rather not eat crow."
 msgstr "我寧願不吃烏鴉。"
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "I believe I just lost my appetite."
+msgstr "這下可真沒胃口了。"
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Perhaps it's not the most tasteful decoration."
+msgstr "這裝飾恐怕不太對胃口。"
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "How frightening!"
+msgstr "真嚇人！"
 
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.HAMBAT"
@@ -73725,6 +73855,11 @@ msgstr "好像很危險，但卻驚人的讓人平靜。"
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "Oh, I get it! Kind of like a spork!"
 msgstr "哦，我得到了這個！有點像叉勺！"
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.MUMMY_MERM"
+msgid "The fishmonger looks unwell."
+msgstr "這賣魚的看着不太舒服。"
 
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.MUSHGNOME"
@@ -78450,6 +78585,11 @@ msgstr "媽呀！好鮮！"
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.UNIMPLEMENTED"
 msgid "It appears unfinished."
 msgstr "看起來還沒完成。"
+
+#. STRINGS.CHARACTERS.WARLY.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Does it hunger for my blood?"
+msgstr "它想喝我的血嗎？"
 
 #. STRINGS.CHARACTERS.WARLY.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WARLY.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -88786,6 +88926,11 @@ msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "All that remains of a terrible beast."
 msgstr "猛獸遺骸。"
 
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.FRANKEN_PIG"
+msgid "The dead walk among us!"
+msgstr "死者竟行走於吾等之間！"
+
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.FRESHFRUITCREPES"
 msgid "So light and airy!"
@@ -89556,6 +89701,11 @@ msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Meant to hang from Yggdrasil's kin!"
 msgstr "應當高掛在世界樹的樹梢上！"
 
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "I shall hang it high, for all to see!"
+msgstr "吾要將它高高掛起，讓所有人都看見！"
+
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Decoration! Prepare to be hung from something!"
@@ -89580,6 +89730,21 @@ msgstr "應該把它掛在最高的樹枝上！"
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Huginn? Or Muninn?"
 msgstr "這是什麼？"
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "To ward off evil spirits."
+msgstr "用來驅除邪靈。"
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "I shall affix thee to a sturdy branch."
+msgstr "吾會將汝掛上結實的樹枝。"
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "A fearsome sight!"
+msgstr "好一副駭人模樣！"
 
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.HAMBAT"
@@ -92075,6 +92240,11 @@ msgstr "它熠熠生輝。"
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "A warrior's tool!"
 msgstr "戰士的工具！"
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.MUMMY_MERM"
+msgid "The fish beast must be grievously injured to be bandaged so!"
+msgstr "這魚怪定是傷得極重，才裹了這麼多繃帶！"
 
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.MUSHGNOME"
@@ -97465,6 +97635,11 @@ msgstr "沒必要把食物弄得這麼花哨。"
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.UNIMPLEMENTED"
 msgid "A mysterious relic, sure to contain great power."
 msgstr "神秘的遺跡，肯定蘊含著偉大的力量。"
+
+#. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.VAMPIRE_BUNNY"
+msgid "I can see the bloodlust in thine eyes, fiend! Let us fight!"
+msgstr "吾看見了汝眼中的嗜血慾望，惡魔！來戰吧！"
 
 #. STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WATHGRITHR.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -107876,6 +108051,11 @@ msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "The beginnings of some demonic beast."
 msgstr "某些惡魔野獸的開端。"
 
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.FRANKEN_PIG"
+msgid "It looks even less intelligent than usual."
+msgstr "看着比平時更沒腦子了。"
+
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.FRESHFRUITCREPES"
 msgid "Deserves to be eaten with fine silverware. Sadly, I've just my hands."
@@ -108646,6 +108826,11 @@ msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Oh joy. Is there really need for decoration?"
 msgstr "哦，真的有必要裝飾嗎？"
 
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Must I be reminded of them?"
+msgstr "非得讓我想起那些傢伙嗎？"
+
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Such a burden to carry it. If only there were a place to leave it."
@@ -108670,6 +108855,21 @@ msgstr "啊。又是這些傢伙。"
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Why do I hear \"Nevermore\"?"
 msgstr "我好像聽見“絕對不再”？"
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Some subpar workmanship went into this one. Such atrocious stitching!"
+msgstr "這手藝真不入流。瞧瞧這慘不忍睹的縫線！"
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "The truly frightening thing is that I'm actually participating in this frivolity."
+msgstr "真正嚇人的是，我居然也在陪着胡鬧。"
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "I suppose I should find someplace to hang it. Preferably out of sight."
+msgstr "看來得找個地方掛起來。最好是我看不見的地方。"
 
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.HAMBAT"
@@ -111165,6 +111365,11 @@ msgstr "看起來有點不祥。"
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "The duality of mine."
 msgstr "地雷的雙重性。"
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.MUMMY_MERM"
+msgid "How quaint. Is this meant to scare me?"
+msgstr "真老套。就這也想嚇唬我？"
 
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.MUSHGNOME"
@@ -116555,6 +116760,11 @@ msgstr "它註定要成為盤中餐。"
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.UNIMPLEMENTED"
 msgid "Just what are you up to now, Charlie?"
 msgstr "查理，進展如何？"
+
+#. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.VAMPIRE_BUNNY"
+msgid "He's not pulling off that cape as well as he thinks."
+msgstr "它可沒把那件披風穿出自己以為的派頭。"
 
 #. STRINGS.CHARACTERS.WAXWELL.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WAXWELL.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -126896,6 +127106,11 @@ msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Needs more bones!"
 msgstr "需要更多骨頭！"
 
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.FRANKEN_PIG"
+msgid "Mismatched parts brought to life with lightning! Hey wait a minute..."
+msgstr "東拼西湊的身體，被閃電劈活了！誒，等等……"
+
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.FRESHFRUITCREPES"
 msgid "Cripes! We can't wait for these crepes!"
@@ -127666,6 +127881,11 @@ msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Oooh. Spooky. We should decorate!"
 msgstr "噢。怕怕。我們應該裝飾一下！"
 
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Better a little one in a tree than a big one on our head."
+msgstr "樹上掛個小的，總比腦袋上趴個大的好。"
+
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Gosh. That almost looks real."
@@ -127690,6 +127910,21 @@ msgstr "我們應該把這個傢伙放到樹上！"
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "If we put it in a tree it'd look almost real."
 msgstr "如果把它放到樹上，看上去就會很逼真。"
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "We wanna put it on the tree!"
+msgstr "我們要把它掛到樹上！"
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "It's gonna look real scary on the tree!"
+msgstr "掛到樹上肯定特別嚇人！"
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "We're gonna hang it up really high!"
+msgstr "我們要把它掛得高高的！"
 
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.HAMBAT"
@@ -130185,6 +130420,11 @@ msgstr "天啊，太閃亮了!"
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "Double duty."
 msgstr "雙重功能。"
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.MUMMY_MERM"
+msgid "They must be covered in booboos!"
+msgstr "它一定渾身都是傷口！"
 
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.MUSHGNOME"
@@ -135575,6 +135815,11 @@ msgstr "我們有這麼多條手臂，這簡直是小菜一碟。"
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.UNIMPLEMENTED"
 msgid "What a crummy item."
 msgstr "這東西太糟糕了。"
+
+#. STRINGS.CHARACTERS.WEBBER.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Y-you wouldn't like our blood!"
+msgstr "你、你不會喜歡我們的血的！"
 
 #. STRINGS.CHARACTERS.WEBBER.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WEBBER.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -145946,6 +146191,11 @@ msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "We must find more pieces."
 msgstr "我們必須找到更多的碎塊。"
 
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.FRANKEN_PIG"
+msgid "Who is the true monster, you or your creator?"
+msgstr "真正的怪物是你，還是造出你的人？"
+
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.FRESHFRUITCREPES"
 msgid "Could I get this a la mode?"
@@ -146716,6 +146966,11 @@ msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "It reminds me of Abigail. I'll hang it somewhere."
 msgstr "它讓我想起阿比蓋爾。我要把它掛在某個地方。"
 
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "A grim souvenir from the dark tunnels below."
+msgstr "來自地下黑暗隧道的陰森紀念品。"
+
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "It longs to be hung somewhere."
@@ -146740,6 +146995,21 @@ msgstr "它陷入黑暗了。"
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Crows in trees mean souls trapped between worlds."
 msgstr "樹上的烏鴉代表困在不同世界之間的靈魂。"
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "I like watching it dangle helplessly."
+msgstr "我喜歡看它無助地吊着。"
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Hang it from the highest tree."
+msgstr "把它吊上最高的樹。"
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "I will find a barren branch to leave it on."
+msgstr "我會找根枯枝，把它留在那裏。"
 
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.HAMBAT"
@@ -149235,6 +149505,11 @@ msgstr "冰冷而美麗，就像死亡一樣。"
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "An item with multiple uses."
 msgstr "一個用途多多的工具。"
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.MUMMY_MERM"
+msgid "The undead are cursed to wander for all eternity..."
+msgstr "不死者受了詛咒，只能永遠遊蕩……"
 
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.MUSHGNOME"
@@ -154625,6 +154900,11 @@ msgstr "這樣看起來更美味。"
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.UNIMPLEMENTED"
 msgid "It's not done, like life."
 msgstr "還沒有完結，就像生命一樣。"
+
+#. STRINGS.CHARACTERS.WENDY.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.VAMPIRE_BUNNY"
+msgid "I'm afraid you would find my blood quite cold and bitter."
+msgstr "恐怕你會覺得，我的血又冷又苦。"
 
 #. STRINGS.CHARACTERS.WENDY.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WENDY.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -165001,6 +165281,11 @@ msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "There are pieces of the skeleton still yet to be assembled."
 msgstr "還有骨架碎片需要組合起來。"
 
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.FRANKEN_PIG"
+msgid "Clearly the work of a mind that is equal parts brilliant and depraved."
+msgstr "造出它的那顆頭腦，顯然是才智與邪念各佔一半。"
+
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.FRESHFRUITCREPES"
 msgid "Sticky fingers will ensue."
@@ -165771,6 +166056,11 @@ msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "An ornamental poltergeist meant to be hung somewhere."
 msgstr "一個適合掛起來當做裝飾的淘氣鬼。"
 
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "A fine bit of ornamentation for the tree."
+msgstr "給樹添上這麼一件裝飾，很不錯。"
+
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "A flourish of flying mammal."
@@ -165795,6 +166085,21 @@ msgstr "這樣的裝飾物就該掛起來。"
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "A corvus such as this would do better in a tree."
 msgstr "這種烏鴉似的東西比較適合掛在樹上。"
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "This porcine ornament should be affixed to a tree."
+msgstr "這個豬形裝飾應該掛在樹上。"
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Our young merm friend seemed rather keen on hanging this one herself."
+msgstr "我們那位小魚人朋友，似乎很想親手掛上這個。"
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "It will go nicely with the seasonal decor."
+msgstr "它與節日裝飾很相配。"
 
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.HAMBAT"
@@ -168290,6 +168595,11 @@ msgstr "它的設計無疑是超凡脫俗的。"
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "Quite functional, it operates as both an axe and a pickaxe."
 msgstr "功能很強大，既能當斧子用又能當鶴嘴鋤用。"
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.MUMMY_MERM"
+msgid "I didn't realize merms practiced mummification rituals."
+msgstr "我還不知道魚人也會舉行木乃伊製作儀式。"
 
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.MUSHGNOME"
@@ -173680,6 +173990,11 @@ msgstr "一種常見的製作鰻魚料理的方法。"
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.UNIMPLEMENTED"
 msgid "It's under construction."
 msgstr "還在建設中。"
+
+#. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.VAMPIRE_BUNNY"
+msgid "A hematophagous lagomorph? How odd!"
+msgstr "吸血的兔形目動物？真奇怪！"
 
 #. STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WICKERBOTTOM.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -184016,6 +184331,11 @@ msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Needs more gross old bits."
 msgstr "需要更多老碎片。"
 
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.FRANKEN_PIG"
+msgid "Do you and Bernie go to the same seamstress?"
+msgstr "你和伯尼找的是同一個裁縫嗎？"
+
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.FRESHFRUITCREPES"
 msgid "Ooo la la."
@@ -184786,6 +185106,11 @@ msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Can I set it on fire?"
 msgstr "我能不能放火燒它？"
 
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Those guys really sucked."
+msgstr "那些傢伙可真夠吸血的。"
+
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "I should decorate for Halloween."
@@ -184810,6 +185135,21 @@ msgstr "我應該把它掛在某個地方嚇一嚇人。"
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "I'm gonna stick you in a tree."
 msgstr "我要把你弄到樹上。"
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "It'll look nice and spooky hanging from a tree."
+msgstr "掛在樹上，既好看又嚇人。"
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "It looks alright. It'd look better on fire."
+msgstr "看着還行。燒起來會更好看。"
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "Let's get it up on the tree!"
+msgstr "把它掛上樹吧！"
 
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.HAMBAT"
@@ -187305,6 +187645,11 @@ msgstr "它是由某種無法燃燒的混蛋岩石做成的。"
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "It's so useful!"
 msgstr "這東西太有用了！"
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.MUMMY_MERM"
+msgid "Those soggy bandages really don't help with the swamp stink."
+msgstr "這些濕繃帶可遮不住那股沼澤臭味。"
 
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.MUSHGNOME"
@@ -192695,6 +193040,11 @@ msgstr "你可以把它做得很漂亮，但它還是鰻魚。"
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.UNIMPLEMENTED"
 msgid "It's not finished. But I bet it still burns."
 msgstr "還沒完成。但我打賭它還是能燃燒。"
+
+#. STRINGS.CHARACTERS.WILLOW.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Keep those teeth where I can see them, bunny!"
+msgstr "兔子，你那口牙可別離開我的視線！"
 
 #. STRINGS.CHARACTERS.WILLOW.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WILLOW.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -203101,6 +203451,11 @@ msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Some more assembly required."
 msgstr "還需要一些組裝。"
 
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.FRANKEN_PIG"
+msgid "Whoever stitched him up is even worse at sewing than I am."
+msgstr "縫它的那位，針線活居然比我還差。"
+
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.FRESHFRUITCREPES"
 msgid "Fruit wrapped in a blanket of pancake."
@@ -203871,6 +204226,11 @@ msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Ha! Ya almost fooled me."
 msgstr "哈！我差點被你騙到了。"
 
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "It's that time of year again."
+msgstr "又到一年中的這個時候了。"
+
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "I should hang this somewhere."
@@ -203895,6 +204255,21 @@ msgstr "嘿，是那些可以掛的傢伙。"
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "It needs to be in a tree."
 msgstr "它需要到樹上去。"
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Let's get decorating!"
+msgstr "開始佈置吧！"
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Up on the tree you get!"
+msgstr "上樹待着去！"
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "Lookin' spooky!"
+msgstr "看着夠嚇人的！"
 
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.HAMBAT"
@@ -206405,6 +206780,11 @@ msgstr "哇，甚至看不到焊接接頭。"
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "That's really not my forte."
 msgstr "這真的不是我的長項。"
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.MUMMY_MERM"
+msgid "That merm's seen better days."
+msgstr "這魚人以前可沒這麼慘。"
 
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.MUSHGNOME"
@@ -211795,6 +212175,11 @@ msgstr "高檔的食物。"
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.UNIMPLEMENTED"
 msgid "What kind of bonehead leaves stuff half-built?!"
 msgstr "只有傻子才會造一半就不造了吧？！"
+
+#. STRINGS.CHARACTERS.WINONA.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Those teeth are a bit too sharp for my liking."
+msgstr "這牙也太尖了，我可不喜歡。"
 
 #. STRINGS.CHARACTERS.WINONA.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WINONA.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -222171,6 +222556,11 @@ msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Is not look done yet."
 msgstr "看起來還沒完成。"
 
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.FRANKEN_PIG"
+msgid "S-s-something wrong with pig man!"
+msgstr "豬、豬、豬人不對勁！"
+
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.FRESHFRUITCREPES"
 msgid "Manly midmorning brunch."
@@ -222941,6 +223331,11 @@ msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Wolfgang should be hanging it somewhere."
 msgstr "沃爾夫岡應該把它掛在某個地方。"
 
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Is not real, can't bite Wolfgang."
+msgstr "不是真的，咬不到沃爾夫岡。"
+
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Is real bat?! Is not real bat."
@@ -222965,6 +223360,21 @@ msgstr "沃爾夫岡可以把東西掛起來。"
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Little fake birdy is needing tree!"
 msgstr "這只假的小鳥需要到樹上去！"
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Is for scary tree."
+msgstr "掛在嚇人的樹上。"
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Is scary little decoration."
+msgstr "嚇人的小裝飾。"
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "Wolfgang will hang on tree."
+msgstr "沃爾夫岡把它掛到樹上。"
 
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.HAMBAT"
@@ -225460,6 +225870,11 @@ msgstr "像沃爾夫岡一樣強壯！"
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "Chop and dig! I can do that all day."
 msgstr "砍砍挖挖！我能幹上一整天。"
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.MUMMY_MERM"
+msgid "Eep!! Stay away from Wolfgang!"
+msgstr "噫！！離沃爾夫岡遠點！"
 
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.MUSHGNOME"
@@ -230850,6 +231265,11 @@ msgstr "食物讓我強大！"
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.UNIMPLEMENTED"
 msgid "I do not trust unfinished business."
 msgstr "我不相信未完成的東西。"
+
+#. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Do not take Wolfgang's blood!!"
+msgstr "不許吸沃爾夫岡的血！！"
 
 #. STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WOLFGANG.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -241161,6 +241581,11 @@ msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Still got some work to do, looks like."
 msgstr "看起來還有些工作要做。"
 
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.FRANKEN_PIG"
+msgid "A bunch of bacon bits sewn together."
+msgstr "一堆縫在一起的培根碎。"
+
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.FRESHFRUITCREPES"
 msgid "I can get maple syrup on that?"
@@ -241931,6 +242356,11 @@ msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "It's just fake, eh."
 msgstr "是假的，嗯。"
 
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Better hang it up, eh?"
+msgstr "得把它掛起來，對吧？"
+
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "That's nice. I should hang it somewhere."
@@ -241955,6 +242385,21 @@ msgstr "掛在那兒，堅持住啊。"
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Argh! I'd sure like to hang a real one like that."
 msgstr "唉！要是有個真的那種東西讓我掛起來就好了。"
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Pick out a good branch for this one, Luce."
+msgstr "露西，給它挑根好樹枝吧。"
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "I was just aboot to put it on the tree."
+msgstr "我正要把它掛上樹呢。"
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "It'll look good on a tree."
+msgstr "掛在樹上會挺好看。"
 
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.HAMBAT"
@@ -244455,6 +244900,11 @@ msgstr "我想知道要把它通向什麼地方。"
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "It's... it's beautiful."
 msgstr "它...它真漂亮。"
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.MUMMY_MERM"
+msgid "That mummy's alive!"
+msgstr "這木乃伊是活的！"
 
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.MUSHGNOME"
@@ -249845,6 +250295,11 @@ msgstr "它會填飽你的肚子。"
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.UNIMPLEMENTED"
 msgid "It doesn't look safe."
 msgstr "看起來不太安全。"
+
+#. STRINGS.CHARACTERS.WOODIE.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Why's he lookin' at me the way a tapper looks at a maple tree?"
+msgstr "它瞅着我，怎麼跟採糖人瞅着楓樹似的？"
 
 #. STRINGS.CHARACTERS.WOODIE.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WOODIE.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -260191,6 +260646,11 @@ msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Not done yet"
 msgstr "還沒完"
 
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.FRANKEN_PIG"
+msgid "Twirly Tail okay?"
+msgstr "卷尾巴還好？"
+
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.FRESHFRUITCREPES"
 msgid "Sweet belly stuff"
@@ -260961,6 +261421,11 @@ msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Ooooooo!"
 msgstr "噢、噢、噢！"
 
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Oh. Not real"
+msgstr "哦。不是真的"
+
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Not flapping"
@@ -260985,6 +261450,21 @@ msgstr "哈哈！這蟲子好多條腿"
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Alive, Tweeter? Nope"
 msgstr "活著嗎，小鳥？不"
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Give to friend"
+msgstr "送給朋友"
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Friend wants to hold it"
+msgstr "朋友想拿着"
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "So little!"
+msgstr "好小！"
 
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.HAMBAT"
@@ -263495,6 +263975,11 @@ msgstr "發亮，像夜晚的球。"
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "Handy stick"
 msgstr "有用的棍子"
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.MUMMY_MERM"
+msgid "Oh! Glub Glub hurt?"
+msgstr "哦！咕嚕咕嚕受傷了？"
 
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.MUSHGNOME"
@@ -268885,6 +269370,11 @@ msgstr "海裡扭來扭去的吃的"
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.UNIMPLEMENTED"
 msgid "Hmm..."
 msgstr "呣..."
+
+#. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Sharp tooth Hopper!"
+msgstr "尖牙跳跳！"
 
 #. STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WORMWOOD.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -279376,6 +279866,11 @@ msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Still could use a piece or two."
 msgstr "好像還差一兩塊，不全啊。"
 
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.FRANKEN_PIG"
+msgid "A ponderously plodding patchwork piggy!"
+msgstr "拼拼補補一頭豬，慢慢吞吞挪着步！"
+
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.FRESHFRUITCREPES"
 msgid "Fruits and berries put to bed."
@@ -280146,6 +280641,11 @@ msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "It makes me hungry, yes indeed!"
 msgstr "讓我感到好餓啊！"
 
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Left in the trees to flutter in the breeze."
+msgstr "掛在樹梢，隨風飄搖。"
+
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Absolutely batty!"
@@ -280170,6 +280670,21 @@ msgstr "可以掛在樹上晃。"
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "I do believe it is quite dead!"
 msgstr "死的很踏實了！"
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "A piggy pendant for the tree."
+msgstr "小豬做掛件，樹上來露臉。"
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "A mummification decoration."
+msgstr "木乃伊做裝飾，裹得嚴嚴實實。"
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "What a batty old bunny."
+msgstr "瘋癲老兔，蝠氣十足。"
 
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.HAMBAT"
@@ -282665,6 +283180,11 @@ msgstr "哦，我們也許能在裡面好好玩一下！"
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "It couldn't decide which to be, so it became both."
 msgstr "實在決定不了要哪個，所以就兼顧了。"
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.MUMMY_MERM"
+msgid "What did that merm get wrapped up in? Hyuyu!"
+msgstr "魚人惹上什麼麻煩，纏了一圈又一圈？咻咿！"
 
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.MUSHGNOME"
@@ -288055,6 +288575,11 @@ msgstr "凡人們做的又一道菜。"
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.UNIMPLEMENTED"
 msgid "What on earth is that?"
 msgstr "那究竟是什麼東西？"
+
+#. STRINGS.CHARACTERS.WORTOX.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Blood is a trifling thing compared to sucking up souls."
+msgstr "吸血有啥好，吸魂才叫妙！"
 
 #. STRINGS.CHARACTERS.WORTOX.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WORTOX.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -298491,6 +299016,11 @@ msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "Need more spooky bones."
 msgstr "需要多幾塊陰森的骨頭。"
 
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.FRANKEN_PIG"
+msgid "Glorph. Didn't think Pigman could get uglier."
+msgstr "格勒浮。沒想到豬人還能更醜。"
+
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.FRESHFRUITCREPES"
 msgid "Fancy fruit pancake!"
@@ -299261,6 +299791,11 @@ msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "Boo! Hee-hee."
 msgstr "啵！嘿嘿。"
 
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "Bad doggy stay on tree!"
+msgstr "壞狗狗，待在樹上！"
+
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "Can help decorate too, florp!"
@@ -299285,6 +299820,21 @@ msgstr "魚人也很嚇人啊！魚人的裝飾物呢？？"
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "Pretty bird."
 msgstr "漂亮的小鳥。"
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "Glurgh. Why we need this one?"
+msgstr "格勒格。為什麼要這個？"
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "Mine!! Me put on tree!"
+msgstr "我的！！我要掛到樹上！"
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "Bitey Bunnyman for tree."
+msgstr "咬人兔人，掛樹上。"
 
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.HAMBAT"
@@ -301795,6 +302345,11 @@ msgstr "它是月亮上的東西做的！"
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "That pretty smart, florp."
 msgstr "做出來這個真聰明，浮浪噗。"
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.MUMMY_MERM"
+msgid "Mermfolk come back from dead!"
+msgstr "魚人死了又活了！"
 
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.MUSHGNOME"
@@ -307190,6 +307745,11 @@ msgstr "不能這樣對待魚，浮浪特!"
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.UNIMPLEMENTED"
 msgid "What that?"
 msgstr "那是什麼？"
+
+#. STRINGS.CHARACTERS.WURT.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.VAMPIRE_BUNNY"
+msgid "Flort! No bite allowed!"
+msgstr "浮浪特！不許咬！"
 
 #. STRINGS.CHARACTERS.WURT.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WURT.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -317646,6 +318206,11 @@ msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.FOSSIL_STALKER.GENERIC"
 msgid "SOME ASSEMBLY REQUIRED"
 msgstr "需要一些元件"
 
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.FRANKEN_PIG
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.FRANKEN_PIG"
+msgid "A DISGUSTING CONFIGURATION OF SPARE PARTS"
+msgstr "備用零件拼成的噁心組合"
+
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.FRESHFRUITCREPES
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.FRESHFRUITCREPES"
 msgid "READY FOR DELICIOUS CONSUMPTION"
@@ -318416,6 +318981,11 @@ msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_1"
 msgid "ERROR: DOES NOT FUNCTION IN INVENTORY"
 msgstr "錯誤：在庫存中無法發揮功能"
 
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_10"
+msgid "PLEASINGLY ARTIFICIAL"
+msgstr "人造製品，令人滿意"
+
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_2"
 msgid "ACCESSORY FOR HORRIFIC TREE"
@@ -318440,6 +319010,21 @@ msgstr "需要懸掛才可引發恐懼"
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_6"
 msgid "FLESHLESS FLESHSACK"
 msgstr "無肉動物"
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_7"
+msgid "IT BELONGS ON THE AWFUL TREE"
+msgstr "它就該待在那棵討厭的樹上"
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_8"
+msgid "TREE ATTACHMENT"
+msgstr "樹木附件"
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HALLOWEEN_ORNAMENT_9"
+msgid "SUPPOSEDLY THIS WILL INDUCE FEAR IN ORGANICS"
+msgstr "據説能誘發有機體的恐懼"
 
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.HAMBAT
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.HAMBAT"
@@ -320935,6 +321520,11 @@ msgstr "聯網傳送門"
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.MULTITOOL_AXE_PICKAXE"
 msgid "A PRACTICAL TOOL"
 msgstr "實用的工具"
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.MUMMY_MERM
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.MUMMY_MERM"
+msgid "IS IT ATTEMPTING TO COVER ITS HIDEOUS MEAT BODY? GOOD"
+msgstr "它想遮住那副醜陋的肉體？很好"
 
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.MUSHGNOME
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.MUSHGNOME"
@@ -326340,6 +326930,11 @@ msgstr "更高檔的燃料包"
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.UNIMPLEMENTED"
 msgid "WARNING: UNIMPLEMENTED"
 msgstr "警告：未實現"
+
+#. STRINGS.CHARACTERS.WX78.DESCRIBE.VAMPIRE_BUNNY
+msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.VAMPIRE_BUNNY"
+msgid "WHERE DID IT GET THAT CAPE?"
+msgstr "它從哪弄來的披風？"
 
 #. STRINGS.CHARACTERS.WX78.DESCRIBE.VAULT_CHANDELIER_BROKEN
 msgctxt "STRINGS.CHARACTERS.WX78.DESCRIBE.VAULT_CHANDELIER_BROKEN"
@@ -342391,6 +342986,11 @@ msgctxt "STRINGS.NAMES.FOSSIL_STALKER"
 msgid "Odd Skeleton"
 msgstr "奇異的骨架"
 
+#. STRINGS.NAMES.FRANKEN_PIG
+msgctxt "STRINGS.NAMES.FRANKEN_PIG"
+msgid "Frankenswine"
+msgstr "科學怪豬"
+
 #. STRINGS.NAMES.FRESHFRUITCREPES
 msgctxt "STRINGS.NAMES.FRESHFRUITCREPES"
 msgid "Fresh Fruit Crepes"
@@ -343051,9 +343651,14 @@ msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_1"
 msgid "Ghost Decoration"
 msgstr "幽靈裝飾"
 
+#. STRINGS.NAMES.HALLOWEEN_ORNAMENT_10
+msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_10"
+msgid "Hound Batilisk Decoration"
+msgstr "獵犬蝙蝠裝飾"
+
 #. STRINGS.NAMES.HALLOWEEN_ORNAMENT_2
 msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_2"
-msgid "Bat Decoration"
+msgid "Batilisk Decoration"
 msgstr "蝙蝠裝飾"
 
 #. STRINGS.NAMES.HALLOWEEN_ORNAMENT_3
@@ -343075,6 +343680,21 @@ msgstr "穴居懸蛛裝飾"
 msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_6"
 msgid "Crow Decoration"
 msgstr "烏鴉裝飾"
+
+#. STRINGS.NAMES.HALLOWEEN_ORNAMENT_7
+msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_7"
+msgid "Frankenswine Decoration"
+msgstr "科學怪豬裝飾"
+
+#. STRINGS.NAMES.HALLOWEEN_ORNAMENT_8
+msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_8"
+msgid "Mermummy Decoration"
+msgstr "魚人木乃伊裝飾"
+
+#. STRINGS.NAMES.HALLOWEEN_ORNAMENT_9
+msgctxt "STRINGS.NAMES.HALLOWEEN_ORNAMENT_9"
+msgid "Vamphare Decoration"
+msgstr "吸血兔裝飾"
 
 #. STRINGS.NAMES.HAMBAT
 msgctxt "STRINGS.NAMES.HAMBAT"
@@ -345360,6 +345980,11 @@ msgstr "傳送門用具"
 msgctxt "STRINGS.NAMES.MULTITOOL_AXE_PICKAXE"
 msgid "Pick/Axe"
 msgstr "多用斧鎬"
+
+#. STRINGS.NAMES.MUMMY_MERM
+msgctxt "STRINGS.NAMES.MUMMY_MERM"
+msgid "Mermummy"
+msgstr "魚人木乃伊"
 
 #. STRINGS.NAMES.MUSHGNOME
 msgctxt "STRINGS.NAMES.MUSHGNOME"
@@ -350525,6 +351150,11 @@ msgstr "鰻魚料理"
 msgctxt "STRINGS.NAMES.UNKNOWN"
 msgid "Unknown"
 msgstr "未知"
+
+#. STRINGS.NAMES.VAMPIRE_BUNNY
+msgctxt "STRINGS.NAMES.VAMPIRE_BUNNY"
+msgid "Vamphare"
+msgstr "吸血兔"
 
 #. STRINGS.NAMES.VAULTRELIC
 msgctxt "STRINGS.NAMES.VAULTRELIC"

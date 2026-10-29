@@ -8531,7 +8531,7 @@ function Tune(overrides)
         SHADOWHEART_HOP_SPEED = 7.0,
 
         -- HallowedNights2024
-        HALLOWEEN_PUMPKINCARVER_PIGKING_TRADE_CHANCE = .15,
+        HALLOWEEN_PUMPKINCARVER_PIGKING_TRADE_CHANCE = .15, -- also from merm king
         HALLOWEEN_PUMPKINCARVER_GRAVESTONE_CHANCE = .15,
 		HALLOWEEN_PUMPKINCARVER_MAX_CUTS = 15,
 
@@ -9806,7 +9806,18 @@ function Tune(overrides)
 		PUMPKIN_BOMB_DAMAGE = 50,
         PUMPKIN_BOMB_SEED_CHANCE = 0.1,
         PUMPKIN_BOMB_BUILDING_DAMAGE = 4,
-        PUMPKIN_BOMB_PIGKING_TRADE_CHANCE = 0.33,
+        PUMPKIN_BOMB_PIGKING_TRADE_CHANCE = 0.2, -- also from merm king
+
+		--used by: franken_pig, mummy_merm, vampire_bunny
+		HN_MONSTER_CHANCE = 0.3, -- 30% chance for monster version (during hallowed nights)
+		HN_MONSTER_HEALTH = 600,
+		HN_MONSTER_HEALTH_REGEN_PERIOD = 5,
+		HN_MONSTER_HEALTH_REGEN_AMOUNT = 5 * 600 / (total_day_time * 0.5),
+		HN_MONSTER_DAMAGE = 40,
+		HN_MONSTER_ATTACK_PERIOD = 2,
+		HN_MONSTER_TARGET_DIST = 8,
+		HN_MONSTER_WALKSPEED = 0.8,
+		HN_MONSTER_RUNSPEED = 9,
     }
 
     TUNING_MODIFIERS = {}

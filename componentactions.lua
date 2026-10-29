@@ -1772,7 +1772,8 @@ local COMPONENT_ACTIONS =
         end,
 
         spellcaster = function(inst, doer, target, actions, right)
-            if inst:HasTag("nomagiccast") then
+            if inst:HasTag("nomagiccast") or
+                (target.replica.inventoryitem and target.replica.inventoryitem:IsHeld()) then -- not allowed to use on items in an inventory, only on targets in the world
                 return
             end
 

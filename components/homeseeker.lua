@@ -24,10 +24,14 @@ function HomeSeeker:GetHome()
 end
 
 function HomeSeeker:SetHome(home)
-    if self.home ~= nil then
-        self.inst:RemoveEventCallback("onremove", self.onhomeremoved, self.home)
+    local oldhome = self.home
+    if oldhome ~= nil then
+        self.inst:RemoveEventCallback("onremove", self.onhomeremoved, oldhome)
     end
     self.home = home
+    if self.inst.homeseeker_onsethome then
+        self.inst.homeseeker_onsethome(self.inst, home, oldhome)
+    end
     if home ~= nil then
         self.inst:ListenForEvent("onremove", self.onhomeremoved, home)
     end

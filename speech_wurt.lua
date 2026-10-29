@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "Florp! Me can be scary night lady! Ha!",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Glorph. Didn't think Pigman could get uglier.",
+		MUMMY_MERM = "Mermfolk come back from dead!",
+		VAMPIRE_BUNNY = "Flort! No bite allowed!",
         LEAFPILE = "Me best sweeper! Flort!",
         PUMPKIN_BOMB = "Hee-hee, surprise for Pigman.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Sweep, sweep! No more dirties!", -- normal version
-            LIVING = "Huh? Weird broom.",
+            LIVING = "Huh? Weird broom."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Glurgh. Why we need this one?", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Mine!! Me put on tree!", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Bitey Bunnyman for tree.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Bad doggy stay on tree!", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "What that?",

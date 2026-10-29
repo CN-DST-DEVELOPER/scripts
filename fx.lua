@@ -3718,7 +3718,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile",
         anim = "leaves_fall",
-        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_delay", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
         fn = FinalOffset2,
     },
     {
@@ -3726,7 +3726,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile",
         anim = "leaves_shatter",
-        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
         fn = FinalOffset2,
     },
     {
@@ -3734,7 +3734,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile_red_build",
         anim = "leaves_fall",
-        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_delay", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
         fn = FinalOffset2,
     },
     {
@@ -3742,7 +3742,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile_red_build",
         anim = "leaves_shatter",
-        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
         fn = FinalOffset2,
     },
     {
@@ -3750,7 +3750,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile_yellow_build",
         anim = "leaves_fall",
-        sound = "dontstarve_DLC001/fall/leaf_rustle", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_delay", -- TODO get a better sound from Andy (this one is so quiet, should be increased in general?)
         fn = FinalOffset2,
     },
     {
@@ -3758,7 +3758,7 @@ local fx =
         bank = "leafpile",
         build = "leafpile_yellow_build",
         anim = "leaves_shatter",
-        sound = "dontstarve/movement/foley/hidebush", -- TODO get a better sound from Andy
+        sound = "dontstarve_DLC001/fall/leaf_rustle_sfx_os", -- TODO get a better sound from Andy
         fn = FinalOffset2,
     },
     {

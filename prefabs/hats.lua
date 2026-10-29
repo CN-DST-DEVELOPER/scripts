@@ -5575,7 +5575,10 @@ local function MakeHat(name)
             return
         end
 
-        if data.victim.sg == nil or not (data.victim.sg:HasState("parasite_revive") or data.victim.sg:HasState("death_hosted")) then
+		if data.victim.sg == nil or
+			not (data.victim.sg:HasState("parasite_revive") or data.victim.sg:HasState("death_hosted")) or
+			data.victim.sg.mem.noparasitehost
+		then
             return
         end
 

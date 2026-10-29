@@ -6411,14 +6411,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "Ooooh, what's that on the back!",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Actually, he should really be called Frankenswine's monster.",
+		MUMMY_MERM = "A bog monster AND a mummy?! This is the best day ever!",
+		VAMPIRE_BUNNY = "I wonder if they drink blood or carrot juice?",
         LEAFPILE = "I love the sound of crunching leaves!",
         PUMPKIN_BOMB = "This is gonna blow chunks!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "A Pinetree Pioneer always does his duty!", -- normal version
-            LIVING = "You sense it too, eh Woby?",
+            LIVING = "You sense it too, eh Woby?"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "It looks just like him!", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "It sure looks great on the tree!", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Should I hang it upside-down?", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "I think it's kinda cute!", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "That sure is a mystery!",

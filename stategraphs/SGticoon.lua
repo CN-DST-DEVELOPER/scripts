@@ -11,6 +11,7 @@ local events =
     CommonHandlers.OnSleep(),
     CommonHandlers.OnFreeze(),
 	CommonHandlers.OnElectrocute(),
+	CommonHandlers.OnKnockback(),
     CommonHandlers.OnAttacked(),
 	CommonHandlers.OnAttack(),
     CommonHandlers.OnDeath(),
@@ -36,11 +37,10 @@ local events =
 	end),
 
 	EventHandler("oneat", function(inst) 
-		if inst.components.health == nil or not inst.components.health:IsDead() and not inst:HasTag("busy") then
+		if not (inst.components.health and inst.components.health:IsDead() or inst:HasStateTag("busy")) then
 			inst.sg:GoToState("eat") 
 		end
 	end),
-
 }
 
 local states=
@@ -416,6 +416,7 @@ CommonStates.AddSleepStates(states,
 
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
+CommonStates.AddKnockbackStates(states)
 CommonStates.AddHopStates(states, true)
 CommonStates.AddSinkAndWashAshoreStates(states)
 CommonStates.AddVoidFallStates(states)

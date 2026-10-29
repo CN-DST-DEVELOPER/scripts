@@ -6373,14 +6373,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "And that's how she'll be remembered.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Who is the true monster, you or your creator?",
+		MUMMY_MERM = "The undead are cursed to wander for all eternity...",
+		VAMPIRE_BUNNY = "I'm afraid you would find my blood quite cold and bitter.",
         LEAFPILE = "We are all just leaves on a tree waiting to fall.",
         PUMPKIN_BOMB = "Better to explode than simply rot away, I suppose.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "If only grief could be swept away.", -- normal version
-            LIVING = "It seems even a broom can be haunted.",
+            LIVING = "It seems even a broom can be haunted."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "I like watching it dangle helplessly.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Hang it from the highest tree.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "I will find a barren branch to leave it on.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "A grim souvenir from the dark tunnels below.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Sigh... I don't know.",

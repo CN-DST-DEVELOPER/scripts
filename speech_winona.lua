@@ -6375,14 +6375,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "This is horrible, Charlie.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Whoever stitched him up is even worse at sewing than I am.",
+		MUMMY_MERM = "That merm's seen better days.",
+		VAMPIRE_BUNNY = "Those teeth are a bit too sharp for my liking.",
         LEAFPILE = "High time for some fall cleanin'.",
         PUMPKIN_BOMB = "The kids are gonna love this.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Just add elbow grease, and it gets the job done.", -- normal version
-            LIVING = "Ain't right for a broom to feel this eerie.",
+            LIVING = "Ain't right for a broom to feel this eerie."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Let's get decorating!", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Up on the tree you get!", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Lookin' spooky!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "It's that time of year again.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Incredible! I have no idea what that is.",

@@ -5,7 +5,7 @@ local SGWX78Common = require("stategraphs/SGwx78_common")
 local WX78Common = require("prefabs/wx78_common")
 
 local ATTACK_PROP_MUST_TAGS = { "_combat" }
-local ATTACK_PROP_CANT_TAGS = { "flying", "shadow", "ghost", "FX", "NOCLICK", "DECOR", "INLIMBO", "playerghost" }
+local ATTACK_PROP_CANT_TAGS = { "shadow", "ghost", "FX", "NOCLICK", "DECOR", "INLIMBO", "playerghost" }
 
 local MOOSE_AOE_MUST_TAGS = { "_combat" }
 local MOOSE_AOE_CANT_TAGS = { "INLIMBO", "wall", "companion", "flight", "invisible", "notarget", "noattack" }
@@ -497,7 +497,7 @@ local function ConfigureRunState(inst)
 		inst.sg.statemem.teetering = true
     elseif inst:HasTag("groggy") then
         inst.sg.statemem.groggy = true
-    elseif inst:IsCarefulWalking() then
+    elseif inst:IsCarefulWalking() and not inventory:EquipHasTag("flyingbroom") then
         inst.sg.statemem.careful = true
 		inst.sg:AddStateTag("noslip")
     else
@@ -892,9 +892,21 @@ local function ConfigureWitchBroomFlying(inst, enable)
 	if enable then
 		inst:AddTag("notraptrigger")
 		inst.components.locomotor:EnableGroundSpeedMultiplier(false)
+        if inst.components.carefulwalker then
+            inst.components.carefulwalker:Enable(false)
+        end
+        local nonslipgrituser = inst.components.nonslipgrituser or inst:AddComponent("nonslipgrituser")
+        nonslipgrituser:AddSource(inst)
 	else
 		inst:RemoveTag("notraptrigger")
 		inst.components.locomotor:EnableGroundSpeedMultiplier(true)
+        if inst.components.carefulwalker then
+            inst.components.carefulwalker:Enable(true)
+        end
+        local nonslipgrituser = inst.components.nonslipgrituser
+        if nonslipgrituser then
+            nonslipgrituser:RemoveSource(inst)
+        end
 	end
 end
 
@@ -28828,6 +28840,7 @@ local states =
             end
             inst.components.locomotor:RunForward()
             inst.AnimState:PlayAnimation("run_witchbroom_pre")
+            inst.SoundEmitter:PlaySound("dontstarve/movement/foley/cactus_armor", nil, nil, true)
         end,
 
         events =
@@ -28876,6 +28889,12 @@ local states =
 
             if not inst.AnimState:IsCurrentAnimation("run_witchbroom_loop") then
                 inst.AnimState:PlayAnimation("run_witchbroom_loop", true)
+            end
+            if not inst.SoundEmitter:PlayingSound("witchbroom_lp") then
+                inst.SoundEmitter:PlaySound("terraria1/terrarium/shimmer_only_LP", "witchbroom_lp")
+            end
+            if not inst.SoundEmitter:PlayingSound("witchbroom_rustle_lp") then
+                inst.SoundEmitter:PlaySound("dontstarve_DLC001/fall/leaf_rustle_LP", "witchbroom_rustle_lp")
             end
 
             ConfigureWitchBroomFlying(inst, true)
@@ -28930,6 +28949,8 @@ local states =
         onexit = function(inst)
             if not inst.sg.statemem.flyingbroom then
                 ConfigureWitchBroomFlying(inst, false)
+                inst.SoundEmitter:KillSound("witchbroom_lp")
+                inst.SoundEmitter:KillSound("witchbroom_rustle_lp")
             end
         end,
     },

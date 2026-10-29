@@ -258,7 +258,7 @@ local function on_ground_wobster_landed(inst)
     local x, y, z = inst.Transform:GetWorldPosition()
     if TheWorld.Map:IsPassableAtPoint(x, y, z) then
         inst.sg:GoToState("stunned", false)
-    else
+	elseif TheWorld.has_ocean then
         local ocean_wobster = SpawnPrefab(inst.fish_def.prefab)
         ocean_wobster.Transform:SetPosition(x, y, z)
         ocean_wobster.Transform:SetRotation(inst.Transform:GetRotation())
@@ -269,8 +269,9 @@ local function on_ground_wobster_landed(inst)
         end
 
         SpawnPrefab("splash").Transform:SetPosition(x, y, z)
-
         inst:Remove()
+	else
+		SinkEntity(inst)
     end
 end
 

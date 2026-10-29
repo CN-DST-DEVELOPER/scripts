@@ -6370,14 +6370,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "All that is left of scary night lady. So sad.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "S-s-something wrong with pig man!",
+		MUMMY_MERM = "Eep!! Stay away from Wolfgang!",
+		VAMPIRE_BUNNY = "Do not take Wolfgang's blood!!",
         LEAFPILE = "Wolfgang make clean sweep of all leaf pile!",
         PUMPKIN_BOMB = "PUMPKIN FULL OF SURPRISE!", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Even strongman must do chore.", -- normal version
-            LIVING = "Is there scary witch missing this broom?",
+            LIVING = "Is there scary witch missing this broom?"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Is for scary tree.", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "Is scary little decoration.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "Wolfgang will hang on tree.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Is not real, can't bite Wolfgang.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

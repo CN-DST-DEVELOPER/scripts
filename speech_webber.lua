@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "We wanna wear the lady's face!",
 
         -- Halloween 2026
+		FRANKEN_PIG = "Mismatched parts brought to life with lightning! Hey wait a minute...",
+		MUMMY_MERM = "They must be covered in booboos!",
+		VAMPIRE_BUNNY = "Y-you wouldn't like our blood!",
         LEAFPILE = "We can help sweep up!",
         PUMPKIN_BOMB = "What should we explode?", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "Aw, we have to do chores?", -- normal version
-            LIVING = "Is it a magic broom?",
+            LIVING = "Is it a magic broom?"
         },
 
+		HALLOWEEN_ORNAMENT_7 = "We wanna put it on the tree!", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "It's gonna look real scary on the tree!", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "We're gonna hang it up really high!", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Better a little one in a tree than a big one on our head.", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "Can we play with it?",

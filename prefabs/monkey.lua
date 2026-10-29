@@ -428,6 +428,7 @@ local function fn()
     inst:AddTag("nightmarecorruptable")
 
     inst.entity:SetPristine()
+
     if not TheWorld.ismastersim then
         return inst
     end
@@ -485,6 +486,8 @@ local function fn()
     inst:AddComponent("acidinfusible")
     inst.components.acidinfusible:SetFXLevel(1)
     inst.components.acidinfusible:SetMultipliers(TUNING.ACID_INFUSION_MULT.WEAKER)
+
+	inst:AddComponent("drownable")
 
     inst:SetBrain(brain)
     inst:SetStateGraph("SGmonkey")

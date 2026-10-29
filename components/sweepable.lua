@@ -22,6 +22,9 @@ function Sweepable:SetOnSweepedFn(fn)
 end
 
 function Sweepable:Sweep(doer, sweeper)
+    if sweeper and sweeper.components.sweeper then
+        sweeper.components.sweeper:OnSweep(self.inst, doer)
+    end
     if self.onsweepfn ~= nil then
         self.onsweepfn(self.inst, doer, sweeper)
     end

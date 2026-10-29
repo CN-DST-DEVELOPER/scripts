@@ -86,7 +86,7 @@ local function onthrown(inst, attacker)
 	inst.AnimState:PlayAnimation("spin_loop", true)
 	inst.Transform:SetTwoFaced()
 
-	inst.SoundEmitter:PlaySound("rifts/lunarthrall_bomb/throw", "toss")
+	inst.SoundEmitter:PlaySound("hallowednights2025/pumpkin/throw", "toss")
 
 	inst.Physics:SetMass(1)
 	inst.Physics:SetFriction(0)
@@ -187,7 +187,8 @@ end
 --------------------------------------------------------------------------
 
 local function PlayExplodeSound(inst)
-	inst.SoundEmitter:PlaySound("rifts/lunarthrall_bomb/explode") -- TODO
+	inst.SoundEmitter:PlaySound("dontstarve/common/blackpowder_explo")
+	inst.SoundEmitter:PlaySound("terraria1/mini_eyeofterror/egg_crack")
 end
 
 local function CreatePumpkinChunk()

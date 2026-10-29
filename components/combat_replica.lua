@@ -304,7 +304,7 @@ function Combat:IsValidTarget(target)
             not target:HasTag("spawnprotection") and
             not (target:HasTag("shadow") and self.inst.replica.sanity == nil and not self.inst:HasTag("crazy")) and
             not (target:HasTag("playerghost") and (self.inst.replica.sanity == nil or self.inst.replica.sanity:IsSane()) and not self.inst:HasTag("crazy")) and
-			(TheNet:GetPVPEnabled() or not (self.inst.isplayer and target.isplayer) or (weapon and weapon:HasTag("propweapon"))) and
+			(TheNet:GetPVPEnabled() or not (self.inst.isplayer and target.isplayer) or (weapon and weapon:HasTag("propweapon") and not weapon:HasTag("propweapon_nopvp"))) and
             target:GetPosition().y <= self._attackrange:value())
 end
 
@@ -432,7 +432,7 @@ function Combat:CanBeAttacked(attacker)
                 --PVP check
                 local combat = attacker.replica.combat
                 local weapon = combat ~= nil and combat:GetWeapon() or nil
-                if weapon == nil or not weapon:HasTag("propweapon") then
+                if weapon == nil or (not weapon:HasTag("propweapon") and not weapon:HasTag("propweapon_nopvp")) then
                     --Allow friendly fire with props
                     return false
                 end

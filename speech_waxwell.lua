@@ -6369,14 +6369,21 @@ return{
         MASK_CHARLIE_BOSSHAT = "I'm sorry, Charlie.",
 
         -- Halloween 2026
+		FRANKEN_PIG = "It looks even less intelligent than usual.",
+		MUMMY_MERM = "How quaint. Is this meant to scare me?",
+		VAMPIRE_BUNNY = "He's not pulling off that cape as well as he thinks.",
         LEAFPILE = "Someone should sweep up around here.",
         PUMPKIN_BOMB = "I'd better not find one on my doorstep.", -- heavy and does knockback on its explosion, sends out pumpkin chunks on explode
         WITCHBROOM =
         {
             GENERIC = "I have better things to do than sweep.", -- normal version
-            LIVING = "A little magic makes all the difference.",
+            LIVING = "A little magic makes all the difference."
         },
 
+		HALLOWEEN_ORNAMENT_7 = "Some subpar workmanship went into this one. Such atrocious stitching!", -- frankenswine
+		HALLOWEEN_ORNAMENT_8 = "The truly frightening thing is that I'm actually participating in this frivolity.", -- mummy merm
+		HALLOWEEN_ORNAMENT_9 = "I suppose I should find someplace to hang it. Preferably out of sight.", -- vampire bunnyman
+		HALLOWEEN_ORNAMENT_10 = "Must I be reminded of them?", -- hound batilisk
     },
 
     DESCRIBE_GENERIC = "You tell me.",

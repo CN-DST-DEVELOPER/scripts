@@ -26,9 +26,7 @@ local prefabs =
 	"bat_boss_shadow",
 	"bat_bosscorpsehat",
 	"bat_bosshat_fx",
-	"monstermeat",
 	"guano",
-	"batwing",
 	"splash",
 }
 
@@ -532,6 +530,7 @@ local function commonfn(build, common_postinit, master_postinit)
 
 	inst:SetStateGraph("SGbat")
 	inst.sg.mem.nocorpse = true -- we drop ourself as the corpse!
+	inst.sg.mem.noknockback = true
 
 	inst:SetBrain(brain)
 

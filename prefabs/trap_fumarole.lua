@@ -446,6 +446,7 @@ local function SetTrap(inst)
         inst.components.inventoryitem:SetMaxTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP)
         inst:AddTag("mineactive")
         inst:AddTag("canpourwateron")
+        inst.Physics:SetActive(false)
         if not inst:IsInLimbo() then
             inst.MiniMapEntity:SetEnabled(true)
         end
@@ -466,6 +467,7 @@ end
 local function SetItem(inst)
     inst.MiniMapEntity:SetEnabled(false) -- has to always run because RemoveFromScene/ReturnToScene call SetEnabled
     if inst.settrap then
+        inst.Physics:SetActive(true)
         inst.components.inventoryitem:SetMaxTemperature(TUNING.TRAP_FUMAROLE_MAXTEMP_HELD)
         ClearPlayIdleTask(inst)
         inst:RemoveTag("mineactive")
@@ -624,6 +626,7 @@ local function fn()
 	inst:ListenForEvent("onputininventory", SetItem)
 	inst:ListenForEvent("onpickup", OnPickup)
 	inst:ListenForEvent("ondropped", SetItem)
+	inst:ListenForEvent("teleported", SetItem)
     inst:ListenForEvent("temperaturedelta", OnTemperatureDelta)
 	inst:ListenForEvent("floater_startfloating", SetItem)
 

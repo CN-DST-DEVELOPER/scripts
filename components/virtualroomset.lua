@@ -1007,7 +1007,7 @@ local function _GetEntUnloadAction(self, ent)
             owner:HasAnyTag("irreplaceable", "followsthroughvirtualrooms") or
             (owner.components.migrationpetowner and owner.components.migrationpetowner:GetPet()) or
             (owner.components.inventoryitem and self.keepinventoryitemsthroughreset and self.resetting)
-        ) and not owner:HasAnyTag("forcedtosavethroughvirtualrooms") then
+        ) and not owner:HasTag("forcedtosavethroughvirtualrooms") then
         return _KEEP
     end
     return _SAVE
