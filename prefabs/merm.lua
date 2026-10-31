@@ -194,9 +194,9 @@ local function IsHost(dude)
     return dude:HasTag("shadowthrall_parasite_hosted")
 end 
 
-local function IsMummy(dude, inst)
+--[[local function IsMummy(dude, inst)
 	return dude.mummy and dude.prefab == inst.prefab
-end
+end]]
 
 local function resolve_on_attacked(inst, attacker)
 	if attacker.prefab == "deciduous_root" then
@@ -205,7 +205,7 @@ local function resolve_on_attacked(inst, attacker)
 		end
 	elseif inst.components.combat:CanTarget(attacker) then
 		if inst.mummy then
-			inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsMummy, TUNING.MERM_MAX_TARGET_SHARES)
+			--inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsMummy, TUNING.MERM_MAX_TARGET_SHARES)
 		elseif inst:HasTag("shadowthrall_parasite_hosted") then
             inst.components.combat:ShareTarget(attacker, TUNING.MERM_SHARE_TARGET_DIST, IsHost, TUNING.MERM_MAX_TARGET_SHARES)
         else
@@ -226,7 +226,6 @@ local function resolve_on_attacked(inst, attacker)
         inst.components.combat:SetTarget(attacker)  
     end
 end
-
 
 local function OnAttacked(inst, data)
     local attacker = data ~= nil and data.attacker or nil
@@ -683,7 +682,7 @@ local function OnSave(inst, data)
     if inst.wantstoteleport then
         data.wantstoteleport = true
     end
-	data.mummy = inst.mummy or inst.wasmummy
+	data.mummy = (inst.mummy or inst.wasmummy) and not inst:HasTag("shadowthrall_parasite_hosted") or nil
 end
 
 local function spawn_shadow_merm(inst)
@@ -1334,7 +1333,7 @@ local mummymermbrain, mummymermloot
 
 local function MummyRetargetFn(inst)
 	local player, dsq = inst:GetNearestPlayer(true)
-	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DISTSQ and player or nil
 end
 
 local function MummyKeepTargetFn(inst, target)

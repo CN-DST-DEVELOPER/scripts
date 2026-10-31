@@ -238,7 +238,7 @@ end
 local function OnAttacked(inst, data)
     inst.components.combat:SetTarget(data.attacker)
 	if inst.vampire then
-		inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
+		--inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
 	elseif inst:HasTag("shadowthrall_parasite_hosted") then
         inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
     else
@@ -248,7 +248,7 @@ end
 
 local function OnNewTarget(inst, data)
 	if inst.vampire then
-		inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
+		--inst.components.combat:ShareTarget(data.attacker, SHARE_TARGET_DIST, IsVampire, MAX_TARGET_SHARES)
 	elseif inst:HasTag("shadowthrall_parasite_hosted") then
         inst.components.combat:ShareTarget(data.target, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
     else
@@ -318,7 +318,7 @@ local function LootSetupFunction(lootdropper)
 end
 
 local function OnSave(inst, data)
-	data.vampire = inst.vampire or inst.wasvampire
+	data.vampire = (inst.vampire or inst.wasvampire) and not inst:HasTag("shadowthrall_parasite_hosted") or nil
     data._vampireinitialized = inst._vampireinitialized
 end
 
@@ -330,6 +330,10 @@ local function OnPreLoad(inst, data)--, ents)
 				inst:MakeVampireBunny()
 			else
 				inst.wasvampire = true
+				if inst._inithallowednights then
+					inst._inithallowednights:Cancel()
+					inst._inithallowednights = nil
+				end
 			end
 		end
 	end
@@ -383,7 +387,7 @@ local vampirebunnybrain, vampirebunnyloot
 
 local function VampireRetargetFn(inst)
 	local player, dsq = inst:GetNearestPlayer(true)
-	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DISTSQ and player or nil
 end
 
 local function VampireKeepTargetFn(inst, target)
@@ -402,6 +406,11 @@ end
 local function MakeVampireBunny(inst)
 	vampirebunnybrain = vampirebunnybrain or require("brains/vampirebunnybrain")
 	vampirebunnyloot = vampirebunnyloot or { "monstermeat", "monstermeat", "manrabbit_tail" }
+
+	if inst._inithallowednights then
+		inst._inithallowednights:Cancel()
+		inst._inithallowednights = nil
+	end
 
 	inst:AddTag("monster")
 	inst:AddTag("hostile")
@@ -483,7 +492,7 @@ local function OnInitHallowedNights(inst)
 	inst._inithallowednights = nil
     if not inst._vampireinitialized then
         inst._vampireinitialized = true
-		if TheWorld:HasTag("cave") and math.random() <= TUNING.HN_MONSTER_CHANCE then
+		if TheWorld:HasTag("cave") and not inst:HasTag("shadowthrall_parasite_hosted") and math.random() <= TUNING.HN_MONSTER_CHANCE then
             inst:MakeVampireBunny()
         end
     end

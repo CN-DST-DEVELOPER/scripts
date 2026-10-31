@@ -26,9 +26,9 @@ local events =
         inst.sg:GoToState("glide")
     end),
 
-    EventHandler("doattack", function(inst)
-        if not (inst.sg:HasStateTag("busy")) then
-            inst.sg:GoToState("attack")
+	EventHandler("doattack", function(inst, data)
+		if not inst.sg:HasStateTag("busy") then
+			inst.sg:GoToState("attack", data and data.target)
         end
     end),
 
@@ -111,22 +111,24 @@ local states=
         name = "attack",
         tags = { "busy", "attack"},
 
-        onenter = function(inst)
+		onenter = function(inst, target)
             inst.AnimState:PlayAnimation("attack")
 			inst.components.locomotor:Stop()
-			if inst.components.combat.target ~= nil then
-				inst:ForceFacePoint(inst.components.combat.target.Transform:GetWorldPosition())
+
+			inst.components.combat:StartAttack()
+			if target and target:IsValid() then
+				inst:ForceFacePoint(target.Transform:GetWorldPosition())
+				inst.sg.statemem.target = target
 			end
-	        inst.components.combat:StartAttack()
             inst.SoundEmitter:PlaySound(inst.sounds.attack)
 		end,
 
         timeline=
         {
             TimeEvent(8*FRAMES, function(inst)
-					inst.components.combat:DoAttack()
-                    inst.components.combat:DropTarget()
-				end ),
+				inst.components.combat:DoAttack(inst.sg.statemem.target)
+				inst.components.combat:DropTarget()
+			end),
         },
 
         events =

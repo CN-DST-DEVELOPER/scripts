@@ -2272,7 +2272,7 @@ NAUGHTY_VALUE =
 {
     ["pigman"] = function(player, data) -- franken and werepigs don't trigger naughtiness
         local victim = data and data.victim
-        return (victim and (victim.components.werebeast and victim.components.werebeast:IsInWereState()) or victim.franken) and 0
+        return (victim and ((victim.components.werebeast and victim.components.werebeast:IsInWereState()) or victim.franken)) and 0
             or 3
     end,
     ["babybeefalo"] = 6,

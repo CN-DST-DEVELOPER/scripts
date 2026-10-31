@@ -1,6 +1,6 @@
 require "behaviours/chaseandattack"
 require "behaviours/panic"
-require "behaviours/attackwall"
+--require "behaviours/attackwall"
 require "behaviours/leash"
 require "behaviours/standstill"
 local BrainCommon = require("brains/braincommon")
@@ -92,7 +92,7 @@ function BirdMutantBrain:OnStart()
 
         SequenceNode{
             ActionNode(function() BreakSkeletons(self.inst) end),
-            AttackWall(self.inst),
+			--AttackWall(self.inst),
             ActionNode(function() self.inst.components.combat:ResetCooldown() end),
         },
 

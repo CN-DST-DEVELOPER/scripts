@@ -363280,7 +363280,7 @@ msgstr ""
 
 #. STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_ORB_REFINED
 msgctxt "STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_ORB_REFINED"
-msgid "A refined piece of a Portation Orb that can be expended to teleport to a fully-socketed Telelocater Focus. A Telelocater Focus must be socketed with three Portation Orbs to become operational."
+msgid "A refined piece of a Portation Orb that can be expended to teleport to a fully-socketed Telelocator Focus. A Telelocator Focus must be socketed with three Portation Orbs to become operational."
 msgstr ""
 
 #. STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_REFINER_PEDESTAL
@@ -438000,7 +438000,7 @@ msgstr ""
 
 #. STRINGS.UI.PREMIUM_ONLINE.UPSELL_TEXT
 msgctxt "STRINGS.UI.PREMIUM_ONLINE.UPSELL_TEXT"
-msgid "Online play requires an active%s membership\n Do you want to become a member?"
+msgid "Online play requires an active\n%s membership\n Do you want to become a member?"
 msgstr ""
 
 #. STRINGS.UI.PRESENCE.INVITATION

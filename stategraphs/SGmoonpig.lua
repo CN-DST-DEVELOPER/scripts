@@ -106,31 +106,75 @@ local states =
 
     State{
         name = "attack",
-        tags = { "attack", "busy" },
+		tags = { "attack", "busy", "jumping" },
 
         onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.components.locomotor:Clear()
+			inst:ClearBufferedAction()
             inst.components.combat:StartAttack()
-            inst.Physics:Stop()
-            inst.AnimState:PlayAnimation("were_atk_pre")
-            inst.AnimState:PushAnimation("were_atk", false)
+			inst.AnimState:PlayAnimation("were_atk_pre") --15 frames
+			inst.AnimState:PushAnimation("were_atk") --7 frames
+			inst.AnimState:PushAnimation("were_atk_pst", false)
+
+			local target = inst.components.combat.target
+			if target and target.components.locomotor == nil then
+				local dist1 = inst:GetDistanceSqToInst(target)
+				if dist1 > 0 then
+					local dist = 1.883
+					inst.sg.statemem.speedmult = math.clamp(dist1, 0, dist) / dist
+				else
+					inst.sg.statemem.speedmult = 0
+				end
+			else
+				inst.sg.statemem.speedmult = 1
+			end
+			inst.Physics:SetMotorVelOverride(3 * inst.sg.statemem.speedmult, 0 ,0)
         end,
 
         timeline =
         {
-            TimeEvent(15*FRAMES, function(inst) inst.SoundEmitter:PlaySound("dontstarve/creatures/werepig/attack") end),
-            TimeEvent(16*FRAMES, function(inst) inst.components.combat:DoAttack() end),
+			FrameEvent(3, PlayFootstep),
+			FrameEvent(10, function(inst) inst.SoundEmitter:PlaySound("dontstarve_DLC001/creatures/bearger/swhoosh", nil, 0.7) end),
+			FrameEvent(15, function(inst)
+				inst.SoundEmitter:PlaySound("dontstarve/creatures/werepig/attack")
+				inst.Physics:SetMotorVelOverride(8 * inst.sg.statemem.speedmult, 0, 0)
+			end),
+			FrameEvent(16, function(inst)
+				PlayFootstep(inst)
+				inst.components.combat:DoAttack()
+			end),
+			FrameEvent(17, function(inst) inst.Physics:SetMotorVelOverride(4 * inst.sg.statemem.speedmult, 0, 0) end),
+			FrameEvent(18, function(inst) inst.Physics:SetMotorVelOverride(2 * inst.sg.statemem.speedmult, 0, 0) end),
+			FrameEvent(19, function(inst) inst.Physics:SetMotorVelOverride(1 * inst.sg.statemem.speedmult, 0, 0) end),
+			FrameEvent(20, function(inst) inst.Physics:SetMotorVelOverride(0.5 * inst.sg.statemem.speedmult, 0, 0) end),
+			FrameEvent(21, function(inst)
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+				inst.sg:RemoveStateTag("jumping")
+			end),
+			FrameEvent(15 + 7 + 4, function(inst)
+				if inst.components.combat:HasTarget() or math.random() < 0.7 then
+					inst.sg:AddStateTag("caninterrupt")
+				end
+			end),
         },
 
         events =
         {
             EventHandler("animqueueover", function(inst)
-                inst.sg:GoToState(
-                    not inst.components.combat:HasTarget() and
-                    math.random() < 0.3 and
-                    "howl" or
-                    "idle")
+				if inst.AnimState:AnimDone() then
+					inst.sg:GoToState(inst.sg:HasStateTag("caninterrupt") and "idle" or "howl")
+				end
             end),
         },
+
+		onexit = function(inst)
+			if inst.sg:HasStateTag("jumping") then
+				inst.Physics:ClearMotorVelOverride()
+				inst.Physics:Stop()
+			end
+		end,
     },
 
     State{

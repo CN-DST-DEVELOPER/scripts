@@ -87,8 +87,7 @@ local function fn()
     MakeCharacterPhysics(inst, 10, 0.5)
     RemovePhysicsColliders(inst)
     inst.Physics:SetCollisionGroup(COLLISION.SANITY)
-    inst.Physics:CollidesWith(COLLISION.SANITY)
-    inst.Physics:CollidesWith(COLLISION.WORLD)
+	inst.Physics:SetCollisionMask(COLLISION.SANITY, COLLISION.WORLD)
 
 	inst.Transform:SetSixFaced()
 

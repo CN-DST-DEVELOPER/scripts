@@ -441,8 +441,8 @@ function Combat:ShouldAggro(target, ignore_forbidden)
 		end
 		if target.components.health ~= nil and (target.components.health.minhealth or 0) > 0 and not target:HasTag("hostile") then
 			target = target.components.follower ~= nil and target.components.follower:GetLeader() or target
-			if not target.isplayer then
-				--npc should not aggro on things that can't be killed (unless hostile!)
+			if not (target.isplayer or target:HasTag("companion")) then
+				--npc should not aggro on things that can't be killed (unless hostile or player aligned)
 				return false
 			end
 		end

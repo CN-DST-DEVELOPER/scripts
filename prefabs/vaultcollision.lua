@@ -147,7 +147,7 @@ local function commonfn(points)
 
     inst.entity:AddPhysics()
     inst.Physics:SetMass(0)
-    inst.Physics:SetCollisionGroup(COLLISION.CHARACTERS)
+    inst.Physics:SetCollisionGroup(COLLISION.WORLD)
     inst.Physics:SetCollisionMask(COLLISION.CHARACTERS)
     inst.Physics:SetTriangleMesh(BuildPhysicsMesh(points, 0.1))
 

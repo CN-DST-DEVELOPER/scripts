@@ -109,6 +109,17 @@ local states =
 			if not inst.AnimState:IsCurrentAnimation("walk_loop") then
 				inst.AnimState:PlayAnimation("walk_loop", true)
 			end
+
+			local x, _, z = inst.Transform:GetWorldPosition()
+			local map = TheWorld.Map
+			if map:IsPointInCharlieBossArena(x, 0, z) then
+				local theta = inst.Transform:GetRotation() * DEGREES
+				if not map:IsValidTileAtPoint(x + math.cos(theta), 0, z - math.sin(theta)) then
+					inst.sg:GoToState("fadeout")
+					return
+				end
+			end
+
 			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 		end,
 
@@ -173,6 +184,17 @@ local states =
 			if not inst.AnimState:IsCurrentAnimation("run_loop") then
 				inst.AnimState:PlayAnimation("run_loop", true)
 			end
+
+			local x, _, z = inst.Transform:GetWorldPosition()
+			local map = TheWorld.Map
+			if map:IsPointInCharlieBossArena(x, 0, z) then
+				local theta = inst.Transform:GetRotation() * DEGREES
+				if not map:IsValidTileAtPoint(x + math.cos(theta), 0, z - math.sin(theta)) then
+					inst.sg:GoToState("fadeout")
+					return
+				end
+			end
+
 			inst.sg:SetTimeout(inst.AnimState:GetCurrentAnimationLength())
 		end,
 
@@ -214,6 +236,35 @@ local states =
 				end
 			end),
 		},
+	},
+
+	State{
+		name = "fadeout",
+		tags = { "busy" },
+
+		onenter = function(inst)
+			inst.components.spawnfader:FadeOut()
+		end,
+
+		timeline =
+		{
+			TimeEvent(0.5, function(inst)
+				--keep running against wall
+				inst.Physics:ClearCollidesWith(COLLISION.SANITY)
+			end),
+		},
+
+		events =
+		{
+			EventHandler("spawnfaderout", function(inst)
+				inst:Remove()
+			end),
+		},
+
+		onexit = function(inst)
+			inst.components.spawnfader:Cancel()
+			inst.Physics:CollidesWith(COLLISION.SANITY)
+		end,
 	},
 
     State{
@@ -320,6 +371,13 @@ local states =
                 end
             end),
 		},
+
+		onexit = function(inst)
+			inst.Light:Enable(true)
+			inst.Physics:ClearMotorVelOverride()
+			inst.Physics:Stop()
+			inst.Physics:CollidesWith(COLLISION.SANITY)
+		end,
     },
 
     State{
@@ -366,6 +424,7 @@ local states =
 
         onexit = function(inst)
             inst:RemoveTag("NOCLICK")
+			inst.Physics:CollidesWith(COLLISION.SANITY)
         end,
     },
 }

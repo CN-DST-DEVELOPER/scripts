@@ -119,16 +119,16 @@ local function settarget(inst,target,life,source)
             end
 
 			if target then
-                local dist = inst:GetDistanceSqToInst(target)
-
-                if dist<CLOSERANGE*CLOSERANGE then
-                    local weapon = inst
-					local x, y, z = target.Transform:GetWorldPosition()
-
+				local x, y, z = inst.Transform:GetWorldPosition()
+				local x1, y1, z1 = target.Transform:GetWorldPosition()
+				local dx = x1 - x
+				local dz = z1 - z
+				local dsq = dx * dx + dz * dz
+				if dsq < CLOSERANGE * CLOSERANGE then
                     source.components.combat.ignorehitrange = true
                     source.components.combat.ignoredamagereflect = true
 
-                    source.components.combat:DoAttack(target, weapon)
+					source.components.combat:DoAttack(target, inst)
 
                     source.components.combat.ignorehitrange = false
                     source.components.combat.ignoredamagereflect = false
@@ -136,22 +136,19 @@ local function settarget(inst,target,life,source)
                     theta = nil
 
 					if inst:IsValid() then -- removed if deflected
-						SpawnPrefab("willow_shadow_fire_explode").Transform:SetPosition(x, y, z)
+						SpawnPrefab("willow_shadow_fire_explode").Transform:SetPosition(x1, y1, z1)
 					end
                 else
-                    local pt = Vector3(target.Transform:GetWorldPosition())
-                    local angle = inst:GetAngleToPoint(pt.x,pt.y,pt.z)
-                    local anglediff = angle - inst.Transform:GetRotation()
-                    if anglediff > 180 then
-                        anglediff = anglediff - 360
-                    elseif anglediff < -180 then
-                        anglediff = anglediff + 360
-                    end
-                    if math.abs(anglediff) > maxdeflect then
-                        anglediff = math.clamp(anglediff, -maxdeflect, maxdeflect)
-                    end
+					local rot = inst.Transform:GetRotation()
+					local angle = math.atan2(-dz, dx) * RADIANS
+					local anglediff = ReduceAngle(angle - rot)
+					if dsq < 9 then
+						local k = math.min(1, Remap(math.sqrt(dsq), CLOSERANGE, 3, 1, 0))
+						maxdeflect = maxdeflect * (1 + k * k)
+					end
+					anglediff = math.clamp(anglediff, -maxdeflect, maxdeflect)
 
-                    theta = (inst.Transform:GetRotation() + anglediff) * DEGREES
+					theta = (rot + anglediff) * DEGREES
                 end
             else
                 if not inst.currentdeflection then

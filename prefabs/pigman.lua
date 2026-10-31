@@ -205,7 +205,7 @@ local function OnAttacked(inst, data)
 			inst.components.combat:SetTarget(attacker)
 
 			if inst.franken then
-				inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsFranken, MAX_TARGET_SHARES)
+				--inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsFranken, MAX_TARGET_SHARES)
 			elseif inst:HasTag("shadowthrall_parasite_hosted") then
                 inst.components.combat:ShareTarget(attacker, SHARE_TARGET_DIST, IsHost, MAX_TARGET_SHARES)
 			elseif inst:HasTag("werepig") then
@@ -312,7 +312,7 @@ local function OnInit(inst)
     if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
         if not inst._frankeninitialized then
             inst._frankeninitialized = true
-			if math.random() <= TUNING.HN_MONSTER_CHANCE then
+			if not inst:HasTag("shadowthrall_parasite_hosted") and math.random() <= TUNING.HN_MONSTER_CHANCE then
                 inst:MakeFrankenPig()
             end
         end
@@ -588,7 +588,7 @@ local frankenpigbrain, frankenpigloot
 
 local function FrankenRetargetFn(inst)
 	local player, dsq = inst:GetNearestPlayer(true)
-	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DIST * TUNING.HN_MONSTER_TARGET_DIST and player or nil
+	return dsq and dsq < TUNING.HN_MONSTER_TARGET_DISTSQ and player or nil
 end
 
 local function FrankenKeepTargetFn(inst, target)
@@ -695,7 +695,7 @@ local function displaynamefn(inst)
 end
 
 local function OnSave(inst, data)
-	data.franken = inst.franken or inst.wasfranken
+	data.franken = (inst.franken or inst.wasfranken) and not inst:HasTag("shadowthrall_parasite_hosted") or nil
     data.build = inst.build
 	data._pigtokeninitialized = inst._pigtokeninitialized
 	data._frankeninitialized = inst._frankeninitialized
