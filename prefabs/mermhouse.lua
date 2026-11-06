@@ -169,12 +169,14 @@ end
 
 --hallowed nights mummyhouse retrofit fixup
 local function HN_OnLoadPostPass(inst)--, ents, data)
-	inst.components.childspawner:CountChildrenOutside(function(child)
-		if inst.ismummyhouse and child.components.inventory and child.components.inventory:HasAnyEquipment() then
-			inst.ismummyhouse = false
-		end
-		return true
-	end)
+	if inst.components.childspawner then
+		inst.components.childspawner:CountChildrenOutside(function(child)
+			if inst.ismummyhouse and child.components.inventory and child.components.inventory:HasAnyEquipment() then
+				inst.ismummyhouse = false
+			end
+			return true
+		end)
+	end
 end
 
 local function onload(inst, data)
