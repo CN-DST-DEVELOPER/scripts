@@ -344,7 +344,8 @@ local function itemfn()
 
     inst:AddTag("portableitem")
 
-    MakeInventoryFloatable(inst, "med")
+    local swap_data = {bank = "portable_spicer", anim = "idle_ground"}
+    MakeInventoryFloatable(inst, "med", nil, nil, nil, nil, swap_data)
 
     inst.entity:SetPristine()
 

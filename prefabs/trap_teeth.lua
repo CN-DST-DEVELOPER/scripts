@@ -135,7 +135,8 @@ local function common_fn(bank, build, isinventoryitem)
     inst:AddTag("trap")
 
     if isinventoryitem then
-        MakeInventoryFloatable(inst)
+        local swap_data = {bank = bank, anim = "inactive"}
+        MakeInventoryFloatable(inst, nil, nil, nil, nil, nil, swap_data)
     end
 
     inst.entity:SetPristine()

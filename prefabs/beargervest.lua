@@ -55,7 +55,8 @@ local function fn()
     inst.AnimState:SetBuild("torso_bearger")
     inst.AnimState:PlayAnimation("anim")
 
-    MakeInventoryFloatable(inst, "small", 0.2, 0.9)
+    local swap_data = {bank = "torso_bearger", anim = "anim"}
+    MakeInventoryFloatable(inst, "small", 0.2, 0.9, nil, nil, swap_data)
 
     inst.entity:SetPristine()
 

@@ -162,6 +162,7 @@ end
 local function PlanNextAttack(force, data)
 	ClearLocationImmunity()
 	if _timetoattack > 0 and not force then
+		_attackplanned = true -- Make sure we mark the attack as planned
 		-- we came in through a savegame that already had an attack scheduled
 		return
 	end

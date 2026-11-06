@@ -303,7 +303,8 @@ local function itemfn()
     inst.AnimState:Hide("top_light")
     inst.AnimState:Hide("bottom_light")
 
-    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE)
+    local swap_data = {bank = "scanner", anim = "turn_off_idle"}
+    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE, nil, nil, swap_data)
 
     inst:AddTag("usedeploystring")
 
@@ -905,7 +906,8 @@ local function scannerfn()
     inst.GetScannerScanDistance = GetScannerScanDistance
     inst.GetScannerPlayerProximityDistance = GetScannerPlayerProximityDistance
 
-    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE)
+    local swap_data = {bank = "scanner", anim = "turn_off_idle"}
+    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE, nil, nil, swap_data)
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then
@@ -1130,7 +1132,8 @@ local function scannersucceededfn()
     inst.AnimState:Hide("top_light")
     inst.AnimState:Hide("bottom_light")
 
-    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE)
+    local swap_data = {bank = "scanner", anim = "turn_off_idle"}
+    MakeInventoryFloatable(inst, nil, 0.15, ITEM_FLOATER_SCALE, nil, nil, swap_data)
 
     inst.entity:SetPristine()
     if not TheWorld.ismastersim then

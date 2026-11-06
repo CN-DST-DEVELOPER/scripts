@@ -28840,7 +28840,7 @@ local states =
             end
             inst.components.locomotor:RunForward()
             inst.AnimState:PlayAnimation("run_witchbroom_pre")
-            inst.SoundEmitter:PlaySound("dontstarve/movement/foley/cactus_armor", nil, nil, true)
+            inst.SoundEmitter:PlaySound("hallowednights2025/broom/broom_takeoff", nil, nil, true)
         end,
 
         events =

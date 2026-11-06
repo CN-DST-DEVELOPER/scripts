@@ -170,6 +170,7 @@ local function fn()
 
     ------------------------------------------
 
+	inst:AddComponent("drownable")
     inst:AddComponent("knownlocations")
     inst:AddComponent("inventory")
     inst:AddComponent("herdmember")

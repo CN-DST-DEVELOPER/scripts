@@ -359,6 +359,7 @@ local states =
             inst.SoundEmitter:PlaySound("dontstarve/creatures/werepig/hurt")
             inst.AnimState:PlayAnimation("hit")
             inst.Physics:Stop()
+			CommonHandlers.UpdateHitRecoveryDelay(inst)
         end,
 
         events =

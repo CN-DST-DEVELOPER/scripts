@@ -56,9 +56,10 @@ end
 
 local BREAKSKELETONS_MUST_TAGS = { "playerskeleton", "HAMMER_workable" }
 local function BreakSkeletons(inst)
-    local skel = FindEntity(inst, 1.25, nil, BREAKSKELETONS_MUST_TAGS)
+	local skel = FindEntity(inst, 1.3, nil, BREAKSKELETONS_MUST_TAGS)
     if skel ~= nil then
         skel.components.workable:WorkedBy(inst, 1)
+		return true
     end
 end
 
@@ -90,11 +91,13 @@ function BirdMutantBrain:OnStart()
             --Spit
             --waittospit
 
-        SequenceNode{
+		--[[SequenceNode{
             ActionNode(function() BreakSkeletons(self.inst) end),
-			--AttackWall(self.inst),
+			AttackWall(self.inst),
             ActionNode(function() self.inst.components.combat:ResetCooldown() end),
-        },
+		},]]
+		IfNode(function() return BreakSkeletons(self.inst) end, "Break Skeletons",
+			ActionNode(function() self.inst.components.combat:ResetCooldown() end)),
 
         IfNode(function() return CanBirdAttack(self.inst) end, "Attack",
             ActionNode(function() AttackTarget(self.inst) end)),

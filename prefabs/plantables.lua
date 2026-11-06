@@ -52,10 +52,11 @@ local function make_plantable(data)
         inst.AnimState:PlayAnimation("dropped")
         inst.scrapbook_anim = "dropped"
 
+        local swap_data = {bank = data.bank or data.name, anim = "dropped"}
         if data.floater ~= nil then
-            MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3])
+            MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3], nil, nil, swap_data)
         else
-            MakeInventoryFloatable(inst)
+            MakeInventoryFloatable(inst, nil, nil, nil, nil, nil, swap_data)
         end
 
         if data.name == "berrybush" or 

@@ -48,8 +48,11 @@ local function do_squid_spawn_for_herd(herd, spawnpoint)
     herd.components.herd:AddMember(squid)
 end
 
+-- checking state.phase, not isday,isdusk or isnight. because these runs on phase state change, so those latter 3 aren't updated yet.
+-- moonphase updates after phase change, so moon phase might not be updated yet properly. Not going to bother fixing at this time.
 local function testforsquid(forcesquid)
-    if not forcesquid and _worldstate.isday then
+    local phase = _worldstate.phase
+    if not forcesquid and (phase == "day") then
         return
     end
 
@@ -74,7 +77,7 @@ local function testforsquid(forcesquid)
 
         local chance = TUNING.SQUID_CHANCE[_worldstate.moonphase] * (oceantrawlerchancemodifier or 1)
         chance = Remap(math.min(fishcount, TUNING.SQUID_MAX_FISH), 0, TUNING.SQUID_MAX_FISH, 0, chance)
-        if _worldstate.isnight then
+        if phase == "night" then
             chance = chance * 2
         end
 
@@ -89,7 +92,7 @@ local function testforsquid(forcesquid)
 
         if forcesquid or (squidcount < max and TryLuckRoll(scrambled[1], chance, LuckFormulas.SquidHerdSpawn)) then
             local herd = SpawnPrefab("squidherd")
-            local num = math.random(2, moonphase_max)
+            local num = math.random(TUNING.SQUID_MIN_COUNT, moonphase_max)
             for _=1,num do
                 local squidspawnpoint = (fishcount ~= 0 and fishlist[math.random(fishcount)]:GetPosition())
                     or spawnpoint
@@ -144,7 +147,9 @@ local function OnPlayerLeft(src, player)
 end
 
 local function spawntask()
-    if _worldstate.isnight or _worldstate.isdusk then
+    -- don't check isnight or isdusk, because these are not updated yet properly
+    local phase = _worldstate.phase
+    if phase == "night" or phase == "dusk" then
         testforsquid()
         if inst.squidtask then
             inst.squidtask:Cancel()

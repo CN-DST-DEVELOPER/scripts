@@ -394,7 +394,8 @@ local function commonfn(anim, tag, should_sink, can_refuel)
 	end
 
     if not should_sink then
-        MakeInventoryFloatable(inst, "med", nil, 0.6)
+        local swap_data = {bank = "amulets", anim = anim}
+        MakeInventoryFloatable(inst, "med", nil, 0.6, nil, nil, swap_data)
     end
 
     inst.entity:SetPristine()

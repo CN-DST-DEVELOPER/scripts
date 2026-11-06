@@ -121,6 +121,8 @@ local states=
         tags = {"busy"},
 
         onenter = function(inst, cb)
+            --inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/taunt")
+
             inst.Physics:Stop()
             inst.AnimState:PlayAnimation("taunt")
             inst.SoundEmitter:PlaySound("dontstarve/creatures/krampus/taunt")

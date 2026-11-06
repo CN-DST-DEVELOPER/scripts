@@ -28,6 +28,8 @@ local events=
 	end),
 	CommonHandlers.OnAttacked(),
 	CommonHandlers.OnDeath(),
+	CommonHandlers.OnSink(),
+	CommonHandlers.OnFallInVoid(),
 
 	EventHandler("flyaway", function(inst)
 		if not inst.components.health:IsDead() and not inst.sg:HasStateTag("busy") then
@@ -432,6 +434,8 @@ local states=
 CommonStates.AddFrozenStates(states)
 CommonStates.AddElectrocuteStates(states)
 CommonStates.AddKnockbackStates(states)
+CommonStates.AddSinkAndWashAshoreStates(states)
+CommonStates.AddVoidFallStates(states)
 CommonStates.AddWalkStates(states,
 {
 	walktimeline =

@@ -102,7 +102,8 @@ local function fn()
     inst:AddTag("nonpotatable")
     inst:AddTag("irreplaceable")
 
-    MakeInventoryFloatable(inst, "med", nil, 0.7)
+    local swap_data = {bank = "glommer_flower", anim = "idle"}
+    MakeInventoryFloatable(inst, "med", nil, 0.7, nil, nil, swap_data)
 
     inst.scrapbook_adddeps = {"glommer"}
 

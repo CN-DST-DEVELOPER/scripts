@@ -1003,7 +1003,8 @@ local function MakeBook(def)
         inst.AnimState:PlayAnimation(def.name)
         inst.scrapbook_anim = def.name
 
-        MakeInventoryFloatable(inst, "med", nil, 0.75)
+        local swap_data = {bank = "books", anim = def.name}
+        MakeInventoryFloatable(inst, "med", nil, 0.75, nil, nil, swap_data)
 
         inst:AddTag("book")
         inst:AddTag("bookcabinet_item")

@@ -317,7 +317,8 @@ local function CommonFn(data)
     inst.AnimState:SetBuild(data.build)
     inst.AnimState:PlayAnimation("idle1", false)
 
-    MakeInventoryFloatable(inst, nil, 0.05, FLOAT_SCALE)
+    local swap_data = {bank = data.bank, anim = "idle1"}
+    MakeInventoryFloatable(inst, nil, 0.05, FLOAT_SCALE, nil, nil, swap_data)
 
     inst:AddTag("bell")
     inst:AddTag("donotautopick")

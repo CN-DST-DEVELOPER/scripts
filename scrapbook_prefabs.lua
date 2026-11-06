@@ -2133,6 +2133,13 @@ local PREFABS =
     ["leafpile"] = true,
     ["witchbroom"] = true,
 
+    ["halloween_ornament_7"] = true,
+    ["halloween_ornament_8"] = true,
+    ["halloween_ornament_9"] = true,
+    ["halloween_ornament_10"] = true,
+
+    ["turf_vent"] = true, -- this one was missed.
+
     -----------------------------------------------
 
     --["archive_switch"] = true, proxy for archive_switch_base

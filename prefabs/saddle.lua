@@ -257,6 +257,7 @@ local function MakeSaddle(name, data)
     local assets = {
         Asset("ANIM", "anim/"..name..".zip"),
     }
+    local swap_data = {bank = BANK, anim = IDLE_ANIM}
 
     local function fn()
         local inst = CreateEntity()
@@ -273,7 +274,7 @@ local function MakeSaddle(name, data)
 
         inst.mounted_foleysound = "dontstarve/beefalo/saddle/"..data.foley
 
-        MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3])
+        MakeInventoryFloatable(inst, data.floater[1], data.floater[2], data.floater[3], nil, nil, swap_data)
 
         if data.extra_tags ~= nil then
             for _, tag in ipairs(data.extra_tags) do

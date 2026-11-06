@@ -147,7 +147,8 @@ local function fn()
 	inst.AnimState:SetBuild("hermithouse_ornament_shell")
 	inst.AnimState:PlayAnimation("grounded")
 
-	MakeInventoryFloatable(inst, "small", 0.1, { 1.3, 1, 1 })
+    local swap_data = {bank = "hermithouse_ornament_shell", anim = "grounded"}
+	MakeInventoryFloatable(inst, "small", 0.1, { 1.3, 1, 1 }, nil, nil, swap_data)
 
 	inst.entity:SetPristine()
 

@@ -250,9 +250,6 @@ local function commonfn(data)
     inst.components.combat:SetDefaultDamage(TUNING.SHADOWTHRALL_CENTIPEDE.DAMAGE)
     inst.components.combat.playerdamagepercent = TUNING.SHADOWTHRALL_CENTIPEDE.PLAYERDAMAGEPERCENT --NOTE: This does not apply to special damage! (e.g. planar)
     inst.components.combat.redirectdamagefn = DamageRedirectFn
-    inst.components.combat.noimpactsound = true
-    --inst.components.combat:SetRetargetFunction(1, RetargetFn)
-    --inst.components.combat:SetKeepTargetFunction(KeepTargetFn)
 
     inst:AddComponent("eater")
     inst.components.eater:SetDiet(DIET, DIET)

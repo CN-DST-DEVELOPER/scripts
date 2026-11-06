@@ -419915,7 +419915,7 @@ msgstr ""
 
 #. STRINGS.STALKER_NPC_PERFORM_CORRUPT.1
 msgctxt "STRINGS.STALKER_NPC_PERFORM_CORRUPT.1"
-msgid "Awaken to your new life... horrific and fleeting as it may be"
+msgid "Awaken to your new life... horrific and fleeting as it may be."
 msgstr ""
 
 #. STRINGS.STALKER_NPC_PERFORM_CORRUPT.2

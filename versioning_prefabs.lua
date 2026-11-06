@@ -3,5 +3,5 @@
 
 return {
     LAST_BETA = "43",
-    VERSION = 9,
+    VERSION = 10,
 }

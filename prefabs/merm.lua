@@ -727,6 +727,12 @@ local function OnPreLoad(inst, data)--, ents)
 	end
 end
 
+local function OnLoadPostPass(inst)--, ents, data)
+	if inst.mummy then
+		inst.components.inventory:DropEquipped()
+	end
+end
+
 local function TestForShadowDeath(inst)
     if not inst:HasTag("shadowminion") and
         inst.old_leader ~= nil and
@@ -1093,6 +1099,7 @@ local function MakeMerm(name, assets, prefabs, common_postinit, master_postinit,
         inst.DoDisapproval = DoDisapproval
         inst.OnSave = OnSave
 		inst.OnPreLoad = OnPreLoad
+		inst.OnLoadPostPass = OnLoadPostPass
 
         inst:AddComponent("locomotor")
         -- boat hopping setup
@@ -1389,12 +1396,14 @@ local function MakeMummyMerm(inst)
 	inst.components.locomotor.walkspeed = TUNING.HN_MONSTER_WALKSPEED
 
 	inst.components.lootdropper:SetLoot(mummymermloot)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
-    inst.components.lootdropper:AddChanceLoot("halloween_ornament_8", 0.1)
+	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+		inst.components.lootdropper:AddChanceLoot("halloween_ornament_8", 0.1)
+	end
 
 	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
 	inst:RemoveEventCallback("entitysleep", OnEntitySleepMerm)

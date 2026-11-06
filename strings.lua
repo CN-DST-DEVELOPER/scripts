@@ -7547,7 +7547,7 @@ STRINGS =
 
     STALKER_NPC_PERFORM_CORRUPT =
     {
-        "Awaken to your new life... horrific and fleeting as it may be",
+        "Awaken to your new life... horrific and fleeting as it may be.",
         "We are all pawns.",
         "You are woven.",
         "Your sacrifice will not be forgotten.",

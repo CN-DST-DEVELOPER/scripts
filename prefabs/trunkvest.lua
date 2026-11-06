@@ -59,7 +59,8 @@ local function create_common(bankandbuild, iswaterproofer)
         inst:AddTag("waterproofer")
     end
 
-    MakeInventoryFloatable(inst, "small", 0.1, 0.8)
+    local swap_data = {bank = bankandbuild, anim = "anim"}
+    MakeInventoryFloatable(inst, "small", 0.1, 0.8, nil, nil, swap_data)
 
     inst.entity:SetPristine()
 

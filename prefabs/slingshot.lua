@@ -514,7 +514,8 @@ local function MakeSlingshot(name, assets, prefabs, common_postinit, master_post
 		--inst._iconlayers = nil
 		inst.layeredinvimagefn = LayeredInvImageFn
 
-		MakeInventoryFloatable(inst, "med", 0.07, { 0.53, 0.5, 0.5 })
+        local swap_data = {bank = "slingshot", anim = "float"}
+		MakeInventoryFloatable(inst, "med", 0.07, { 0.53, 0.5, 0.5 }, nil, nil, swap_data)
 
 		if common_postinit then
 			common_postinit(inst)

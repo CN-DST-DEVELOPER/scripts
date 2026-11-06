@@ -1253,7 +1253,8 @@ local function itemfn()
 
 	inst:AddTag("portableitem")
 
-	MakeInventoryFloatable(inst, "large", 0.4, { 0.5, 0.9, 1 })
+    local swap_data = {bank = "winona_catapult", anim = "idle_ground"}
+	MakeInventoryFloatable(inst, "large", 0.4, { 0.5, 0.9, 1 }, nil, nil, swap_data)
 
 	inst:SetPrefabNameOverride("winona_catapult")
 

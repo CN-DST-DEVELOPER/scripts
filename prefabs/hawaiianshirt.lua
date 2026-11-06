@@ -36,7 +36,8 @@ local function create()
 
     inst:AddTag("show_spoilage")
 
-    MakeInventoryFloatable(inst, "small", 0.1, 0.77)
+    local swap_data = {bank = "hawaiian_shirt", anim = "anim"}
+    MakeInventoryFloatable(inst, "small", 0.1, 0.77, nil, nil, swap_data)
 
     inst.entity:SetPristine()
 

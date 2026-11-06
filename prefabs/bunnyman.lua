@@ -345,6 +345,12 @@ local function OnLoad(inst, data)
 	end
 end
 
+local function OnLoadPostPass(inst)--, ents, data)
+	if inst.vampire then
+		inst.components.inventory:DropEquipped()
+	end
+end
+
 local function SwitchLeaderToRabbitKing(inst, rabbitking)
     local follower = inst.components.follower
     if follower then
@@ -459,12 +465,14 @@ local function MakeVampireBunny(inst)
 
 	inst.components.lootdropper:SetLootSetupFn(nil)
 	inst.components.lootdropper:SetLoot(vampirebunnyloot)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
-    inst.components.lootdropper:AddChanceLoot("halloween_ornament_9", 0.1)
+	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+		inst.components.lootdropper:AddChanceLoot("halloween_ornament_9", 0.1)
+	end
 
 	inst.has_nightmare_state = nil
 	inst:RemoveEventCallback("ms_forcenightmarestate", OnForceNightmareState)
@@ -492,7 +500,11 @@ local function OnInitHallowedNights(inst)
 	inst._inithallowednights = nil
     if not inst._vampireinitialized then
         inst._vampireinitialized = true
-		if TheWorld:HasTag("cave") and not inst:HasTag("shadowthrall_parasite_hosted") and math.random() <= TUNING.HN_MONSTER_CHANCE then
+		if TheWorld:HasTag("cave") and
+			not inst:HasTag("shadowthrall_parasite_hosted") and
+			not inst.components.inventory:HasAnyEquipment() and
+			math.random() <= TUNING.HN_MONSTER_CHANCE
+		then
             inst:MakeVampireBunny()
         end
     end
@@ -684,6 +696,7 @@ local function fn()
 	inst.OnSave = OnSave
 	inst.OnPreLoad = OnPreLoad
 	inst.OnLoad = OnLoad
+	inst.OnLoadPostPass = OnLoadPostPass
 
     return inst
 end

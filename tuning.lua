@@ -6096,6 +6096,7 @@ function Tune(overrides)
 
         SQUID_TEST_RADIUS = 80,
         SQUID_MAX_FISH = 10,
+        SQUID_MIN_COUNT = 2,
         SQUID_MAX_NUMBERS = {
             ["new"] = 6,
             ["quarter"] = 3,

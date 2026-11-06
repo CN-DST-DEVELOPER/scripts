@@ -756,8 +756,8 @@ lighter_clear_fn = function(inst) basic_clear_fn(inst, "lighter" ) end
 spear_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear" ) end
 spear_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear" ) end
 
-waterballoon_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_waterballoon" ) end
-waterballoon_clear_fn = function(inst) basic_clear_fn(inst, "swap_waterballoon" ) end
+waterballoon_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "waterballoon" ) end
+waterballoon_clear_fn = function(inst) basic_clear_fn(inst, "waterballoon" ) end
 
 spear_wathgrithr_init_fn = function(inst, build_name) basic_init_fn( inst, build_name, "swap_spear_wathgrithr" ) end
 spear_wathgrithr_clear_fn = function(inst) basic_clear_fn(inst, "swap_spear_wathgrithr" ) end

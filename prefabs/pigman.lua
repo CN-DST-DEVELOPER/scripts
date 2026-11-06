@@ -312,7 +312,10 @@ local function OnInit(inst)
     if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
         if not inst._frankeninitialized then
             inst._frankeninitialized = true
-			if not inst:HasTag("shadowthrall_parasite_hosted") and math.random() <= TUNING.HN_MONSTER_CHANCE then
+			if not inst:HasTag("shadowthrall_parasite_hosted") and
+				not inst.components.inventory:HasAnyEquipment() and
+				math.random() <= TUNING.HN_MONSTER_CHANCE
+			then
                 inst:MakeFrankenPig()
             end
         end
@@ -660,12 +663,14 @@ local function MakeFrankenPig(inst)
 	inst.components.locomotor.walkspeed = TUNING.HN_MONSTER_WALKSPEED
 
 	inst.components.lootdropper:SetLoot(frankenpigloot)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
-    inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
-    inst.components.lootdropper:AddChanceLoot("halloween_ornament_7", 0.1)
+	if IsSpecialEventActive(SPECIAL_EVENTS.HALLOWED_NIGHTS) then
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("halloweencandy_"..math.random(NUM_HALLOWEENCANDY), 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 1)
+		inst.components.lootdropper:AddChanceLoot("pumpkin_bomb", 0.15)
+		inst.components.lootdropper:AddChanceLoot("halloween_ornament_7", 0.1)
+	end
 
 	inst:RemoveEventCallback("suggest_tree_target", SuggestTreeTarget)
 
@@ -719,6 +724,12 @@ end
 local function OnLoad(inst, data)
 	if data and not (inst.franken or inst.components.werebeast:IsInWereState()) then
 		inst.AnimState:SetBuild(inst.build)
+	end
+end
+
+local function OnLoadPostPass(inst)--, ents, data)
+	if inst.franken then
+		inst.components.inventory:DropEquipped()
 	end
 end
 
@@ -893,6 +904,7 @@ local function common(moonbeast)
         inst.OnSave = OnSave
 		inst.OnPreLoad = OnPreLoad
         inst.OnLoad = OnLoad
+		inst.OnLoadPostPass = OnLoadPostPass
     end
 
     inst:ListenForEvent("attacked", OnAttacked)

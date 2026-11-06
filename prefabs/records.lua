@@ -82,7 +82,8 @@ local function fn()
     inst:AddTag("cattoy")
     inst:AddTag("phonograph_record")
 
-    MakeInventoryFloatable(inst, "med", 0.02, 0.7)
+    local swap_data = {bank = "records", anim = "idle"}
+    MakeInventoryFloatable(inst, "med", 0.02, 0.7, nil, nil, swap_data)
 
     inst.record_displayname = net_string(inst.GUID, "record.record_displayname")
     inst.displaynamefn = DisplayNameFn

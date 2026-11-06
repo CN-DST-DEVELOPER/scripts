@@ -109,6 +109,8 @@ function MapScreen:OnBecomeInactive()
     self:RemoveDecorations()
     self.decorationdata.lmb = nil
     self.decorationdata.rmb = nil
+
+    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/map_close")
 end
 
 function MapScreen:OnBecomeActive()
@@ -133,6 +135,8 @@ function MapScreen:OnBecomeActive()
         local scale = TheFrontEnd:GetHUDScale()
         self.hover:SetScale(scale)
     end
+
+    TheFrontEnd:GetSound():PlaySound("dontstarve/HUD/map_open")
 
     self.zoomsensitivity = Profile:GetMiniMapZoomSensitivity()
     --V2C: Don't set pause in multiplayer, all it does is change the

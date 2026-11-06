@@ -150,7 +150,7 @@ end
 local function OnGoHome(inst, child)
     if not inst:HasTag("burnt") then
         inst.SoundEmitter:PlaySound("dontstarve/common/pighouse_door")
-        if inst.ismummyhouse and (
+        if inst.ismummyhouse or (
             inst.components.childspawner ~= nil and
             inst.components.childspawner:CountChildrenOutside() < 1) then
             StartSpawning(inst)
@@ -163,8 +163,18 @@ local function onsave(inst, data)
         data.burnt = true
     end
     if inst.ismummyhouse ~= nil then
-        data.ismummyhouse = inst.ismummyhouse or inst.wasmummyhouse
+		data.ismummyhouse = inst.ismummyhouse or inst.wasmummyhouse or false
     end
+end
+
+--hallowed nights mummyhouse retrofit fixup
+local function HN_OnLoadPostPass(inst)--, ents, data)
+	inst.components.childspawner:CountChildrenOutside(function(child)
+		if inst.ismummyhouse and child.components.inventory and child.components.inventory:HasAnyEquipment() then
+			inst.ismummyhouse = false
+		end
+		return true
+	end)
 end
 
 local function onload(inst, data)
@@ -178,6 +188,9 @@ local function onload(inst, data)
 	    	else
 	    		inst.wasmummyhouse = data.ismummyhouse
 	    	end
+		elseif inst.ismummyhouse then
+			--retrofit? need to check if our existing children after loadpostpass
+			inst.OnLoadPostPass = HN_OnLoadPostPass
 	    end
     end
 end
