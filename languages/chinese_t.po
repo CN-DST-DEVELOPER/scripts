@@ -363283,7 +363283,7 @@ msgstr "聖殿路標的意志焦點，將域外來客彙聚于此。"
 
 #. STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_ORB_REFINED
 msgctxt "STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_ORB_REFINED"
-msgid "A refined piece of a Portation Orb that can be expended to teleport to a fully-socketed Telelocater Focus. A Telelocater Focus must be socketed with three Portation Orbs to become operational."
+msgid "A refined piece of a Portation Orb that can be expended to teleport to a fully-socketed Telelocator Focus. A Telelocator Focus must be socketed with three Portation Orbs to become operational."
 msgstr "一塊精煉過的傳送寶珠碎片，可以消耗它傳送到一個已完全嵌入寶珠的傳送焦點。傳送焦點必須嵌入三顆傳送寶珠後才能運作。"
 
 #. STRINGS.SCRAPBOOK.SPECIALINFO.VAULT_REFINER_PEDESTAL
@@ -376366,6 +376366,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.fencegate_victorianbronze_item"
 msgid "n/a"
 msgstr "n/a"
 
+#. STRINGS.SKIN_DESCRIPTIONS.firepit_baker
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.firepit_baker"
+msgid "The comforting warmth of the fire makes you feel right at home."
+msgstr "冒險途中爐火暖，荒野便是新家園。"
+
 #. STRINGS.SKIN_DESCRIPTIONS.firepit_chess
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.firepit_chess"
 msgid "Worth the sacrifice."
@@ -381968,7 +381973,7 @@ msgstr "這個全套凱旋箱子包含了全套的凱旋系列冒險家皮膚。
 
 #. STRINGS.SKIN_DESCRIPTIONS.pack_shadow_items
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.pack_shadow_items"
-msgid "This Cursed Chest contains the following skin items: Brumal Amulet, Verdigris Amulet, Carnelian Amulet, Lolite Amulet, Sanguine Amulet, Orpiment Amulet, Sanguine Bearger Vest, Sanguine Skiff, Sanguine Suppressor, Sanguine Queen's Crown, Sanguine Sack, Sanguine Sail, Sanguine Pack, Sanguine Helm, Sanguine Thurible, Infernal Bonnet, Patched Void Robe, Cursed Cowl, and Void Rags."
+msgid "This Cursed Chest contains the following skin items: Brumal Amulet, Verdigris Amulet, Carnelian Amulet, Iolite Amulet, Sanguine Amulet, Orpiment Amulet, Sanguine Bearger Vest, Sanguine Skiff, Sanguine Suppressor, Sanguine Queen's Crown, Sanguine Sack, Sanguine Sail, Sanguine Pack, Sanguine Helm, Sanguine Thurible, Infernal Bonnet, Patched Void Robe, Cursed Cowl, and Void Rags."
 msgstr "這個詛咒箱子包含了下列皮膚物品：寒冬護符、銅綠護符、紅玉髓護符、堇青石護符、血色護符、雌黃護符、血色熊獾背心、血色小舟、血色滅火器、血色女王冠、血色大袋、血色船帆、血色揹包、血色船舵、血色香爐、地獄軟帽、拼補虛空長袍、詛咒兜帽和虛空破布衫。"
 
 #. STRINGS.SKIN_DESCRIPTIONS.pack_shadowchesspiratewanda
@@ -390833,7 +390838,7 @@ msgstr "平靜護符"
 
 #. STRINGS.SKIN_NAMES.amulet_purple_shadow
 msgctxt "STRINGS.SKIN_NAMES.amulet_purple_shadow"
-msgid "Lolite Amulet"
+msgid "Iolite Amulet"
 msgstr "堇青石護符"
 
 #. STRINGS.SKIN_NAMES.amulet_red_heart
@@ -397090,6 +397095,11 @@ msgstr "古董黃銅門"
 msgctxt "STRINGS.SKIN_NAMES.fencegate_victorianbronze_item"
 msgid "Antique Bronze Gate"
 msgstr "古董青銅門"
+
+#. STRINGS.SKIN_NAMES.firepit_baker
+msgctxt "STRINGS.SKIN_NAMES.firepit_baker"
+msgid "Homestyle Hearth"
+msgstr "家用爐灶"
 
 #. STRINGS.SKIN_NAMES.firepit_chess
 msgctxt "STRINGS.SKIN_NAMES.firepit_chess"
@@ -419918,7 +419928,7 @@ msgstr "可你最恐懼的東西，卻藏在內心。"
 
 #. STRINGS.STALKER_NPC_PERFORM_CORRUPT.1
 msgctxt "STRINGS.STALKER_NPC_PERFORM_CORRUPT.1"
-msgid "Awaken to your new life... horrific and fleeting as it may be"
+msgid "Awaken to your new life... horrific and fleeting as it may be."
 msgstr "醒來，迎接你的新生……哪怕它恐怖而短暫"
 
 #. STRINGS.STALKER_NPC_PERFORM_CORRUPT.2
@@ -438003,7 +438013,7 @@ msgstr "訂閱"
 
 #. STRINGS.UI.PREMIUM_ONLINE.UPSELL_TEXT
 msgctxt "STRINGS.UI.PREMIUM_ONLINE.UPSELL_TEXT"
-msgid "Online play requires an active%s membership\n Do you want to become a member?"
+msgid "Online play requires an active\n%s membership\n Do you want to become a member?"
 msgstr "在線遊戲需要有效的\n%s會員資格\n要成為會員嗎？"
 
 #. STRINGS.UI.PRESENCE.INVITATION

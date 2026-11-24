@@ -827,6 +827,7 @@ PREFAB_SKINS = {
 	},
 	firepit =
 	{
+		"firepit_baker",
 		"firepit_chess",
 		"firepit_fanged",
 		"firepit_fangedp",

@@ -428,6 +428,7 @@ function UpgradeModulesDisplay:PopModuleAtIndex(bartype, startindex)
                 lastchip:GetAnimState():OverrideSymbol("movespeed2_chip", lastchip.overridebuild, lastchip.modulename.."_chip")
 
                 chip.chip_pos = nil
+                chip:CancelMoveTo()
                 local slot_distance_from_bottom = slotsinuse + (chip._used_modslots - 1) * 0.5
                 local y_pos = (slot_distance_from_bottom * 20) - 51
                 lastchip:SetPosition(self:GetChipXOffset(bartype), y_pos)
@@ -502,6 +503,7 @@ function UpgradeModulesDisplay:DropChip(falling_chip)
     end)
 
     falling_chip.chip_pos = nil
+    falling_chip:CancelMoveTo()
     falling_chip:GetAnimState():PlayAnimation("minichip_fall")
 end
 
@@ -589,7 +591,7 @@ function UpgradeModulesDisplay:Close()
                     local pos = chip.chip_pos
                     local stretch_pos = Vector3(chip.chip_pos.x - 5, chip.chip_pos.y, 0)
                     chip:MoveTo(pos, stretch_pos, 6 * FRAMES, function()
-                        local hidden_pos = Vector3(40, chip.chip_pos.y, 0)
+                        local hidden_pos = Vector3(40, pos.y, 0)
                         chip:MoveTo(pos, hidden_pos, GetBarCloseTimings(k), function() chip:Hide() end)
                         chip:GetAnimState():PlayAnimation("minichip_barframe"..i.."_close")
                     end)

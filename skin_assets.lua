@@ -2421,6 +2421,8 @@ local skin_assets =
 	Asset("PKGREF", "anim/dynamic/fence_victorianbrass.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/fence_victorianbronze.zip"),
 	Asset("PKGREF", "anim/dynamic/fence_victorianbronze.dyn"),
+	Asset("DYNAMIC_ANIM", "anim/dynamic/firepit_baker.zip"),
+	Asset("PKGREF", "anim/dynamic/firepit_baker.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/firepit_chess.zip"),
 	Asset("PKGREF", "anim/dynamic/firepit_chess.dyn"),
 	Asset("DYNAMIC_ANIM", "anim/dynamic/firepit_fanged.zip"),

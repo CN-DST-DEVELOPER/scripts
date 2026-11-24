@@ -105,8 +105,10 @@ function LunarRiftMutationsManager:TriggerWagstaffAppearance(ent)
 
     if self:IsWagstaffSpawned() then
         self.wagstaff.Transform:SetPosition(pos:Get())
-        self.wagstaff:ForceFacePoint(entpos:Get())
-        self.wagstaff:TalkAboutMutatedCreature()
+        if self.wagstaff then -- Wagstaff can be instantly removed after the setposition due to removing on sleep and running RefreshDefeatedMutationsTable
+            self.wagstaff:ForceFacePoint(entpos:Get())
+            self.wagstaff:TalkAboutMutatedCreature()
+        end
     end
 end
 

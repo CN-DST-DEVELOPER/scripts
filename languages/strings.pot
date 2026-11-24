@@ -376363,6 +376363,11 @@ msgctxt "STRINGS.SKIN_DESCRIPTIONS.fencegate_victorianbronze_item"
 msgid "n/a"
 msgstr ""
 
+#. STRINGS.SKIN_DESCRIPTIONS.firepit_baker
+msgctxt "STRINGS.SKIN_DESCRIPTIONS.firepit_baker"
+msgid "The comforting warmth of the fire makes you feel right at home."
+msgstr ""
+
 #. STRINGS.SKIN_DESCRIPTIONS.firepit_chess
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.firepit_chess"
 msgid "Worth the sacrifice."
@@ -381965,7 +381970,7 @@ msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.pack_shadow_items
 msgctxt "STRINGS.SKIN_DESCRIPTIONS.pack_shadow_items"
-msgid "This Cursed Chest contains the following skin items: Brumal Amulet, Verdigris Amulet, Carnelian Amulet, Lolite Amulet, Sanguine Amulet, Orpiment Amulet, Sanguine Bearger Vest, Sanguine Skiff, Sanguine Suppressor, Sanguine Queen's Crown, Sanguine Sack, Sanguine Sail, Sanguine Pack, Sanguine Helm, Sanguine Thurible, Infernal Bonnet, Patched Void Robe, Cursed Cowl, and Void Rags."
+msgid "This Cursed Chest contains the following skin items: Brumal Amulet, Verdigris Amulet, Carnelian Amulet, Iolite Amulet, Sanguine Amulet, Orpiment Amulet, Sanguine Bearger Vest, Sanguine Skiff, Sanguine Suppressor, Sanguine Queen's Crown, Sanguine Sack, Sanguine Sail, Sanguine Pack, Sanguine Helm, Sanguine Thurible, Infernal Bonnet, Patched Void Robe, Cursed Cowl, and Void Rags."
 msgstr ""
 
 #. STRINGS.SKIN_DESCRIPTIONS.pack_shadowchesspiratewanda
@@ -390830,7 +390835,7 @@ msgstr ""
 
 #. STRINGS.SKIN_NAMES.amulet_purple_shadow
 msgctxt "STRINGS.SKIN_NAMES.amulet_purple_shadow"
-msgid "Lolite Amulet"
+msgid "Iolite Amulet"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.amulet_red_heart
@@ -397086,6 +397091,11 @@ msgstr ""
 #. STRINGS.SKIN_NAMES.fencegate_victorianbronze_item
 msgctxt "STRINGS.SKIN_NAMES.fencegate_victorianbronze_item"
 msgid "Antique Bronze Gate"
+msgstr ""
+
+#. STRINGS.SKIN_NAMES.firepit_baker
+msgctxt "STRINGS.SKIN_NAMES.firepit_baker"
+msgid "Homestyle Hearth"
 msgstr ""
 
 #. STRINGS.SKIN_NAMES.firepit_chess
